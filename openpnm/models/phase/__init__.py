@@ -58,6 +58,9 @@ default_argmap = {
     'dipole_moment': 'param.dipole_moment',
     'dipole': 'param.dipole_moment',
     'mu': 'pore.viscosity',
+    'sigma': 'pore.surface_tension',
+    'rhom': 'pore.molar_density',
+    'rho': 'pore.density',
 }
 
 

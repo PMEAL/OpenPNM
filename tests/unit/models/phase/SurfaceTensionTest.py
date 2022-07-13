@@ -6,50 +6,42 @@ import chemicals
 class SurfaceTensionTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.Phase(network=self.net)
-        self.phase['pore.temperature'] = 298.0  # K
-        self.phase['pore.molecular_weight'] = 0.018  # kg/mol
-        self.phase['pore.critical_temperature'] = 647.15  # K
-        self.phase['pore.critical_pressure'] = 3771000.0  # Pa
+        self.phase = op.phase.Species(network=self.net, species='water')
         self.phase['pore.salinity'] = 0  # g/kg
-        self.phase['pore.molar_density'] = 55.5  # mol/m3
 
     def test_water(self):
-        f = op.models.phase.surface_tension.water
+        f = op.models.phase.surface_tension.water_correlation
         self.phase.add_model(propname='pore.surface_tension',
                              model=f)
         self.phase.regenerate_models()
         assert_approx_equal(self.phase['pore.surface_tension'].mean(),
                             0.07199533)
 
-    def test_eotvos(self):
-        f = op.models.phase.surface_tension.eotvos
+    def test_brock_bird(self):
+        f = op.models.phase.surface_tension.liquid_pure_brock_bird
         self.phase.add_model(propname='pore.surface_tension',
-                             model=f,
-                             k=0.000014)
+                             model=f)
         self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
-                            0.07112169)
+        # assert_approx_equal(self.phase['pore.surface_tension'].mean(),
+        #                     0.07820759)
 
-    def test_guggenheim_katayama(self):
-        f = op.models.phase.surface_tension.guggenheim_katayama
-        self.phase.add_model(propname='pore.surface_tension',
-                             model=f,
-                             K2=0.0000014,
-                             n=0.1)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
-                            0.27582571)
-
-    def test_brock_bird_scaling(self):
-        f = op.models.phase.surface_tension.brock_bird_scaling
-        self.phase.add_model(propname='pore.surface_tension',
-                             model=f,
-                             sigma_o=0.0608,
-                             To=363)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.surface_tension'].mean(),
-                            0.07820759)
+    def test_generic_chemicals_for_liquid_mixtures(self):
+        h2o = op.phase.Species(network=self.net, species='water')
+        h2o.add_model(propname='pore.surface_tension',
+                      model=op.models.phase.surface_tension.liquid_pure_brock_bird)
+        etoh = op.phase.Species(network=self.net, species='ethanol')
+        etoh.add_model(propname='pore.surface_tension',
+                       model=op.models.phase.surface_tension.liquid_pure_brock_bird)
+        vodka = op.phase.LiquidMixture(network=self.net, components=[h2o, etoh])
+        vodka.x(h2o.name, 0.5)
+        vodka.x(etoh.name, 0.5)
+        mods = [
+            chemicals.interface.Winterfeld_Scriven_Davis
+        ]
+        vals = []
+        for f in mods:
+            vals.append(op.models.phase.chemicals_wrapper(target=vodka, f=f).mean())
+        assert_allclose(vals, 2.898e-1, rtol=.8)
 
     def test_generic_chemicals_for_pure_liq(self):
         mods = [
@@ -67,8 +59,7 @@ class SurfaceTensionTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            print(f)
-            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
         assert_allclose(vals, 2.898e-1, rtol=.8)
 
 

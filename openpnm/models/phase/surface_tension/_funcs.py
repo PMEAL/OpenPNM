@@ -6,14 +6,13 @@ docstr = Docorator()
 
 
 __all__ = [
-    "water",
-    "guggenheim_katayama",
-    "brock_bird_scaling",
+    "water_correlation",
+    "liquid_pure_brock_bird",
 ]
 
 
 @docstr.dedent
-def water(target, temperature='pore.temperature', salinity='pore.salinity'):
+def water_correlation(target, temperature='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric
     pressure using Eq. (28) given by Sharqawy et al. Values at
@@ -61,53 +60,19 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
 
 
 @docstr.dedent
-def guggenheim_katayama(target, K2, n, temperature='pore.temperature',
-                        critical_temperature='pore.critical_temperature',
-                        critical_pressure='pore.critical_pressure'):
+def liquid_pure_brock_bird(
+    target,
+    temperature='pore.temperature',
+    critical_temperature='param.critical_temperature',
+    boiling_temperature='param.boiling_temperature',
+    critical_pressure='param.critical_pressure',
+):
     r"""
-    Missing description
+    Uses Brock_Bird model
 
     Parameters
     ----------
     %(models.target.parameters)s
-    K2 : scalar
-        Fluid specific constant
-    n : scalar
-        Fluid specific constant
-    %(models.phase.T)s
-    critical_temperature : str
-        The dictionary key containing the critical temperature values (K)
-    critical_pressure : str
-        The dictionary key containing the critical pressure values (K)
-
-    Returns
-    -------
-    value : ndarray
-        A numpy ndarray containing surface tension values [N/m]
-
-    """
-    T = target[temperature]
-    Pc = target[critical_pressure]
-    Tc = target[critical_temperature]
-    sigma_o = K2*Tc**(1/3)*Pc**(2/3)
-    value = sigma_o*(1-T/Tc)**n
-    return value
-
-
-@docstr.dedent
-def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
-                       critical_temperature='pore.critical_temperature'):
-    r"""
-    Uses Brock_Bird model to adjust surface tension from it's value at a given
-    reference temperature to temperature of interest
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    To : float
-        Reference temperature (K)
-    sigma_o : float
-        Surface tension at reference temperature (N/m)
     %(models.phase.T)s
     critical_temperature : str
         The dictionary key containing the critical temperature values (K)
@@ -119,9 +84,34 @@ def brock_bird_scaling(target, sigma_o, To, temperature='pore.temperature',
         temperature [N/m]
 
     """
+    T = target[temperature]
     Tc = target[critical_temperature]
-    Ti = target[temperature]
-    Tro = To/Tc
-    Tri = Ti/Tc
-    value = sigma_o*(1-Tri)**(11/9)/(1-Tro)**(11/9)
-    return value
+    Tr = T/Tc
+    Tb = target[boiling_temperature]
+    Tbr = Tb/Tc
+    Pc = target[critical_pressure]/100000
+    Q = 0.1196*(1 + Tbr*np.log(Pc/1.01325)/(1-Tbr))-0.279
+    sigma = 1e-3 * Q * (Pc**(2/3)) * (Tc**(1/3)) * ((1-Tr)**(11/9))
+    return sigma
+
+
+if __name__ == "__main__":
+    import chemicals as chem
+    import openpnm as op
+    from numpy.testing import assert_allclose
+
+    pn = op.network.Demo()
+
+    cbz = op.phase.Species(network=pn, species='chlorobenzen')
+    cbz.add_model(propname='pore.surface_tension',
+                  model=liquid_pure_brock_bird)
+    k_calc = cbz['pore.surface_tension'][0]
+    k_ref = chem.interface.Brock_Bird(
+        T=cbz['pore.temperature'][0],
+        Tb=cbz['param.boiling_temperature'],
+        Tc=cbz['param.critical_temperature'],
+        Pc=cbz['param.critical_pressure'],
+    )
+    assert_allclose(k_ref, k_calc, rtol=1e-10, atol=0)
+
+

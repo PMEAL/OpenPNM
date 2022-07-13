@@ -5,7 +5,9 @@ from openpnm.models.phase.mixtures import mixing_rule
 __all__ = [
     'water_correlation',
     'liquid_mixture',
+    'liquid_pure',
     'gas_mixture',
+    'gas_pure',
 ]
 
 
@@ -134,7 +136,7 @@ def gas_pure_stiel_thodos(
     return mu/1000
 
 
-def gas_pure_gharagheizi(
+def gas_pure(
     target,
     temperature='pore.temperature',
     critical_temperature='param.critical_temperature',
@@ -174,7 +176,7 @@ def gas_pure_chung(
         The dictionary key containing the temperature values (K)
     critical_temperature : str
         The dictionary key containing the temperature values (K)
-    mol_weight: str
+    molecular_weight: str
         The dictionary key containing the molecular weight values (kg/mol)
     critical_volume : str
         The dictionary key containing the critical volume values (m3/kmol)
@@ -182,7 +184,7 @@ def gas_pure_chung(
     Returns
     -------
     value : ndarray
-        Array containing viscosity values based on Chung model [kg/m.s].
+        Array containing viscosity values based on Chung model in [Pa.s].
 
     References
     ----------
@@ -211,12 +213,12 @@ def gas_pure_chung(
 
 def gas_mixture(
     target,
-    MWs='param.molecular_weight',
-    mus='pore.viscosity',
+    viscosity='pore.viscosity',
+    molecular_weight='param.molecular_weight',
 ):
     r"""
     Computes the viscosity of a gas mixture using a custom written version
-    of ``chemicals.viscosity.HerningZipperer``
+    of ``chemicals.viscosity.Herning_Zipperer``
 
     Parameters
     ----------
@@ -235,8 +237,8 @@ def gas_mixture(
         An ndarray of Np length containing the viscosity of the mixture in
         each pore
     """
-    MWs = target.get_comp_vals(MWs)
-    mus = target.get_comp_vals(mus)
+    MWs = target.get_comp_vals(molecular_weight)
+    mus = target.get_comp_vals(viscosity)
     xs = target['pore.mole_fraction']
     num = 0.0
     denom = 0.0
@@ -244,6 +246,30 @@ def gas_mixture(
         num += xs[k]*mus[k]*MWs[k]**0.5
         denom += xs[k]*MWs[k]**0.5
     mu = num/denom
+    return mu
+
+
+def liquid_pure(
+    target,
+    temperature='pore.temperature',
+    molecular_weight='param.molecular_weight',
+    critical_temperature='param.critical_temperature',
+    critical_pressure='param.critical_pressure',
+    acentric_factor='param.acentric_factor',
+):
+    r"""
+    """
+    # Letsou_Stiel
+    T = target[temperature]
+    MW = target[molecular_weight]
+    Tc = target[critical_temperature]
+    Pc = target[critical_pressure]
+    omega = target[acentric_factor]
+    Tr = T/Tc
+    zeta = 2173.424 * (Tc**(1/6))/((MW**(0.5))*(Pc**(2/3)))
+    zeta0 = (1.5174 - 2.135*Tr + 0.75*(Tr**2))*1e-5
+    zeta1 = (4.2552 - 7.674*Tr + 3.4*(Tr**2))*1e-5
+    mu = (zeta0 + omega*zeta1)/zeta
     return mu
 
 
@@ -261,7 +287,6 @@ liquid_mixture.__doc__ = mixing_rule.__doc__
 
 if __name__ == "__main__":
 
-    from chemicals import viscosity_gas_Gharagheizi, Vm_to_rho
     import chemicals as chem
     import openpnm as op
     from numpy.testing import assert_allclose
@@ -282,7 +307,15 @@ if __name__ == "__main__":
 
     co2 = op.phase.Species(network=pn, species='co2')
     co2.add_model(propname='pore.viscosity',
-                  model=gas_pure_stiel_thodos)
+                  model=gas_pure)
+    mu_ref = chem.viscosity.viscosity_gas_Gharagheizi(
+        T=co2['pore.temperature'][0],
+        Tc=co2['param.critical_temperature'],
+        Pc=co2['param.critical_pressure'],
+        MW=co2['param.molecular_weight'],
+    )
+    mu_calc = co2['pore.viscosity'][0]
+    assert_allclose(mu_ref, mu_calc, rtol=1e-10, atol=0)
 
     fluegas = op.phase.GasMixture(network=pn, components=[co2, ch4])
     fluegas.y(ch4, 0.1)
@@ -297,8 +330,18 @@ if __name__ == "__main__":
     mu_calc = fluegas['pore.viscosity'][0]
     assert_allclose(mu_ref, mu_calc, rtol=1e-10, atol=0)
 
-
-
+    cbz = op.phase.Species(network=pn, species='chlorobenzene')
+    cbz.add_model(propname='pore.viscosity',
+                  model=liquid_pure)
+    mu_calc = cbz['pore.viscosity'][0]
+    mu_ref = chem.viscosity.Letsou_Stiel(
+        T=cbz['pore.temperature'][0],
+        Tc=cbz['param.critical_temperature'],
+        Pc=cbz['param.critical_pressure'],
+        MW=cbz['param.molecular_weight'],
+        omega=cbz['param.acentric_factor'],
+    )
+    assert_allclose(mu_ref, mu_calc, rtol=1e-10, atol=0)
 
 
 
