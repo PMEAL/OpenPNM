@@ -551,11 +551,11 @@ def merge_networks(network, donor=[]):
         donors = [donor]
 
     for donor in donors:
-        network['pore.coords'] = np.vstack((network['pore.coords'],
-                                            donor['pore.coords']))
         network['throat.conns'] = np.vstack((network['throat.conns'],
                                              donor['throat.conns']
                                              + network.Np))
+        network['pore.coords'] = np.vstack((network['pore.coords'],
+                                            donor['pore.coords']))
         p_all = np.ones((np.shape(network['pore.coords'])[0],), dtype=bool)
         t_all = np.ones((np.shape(network['throat.conns'])[0],), dtype=bool)
         network.update({'pore.all': p_all})
