@@ -7,7 +7,7 @@ docstr = Docorator()
 
 __all__ = [
     "water_correlation",
-    "liquid_pure_brock_bird",
+    "liquid_pure",
 ]
 
 
@@ -60,7 +60,7 @@ def water_correlation(target, temperature='pore.temperature', salinity='pore.sal
 
 
 @docstr.dedent
-def liquid_pure_brock_bird(
+def liquid_pure(
     target,
     temperature='pore.temperature',
     critical_temperature='param.critical_temperature',
@@ -84,6 +84,7 @@ def liquid_pure_brock_bird(
         temperature [N/m]
 
     """
+    # brock_bird
     T = target[temperature]
     Tc = target[critical_temperature]
     Tr = T/Tc
@@ -95,6 +96,29 @@ def liquid_pure_brock_bird(
     return sigma
 
 
+def liquid_mixture(
+    target,
+    surface_tension='pore.surface_tension',
+    density='pore.density',
+    molecular_weight='param.molecular_weight',
+):
+    r"""
+    """
+    sigmas = target.get_comp_vals(surface_tension)
+    xs = target['pore.mole_fraction']
+    rhos = target.get_comp_vals(density)  # kg/m3
+    MWs = target.get_comp_vals(molecular_weight)  # g/mol
+    rhoms = {k: rhos[k]/(MWs[k]/1000) for k in xs.keys()}  # mol/m3
+    rhom_mix = np.vstack([rhoms[k]*xs[k] for k in xs.keys()]).sum(axis=0)
+    sigma = 0.0
+    for i, ki in enumerate(xs.keys()):
+        for j, kj in enumerate(xs.keys()):
+            num = xs[ki]*xs[kj]*(rhom_mix**2)*(sigmas[ki]*sigmas[kj])**0.5
+            denom = rhoms[ki]*rhoms[kj]
+            sigma += num/denom
+    return sigma
+
+
 if __name__ == "__main__":
     import chemicals as chem
     import openpnm as op
@@ -102,16 +126,45 @@ if __name__ == "__main__":
 
     pn = op.network.Demo()
 
-    cbz = op.phase.Species(network=pn, species='chlorobenzen')
+    cbz = op.phase.Species(network=pn, species='chlorobenzene')
     cbz.add_model(propname='pore.surface_tension',
-                  model=liquid_pure_brock_bird)
-    k_calc = cbz['pore.surface_tension'][0]
-    k_ref = chem.interface.Brock_Bird(
+                  model=liquid_pure)
+    cbz.add_model(propname='pore.density',
+                  model=op.models.phase.density.liquid_pure)
+    cbz['pore.molar_density'] = cbz['pore.density']/(cbz['param.molecular_weight']/1000)
+    s_calc = cbz['pore.surface_tension'][0]
+    s_ref = chem.interface.Brock_Bird(
         T=cbz['pore.temperature'][0],
         Tb=cbz['param.boiling_temperature'],
         Tc=cbz['param.critical_temperature'],
         Pc=cbz['param.critical_pressure'],
     )
-    assert_allclose(k_ref, k_calc, rtol=1e-10, atol=0)
+    assert_allclose(s_ref, s_calc, rtol=1e-10, atol=0)
 
+    bnz = op.phase.Species(network=pn, species='benzene')
+    bnz.add_model(propname='pore.surface_tension',
+                  model=liquid_pure)
+    bnz.add_model(propname='pore.density',
+                  model=op.models.phase.density.liquid_pure)
+    bnz['pore.molar_density'] = bnz['pore.density']/(bnz['param.molecular_weight']/1000)
+    s_calc = bnz['pore.surface_tension'][0]
+    s_ref = chem.interface.Brock_Bird(
+        T=bnz['pore.temperature'][0],
+        Tb=bnz['param.boiling_temperature'],
+        Tc=bnz['param.critical_temperature'],
+        Pc=bnz['param.critical_pressure'],
+    )
+    assert_allclose(s_ref, s_calc, rtol=1e-10, atol=0)
 
+    mix = op.phase.LiquidMixture(network=pn, components=[bnz, cbz])
+    mix.x(bnz, 0.8)
+    mix.x(cbz, 0.2)
+    mix.add_model(propname='pore.surface_tension',
+                  model=liquid_mixture)
+    s_calc = mix['pore.surface_tension'][0]
+    s_ref = chem.interface.Winterfeld_Scriven_Davis(
+        xs=np.vstack(list(mix['pore.mole_fraction'].values()))[:, 0],
+        sigmas=np.vstack(list(mix.get_comp_vals('pore.surface_tension').values()))[:, 0],
+        rhoms=np.vstack(list(mix.get_comp_vals('pore.molar_density').values()))[:, 0],
+    )
+    assert_allclose(s_ref, s_calc, rtol=1e-2, atol=0)

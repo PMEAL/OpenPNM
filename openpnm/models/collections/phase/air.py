@@ -33,8 +33,11 @@ _air = {
         'model': mods.misc.constant,
         'value': 0.072,
     },
+    'pore.density': {
+        'model': mods.phase.density.ideal_gas,
+    },
     'pore.molar_density': {
-        'model': mods.phase.molar_density.ideal_gas,
+        'model': mods.phase.density.mass_to_molar,
     },
     'pore.diffusivity': {
         'model': mods.phase.diffusivity.fuller,

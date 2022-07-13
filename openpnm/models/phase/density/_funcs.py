@@ -1,5 +1,5 @@
 from openpnm.utils import Docorator
-from chemicals import Vm_to_rho, rho_to_Vm
+from chemicals import Vm_to_rho
 import numpy as np
 
 
@@ -11,6 +11,7 @@ __all__ = [
     "water_correlation",
     "liquid_mixture",
     "liquid_pure",
+    "mass_to_molar",
 ]
 
 
@@ -200,9 +201,37 @@ def liquid_pure(
     return rhoL
 
 
+def mass_to_molar(
+    target,
+    molecular_weight='param.molecular_weight',
+    density='pore.density',
+):
+    r"""
+    Calculates the molar density from the molecular weight and mass density
+
+    Parameters
+    ----------
+    %(models.target.parameters)s
+    mol_weight : str
+        The dictionary key containing the molecular weight in kg/mol
+    density : str
+        The dictionary key containing the density in kg/m3
+
+    Returns
+    -------
+    value : ndarray
+        A numpy ndrray containing molar density values [mol/m3]
+
+    """
+    MW = target[molecular_weight]
+    rho = target[density]
+    value = rho/MW
+    return value
+
+
 if __name__ == "__main__":
 
-    from chemicals import COSTALD, COSTALD_mixture
+    import chemicals as chem
     import openpnm as op
     from numpy.testing import assert_allclose
 
@@ -211,10 +240,12 @@ if __name__ == "__main__":
     h2o = op.phase.Species(network=pn, species='water')
     h2o.add_model(propname='pore.density',
                   model=op.models.phase.density.liquid_pure)
-    Vm = COSTALD(T=h2o['pore.temperature'][0],
-                 Tc=h2o['param.critical_temperature'],
-                 Vc=h2o['param.critical_volume'],
-                 omega=h2o['param.acentric_factor'],)
+    Vm = chem.COSTALD(
+        T=h2o['pore.temperature'][0],
+        Tc=h2o['param.critical_temperature'],
+        Vc=h2o['param.critical_volume'],
+        omega=h2o['param.acentric_factor'],
+    )
     rho_ref = Vm_to_rho(Vm, h2o['param.molecular_weight'])
     rho_calc = h2o['pore.density'][0]
     assert_allclose(rho_ref, rho_calc, rtol=1e-10, atol=0)
@@ -228,7 +259,7 @@ if __name__ == "__main__":
     vodka.x(etoh.name, 0.5)
     vodka.add_model(propname='pore.density',
                     model=op.models.phase.density.liquid_mixture)
-    Vm = COSTALD_mixture(
+    Vm = chem.COSTALD_mixture(
         T=vodka['pore.temperature'][0],
         xs=np.vstack(list(vodka['pore.mole_fraction'].values()))[:, 0],
         Tcs=list(vodka.get_comp_vals('param.critical_temperature').values()),

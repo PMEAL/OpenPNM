@@ -62,7 +62,7 @@ def salinity(
 
 def mixing_rule(
     target,
-    prop='pore.viscosity',
+    prop,
     mode='logarithmic',
     power=1,
 ):
@@ -82,10 +82,10 @@ def mixing_rule(
         ============== ========================================================
         mode
         ============== ========================================================
+        'logarithmic'  (default) Uses the natural logarithm of the property as:
+                       :math:`ln(z) = \Sigma (x_i \cdot ln(\z_i))`
         'linear'       Basic mole fraction weighting of the form
                        :math:`z = \Sigma (x_i \cdot \z_i)`
-        'logarithmic'  Uses the natural logarithm of the property as:
-                       :math:`ln(z) = \Sigma (x_i \cdot ln(\z_i))`
         'power         Applies an exponent to the property as:
                        :math:`\z^{power} = \Sigma (x_i \cdot \z_i^{power})`
         ============== ========================================================
