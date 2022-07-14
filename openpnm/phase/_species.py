@@ -1,5 +1,7 @@
 import logging
 from openpnm.phase import Phase, _fetch_chemical_props
+from openpnm.models.collections.phase import standard_liquid
+from openpnm.models.collections.phase import standard_gas
 from thermo import Chemical
 
 
@@ -8,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     'Species',
+    'StandardGas',
+    'StandardLiquid',
 ]
 
 
@@ -50,3 +54,17 @@ class Species(Phase):
                     if self is comp:
                         return item
         logger.warn("No mixture phase found for this species")
+
+
+class StandardLiquid(Species):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_model_collection(standard_liquid())
+
+
+class StandardGas(Species):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_model_collection(standard_gas())

@@ -2,6 +2,8 @@ import numpy as np
 import logging
 from openpnm.phase import Phase
 from openpnm.models.phase.mixtures import mole_summation
+from openpnm.models.collections.phase import standard_liquid_mixture
+from openpnm.models.collections.phase import standard_gas_mixture
 from openpnm.utils import HealthDict
 from openpnm.utils import Docorator, Workspace
 
@@ -16,6 +18,8 @@ __all__ = [
     'BinaryGas',
     'GasMixture',
     'LiquidMixture',
+    'StandardGasMixture',
+    'StandardLiquidMixture',
 ]
 
 
@@ -284,6 +288,20 @@ class BinaryGas(GasMixture):
             raise Exception("Binary mixtures cannot have more than 2 components"
                             + ", remove one first")
         super().add_comp(component=component, mole_fraction=mole_fraction)
+
+
+class StandardLiquidMixture(Mixture):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_model_collection(standard_liquid_mixture())
+
+
+class StandardGasMixture(Mixture):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_model_collection(standard_gas_mixture())
 
 
 # if __name__ == '__main__':

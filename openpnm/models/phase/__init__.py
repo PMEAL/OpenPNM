@@ -6,7 +6,9 @@ This submodule contains models for calculating thermophysical properties of
 liquids, gases, and solids.
 
 """
+import logging
 
+logger = logging.getLogger(__name__)
 # The following bits are to initialize some boilerplate docstrings for docrep
 from openpnm.utils import Docorator as _doc
 _docstr = _doc()
@@ -119,8 +121,10 @@ def chemicals_wrapper(target, f, **kwargs):
         argmap[k] = v
     args = _get_items_from_target(target, f, argmap)
     # f = getattr(_chemicals.numba_vectorized, f.__name__)
+    msg = f"Numba version failed for {f.__name__}, reverting to pure python"
     if len(set(['xs', 'yz', 'zs']).intersection(args.keys())):
-        # Call function in for-loop for each pores since they are not vectorized
+        # Call function in for-loop for each pore since they are not vectorized
+        logger.info(msg)
         vals = _np.zeros(target.Np)
         for pore in target.Ps:
             a = {}
@@ -141,6 +145,7 @@ def chemicals_wrapper(target, f, **kwargs):
         except AssertionError:
             f = getattr(_chemicals, f.__name__)
             vals = f(*args.values())
+            logger.warn(msg)
     return vals
 
 

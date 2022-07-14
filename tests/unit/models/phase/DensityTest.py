@@ -1,5 +1,4 @@
 import openpnm as op
-import numpy as np
 from numpy.testing import assert_approx_equal, assert_allclose
 from openpnm.utils import get_mixture_model_args
 import chemicals
@@ -35,10 +34,10 @@ class DensityTest:
     def test_chemicals_for_pure_gas_molar_volume(self):
         mods = [
             # numba version not working for any
-            # chemicals.virial.BVirial_Pitzer_Curl,
-            # chemicals.virial.BVirial_Abbott,
-            # chemicals.virial.BVirial_Tsonopoulos,
-            # chemicals.virial.BVirial_Tsonopoulos_extended,
+            chemicals.virial.BVirial_Pitzer_Curl,
+            chemicals.virial.BVirial_Abbott,
+            chemicals.virial.BVirial_Tsonopoulos,
+            chemicals.virial.BVirial_Tsonopoulos_extended,
         ]
         n2 = op.phase.Species(network=self.net, species='nitrogen')
         n2['pore.temperature'] = 400
@@ -49,7 +48,7 @@ class DensityTest:
 
     def test_chemicals_wrapper_for_pure_liq_molar_volume(self):
         mods = [
-            # chemicals.volume.Yen_Woods_saturation,
+            chemicals.volume.Yen_Woods_saturation,
             chemicals.volume.Rackett,
             chemicals.volume.Yamada_Gunn,
             chemicals.volume.Townsend_Hales,
