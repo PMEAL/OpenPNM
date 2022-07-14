@@ -84,22 +84,9 @@ class Phase(Domain):
                     msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
                     raise KeyError(msg)
                 elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                    msg = f"'pore.{prop}', cannot interpolate '{element+'.'+prop}'"
+                    msg = f"'pore.{prop}', cannot interpolate '{element}.{prop}'"
                     raise KeyError(msg)
                 vals = self.interpolate_data(element + '.' + prop)
             else:
                 raise KeyError(key)
         return vals[locs]
-
-
-
-
-
-
-
-
-
-
-
-
-
