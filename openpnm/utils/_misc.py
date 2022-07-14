@@ -37,6 +37,7 @@ __all__ = [
     'get_model_collection',
     'dict_to_struct',
     'struct_to_dict',
+    'get_mixture_model_args',
 ]
 
 
@@ -648,3 +649,25 @@ def struct_to_dict(s):
     for key in s.dtype.names:
         d[key] = s[key]
     return d
+
+
+def get_mixture_model_args(
+    target,
+    composition='xs',
+    args={
+        'mus': 'pore.viscosity',
+        'MWs': 'param.molecular_weight',
+    }
+):
+    from openpnm.models.phase.misc import mole_to_mass_fraction
+    vals = {}
+    if composition in ['ws']:
+        temp = np.vstack(list(mole_to_mass_fraction(target=target).values()))[:, 0]
+        vals[composition] = temp
+    else:
+        temp = np.vstack(list(target['pore.mole_fraction'].values()))[:, 0]
+        vals[composition] = temp
+    for item in args.keys():
+        temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
+        vals[item] = temp
+    return vals

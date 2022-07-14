@@ -1,24 +1,8 @@
 import openpnm as op
-import numpy as np
 import chemicals
-from thermo import Chemical, Mixture
-from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_allclose
-
-
-def get_mixture_model_args(
-    target,
-    mole_fraction='xs',
-    args={
-        'mus': 'pore.viscosity',
-        'MWs': 'param.molecular_weight',
-    }
-):
-    vals = {}
-    vals[mole_fraction] = np.vstack(list(target['pore.mole_fraction'].values()))[:, 0]
-    for item in args.keys():
-        temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
-        vals[item] = temp
-    return vals
+from thermo import Chemical
+from numpy.testing import assert_array_almost_equal, assert_allclose
+from openpnm.utils import get_mixture_model_args
 
 
 class ViscosityTest:
@@ -69,7 +53,7 @@ class ViscosityTest:
         mix.y(gas2, 0.5)
         mix.add_model(propname='pore.viscosity',
                       model=op.models.phase.viscosity.gas_mixture)
-        args = get_mixture_model_args(mix, mole_fraction='zs',
+        args = get_mixture_model_args(mix, composition='zs',
                                       args={'mus': 'pore.viscosity',
                                             'MWs': 'param.molecular_weight'})
         temp = chemicals.viscosity.Herning_Zipperer(**args)
@@ -88,7 +72,7 @@ class ViscosityTest:
         mix.x(liq2, 0.5)
         mix.add_model(propname='pore.viscosity',
                       model=op.models.phase.viscosity.liquid_mixture)
-        args = get_mixture_model_args(mix, mole_fraction='fracs',
+        args = get_mixture_model_args(mix, composition='fracs',
                                       args={'props': 'pore.viscosity'})
         temp = chemicals.utils.mixing_simple(**args)
         assert_allclose(temp, mix['pore.viscosity'][0], rtol=0.02)

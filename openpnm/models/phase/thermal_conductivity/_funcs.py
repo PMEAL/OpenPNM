@@ -11,6 +11,7 @@ __all__ = [
     'gas_pure',
     'liquid_pure',
     'gas_mixture',
+    'liquid_mixture',
 ]
 
 
@@ -218,11 +219,12 @@ def liquid_mixture_DIPPR9I(
     return kmix
 
 
-def liquid_mixture_DIPPR9H(
+def liquid_mixture(
     target,
     thermal_conductivity='pore.thermal_conductivity',
     molecular_weight='param.molecular_weight',
 ):
+    # DIPPR9H
     xs = target['pore.mole_fraction']
     MW = target.get_comp_vals('param.molecular_weight')
     ks = target.get_comp_vals('pore.thermal_conductivity')
@@ -239,20 +241,18 @@ def gas_mixture(
     thermal_conductivity='pore.thermal_conductivity',
     molecular_weight='param.molecular_weight',
 ):
-    # lindsay_bromley method
+    # Wassiljew_Herning_Zipperer
     T = target[temperature]
     ys = target['pore.mole_fraction']
-    kGs = [c[thermal_conductivity] for c in target.components.values()]
-    MWs = [c[molecular_weight] for c in target.components.values()]
-    # numba_vectorized.Lindsay_Bromley(T, ys, kGs, mus, Tbs, MWs)
+    kGs = target.get_comp_vals(thermal_conductivity)
+    MWs = target.get_comp_vals(molecular_weight)
     kmix = np.zeros_like(T)
-    for i in range(len(ys)):
-        num = ys[i]*kGs[i]
-        A = 0.0
+    for i, ki in enumerate(ys.keys()):
+        num = ys[ki]*kGs[ki]
         denom = 0.0
-        for j in range(len(ys)):
-            A += np.sqrt(MWs[j]/MWs[i])
-            denom += ys[j]*A
+        for j, kj in enumerate(ys.keys()):
+            A = np.sqrt(MWs[kj]/MWs[ki])
+            denom += ys[ki]*A
         kmix += num/denom
     return kmix
 

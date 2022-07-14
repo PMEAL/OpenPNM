@@ -9,19 +9,9 @@ def mercury(regen_mode=None, domain=None):
 
 
 _mercury = {
-    'pore.vapor_pressure': {
-        'model': mods.phase.vapor_pressure.liquid_pure_antoine,
-        'A': 9.85767,
-        'B': 3007.129,
-        'C': -10.001,
-    },
     'throat.contact_angle': {
         'model': mods.misc.constant,
         'value': 140,
-    },
-    'pore.molecular_weight': {
-        'model': mods.misc.constant,
-        'value': 200.59,
     },
     'pore.density': {
         'model': mods.misc.linear,
@@ -49,3 +39,6 @@ _mercury = {
         'a': [0.00355837, -0.0000100131, 1.23684E-08, -5.1684E-12],
     },
 }
+
+# Thermophysical Properties of Materials for Nuclear Engineering:
+# IAEA, Vienna, 2008. ISBN 978-92-0-106508-7:
