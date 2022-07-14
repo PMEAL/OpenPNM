@@ -1,6 +1,7 @@
 from openpnm.models.collections.phase import water
-from openpnm.phase import Phase
+from openpnm.phase import Phase, _fetch_chemical_props
 from openpnm.utils import Docorator
+from thermo import Chemical
 
 
 docstr = Docorator()
@@ -19,5 +20,8 @@ class Water(Phase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        a = Chemical('h2o')
+        temp = _fetch_chemical_props(a)
+        self.params.update(temp)
         self.models.update(water())
         self.regenerate_models()

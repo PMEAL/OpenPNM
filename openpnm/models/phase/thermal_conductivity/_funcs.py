@@ -1,6 +1,6 @@
 import numpy as np
 from openpnm.utils import Docorator
-from chemicals import numba_vectorized, rho_to_Vm
+from chemicals import rho_to_Vm
 
 
 docstr = Docorator()
@@ -8,12 +8,9 @@ docstr = Docorator()
 
 __all__ = [
     'water_correlation',
-    'gas_pure_chung',
-    'gas_pure_gharagheizi',
-    'liquid_pure_sato_riedel',
-    'liquid_pure_gharagheizi',
-    'liquid_mixture_DIPPR9I',
-    'gas_mixture_lindsay_bromley',
+    'gas_pure',
+    'liquid_pure',
+    'gas_mixture',
 ]
 
 
@@ -73,7 +70,7 @@ def water_correlation(
     return value
 
 
-def gas_pure_gharagheizi(
+def gas_pure(
     target,
     temperature='pore.temperature',
     molecular_weight='param.molecular_weight',
@@ -81,6 +78,7 @@ def gas_pure_gharagheizi(
     critical_pressure='param.critical_pressure',
     acentric_factor='param.acentric_factor',
 ):
+    # gharagheizi method
     T = target[temperature]
     MW = target[molecular_weight]
     Tb = target[boiling_temperature]
@@ -96,7 +94,7 @@ def gas_pure_gharagheizi(
     return k
 
 
-def liquid_pure_gharagheizi(
+def liquid_pure(
     target,
     temperature='pore.temperature',
     molecular_weight='param.molecular_weight',
@@ -104,6 +102,7 @@ def liquid_pure_gharagheizi(
     critical_pressure='param.critical_pressure',
     acentric_factor='param.acentric_factor',
 ):
+    # gharagheizi metho
     T = target[temperature]
     MW = target[molecular_weight]
     Tb = target[boiling_temperature]
@@ -234,12 +233,13 @@ def liquid_mixture_DIPPR9H(
     return kmix
 
 
-def gas_mixture_lindsay_bromley(
+def gas_mixture(
     target,
     temperature='pore.temperature',
     thermal_conductivity='pore.thermal_conductivity',
     molecular_weight='param.molecular_weight',
 ):
+    # lindsay_bromley method
     T = target[temperature]
     ys = target['pore.mole_fraction']
     kGs = [c[thermal_conductivity] for c in target.components.values()]
@@ -268,7 +268,7 @@ if __name__ == "__main__":
 
     ch4 = op.phase.Species(network=pn, species='methane')
     ch4.add_model(propname='pore.thermal_conductivity',
-                  model=gas_pure_gharagheizi)
+                  model=gas_pure)
     k_calc = ch4['pore.thermal_conductivity'][0]
     k_ref = chem.thermal_conductivity.Gharagheizi_gas(
         T=ch4['pore.temperature'][0],
@@ -281,7 +281,7 @@ if __name__ == "__main__":
 
     h2o = op.phase.Species(network=pn, species='water')
     h2o.add_model(propname='pore.thermal_conductivity',
-                  model=liquid_pure_gharagheizi)
+                  model=liquid_pure)
     k_calc = h2o['pore.thermal_conductivity'][0]
     k_ref = chem.thermal_conductivity.Gharagheizi_liquid(
         T=h2o['pore.temperature'][0],
@@ -294,16 +294,14 @@ if __name__ == "__main__":
 
     h2o = op.phase.Species(network=pn, species='water')
     h2o.add_model(propname='pore.thermal_conductivity',
-                  model=liquid_pure_gharagheizi)
+                  model=liquid_pure)
     etoh = op.phase.Species(network=pn, species='ethanol')
     etoh.add_model(propname='pore.thermal_conductivity',
-                   model=liquid_pure_gharagheizi)
+                   model=liquid_pure)
 
     vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
     vodka.x(h2o.name, 0.5)
     vodka.x(etoh.name, 0.5)
-    vodka.add_model(propname='pore.mass_fraction',
-                    model=op.models.phase.misc.mole_to_mass_fraction)
     vodka.add_model(propname='pore.thermal_conductivity',
                     model=liquid_mixture_DIPPR9H)
     k_ref = chem.thermal_conductivity.DIPPR9H(

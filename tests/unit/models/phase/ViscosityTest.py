@@ -1,41 +1,97 @@
 import openpnm as op
-import scipy as sp
+import numpy as np
 import chemicals
-from numpy.testing import assert_approx_equal, assert_array_almost_equal
+from thermo import Chemical, Mixture
+from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_allclose
+
+
+def get_mixture_model_args(
+    target,
+    mole_fraction='xs',
+    args={
+        'mus': 'pore.viscosity',
+        'MWs': 'param.molecular_weight',
+    }
+):
+    vals = {}
+    vals[mole_fraction] = np.vstack(list(target['pore.mole_fraction'].values()))[:, 0]
+    for item in args.keys():
+        temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
+        vals[item] = temp
+    return vals
 
 
 class ViscosityTest:
-    def setup_class(self):
-        self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.Phase(network=self.net)
-        self.phase['pore.temperature'] = 298.0  # K
-        self.phase['pore.molecular_weight'] = 0.018  # kg/mol
-        self.phase['pore.critical_temperature'] = 647.15  # K
-        self.phase['pore.critical_volume'] = 1.805e-5  # m3/kmol
-        self.phase['pore.salinity'] = 0  # g/kg
 
-    def test_water(self):
-        self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phase.viscosity.water)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.viscosity'].mean(),
-                            0.0008931909)
+    def test_water_correlation(self):
+        pn = op.network.Demo()
+        water = op.phase.Water(network=pn)
+        temp = Chemical('h2o')
+        assert_allclose(temp.mu, water['pore.viscosity'][0], rtol=0.03)
 
-    def test_reynolds(self):
-        self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phase.viscosity.reynolds,
-                             u0=0.001,
-                             b=0.001)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.viscosity'].mean(),
-                            0.001347161)
+    def test_pure_gas(self):
+        pn = op.network.Demo()
+        gas = op.phase.Species(network=pn, species='ch4')
+        gas.add_model(propname='pore.viscosity',
+                      model=op.models.phase.viscosity.gas_pure)
+        temp = chemicals.viscosity.viscosity_gas_Gharagheizi(
+            T=gas['pore.temperature'][0],
+            Tc=gas['param.critical_temperature'],
+            Pc=gas['param.critical_pressure'],
+            MW=gas['param.molecular_weight'],
+        )
+        assert_allclose(temp, gas['pore.viscosity'][0], rtol=1e-10)
 
-    def test_chung(self):
-        self.phase.add_model(propname='pore.viscosity',
-                             model=op.models.phase.viscosity.chung)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.viscosity'].mean(),
-                            6.47289919e-05)
+    def test_pure_liquid(self):
+        pn = op.network.Demo()
+        liq = op.phase.Species(network=pn, species='h2o')
+        liq.add_model(propname='pore.viscosity',
+                      model=op.models.phase.viscosity.liquid_pure)
+        temp = chemicals.viscosity.Letsou_Stiel(
+            T=liq['pore.temperature'][0],
+            Tc=liq['param.critical_temperature'],
+            Pc=liq['param.critical_pressure'],
+            MW=liq['param.molecular_weight'],
+            omega=liq['param.acentric_factor'],
+        )
+        assert_allclose(temp, liq['pore.viscosity'][0], rtol=1e-10)
+
+    def test_gas_mixture(self):
+        pn = op.network.Demo()
+        gas1 = op.phase.Species(network=pn, species='ch4')
+        gas2 = op.phase.Species(network=pn, species='co2')
+        gas1.add_model(propname='pore.viscosity',
+                       model=op.models.phase.viscosity.gas_pure)
+        gas2.add_model(propname='pore.viscosity',
+                       model=op.models.phase.viscosity.gas_pure)
+        mix = op.phase.GasMixture(network=pn, components=[gas1, gas2])
+        mix.y(gas1, 0.5)
+        mix.y(gas2, 0.5)
+        mix.add_model(propname='pore.viscosity',
+                      model=op.models.phase.viscosity.gas_mixture)
+        args = get_mixture_model_args(mix, mole_fraction='zs',
+                                      args={'mus': 'pore.viscosity',
+                                            'MWs': 'param.molecular_weight'})
+        temp = chemicals.viscosity.Herning_Zipperer(**args)
+        assert_allclose(temp, mix['pore.viscosity'][0], rtol=1e-10)
+
+    def test_liquid_mixture(self):
+        pn = op.network.Demo()
+        liq1 = op.phase.Species(network=pn, species='h2o')
+        liq2 = op.phase.Species(network=pn, species='etoh')
+        liq1.add_model(propname='pore.viscosity',
+                       model=op.models.phase.viscosity.liquid_pure)
+        liq2.add_model(propname='pore.viscosity',
+                       model=op.models.phase.viscosity.liquid_pure)
+        mix = op.phase.LiquidMixture(network=pn, components=[liq1, liq2])
+        mix.x(liq1, 0.5)
+        mix.x(liq2, 0.5)
+        mix.add_model(propname='pore.viscosity',
+                      model=op.models.phase.viscosity.liquid_mixture)
+        args = get_mixture_model_args(mix, mole_fraction='fracs',
+                                      args={'props': 'pore.viscosity'})
+        temp = chemicals.utils.mixing_simple(**args)
+        assert_allclose(temp, mix['pore.viscosity'][0], rtol=0.02)
 
     def test_generic_chemicals_for_pure_gas_viscosity(self):
         mods = [
@@ -44,7 +100,8 @@ class ViscosityTest:
             'Stiel_Thodos',
             # 'Lucas_gas',  # This one does not work
         ]
-        o2 = op.phase.Species(network=self.net, species='oxygen')
+        pn = op.network.Demo()
+        o2 = op.phase.Species(network=pn, species='oxygen')
         mu = []
         for m in mods:
             f = getattr(chemicals.viscosity, m)
@@ -61,19 +118,19 @@ class ViscosityTest:
             # 'Przedziecki_Sridhar',  # Requires molar volume at temperature
             # 'Lucas',  # Requires saturation pressure at temperature
         ]
-        h2o = op.phase.Species(network=self.net, species='water')
+        pn = op.network.Demo()
+        h2o = op.phase.Species(network=pn, species='water')
         mu = []
         for m in mods:
             f = getattr(chemicals.viscosity, m)
             mu.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
-        # assert_array_almost_equal(mu, 2.05e-5, decimal=6)
+        assert_allclose(mu, 0.000621, rtol=0.02)
 
 
 if __name__ == '__main__':
 
     t = ViscosityTest()
     self = t
-    t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
