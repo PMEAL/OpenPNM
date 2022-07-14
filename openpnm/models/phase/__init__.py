@@ -36,6 +36,7 @@ from . import vapor_pressure
 from . import viscosity
 
 
+# %%
 import inspect as _inspect
 import chemicals as _chemicals
 import numpy as _np
@@ -83,12 +84,13 @@ def chemicals_wrapper(target, f, **kwargs):
         so any functions that need ``Tc`` will receive
         ``target['param.critical_temperature']``. Some models only require
         the normal thermodynamic parameters, like ``T``, ``Tc``, and ``Pc``,
-        so in many cases no additional arguments are needed. However, other
-        models require values that are themselves calcualted by another model,
-        like ``Cvm``, or perhaps a list of constants like ``a0``, ``a1``, etc.
-        It is necessary to provide these as keyword arguments, and they will be
-        included in ``default_argmap`` as new entries or overwriting existing
-        ones. So ``mu='pore.blah'`` will pass ``target['pore.blah']`` to the
+        so in many cases no additional arguments are needed beyond whats in the
+        default argument map. However, other models require values that are
+        themselves calcualted by another model, like ``Cvm``, or perhaps a
+        list of constants like ``a0``, ``a1``, etc. It is necessary to provide
+        these as keyword arguments, and they will be included in
+        ``default_argmap`` as new entries or overwriting existing ones.
+        So ``mu='pore.blah'`` will pass ``target['pore.blah']`` to the
         ``mu`` argument of ``f``. Any arguments ending with an ``s`` are
         assumed to refer to the individual properties of pure components in a
         mixture. So ``mus`` means fetch the viscosity of each component as a
@@ -104,11 +106,11 @@ def chemicals_wrapper(target, f, **kwargs):
     in a vectorized way. The means that the conditions in each pore, such as
     temperature, pressure, etc can be passed and iterpreted as a list of
     conditions. For mixture models, however, the vectorization is done over
-    the compositions, at a *fixed* conditions. This means that we must do a
+    the compositions, at a *fixed* condition. This means that we must do a
     pure-python for-loop (ie. slow) for each individual pore. As such, we
     have re-implemented several of the most useful mixing models offered by
-    ``chemicals`` in ``OpenPNM``, and include unit tests to ensure our
-    implementation agrees.
+    ``chemicals`` in ``OpenPNM``, and include unit tests to ensure both
+    implementations agree.
 
     """
     # Update default argmap with any user supplied values
@@ -137,7 +139,8 @@ def chemicals_wrapper(target, f, **kwargs):
             f = getattr(_chemicals.numba_vectorized, f.__name__)
             vals = f(*args.values())
         except AssertionError:
-            raise Exception('numba vectorized version did not work')
+            f = getattr(_chemicals, f.__name__)
+            vals = f(*args.values())
     return vals
 
 
@@ -154,15 +157,23 @@ def _get_items_from_target(target, f, argmap):
         # Treat mole fraction specially, since it can be xs, ys, or zs
         if item in ['xs', 'ys', 'zs']:
             args[item] = list(target['pore.mole_fraction'].values())
-        elif item in argmap.keys():  # Get basic mixture properties like T&P
-            args[item] = target[argmap[item]]
-        elif item[:-1] in argmap.keys():  # Get props that end in s
-            v = list(target.get_comp_vals(argmap[item[:-1]]).values())
-            args[item] = v
-        elif 'pore.' + item in target.keys():
+            continue
+        if 'pore.' + item in target.keys():
             # If eg. pore.Zc was added to dict directly, no argmap needed
             args[item] = target[f"{'pore.'+item}"]
-        elif item in target.params.keys():
+            continue
+        if item in target.params.keys():
             # If a parameter is in params but not in default_argmap
             args[item] = target.params[item]
+            continue
+        if item.endswith('s'):  # Deal specifically with props that end in s
+            if item[:-1] in argmap.keys():
+                v = list(target.get_comp_vals(argmap[item[:-1]]).values())
+                args[item] = v
+            elif item in argmap.keys():
+                v = list(target.get_comp_vals(argmap[item]).values())
+                args[item] = v
+        else:
+            if item in argmap.keys():  # Get basic mixture properties like T&P
+                args[item] = target[argmap[item]]
     return args

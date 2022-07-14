@@ -50,13 +50,13 @@ class Mixture(Phase):
         try:
             vals = super().__getitem__(key)
         except KeyError:
-            # If key ends in component name, fetch it
+            # If key ends in component name, fetch it directly
             if key.split('.')[-1] in self.components.keys():
                 comp = self.project[key.split('.')[-1]]
                 vals = comp[key.rsplit('.', maxsplit=1)[0]]
-            elif key.endswith('*'):
+            elif key[-1] in ['*', '.']:  # Fetch values for ALL components
                 key = key[:-1]
-                if key.endswith('.'):
+                while key.endswith('.'):  # If ended with .* also remove .
                     key = key[:-1]
                 vals = self.get_comp_vals(key)
             else:
@@ -64,12 +64,64 @@ class Mixture(Phase):
         return vals
 
     def get_comp_vals(self, propname):
+        r"""
+        Get a dictionary of the requested values from each component in the
+        mixture
+
+        Parameters
+        ----------
+        propname : str
+            The property to fetch, such as ``'pore.viscosity'``.
+
+        Returns
+        -------
+        vals : dict
+            A dictionary with each component name as the key and the requested
+            property as the value.
+
+        """
         vals = {}
-        for comp in self.components.values():
-            vals[comp.name] = comp[propname]
-        return vals
+        try:
+            for comp in self.components.values():
+                vals[comp.name] = comp[propname]
+            return vals
+        except KeyError:
+            msg = 'Requested value not found on at least one component'
+            raise Exception(msg)
 
     def get_mix_vals(self, propname, mode='linear', power=1):
+        r"""
+        Get the mole fraction weighted value of a given property for the mixture
+
+        Parameters
+        ----------
+        propname : str
+            The property to fetch, such as ``'pore.viscosity'``.
+        mode : str
+            The type of weighting to use. Options are:
+
+            ============== ====================================================
+            mode
+            ============== ====================================================
+            'linear'       (default) Basic mole fraction weighting of the form:
+                           :math:`z = \Sigma (x_i \cdot \z_i)`
+            'logarithmic'  Uses the natural logarithm of the property as:
+                           :math:`ln(z) = \Sigma (x_i \cdot ln(\z_i))`
+            'power         Applies an exponent to the property as:
+                           :math:`\z^{power} = \Sigma (x_i \cdot \z_i^{power})`
+            ============== ====================================================
+
+        power : scalar
+            If ``mode='power'`` this indicates the value of the exponent,
+            otherwise this is ignored.
+
+        Returns
+        -------
+        vals : ndarray
+            An ndarray with the requested values obtained using the specified
+            weigthing.
+
+        """
         Xs = self['pore.mole_fraction']
         ys = self.get_comp_vals(propname)
         if mode == 'linear':
@@ -234,60 +286,60 @@ class BinaryGas(GasMixture):
         super().add_comp(component=component, mole_fraction=mole_fraction)
 
 
-if __name__ == '__main__':
-    import openpnm as op
-    import chemicals as chem
+# if __name__ == '__main__':
+#     import openpnm as op
+#     import chemicals as chem
 
-    pn = op.network.Demo(shape=[20, 20, 20])
-    o2 = op.phase.Species(network=pn, species='o2', name='pure_O2')
+#     pn = op.network.Demo(shape=[20, 20, 20])
+#     o2 = op.phase.Species(network=pn, species='o2', name='pure_O2')
 
-    o2.add_model(propname='pore.viscosity',
-                 model=op.models.phase.chemicals_wrapper,
-                 f=chem.viscosity.viscosity_gas_Gharagheizi)
+#     o2.add_model(propname='pore.viscosity',
+#                  model=op.models.phase.chemicals_wrapper,
+#                  f=chem.viscosity.viscosity_gas_Gharagheizi)
 
-    # o2.add_model(propname='pore.viscosity',
-    #              model=op.models.viscosity.viscosity_gas_Garagheizi)
+#     # o2.add_model(propname='pore.viscosity',
+#     #              model=op.models.viscosity.viscosity_gas_Garagheizi)
 
-    # o2.add_model_from_chemicals(propname='pore.viscosity',
-    #                             model=chem.viscosity.viscosity_gas_Gharagheizi)
+#     # o2.add_model_from_chemicals(propname='pore.viscosity',
+#     #                             model=chem.viscosity.viscosity_gas_Gharagheizi)
 
-    # o2.add_model(propname='pore.viscosity',
-    #              model=chem.viscosity.viscosity_gas_Gharagheizi)
+#     # o2.add_model(propname='pore.viscosity',
+#     #              model=chem.viscosity.viscosity_gas_Gharagheizi)
 
-    n2 = op.phase.Species(network=pn, species='n2', name='pure_N2')
+#     n2 = op.phase.Species(network=pn, species='n2', name='pure_N2')
 
-    n2.add_model(propname='pore.viscosity',
-                 model=op.models.phase.chemicals_wrapper,
-                 f=chem.viscosity.viscosity_gas_Gharagheizi)
+#     n2.add_model(propname='pore.viscosity',
+#                  model=op.models.phase.chemicals_wrapper,
+#                  f=chem.viscosity.viscosity_gas_Gharagheizi)
 
-    air = op.phase.GasMixture(network=pn, components=[o2, n2], name='air')
-    air.y(o2.name, 0.21)
-    air['pore.mole_fraction.pure_N2'] = 0.79
-    air.add_model(propname='pore.viscosity',
-                  model=op.models.phase.chemicals_wrapper,
-                  f=chem.viscosity.Herning_Zipperer)
-    air.regenerate_models()
+#     air = op.phase.GasMixture(network=pn, components=[o2, n2], name='air')
+#     air.y(o2.name, 0.21)
+#     air['pore.mole_fraction.pure_N2'] = 0.79
+#     air.add_model(propname='pore.viscosity',
+#                   model=op.models.phase.chemicals_wrapper,
+#                   f=chem.viscosity.Herning_Zipperer)
+#     air.regenerate_models()
 
-    h2o_l = op.phase.Species(network=pn, species='water')
-    h2o_l.add_model(propname='pore.viscosity',
-                    model=op.models.phase.viscosity.liquid_chung)
-    etoh = op.phase.Species(network=pn, species='ethanol')
-    etoh.add_model(propname='pore.viscosity',
-                   model=op.models.phase.viscosity.liquid_chung)
-    vodka = op.phase.LiquidMixture(network=pn, components=[h2o_l, etoh])
-    vodka.x(h2o_l.name, 0.4)
-    vodka.x(etoh.name, 0.6)
-    vodka.add_model(propname='pore.viscosity',
-                    model=op.models.phase.viscosity.liquid_mixture)
+#     h2o_l = op.phase.Species(network=pn, species='water')
+#     h2o_l.add_model(propname='pore.viscosity',
+#                     model=op.models.phase.viscosity.liquid_chung)
+#     etoh = op.phase.Species(network=pn, species='ethanol')
+#     etoh.add_model(propname='pore.viscosity',
+#                    model=op.models.phase.viscosity.liquid_chung)
+#     vodka = op.phase.LiquidMixture(network=pn, components=[h2o_l, etoh])
+#     vodka.x(h2o_l.name, 0.4)
+#     vodka.x(etoh.name, 0.6)
+#     vodka.add_model(propname='pore.viscosity',
+#                     model=op.models.phase.viscosity.liquid_mixture)
 
-    ch4 = op.phase.Species(network=pn, species='ch4', name='methane')
-    h2 = op.phase.Species(network=pn, species='h2', name='hydrogen')
-    h2o = op.phase.Species(network=pn, species='h2o', name='water')
-    co2 = op.phase.Species(network=pn, species='co2', name='co2')
-    syngas = op.phase.GasMixture(network=pn, components=[ch4, h2, h2o, co2],
-                                 name='syngas')
-    syngas.y(h2.name, 0.25)
-    syngas.y(ch4.name, 0.25)
-    syngas.y(h2o.name, 0.25)
-    syngas.y(co2.name, 0.25)
-    syngas.regenerate_models()
+#     ch4 = op.phase.Species(network=pn, species='ch4', name='methane')
+#     h2 = op.phase.Species(network=pn, species='h2', name='hydrogen')
+#     h2o = op.phase.Species(network=pn, species='h2o', name='water')
+#     co2 = op.phase.Species(network=pn, species='co2', name='co2')
+#     syngas = op.phase.GasMixture(network=pn, components=[ch4, h2, h2o, co2],
+#                                  name='syngas')
+#     syngas.y(h2.name, 0.25)
+#     syngas.y(ch4.name, 0.25)
+#     syngas.y(h2o.name, 0.25)
+#     syngas.y(co2.name, 0.25)
+#     syngas.regenerate_models()
