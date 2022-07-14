@@ -61,7 +61,7 @@ def gas_pure(
 
 def gas_mixture(
     target,
-    heat_capacity='pore.heat_capacity',
+    heat_capacity='pore.heat_capacity.*',
 ):
     r"""
     """
@@ -71,7 +71,7 @@ def gas_mixture(
 
 def liquid_mixture(
     target,
-    heat_capacity='pore.heat_capacity',
+    heat_capacity='pore.heat_capacity.*',
 ):
     r"""
     """

@@ -114,10 +114,10 @@ def water_correlation(
 def liquid_mixture(
     target,
     temperature='pore.temperature',
-    molecular_weight='param.molecular_weight',
-    critical_temperature='param.critical_temperature',
-    critical_volume='param.critical_volume',
-    acentric_factor='param.acentric_factor',
+    molecular_weight='param.molecular_weight.*',
+    critical_temperature='param.critical_temperature.*',
+    critical_volume='param.critical_volume.*',
+    acentric_factor='param.acentric_factor.*',
 ):
     r"""
     Computes the density of a liquid mixture using the COrrospoding STAtes

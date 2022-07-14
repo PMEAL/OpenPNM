@@ -119,12 +119,12 @@ def liquid_pure(
 @docstr.dedent
 def gas_pure_chung(
     target,
-    temperature="pore.temperature",
-    viscosity="pore.viscosity",
-    Cv="pore.constant_volume_molar_heat_capacity",
-    acentric_factor='param.acentric_factor',
-    molecular_weight='param.molecular_weight',
-    critical_temperature='param.critical_temperature',
+    temperature='pore.temperature',
+    viscosity='pore.viscosity.*',
+    Cv='pore.constant_volume_molar_heat_capacity.*',
+    acentric_factor='param.acentric_factor.*',
+    molecular_weight='param.molecular_weight.*',
+    critical_temperature='param.critical_temperature.*',
 ):
     r"""
     Uses Chung et al. model to estimate thermal conductivity for gases with
@@ -199,9 +199,9 @@ def liquid_pure_sato_riedel(
 
 def liquid_mixture_DIPPR9I(
     target,
-    density='pore.density',
-    thermal_conductivity='pore.thermal_conductivity',
-    molecular_weight='param.molecular_weight',
+    density='pore.density.*',
+    thermal_conductivity='pore.thermal_conductivity.*',
+    molecular_weight='param.molecular_weight.*',
 ):
     xs = target['pore.mole_fraction']
     kLs = [c[thermal_conductivity] for c in target.components.values()]
@@ -221,13 +221,13 @@ def liquid_mixture_DIPPR9I(
 
 def liquid_mixture(
     target,
-    thermal_conductivity='pore.thermal_conductivity',
-    molecular_weight='param.molecular_weight',
+    thermal_conductivity='pore.thermal_conductivity.*',
+    molecular_weight='param.molecular_weight.*',
 ):
     # DIPPR9H
     xs = target['pore.mole_fraction']
-    MW = target.get_comp_vals('param.molecular_weight')
-    ks = target.get_comp_vals('pore.thermal_conductivity')
+    MW = target.get_comp_vals(molecular_weight)
+    ks = target.get_comp_vals(thermal_conductivity)
     num = np.vstack([xs[k]*MW[k]/(ks[k]**2) for k in xs.keys()]).sum(axis=0)
     denom = np.vstack([xs[k]*MW[k] for k in xs.keys()]).sum(axis=0)
     temp = num/denom
@@ -303,7 +303,7 @@ if __name__ == "__main__":
     vodka.x(h2o.name, 0.5)
     vodka.x(etoh.name, 0.5)
     vodka.add_model(propname='pore.thermal_conductivity',
-                    model=liquid_mixture_DIPPR9H)
+                    model=liquid_mixture)
     k_ref = chem.thermal_conductivity.DIPPR9H(
         ws=np.vstack(list(vodka['pore.mole_fraction'].values()))[:, 0],
         ks=np.vstack(list(vodka.get_comp_vals('pore.thermal_conductivity').values()))[:, 0],

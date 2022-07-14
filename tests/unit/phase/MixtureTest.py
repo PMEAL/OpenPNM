@@ -15,8 +15,8 @@ class MixtureTest:
 
     def test_liquid_mixture_two_comps(self):
         net = op.network.Demo()
-        A = op.phase.Species(network=net, species='ethanol')
-        B = op.phase.Species(network=net, species='h2o')
+        A = op.phase.StandardLiquid(network=net, species='ethanol')
+        B = op.phase.StandardLiquid(network=net, species='h2o')
         vodka = op.phase.LiquidMixture(network=net, components=[A, B])
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
@@ -25,10 +25,13 @@ class MixtureTest:
     def test_standard_liquid_mixture(self):
         net = op.network.Demo()
         A = op.phase.StandardLiquid(network=net, species='ethanol')
+        A.regenerate_models()
         B = op.phase.StandardLiquid(network=net, species='h2o')
+        B.regenerate_models()
         vodka = op.phase.StandardLiquidMixture(network=net, components=[A, B])
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
+        vodka.regenerate_models()
 
     def test_add_and_remove_component_method(self):
         net = op.network.Demo()

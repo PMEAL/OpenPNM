@@ -85,6 +85,11 @@ class Mixture(Phase):
 
         """
         vals = {}
+        if propname.endswith('*'):
+            try:
+                return self[propname]
+            except KeyError:
+                pass
         try:
             for comp in self.components.values():
                 vals[comp.name] = comp[propname]
@@ -295,6 +300,7 @@ class StandardLiquidMixture(LiquidMixture):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_model_collection(standard_liquid_mixture())
+        self.regenerate_models()
 
 
 class StandardGasMixture(GasMixture):
@@ -302,6 +308,7 @@ class StandardGasMixture(GasMixture):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_model_collection(standard_gas_mixture())
+        self.regenerate_models()
 
 
 # if __name__ == '__main__':

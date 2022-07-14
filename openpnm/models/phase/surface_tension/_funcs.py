@@ -98,9 +98,9 @@ def liquid_pure(
 
 def liquid_mixture(
     target,
-    surface_tension='pore.surface_tension',
-    density='pore.density',
-    molecular_weight='param.molecular_weight',
+    surface_tension='pore.surface_tension.*',
+    density='pore.density.*',
+    molecular_weight='param.molecular_weight.*o',
 ):
     r"""
     """

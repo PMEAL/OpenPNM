@@ -216,8 +216,8 @@ def gas_pure_chung(
 
 def gas_mixture(
     target,
-    viscosity='pore.viscosity',
-    molecular_weight='param.molecular_weight',
+    viscosity='pore.viscosity.*',
+    molecular_weight='param.molecular_weight.*',
 ):
     r"""
     Computes the viscosity of a gas mixture using a custom written version
@@ -278,7 +278,7 @@ def liquid_pure(
 
 def liquid_mixture(
     target,
-    prop='pore.viscosity',
+    prop='pore.viscosity.*',
     mode='logarithmic',
     power=1,
 ):
