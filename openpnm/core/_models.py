@@ -218,13 +218,13 @@ class ModelWrapper(dict):
     """
 
     def __call__(self):
-        f = self['model']
-        target = self._find_parent()
-        kwargs = self.copy()
-        for kw in ['regen_mode', 'target', 'model']:
-            kwargs.pop(kw, None)
-        vals = f(target=target, **kwargs)
-        return vals
+        target = self._find_target()
+        model = self['model']
+        kwargs = {}
+        for k, v in self.items():
+            if k not in ['model', 'regen_mode']:
+                kwargs[k] = v
+        return model(target=target, **kwargs)
 
     def _find_parent(self):
         r"""
@@ -284,15 +284,6 @@ class ModelWrapper(dict):
                         if mod is self:
                             return obj
         raise Exception("No target object found!")
-
-    def __call__(self):
-        target = self._find_target()
-        model = self['model']
-        kwargs = {}
-        for k, v in self.items():
-            if k not in ['model', 'regen_mode']:
-                kwargs[k] = v
-        return model(target=target, **kwargs)
 
 
 class ModelsMixin:
