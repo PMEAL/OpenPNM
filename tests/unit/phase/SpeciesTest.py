@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.phase as pm
 from numpy.testing import assert_allclose
+from thermo import Chemical
 
 
 class SpeciesTest:
@@ -24,7 +25,23 @@ class SpeciesTest:
     def test_standard_liquid(self):
         pn = op.network.Demo()
         h2o = op.phase.StandardLiquid(network=pn, species='water')
-        assert_allclose(h2o['pore.density'].mean(), 992.34552)
+        h2o.regenerate_models()
+        a = Chemical('h2o')
+        assert_allclose(h2o['pore.density'].mean(), a.rho, rtol=0.01)
+        assert_allclose(h2o['pore.heat_capacity'].mean(), a.Cplm, rtol=0.5)
+        assert_allclose(h2o['pore.thermal_conductivity'].mean(), a.kl, rtol=0.2)
+        assert_allclose(h2o['pore.viscosity'].mean(), a.mul, rtol=0.5)
+        assert_allclose(h2o['pore.vapor_pressure'].mean(), a.Psat, rtol=0.01)
+
+    def test_standard_gas(self):
+        pn = op.network.Demo()
+        o2 = op.phase.StandardGas(network=pn, species='o2')
+        o2.regenerate_models()
+        a = Chemical('o2')
+        assert_allclose(o2['pore.density'].mean(), a.rhog, rtol=0.01)
+        assert_allclose(o2['pore.heat_capacity'].mean(), a.Cpgm, rtol=0.01)
+        assert_allclose(o2['pore.thermal_conductivity'].mean(), a.kg, rtol=0.5)
+        # assert_allclose(o2['pore.viscosity'].mean(), a.mug, rtol=0.5)
 
 
 if __name__ == '__main__':

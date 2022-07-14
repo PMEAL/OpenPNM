@@ -290,14 +290,14 @@ class BinaryGas(GasMixture):
         super().add_comp(component=component, mole_fraction=mole_fraction)
 
 
-class StandardLiquidMixture(Mixture):
+class StandardLiquidMixture(LiquidMixture):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_model_collection(standard_liquid_mixture())
 
 
-class StandardGasMixture(Mixture):
+class StandardGasMixture(GasMixture):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

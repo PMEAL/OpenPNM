@@ -18,11 +18,35 @@ _pure_liquid = {
     'pore.density': {
         'model': mods.phase.density.liquid_pure,
     },
+    'pore.heat_capacity_gas': {
+        'model': mods.phase.heat_capacity.gas_pure,
+    },
+    'pore.heat_capacity': {
+        'model': mods.phase.heat_capacity.liquid_pure,
+    },
+    'pore.thermal_conductivity': {
+        'model': mods.phase.thermal_conductivity.liquid_pure,
+    },
+    'pore.viscosity': {
+        'model': mods.phase.viscosity.liquid_pure,
+    },
+    'pore.vapor_pressure': {
+        'model': mods.phase.vapor_pressure.liquid_pure_antoine,
+    },
 }
 
 
 _liquid_mixture = {
     'pore.density': {
         'model': mods.phase.density.liquid_mixture,
+    },
+    'pore.heat_capacity': {
+        'model': mods.phase.heat_capacity.liquid_mixture,
+    },
+    'pore.thermal_conductivity': {
+        'model': mods.phase.thermal_conductivity.liquid_mixture,
+    },
+    'pore.viscosity': {
+        'model': mods.phase.viscosity.liquid_mixture,
     },
 }

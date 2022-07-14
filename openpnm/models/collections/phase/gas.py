@@ -18,11 +18,32 @@ _pure_gas = {
     'pore.density': {
         'model': mods.phase.density.ideal_gas,
     },
+    'pore.heat_capacity_gas': {
+        'model': mods.phase.heat_capacity.gas_pure,
+    },
+    'pore.heat_capacity': {
+        'model': mods.phase.heat_capacity.gas_pure,
+    },
+    'pore.thermal_conductivity': {
+        'model': mods.phase.thermal_conductivity.gas_pure,
+    },
+    'pore.viscosity': {
+        'model': mods.phase.viscosity.gas_pure,
+    },
 }
 
 
 _gas_mixture = {
     'pore.density': {
         'model': mods.phase.density.ideal_gas,
+    },
+    'pore.heat_capacity': {
+        'model': mods.phase.heat_capacity.gas_mixture,
+    },
+    'pore.thermal_conductivity': {
+        'model': mods.phase.thermal_conductivity.gas_mixture,
+    },
+    'pore.viscosity': {
+        'model': mods.phase.viscosity.gas_mixture,
     },
 }
