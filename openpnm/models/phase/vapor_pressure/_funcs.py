@@ -82,21 +82,25 @@ def liquid_pure_lee_kesler(
 
 def liquid_pure_antoine(
     target,
-    T='pore.temperature'
+    T='pore.temperature',
+    Tc='param.critical_temperature',
 ):
     r"""
     """
     CAS = target.params['CAS']
-    Tc = target['param.critical_temperature']
+    Tc = target[Tc]
+    T = target[T]
     try:
         from chemicals.vapor_pressure import Psat_data_AntoineExtended
-        from chemicals.vectorized import TRC_Antoine_extended
         coeffs = Psat_data_AntoineExtended.loc[CAS]
         _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
-        PV = TRC_Antoine_extended(T, A, B, C, n, E, F)
+        # Pvap = TRC_Antoine_extended(T, A, B, C, n, E, F)
+        x = (T - to - 273.15)/Tc
+        x = np.clip(x, 0, None)
+        Pvap = 10**(A - B/(T+C) + 0.43429*(x**n) + E*(x**8) + F*(x**12))
     except KeyError:
         from chemicals.vapor_pressure import Psat_data_AntoinePoling
         coeffs = Psat_data_AntoinePoling.loc[CAS]
         _, A, B, C, Tmin, Tmax = coeffs
-        PV = 10**(A - B/(T + C))
-    return PV
+        Pvap = 10**(A - B/(T + C))
+    return Pvap
