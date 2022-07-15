@@ -23,16 +23,6 @@ class Air(Phase):
     ----------
     %(Phase.parameters)s
 
-    References
-    ----------
-    The correlations and constants for this class are taken from:
-
-    ::
-
-        E.W. Lemmon and R.T. Jacobsen, "Viscosity and Thermal Conductivity
-        Equations for Nitrogen, Oxygen, Argon, and Air", Int. J. of
-        Thermophysics, Vol. 25, No. 1, January 2004, pp. 21-69
-
     """
 
     def __init__(self, **kwargs):
@@ -40,8 +30,8 @@ class Air(Phase):
         a = Mixture(IDs=['o2', 'n2'], zs=[0.21, 0.79])
         temp = _fetch_chemical_props(a)
         self.params.update(temp)
-        self.models.update(air(regen_mode='deferred'))
-        # self.regenerate_models()
+        self.models.update(air())
+        self.regenerate_models()
 
 
 class _AirMixture(StandardGasMixture):
@@ -51,5 +41,5 @@ class _AirMixture(StandardGasMixture):
         n2 = StandardGas(network=network, species='n2')
         super().__init__(network=network, components=[o2, n2], **kwargs)
         self.y(o2, 0.21)
-        self.y(n2, 0.78)
+        self.y(n2, 0.79)
         self.regenerate_models()
