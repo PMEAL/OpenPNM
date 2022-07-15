@@ -89,13 +89,13 @@ def liquid_pure_antoine(
     CAS = target.params['CAS']
     Tc = target['param.critical_temperature']
     try:
-        from chemicals import Psat_data_AntoineExtended
+        from chemicals.vapor_pressure import Psat_data_AntoineExtended
         from chemicals.vectorized import TRC_Antoine_extended
         coeffs = Psat_data_AntoineExtended.loc[CAS]
         _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
         PV = TRC_Antoine_extended(T, A, B, C, n, E, F)
     except KeyError:
-        from chemicals import Psat_data_AntoinePoling
+        from chemicals.vapor_pressure import Psat_data_AntoinePoling
         coeffs = Psat_data_AntoinePoling.loc[CAS]
         _, A, B, C, Tmin, Tmax = coeffs
         PV = 10**(A - B/(T + C))
