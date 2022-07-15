@@ -95,7 +95,7 @@ class Mixture(Phase):
                 vals[comp.name] = comp[propname]
             return vals
         except KeyError:
-            msg = 'Requested value not found on at least one component'
+            msg = f'{propname} not found on at least one component'
             raise Exception(msg)
 
     def get_mix_vals(self, propname, mode='linear', power=1):

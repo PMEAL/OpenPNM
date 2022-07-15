@@ -8,6 +8,7 @@ docstr = Docorator()
 __all__ = [
     "water_correlation",
     "liquid_pure",
+    "liquid_mixture",
 ]
 
 
@@ -104,6 +105,7 @@ def liquid_mixture(
 ):
     r"""
     """
+    # winterfelf_scriven_davis
     sigmas = target.get_comp_vals(sigmas)
     xs = target['pore.mole_fraction']
     rhos = target.get_comp_vals(rhos)  # kg/m3
@@ -117,54 +119,3 @@ def liquid_mixture(
             denom = rhoms[ki]*rhoms[kj]
             sigma += num/denom
     return sigma
-
-
-if __name__ == "__main__":
-    import chemicals as chem
-    import openpnm as op
-    from numpy.testing import assert_allclose
-
-    pn = op.network.Demo()
-
-    cbz = op.phase.Species(network=pn, species='chlorobenzene')
-    cbz.add_model(propname='pore.surface_tension',
-                  model=liquid_pure)
-    cbz.add_model(propname='pore.density',
-                  model=op.models.phase.density.liquid_pure)
-    cbz['pore.molar_density'] = cbz['pore.density']/(cbz['param.molecular_weight']/1000)
-    s_calc = cbz['pore.surface_tension'][0]
-    s_ref = chem.interface.Brock_Bird(
-        T=cbz['pore.temperature'][0],
-        Tb=cbz['param.boiling_temperature'],
-        Tc=cbz['param.critical_temperature'],
-        Pc=cbz['param.critical_pressure'],
-    )
-    assert_allclose(s_ref, s_calc, rtol=1e-10, atol=0)
-
-    bnz = op.phase.Species(network=pn, species='benzene')
-    bnz.add_model(propname='pore.surface_tension',
-                  model=liquid_pure)
-    bnz.add_model(propname='pore.density',
-                  model=op.models.phase.density.liquid_pure)
-    bnz['pore.molar_density'] = bnz['pore.density']/(bnz['param.molecular_weight']/1000)
-    s_calc = bnz['pore.surface_tension'][0]
-    s_ref = chem.interface.Brock_Bird(
-        T=bnz['pore.temperature'][0],
-        Tb=bnz['param.boiling_temperature'],
-        Tc=bnz['param.critical_temperature'],
-        Pc=bnz['param.critical_pressure'],
-    )
-    assert_allclose(s_ref, s_calc, rtol=1e-10, atol=0)
-
-    mix = op.phase.LiquidMixture(network=pn, components=[bnz, cbz])
-    mix.x(bnz, 0.8)
-    mix.x(cbz, 0.2)
-    mix.add_model(propname='pore.surface_tension',
-                  model=liquid_mixture)
-    s_calc = mix['pore.surface_tension'][0]
-    s_ref = chem.interface.Winterfeld_Scriven_Davis(
-        xs=np.vstack(list(mix['pore.mole_fraction'].values()))[:, 0],
-        sigmas=np.vstack(list(mix.get_comp_vals('pore.surface_tension').values()))[:, 0],
-        rhoms=np.vstack(list(mix.get_comp_vals('pore.molar_density').values()))[:, 0],
-    )
-    assert_allclose(s_ref, s_calc, rtol=1e-2, atol=0)

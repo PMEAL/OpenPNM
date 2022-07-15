@@ -163,11 +163,11 @@ def liquid_mixture(
     T = target[T]
     rhoL = liquid_pure(
         target=target,
-        temperature=T,
-        molecular_weight=MWm,
-        critical_temperature=Tcm,
-        critical_volume=Vm,
-        acentric_factor=omegam,
+        T=T,
+        MW=MWm,
+        Tc=Tcm,
+        Vc=Vm,
+        omega=omegam,
     )
     return rhoL
 

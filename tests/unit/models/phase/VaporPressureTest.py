@@ -7,42 +7,36 @@ import chemicals
 class VaporPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
-        self.phase = op.phase.Phase(network=self.net)
+        self.phase = op.phase.Species(network=self.net, species='h2o')
         self.phase['pore.temperature'] = 300*np.ones(self.phase.Np,)
         self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 
     def test_antoine(self):
-        f = op.models.phase.vapor_pressure.antoine
+        f = op.models.phase.vapor_pressure.liquid_pure_antoine
         self.phase.add_model(propname='pore.test',
                              model=f,
-                             temperature='pore.temperature',
-                             A=8.088,
-                             B=1750.71,
-                             C=236.191)
+                             T='pore.temperature')
         self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.test'].mean(),
-                            3607.8508)
+        assert_approx_equal(self.phase['pore.test'].mean(), 3546.9831)
 
     def test_water(self):
-        f = op.models.phase.vapor_pressure.water
+        f = op.models.phase.vapor_pressure.water_correlation
         self.phase.add_model(propname='pore.test',
                              model=f,
-                             temperature='pore.temperature',
+                             T='pore.temperature',
                              salinity='pore.salinity')
         self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.test'].mean(),
-                            3536.0130)
+        assert_approx_equal(self.phase['pore.test'].mean(), 3536.0130)
 
     def test_water_no_salinity(self):
-        f = op.models.phase.vapor_pressure.water
+        f = op.models.phase.vapor_pressure.water_correlation
         del self.phase['pore.salinity']
         self.phase.add_model(propname='pore.test',
                              model=f,
-                             temperature='pore.temperature',
+                             T='pore.temperature',
                              salinity='pore.salinity')
         self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.test'].mean(),
-                            3536.0130)
+        assert_approx_equal(self.phase['pore.test'].mean(), 3536.0130)
         self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 
     def test_generic_chemicals_for_pure_liquid(self):
@@ -61,7 +55,7 @@ class VaporPressureTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_pure_prop_wrapper(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
         assert_allclose(vals, 2.762e3, rtol=.5)
 
 
