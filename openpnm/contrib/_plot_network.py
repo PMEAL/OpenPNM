@@ -1,6 +1,5 @@
 import numpy as np
 import openpnm as op
-from vispy import scene
 from matplotlib import cm
 
 
@@ -33,6 +32,10 @@ def plot_3d(
     ----------
     network
     """
+    try:
+        from vispy import scene
+    except ModuleNotFoundError:
+        raise Exception("vispy must be installed to use this function")
     canvas = scene.SceneCanvas(keys='interactive', show=True, bgcolor=bgcolor)
     view = canvas.central_widget.add_view()
     view.camera = 'turntable'
