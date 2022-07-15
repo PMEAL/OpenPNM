@@ -23,9 +23,9 @@ def _fetch_chemical_props(a):
     return temp
 
 
-from ._phase import Phase
-from ._air import Air
-from ._water import Water
-from ._mercury import Mercury
+from ._phase import *
 from ._mixture import *
 from ._species import *
+from ._air import *
+from ._water import *
+from ._mercury import *

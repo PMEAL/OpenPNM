@@ -9,6 +9,11 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+__all__ = [
+    'Phase',
+]
+
+
 @docstr.get_sections(base='PhaseSettings', sections=['Parameters'])
 @docstr.dedent
 class PhaseSettings:
@@ -92,16 +97,3 @@ class Phase(Domain):
             else:
                 raise KeyError(key)
         return vals[locs]
-
-
-
-
-
-
-
-
-
-
-
-
-

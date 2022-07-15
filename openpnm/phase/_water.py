@@ -7,6 +7,11 @@ from thermo import Chemical
 docstr = Docorator()
 
 
+__all__ = [
+    'Water',
+]
+
+
 @docstr.dedent
 class Water(Phase):
     r"""

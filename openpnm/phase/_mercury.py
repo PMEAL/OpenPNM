@@ -3,6 +3,11 @@ from openpnm.phase import Phase, _fetch_chemical_props
 from thermo import Chemical
 
 
+__all__ = [
+    'Mercury',
+]
+
+
 class Mercury(Phase):
     r"""
     Creates Phase object with and preset values and pore-scale models for
