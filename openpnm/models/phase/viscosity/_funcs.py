@@ -13,7 +13,7 @@ __all__ = [
 
 def water_correlation(
     target,
-    temperature='pore.temperature',
+    T='pore.temperature',
     salinity='pore.salinity'
 ):
     r"""
@@ -51,7 +51,7 @@ def water_correlation(
         Water Treatment, 2010.
 
     """
-    T = target[temperature]
+    T = target[T]
     if salinity in target.keys():
         S = target[salinity]
     else:
@@ -78,15 +78,15 @@ def water_correlation(
 
 def air_correlation(
     target,
-    temperature='pore.temperature',
-    molar_density='pore.molar_density',
+    T='pore.temperature',
+    n_V='pore.molar_density',
 ):
     r"""
     """
     raise Exception("This function does not work yet")
     # Get props from object
-    T = target[temperature]
-    rho = target[molar_density]
+    T = target[T]
+    rho = target[n_V]
     # Declare given constants
     MW = 28.9586  # g/mol
     Tc = 132.6312  # K
@@ -115,15 +115,15 @@ def air_correlation(
 
 def gas_pure_stiel_thodos(
     target,
-    temperature='pore.temperature',
-    critical_temperature='param.critical_temperature',
-    critical_pressure='param.critical_pressure',
-    molecular_weight='param.molecular_weight',
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+    Pc='param.critical_pressure',
+    MW='param.molecular_weight',
 ):
-    T = target[temperature]
-    Tc = target[critical_temperature]
-    Pc = target[critical_pressure]/101325
-    MW = target[molecular_weight]
+    T = target[T]
+    Tc = target[Tc]
+    Pc = target[Pc]/101325
+    MW = target[MW]
 
     mu = np.zeros_like(T)
     Tr = T/Tc
@@ -138,18 +138,18 @@ def gas_pure_stiel_thodos(
 
 def gas_pure(
     target,
-    temperature='pore.temperature',
-    critical_temperature='param.critical_temperature',
-    critical_pressure='param.critical_pressure',
-    molecular_weight='param.molecular_weight',
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+    Pc='param.critical_pressure',
+    MW='param.molecular_weight',
 ):
     r"""
     """
     # Gharagheizi method from chemicals
-    T = target[temperature]
-    MW = target[molecular_weight]
-    Pc = target[critical_pressure]
-    Tc = target[critical_temperature]
+    T = target[T]
+    MW = target[MW]
+    Pc = target[Pc]
+    Tc = target[Tc]
     Tr = T/Tc
     mu = (1e-5)*Pc*Tr + (0.091 - 0.477/MW)*T + \
         MW*((1e-5)*Pc - 8.0*(MW**2)/(T**2))*(10.7639/Tc - 4.1929/T)
@@ -160,10 +160,10 @@ def gas_pure(
 
 def gas_pure_chung(
     target,
-    temperature='pore.temperature',
-    molecular_weight='param.molecular_weight',
-    critical_temperature='param.critical_temperature',
-    critical_volume='param.critical_volume'
+    T='pore.temperature',
+    MW='param.molecular_weight',
+    Tc='param.critical_temperature',
+    Vc='param.critical_volume'
 ):
     r"""
     Uses Chung et al. [1] model to estimate viscosity for gases at low
@@ -196,10 +196,10 @@ def gas_pure_chung(
         Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
 
     """
-    T = target[temperature]
-    MW = target[molecular_weight]
-    Tc = target[critical_temperature]
-    Vc = target[critical_volume]
+    T = target[T]
+    MW = target[MW]
+    Tc = target[Tc]
+    Vc = target[Vc]
     Tr = T / Tc
     Tstar = 1.2593*Tr
     A = 1.161415
@@ -216,8 +216,8 @@ def gas_pure_chung(
 
 def gas_mixture(
     target,
-    viscosity='pore.viscosity.*',
-    molecular_weight='param.molecular_weight.*',
+    mus='pore.viscosity.*',
+    MWs='param.molecular_weight.*',
 ):
     r"""
     Computes the viscosity of a gas mixture using a custom written version
@@ -240,8 +240,8 @@ def gas_mixture(
         An ndarray of Np length containing the viscosity of the mixture in
         each pore
     """
-    MWs = target.get_comp_vals(molecular_weight)
-    mus = target.get_comp_vals(viscosity)
+    MWs = target.get_comp_vals(MWs)
+    mus = target.get_comp_vals(mus)
     xs = target['pore.mole_fraction']
     num = 0.0
     denom = 0.0
@@ -254,20 +254,20 @@ def gas_mixture(
 
 def liquid_pure(
     target,
-    temperature='pore.temperature',
-    molecular_weight='param.molecular_weight',
-    critical_temperature='param.critical_temperature',
-    critical_pressure='param.critical_pressure',
-    acentric_factor='param.acentric_factor',
+    T='pore.temperature',
+    MW='param.molecular_weight',
+    Tc='param.critical_temperature',
+    Pc='param.critical_pressure',
+    omega='param.acentric_factor',
 ):
     r"""
     """
     # Letsou_Stiel
-    T = target[temperature]
-    MW = target[molecular_weight]
-    Tc = target[critical_temperature]
-    Pc = target[critical_pressure]
-    omega = target[acentric_factor]
+    T = target[T]
+    MW = target[MW]
+    Tc = target[Tc]
+    Pc = target[Pc]
+    omega = target[omega]
     Tr = T/Tc
     zeta = 2173.424 * (Tc**(1/6))/((MW**(0.5))*(Pc**(2/3)))
     zeta0 = (1.5174 - 2.135*Tr + 0.75*(Tr**2))*1e-5

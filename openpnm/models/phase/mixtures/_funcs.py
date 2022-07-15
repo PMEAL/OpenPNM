@@ -16,8 +16,8 @@ __all__ = [
 @docstr.dedent
 def salinity(
     target,
-    temperature='pore.temperature',
-    concentration='pore.concentration',
+    T='pore.temperature',
+    M='pore.concentration',
     ):
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
@@ -47,8 +47,8 @@ def salinity(
     solute)
 
     """
-    C = target[concentration]
-    T = target[temperature]
+    C = target[M]
+    T = target[T]
     a = 8.73220929e+00
     b = 6.00389629e+01
     c = -1.19083743e-01

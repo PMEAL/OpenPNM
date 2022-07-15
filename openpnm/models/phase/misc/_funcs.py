@@ -48,9 +48,9 @@ def mix_and_match(target, prop, phases, occupancy):
 
 def mole_to_mass_fraction(
     target,
-    molecular_weight='param.molecular_weight',
+    MWs='param.molecular_weight.*',
 ):
-    MWs = target.get_comp_vals(molecular_weight)
+    MWs = target.get_comp_vals(MWs)
     xs = target['pore.mole_fraction']
     ms = {}
     # Find the actual masses in each pore

@@ -181,7 +181,7 @@ class ModelsDict(PrintableDict):
                 names[name] = []
             names[name].append(domain)
         D = PrintableDict(names, key='Model', value='Doamin')
-        print(D)
+        return D
 
     def __str__(self):
         horizontal_rule = '―' * 85

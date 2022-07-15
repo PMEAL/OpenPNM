@@ -3,7 +3,6 @@ from chemicals import Vm_to_rho
 import numpy as np
 
 
-
 docstr = Docorator()
 
 
@@ -18,9 +17,9 @@ __all__ = [
 
 def ideal_gas(
     target,
-    pressure='pore.pressure',
-    temperature='pore.temperature',
-    molecular_weight='param.molecular_weight',
+    P='pore.pressure',
+    T='pore.temperature',
+    MW='param.molecular_weight',
 ):
     r"""
     Uses ideal gas law to calculate the mass density of an ideal gas
@@ -39,14 +38,14 @@ def ideal_gas(
     %(models.phase.density.returns)s
 
     """
-    P = target[pressure]
-    T = target[temperature]
+    P = target[P]
+    T = target[T]
     try:
         # If target is a pure species, it should have molecular weight in params
-        MW = target[molecular_weight]
+        MW = target[MW]
     except KeyError:
         # Otherwise, get the mole weighted average value
-        MW = target.get_mix_vals(molecular_weight)
+        MW = target.get_mix_vals(MW)
     R = 8.314462618  # J/(mol.K)
     value = P/(R*T)*(MW/1000)  # Convert to kg/m3
     return value
@@ -54,7 +53,7 @@ def ideal_gas(
 
 def water_correlation(
     target,
-    temperature='pore.temperature',
+    T='pore.temperature',
     salinity='pore.salinity',
 ):
     r"""
@@ -65,11 +64,6 @@ def water_correlation(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    salinity : str
-        Name of the dictionary key on ``target`` where the array containing
-        salinity values is stored.
 
     Returns
     -------
@@ -88,7 +82,7 @@ def water_correlation(
     Water Treatment, 2010.
 
     """
-    T = target[temperature]
+    T = target[T]
     if salinity in target.keys():
         S = target[salinity]
     else:
@@ -113,11 +107,11 @@ def water_correlation(
 
 def liquid_mixture(
     target,
-    temperature='pore.temperature',
-    molecular_weight='param.molecular_weight.*',
-    critical_temperature='param.critical_temperature.*',
-    critical_volume='param.critical_volume.*',
-    acentric_factor='param.acentric_factor.*',
+    T='pore.temperature',
+    MWs='param.molecular_weight.*',
+    Tcs='param.critical_temperature.*',
+    Vcs='param.critical_volume.*',
+    omegas='param.acentric_factor.*',
 ):
     r"""
     Computes the density of a liquid mixture using the COrrospoding STAtes
@@ -146,9 +140,9 @@ def liquid_mixture(
 
     """
     # Fetch parameters for each pure component
-    Tcs = target.get_comp_vals(critical_temperature)
-    Vcs = target.get_comp_vals(critical_volume)
-    omegas = target.get_comp_vals(acentric_factor)
+    Tcs = target.get_comp_vals(Tcs)
+    Vcs = target.get_comp_vals(Vcs)
+    omegas = target.get_comp_vals(omegas)
     Xs = target['pore.mole_fraction']
     # Compute mixture values
     omegam = np.vstack([Xs[k]*omegas[k] for k in Xs.keys()]).sum(axis=0)
@@ -166,7 +160,7 @@ def liquid_mixture(
     # Convert molar volume to normal mass density
     MWs = target.get_comp_vals('param.molecular_weight')
     MWm = np.vstack([Xs[k]*MWs[k] for k in Xs.keys()]).sum(axis=0)
-    T = target[temperature]
+    T = target[T]
     rhoL = liquid_pure(
         target=target,
         temperature=T,
@@ -180,32 +174,32 @@ def liquid_mixture(
 
 def liquid_pure(
     target,
-    temperature='pore.temperature',
-    critical_temperature='param.critical_temperature',
-    critical_volume='param.critical_volume',
-    acentric_factor='param.acentric_factor',
-    molecular_weight='param.molecular_weight',
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+    Vc='param.critical_volume',
+    omega='param.acentric_factor',
+    MW='param.molecular_weight',
 ):
     r"""
     """
-    Vc = target[critical_volume]
-    Tc = target[critical_temperature]
-    omega = target[acentric_factor]
-    T = target[temperature]
+    Vc = target[Vc]
+    Tc = target[Tc]
+    omega = target[omega]
+    T = target[T]
     Tr = T/Tc
     V0 = 1 - 1.52816*(1-Tr)**(1/3) + 1.43907*(1-Tr)**(2/3) - 0.81446*(1-Tr) + \
         0.190454*(1-Tr)**(4/3)
     V1 = (-0.296123 + 0.386914*Tr - 0.0427258*Tr**2 - 0.0480645*Tr**3)/(Tr - 1.00001)
     Vs = Vc*V0*(1-omega*V1)
-    MW = target[molecular_weight]
+    MW = target[MW]
     rhoL = Vm_to_rho(Vm=Vs, MW=MW)
     return rhoL
 
 
 def mass_to_molar(
     target,
-    molecular_weight='param.molecular_weight',
-    density='pore.density',
+    MW='param.molecular_weight',
+    rho='pore.density',
 ):
     r"""
     Calculates the molar density from the molecular weight and mass density
@@ -224,7 +218,7 @@ def mass_to_molar(
         A numpy ndrray containing molar density values [mol/m3]
 
     """
-    MW = target[molecular_weight]
-    rho = target[density]
+    MW = target[MW]
+    rho = target[rho]
     value = rho/MW
     return value

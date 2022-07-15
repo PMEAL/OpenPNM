@@ -13,18 +13,18 @@ __all__ = [
 
 def liquid_pure(
     target,
-    temperature='pore.temperature',
-    critical_temperature='param.critical_temperature',
-    acentric_factor='param.acentric_factor',
-    heat_capacity_gas='pore.heat_capacity_gas',
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+    omega='param.acentric_factor',
+    Cpg='pore.heat_capacity_gas',
 ):
     r"""
     """
     # Rowlinson and Poling
-    T = target[temperature]
-    Tc = target[critical_temperature]
-    omega = target[acentric_factor]
-    Cpgm = target[heat_capacity_gas]
+    T = target[T]
+    Tc = target[Tc]
+    omega = target[omega]
+    Cpgm = target[Cpg]
     Tr = T/Tc
     if np.any(Tr > 1):
         raise Exception('Cannot calculate liquid property of fluid above'
@@ -39,13 +39,13 @@ def liquid_pure(
 
 def gas_pure(
     target,
-    temperature='pore.temperature',
+    T='pore.temperature',
     a=[],
 ):
     r"""
     """
     # TRCCp
-    T = target[temperature]
+    T = target[T]
     if len(a) == 0:
         c = chem.heat_capacity.TRC_gas_data.loc[target.params['CAS']]
         a = list(c[3:11])
@@ -61,19 +61,19 @@ def gas_pure(
 
 def gas_mixture(
     target,
-    heat_capacity='pore.heat_capacity.*',
+    Cps='pore.heat_capacity.*',
 ):
     r"""
     """
-    Cpmix = mixing_rule(target=target, prop=heat_capacity, mode='linear')
+    Cpmix = mixing_rule(target=target, prop=Cps, mode='linear')
     return Cpmix
 
 
 def liquid_mixture(
     target,
-    heat_capacity='pore.heat_capacity.*',
+    Cps='pore.heat_capacity.*',
 ):
     r"""
     """
-    Cpmix = mixing_rule(target=target, prop=heat_capacity, mode='linear')
+    Cpmix = mixing_rule(target=target, prop=Cps, mode='linear')
     return Cpmix

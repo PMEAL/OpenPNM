@@ -12,7 +12,7 @@ __all__ = [
 
 
 @docstr.dedent
-def water_correlation(target, temperature='pore.temperature', salinity='pore.salinity'):
+def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric
     pressure using Eq. (28) given by Sharqawy et al. Values at
@@ -44,7 +44,7 @@ def water_correlation(target, temperature='pore.temperature', salinity='pore.sal
     Water Treatment, 2010.
 
     """
-    T = target[temperature]
+    T = target[T]
     if salinity in target.keys():
         S = target[salinity]
     else:
@@ -62,10 +62,10 @@ def water_correlation(target, temperature='pore.temperature', salinity='pore.sal
 @docstr.dedent
 def liquid_pure(
     target,
-    temperature='pore.temperature',
-    critical_temperature='param.critical_temperature',
-    boiling_temperature='param.boiling_temperature',
-    critical_pressure='param.critical_pressure',
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+    Tb='param.boiling_temperature',
+    Pc='param.critical_pressure',
 ):
     r"""
     Uses Brock_Bird model
@@ -85,12 +85,12 @@ def liquid_pure(
 
     """
     # brock_bird
-    T = target[temperature]
-    Tc = target[critical_temperature]
+    T = target[T]
+    Tc = target[Tc]
     Tr = T/Tc
-    Tb = target[boiling_temperature]
+    Tb = target[Tb]
     Tbr = Tb/Tc
-    Pc = target[critical_pressure]/100000
+    Pc = target[Pc]/100000
     Q = 0.1196*(1 + Tbr*np.log(Pc/1.01325)/(1-Tbr))-0.279
     sigma = 1e-3 * Q * (Pc**(2/3)) * (Tc**(1/3)) * ((1-Tr)**(11/9))
     return sigma
@@ -98,16 +98,16 @@ def liquid_pure(
 
 def liquid_mixture(
     target,
-    surface_tension='pore.surface_tension.*',
-    density='pore.density.*',
-    molecular_weight='param.molecular_weight.*o',
+    sigmas='pore.surface_tension.*',
+    rhos='pore.density.*',
+    MWs='param.molecular_weight.*',
 ):
     r"""
     """
-    sigmas = target.get_comp_vals(surface_tension)
+    sigmas = target.get_comp_vals(sigmas)
     xs = target['pore.mole_fraction']
-    rhos = target.get_comp_vals(density)  # kg/m3
-    MWs = target.get_comp_vals(molecular_weight)  # g/mol
+    rhos = target.get_comp_vals(rhos)  # kg/m3
+    MWs = target.get_comp_vals(MWs)  # g/mol
     rhoms = {k: rhos[k]/(MWs[k]/1000) for k in xs.keys()}  # mol/m3
     rhom_mix = np.vstack([rhoms[k]*xs[k] for k in xs.keys()]).sum(axis=0)
     sigma = 0.0

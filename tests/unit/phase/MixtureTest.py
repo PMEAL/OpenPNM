@@ -31,8 +31,16 @@ class MixtureTest:
         vodka = op.phase.StandardLiquidMixture(network=net, components=[A, B])
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
+        # Ensure models are NOT run during init (no point without mol fracs)
+        m = vodka.models._info.keys()
+        for item in m:
+            assert item not in vodka.keys()
+        # Make sure models run without complaining
         vodka.regenerate_models()
-
+        # Make sure all models were actually run
+        m = vodka.models._info.keys()
+        for item in m:
+            assert item in vodka.keys()
 
     def test_add_and_remove_component_method(self):
         net = op.network.Demo()

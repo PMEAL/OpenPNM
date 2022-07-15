@@ -18,7 +18,7 @@ __all__ = [
 @docstr.dedent
 def water_correlation(
     target,
-    temperature="pore.temperature",
+    T="pore.temperature",
     salinity="pore.salinity"
 ):
     r"""
@@ -51,7 +51,7 @@ def water_correlation(
     D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.
 
     """
-    T = target[temperature]
+    T = target[T]
     if salinity in target.keys():
         S = target[salinity]
     else:
@@ -73,19 +73,19 @@ def water_correlation(
 
 def gas_pure(
     target,
-    temperature='pore.temperature',
-    molecular_weight='param.molecular_weight',
-    boiling_temperature='param.boiling_temperature',
-    critical_pressure='param.critical_pressure',
-    acentric_factor='param.acentric_factor',
+    T='pore.temperature',
+    MW='param.molecular_weight',
+    Tb='param.boiling_temperature',
+    Pc='param.critical_pressure',
+    omega='param.acentric_factor',
 ):
     # gharagheizi method
-    T = target[temperature]
-    MW = target[molecular_weight]
-    Tb = target[boiling_temperature]
+    T = target[T]
+    MW = target[MW]
+    Tb = target[Tb]
     # The following correction suggested by chemicals package author
-    Pc = target[critical_pressure]/10000
-    omega = target[acentric_factor]
+    Pc = target[Pc]/10000
+    omega = target[omega]
     B = (T + (2.0*omega + 2.0*T - 2.0*T*(2.0*omega + 3.2825)/Tb + 3.2825)
          / (2.0*omega + T - T*(2.0*omega + 3.2825)/Tb + 3.2825)
          - T*(2.0*omega + 3.2825)/Tb)
@@ -97,18 +97,18 @@ def gas_pure(
 
 def liquid_pure(
     target,
-    temperature='pore.temperature',
-    molecular_weight='param.molecular_weight',
-    boiling_temperature='param.boiling_temperature',
-    critical_pressure='param.critical_pressure',
-    acentric_factor='param.acentric_factor',
+    T='pore.temperature',
+    MW='param.molecular_weight',
+    Tb='param.boiling_temperature',
+    Pc='param.critical_pressure',
+    omega='param.acentric_factor',
 ):
     # gharagheizi metho
-    T = target[temperature]
-    MW = target[molecular_weight]
-    Tb = target[boiling_temperature]
-    Pc = target[critical_pressure]/100000
-    omega = target[acentric_factor]
+    T = target[T]
+    MW = target[MW]
+    Tb = target[Tb]
+    Pc = target[Pc]/100000
+    omega = target[omega]
     B = 16.0407*MW + 2.0*Tb - 27.9074
     A = 3.8588*(MW**8)*(1.0045*B + 6.5152*MW - 8.9756)
     k = (1e-4)*(10*omega + 2*Pc - 2*T + 4 + 1.908*(Tb + 1.009*(B**2)/(MW**2))
@@ -116,61 +116,12 @@ def liquid_pure(
     return k
 
 
-@docstr.dedent
-def gas_pure_chung(
-    target,
-    temperature='pore.temperature',
-    viscosity='pore.viscosity.*',
-    Cv='pore.constant_volume_molar_heat_capacity.*',
-    acentric_factor='param.acentric_factor.*',
-    molecular_weight='param.molecular_weight.*',
-    critical_temperature='param.critical_temperature.*',
-):
-    r"""
-    Uses Chung et al. model to estimate thermal conductivity for gases with
-    low pressure(<10 bar) from first principles at conditions of interest
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    viscosity : str
-        The dictionary key containing the viscosity values (Pa.s)
-    Cv : str
-        Dictionary key containing the heat capacity at constant volume
-        (J/(mol.K))
-
-    Returns
-    -------
-    value : ndarray
-        A numpy ndarray containing thermal conductivity values in [W/m.K]
-
-    """
-    omega = target[acentric_factor]
-    MW = target[molecular_weight]
-    Tc = target[critical_temperature]
-    Cv = target[Cv]
-    T = target[temperature]
-    mu = target[viscosity]
-    R = 8.314
-    Tr = T / Tc
-    z = 2.0 + 10.5 * Tr ** 2
-    beta = 0.7862 - 0.7109 * omega + 1.3168 * omega ** 2
-    alpha = Cv / R - 3 / 2
-    s = 1 + alpha * (
-        (0.215 + 0.28288 * alpha - 1.061 * beta + 0.26665 * z)
-        / (0.6366 + beta * z + 1.061 * alpha * beta)
-    )
-    value = 3.75 * s * (mu) * R / (MW)
-    return value
-
-
 def liquid_pure_sato_riedel(
     target,
-    temperature="pore.temperature",
-    critical_temperature='param.critical_temperature',
-    molecular_weight='param.molecular_weight',
-    boiling_temperature='param.boiling_temperature',
+    T="pore.temperature",
+    Tc='param.critical_temperature',
+    MW='param.molecular_weight',
+    Tb='param.boiling_temperature',
 ):
     r"""
     Uses Sato et al. model to estimate thermal conductivity for pure liquids
@@ -187,10 +138,10 @@ def liquid_pure_sato_riedel(
         A numpy ndarray containing thermal conductivity values in [W/m.K]
 
     """
-    T = target[temperature]
-    Tc = target[critical_temperature]
-    MW = target[molecular_weight]
-    Tbr = target[boiling_temperature] / Tc
+    T = target[T]
+    Tc = target[Tc]
+    MW = target[MW]
+    Tbr = target[Tb]/Tc
     Tr = T / Tc
     value = ((1.1053 / ((MW) ** 0.5)) * (3 + 20 * (1 - Tr) ** (2 / 3))
              / (3 + 20 * (1 - Tbr) ** (2 / 3)))
@@ -199,15 +150,16 @@ def liquid_pure_sato_riedel(
 
 def liquid_mixture_DIPPR9I(
     target,
-    density='pore.density.*',
-    thermal_conductivity='pore.thermal_conductivity.*',
-    molecular_weight='param.molecular_weight.*',
+    rhos='pore.density.*',
+    ks='pore.thermal_conductivity.*',
+    MWs='param.molecular_weight.*',
 ):
+    raise NotImplementedError("This function is not ready yet")
     xs = target['pore.mole_fraction']
-    kLs = [c[thermal_conductivity] for c in target.components.values()]
+    kLs = target.get_comp_vals(ks)
     # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
-    Vm = [rho_to_Vm(c[density], c[molecular_weight])
-          for c in target.components.values()]
+    Vm = [rho_to_Vm(c[rhos], c[MWs])
+          for c in target.components.keys()]
     denom = np.sum([xs[i]*Vm[i] for i in range(len(xs))], axis=0)
     phis = np.array([xs[i]*Vm[i] for i in range(len(xs))])/denom
     kij = 2/np.sum([1/kLs[i] for i in range(len(xs))], axis=0)
@@ -221,13 +173,13 @@ def liquid_mixture_DIPPR9I(
 
 def liquid_mixture(
     target,
-    thermal_conductivity='pore.thermal_conductivity.*',
-    molecular_weight='param.molecular_weight.*',
+    ks='pore.thermal_conductivity.*',
+    MWs='param.molecular_weight.*',
 ):
     # DIPPR9H
     xs = target['pore.mole_fraction']
-    MW = target.get_comp_vals(molecular_weight)
-    ks = target.get_comp_vals(thermal_conductivity)
+    MW = target.get_comp_vals(MWs)
+    ks = target.get_comp_vals(ks)
     num = np.vstack([xs[k]*MW[k]/(ks[k]**2) for k in xs.keys()]).sum(axis=0)
     denom = np.vstack([xs[k]*MW[k] for k in xs.keys()]).sum(axis=0)
     temp = num/denom
@@ -237,15 +189,15 @@ def liquid_mixture(
 
 def gas_mixture(
     target,
-    temperature='pore.temperature',
-    thermal_conductivity='pore.thermal_conductivity',
-    molecular_weight='param.molecular_weight',
+    T='pore.temperature',
+    ks='pore.thermal_conductivity.*',
+    MWs='param.molecular_weight.*',
 ):
     # Wassiljew_Herning_Zipperer
-    T = target[temperature]
+    T = target[T]
     ys = target['pore.mole_fraction']
-    kGs = target.get_comp_vals(thermal_conductivity)
-    MWs = target.get_comp_vals(molecular_weight)
+    kGs = target.get_comp_vals(ks)
+    MWs = target.get_comp_vals(MWs)
     kmix = np.zeros_like(T)
     for i, ki in enumerate(ys.keys()):
         num = ys[ki]*kGs[ki]
