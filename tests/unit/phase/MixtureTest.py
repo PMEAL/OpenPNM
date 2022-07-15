@@ -33,6 +33,7 @@ class MixtureTest:
         vodka.x(B.name, 0.6)
         vodka.regenerate_models()
 
+
     def test_add_and_remove_component_method(self):
         net = op.network.Demo()
         o2 = op.phase.Species(network=net, species='o2', name='pure_O2')
