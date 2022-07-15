@@ -1,6 +1,5 @@
 from openpnm.models.collections.phase import mercury
 from openpnm.phase import Phase, _fetch_chemical_props
-from thermo import Chemical
 
 
 __all__ = [
@@ -21,6 +20,7 @@ class Mercury(Phase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        from thermo import Chemical
         a = Chemical('hg')
         temp = _fetch_chemical_props(a)
         self.params.update(temp)

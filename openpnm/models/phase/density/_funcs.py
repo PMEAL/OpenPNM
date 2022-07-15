@@ -1,5 +1,4 @@
 from openpnm.utils import Docorator
-from chemicals import Vm_to_rho
 import numpy as np
 
 
@@ -192,7 +191,7 @@ def liquid_pure(
     V1 = (-0.296123 + 0.386914*Tr - 0.0427258*Tr**2 - 0.0480645*Tr**3)/(Tr - 1.00001)
     Vs = Vc*V0*(1-omega*V1)
     MW = target[MW]
-    rhoL = Vm_to_rho(Vm=Vs, MW=MW)
+    rhoL = 1e-3*MW/Vs
     return rhoL
 
 

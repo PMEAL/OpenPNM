@@ -2,7 +2,6 @@ from openpnm.models.collections.phase import air
 from openpnm.phase import Phase, _fetch_chemical_props
 from openpnm.phase import StandardGas, StandardGasMixture
 from openpnm.utils import Docorator
-from thermo import Mixture
 
 
 docstr = Docorator()
@@ -27,6 +26,7 @@ class Air(Phase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        from thermo import Mixture
         a = Mixture(IDs=['o2', 'n2'], zs=[0.21, 0.79])
         temp = _fetch_chemical_props(a)
         self.params.update(temp)

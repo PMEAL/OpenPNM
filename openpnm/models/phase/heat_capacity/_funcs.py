@@ -1,4 +1,3 @@
-import chemicals as chem
 import numpy as np
 from openpnm.models.phase.mixtures import mixing_rule
 
@@ -45,9 +44,10 @@ def gas_pure(
     r"""
     """
     # TRCCp
+    from chemicals.heat_capacity import TRC_gas_data
     T = target[T]
     if len(a) == 0:
-        c = chem.heat_capacity.TRC_gas_data.loc[target.params['CAS']]
+        c = TRC_gas_data.loc[target.params['CAS']]
         a = list(c[3:11])
     R = 8.314462618
     y = np.zeros_like(T)

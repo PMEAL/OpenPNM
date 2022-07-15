@@ -1,6 +1,5 @@
 import openpnm.models as mods
 from openpnm.utils import get_model_collection
-from thermo import Mixture
 
 
 def air(regen_mode=None, domain=None):

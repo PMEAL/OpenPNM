@@ -40,7 +40,6 @@ from . import viscosity
 
 # %%
 import inspect as _inspect
-import chemicals as _chemicals
 import numpy as _np
 
 
@@ -115,6 +114,7 @@ def chemicals_wrapper(target, f, **kwargs):
     implementations agree.
 
     """
+    import chemicals as _chemicals
     # Update default argmap with any user supplied values
     argmap = default_argmap.copy()
     for k, v in kwargs.items():
@@ -150,6 +150,7 @@ def chemicals_wrapper(target, f, **kwargs):
 
 
 def _get_items_from_target(target, f, argmap):
+    import chemicals as _chemicals
     try:
         arginfo = _inspect.getfullargspec(f)
     except TypeError:

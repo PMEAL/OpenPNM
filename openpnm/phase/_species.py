@@ -2,7 +2,6 @@ import logging
 from openpnm.phase import Phase, _fetch_chemical_props
 from openpnm.models.collections.phase import standard_liquid
 from openpnm.models.collections.phase import standard_gas
-from thermo import Chemical
 
 
 logger = logging.getLogger(__name__)
@@ -42,6 +41,7 @@ class Species(Phase):
 
     def __init__(self, species, **kwargs):
         # Create temp first to ensure all look-ups pass before initializing obj
+        from thermo import Chemical
         temp = _fetch_chemical_props(Chemical(species))
         super().__init__(**kwargs)
         self.params.update(temp)

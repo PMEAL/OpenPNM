@@ -1,7 +1,5 @@
 import numpy as np
 from openpnm.utils import Docorator
-import chemicals as chem
-from chemicals import numba_vectorized
 
 
 docstr = Docorator()
@@ -88,15 +86,17 @@ def liquid_pure_antoine(
 ):
     r"""
     """
-    T = target[T]
     CAS = target.params['CAS']
     Tc = target['param.critical_temperature']
     try:
-        coeffs = chem.vapor_pressure.Psat_data_AntoineExtended.loc[CAS]
+        from chemicals import Psat_data_AntoineExtended
+        from chemicals.vectorized import TRC_Antoine_extended
+        coeffs = Psat_data_AntoineExtended.loc[CAS]
         _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
-        PV = numba_vectorized.TRC_Antoine_extended(T, A, B, C, n, E, F)
+        PV = TRC_Antoine_extended(T, A, B, C, n, E, F)
     except KeyError:
-        coeffs = chem.vapor_pressure.Psat_data_AntoinePoling.loc[CAS]
+        from chemicals import Psat_data_AntoinePoling
+        coeffs = Psat_data_AntoinePoling.loc[CAS]
         _, A, B, C, Tmin, Tmax = coeffs
         PV = 10**(A - B/(T + C))
     return PV

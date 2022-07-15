@@ -1,6 +1,5 @@
 import numpy as np
 from openpnm.utils import Docorator
-from chemicals import rho_to_Vm
 
 
 docstr = Docorator()
@@ -155,6 +154,7 @@ def liquid_mixture_DIPPR9I(
     MWs='param.molecular_weight.*',
 ):
     raise NotImplementedError("This function is not ready yet")
+    from chemicals import rho_to_Vm
     xs = target['pore.mole_fraction']
     kLs = target.get_comp_vals(ks)
     # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
@@ -207,88 +207,3 @@ def gas_mixture(
             denom += ys[ki]*A
         kmix += num/denom
     return kmix
-
-
-if __name__ == "__main__":
-    import chemicals as chem
-    import openpnm as op
-    from numpy.testing import assert_allclose
-
-    pn = op.network.Demo()
-
-    chem.thermal_conductivity.Gharagheizi_gas
-
-    ch4 = op.phase.Species(network=pn, species='methane')
-    ch4.add_model(propname='pore.thermal_conductivity',
-                  model=gas_pure)
-    k_calc = ch4['pore.thermal_conductivity'][0]
-    k_ref = chem.thermal_conductivity.Gharagheizi_gas(
-        T=ch4['pore.temperature'][0],
-        MW=ch4['param.molecular_weight'],
-        Tb=ch4['param.boiling_temperature'],
-        Pc=ch4['param.critical_pressure'],
-        omega=ch4['param.acentric_factor'],
-    )
-    assert_allclose(k_ref, k_calc, rtol=1e-10, atol=0)
-
-    h2o = op.phase.Species(network=pn, species='water')
-    h2o.add_model(propname='pore.thermal_conductivity',
-                  model=liquid_pure)
-    k_calc = h2o['pore.thermal_conductivity'][0]
-    k_ref = chem.thermal_conductivity.Gharagheizi_liquid(
-        T=h2o['pore.temperature'][0],
-        MW=h2o['param.molecular_weight'],
-        Tb=h2o['param.boiling_temperature'],
-        Pc=h2o['param.critical_pressure'],
-        omega=h2o['param.acentric_factor'],
-    )
-    assert_allclose(k_ref, k_calc, rtol=1e-10, atol=0)
-
-    h2o = op.phase.Species(network=pn, species='water')
-    h2o.add_model(propname='pore.thermal_conductivity',
-                  model=liquid_pure)
-    etoh = op.phase.Species(network=pn, species='ethanol')
-    etoh.add_model(propname='pore.thermal_conductivity',
-                   model=liquid_pure)
-
-    vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
-    vodka.x(h2o.name, 0.5)
-    vodka.x(etoh.name, 0.5)
-    vodka.add_model(propname='pore.thermal_conductivity',
-                    model=liquid_mixture)
-    k_ref = chem.thermal_conductivity.DIPPR9H(
-        ws=np.vstack(list(vodka['pore.mole_fraction'].values()))[:, 0],
-        ks=np.vstack(list(vodka.get_comp_vals('pore.thermal_conductivity').values()))[:, 0],
-    )
-    k_calc = vodka['pore.thermal_conductivity'][0]
-    assert_allclose(k_ref, k_calc, rtol=1e-10, atol=0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
