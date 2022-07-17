@@ -84,13 +84,15 @@ class Mixture(Phase):
             property as the value.
 
         """
-        vals = {}
+        if not isinstance(propname, str):
+            return propname
         if propname.endswith('*'):
             try:
                 return self[propname]
             except KeyError:
                 pass
         try:
+            vals = {}
             for comp in self.components.values():
                 vals[comp.name] = comp[propname]
             return vals

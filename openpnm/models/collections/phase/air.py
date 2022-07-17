@@ -16,11 +16,9 @@ _air = {
         'model': mods.phase.density.mass_to_molar,
     },
     'pore.diffusivity': {
-        'model': mods.phase.diffusivity.fuller,
-        'MA': 0.032,
-        'MB': 0.028,
-        'vA': 16.6,
-        'vB': 17.9,
+        'model': mods.phase.diffusivity.gas_mixture_fuller,
+        'MWs': [32.0, 16.0],
+        'Vdms': [16.6, 17.9],
     },
     'pore.thermal_conductivity': {
         'model': mods.misc.polynomial,
