@@ -14,11 +14,11 @@ __all__ = [
 
 
 def liquid_mixture_tyn_calus(
-    target, VA, VB, sigma_A, sigma_B,
+    target,
     T='pore.temperature',
     mu='pore.viscosity',
-    Vms_at_Tb='param.molar_volume.*',
-    sigmas_at_Tb='param.surface_tension_boiling.*',
+    Vms_at_Tb='param.molar_volume_Tb.*',
+    sigmas_at_Tb='param.surface_tension_Tb.*',
 ):
     r"""
     Uses Tyn-Calus model to estimate diffusion coefficient in a dilute liquid
@@ -45,7 +45,7 @@ def liquid_mixture_tyn_calus(
     VA, VB = target.get_comp_vals(Vms_at_Tb).values()
     A = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T
     B = (sigma_B/sigma_A)**0.15/(mu*1e3)
-    value = A*B
+    value = A*B*1e-4
     return value
 
 
