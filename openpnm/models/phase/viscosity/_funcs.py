@@ -4,10 +4,12 @@ from openpnm.models.phase.mixtures import mixing_rule
 
 __all__ = [
     'water_correlation',
-    'liquid_mixture',
-    'liquid_pure',
-    'gas_mixture',
-    'gas_pure',
+    'gas_pure_st',
+    'gas_pure_gesmr',
+    'gas_pure_cls',
+    'gas_mixture_hz',
+    'liquid_pure_ls',
+    'liquid_mixture_xweighted',
 ]
 
 
@@ -113,13 +115,14 @@ def air_correlation(
     return mu
 
 
-def gas_pure_stiel_thodos(
+def gas_pure_st(
     target,
     T='pore.temperature',
     Tc='param.critical_temperature',
     Pc='param.critical_pressure',
     MW='param.molecular_weight',
 ):
+    #  stiel-thodos
     T = target[T]
     Tc = target[Tc]
     Pc = target[Pc]/101325
@@ -136,7 +139,7 @@ def gas_pure_stiel_thodos(
     return mu/1000
 
 
-def gas_pure(
+def gas_pure_gesmr(
     target,
     T='pore.temperature',
     Tc='param.critical_temperature',
@@ -158,7 +161,7 @@ def gas_pure(
     return mu
 
 
-def gas_pure_chung(
+def gas_pure_cls(
     target,
     T='pore.temperature',
     MW='param.molecular_weight',
@@ -214,7 +217,7 @@ def gas_pure_chung(
     return value
 
 
-def gas_mixture(
+def gas_mixture_hz(
     target,
     mus='pore.viscosity.*',
     MWs='param.molecular_weight.*',
@@ -252,7 +255,7 @@ def gas_mixture(
     return mu
 
 
-def liquid_pure(
+def liquid_pure_ls(
     target,
     T='pore.temperature',
     MW='param.molecular_weight',
@@ -276,7 +279,7 @@ def liquid_pure(
     return mu
 
 
-def liquid_mixture(
+def liquid_mixture_xweighted(
     target,
     prop='pore.viscosity.*',
     mode='logarithmic',
@@ -285,4 +288,4 @@ def liquid_mixture(
     return mixing_rule(target=target, prop=prop, mode=mode, power=power)
 
 
-liquid_mixture.__doc__ = mixing_rule.__doc__
+liquid_mixture_xweighted.__doc__ = mixing_rule.__doc__

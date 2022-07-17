@@ -20,7 +20,7 @@ class ThermalConductivityTest:
         pn = op.network.Demo()
         gas = op.phase.Species(network=pn, species='ch4')
         gas.add_model(propname='pore.thermal_conductivity',
-                      model=op.models.phase.thermal_conductivity.gas_pure)
+                      model=op.models.phase.thermal_conductivity.gas_pure_gismr)
         temp = chemicals.thermal_conductivity.Gharagheizi_gas(
             T=gas['pore.temperature'][0],
             Tb=gas['param.boiling_temperature'],
@@ -34,7 +34,7 @@ class ThermalConductivityTest:
         pn = op.network.Demo()
         liq = op.phase.Species(network=pn, species='h2o')
         liq.add_model(propname='pore.thermal_conductivity',
-                      model=op.models.phase.thermal_conductivity.liquid_pure)
+                      model=op.models.phase.thermal_conductivity.liquid_pure_gismr)
         temp = chemicals.thermal_conductivity.Gharagheizi_liquid(
             T=liq['pore.temperature'][0],
             Tb=liq['param.boiling_temperature'],
@@ -49,14 +49,14 @@ class ThermalConductivityTest:
         gas1 = op.phase.Species(network=pn, species='ch4')
         gas2 = op.phase.Species(network=pn, species='co2')
         gas1.add_model(propname='pore.thermal_conductivity',
-                       model=op.models.phase.thermal_conductivity.gas_pure)
+                       model=op.models.phase.thermal_conductivity.gas_pure_gismr)
         gas2.add_model(propname='pore.thermal_conductivity',
-                       model=op.models.phase.thermal_conductivity.gas_pure)
+                       model=op.models.phase.thermal_conductivity.gas_pure_gismr)
         mix = op.phase.GasMixture(network=pn, components=[gas1, gas2])
         mix.y(gas1, 0.5)
         mix.y(gas2, 0.5)
         mix.add_model(propname='pore.thermal_conductivity',
-                      model=op.models.phase.thermal_conductivity.gas_mixture)
+                      model=op.models.phase.thermal_conductivity.gas_mixture_whz)
         args = get_mixture_model_args(mix, composition='zs',
                                       args={'ks': 'pore.thermal_conductivity',
                                             'MWs': 'param.molecular_weight'})
@@ -68,14 +68,14 @@ class ThermalConductivityTest:
         liq1 = op.phase.Species(network=pn, species='h2o')
         liq2 = op.phase.Species(network=pn, species='etoh')
         liq1.add_model(propname='pore.thermal_conductivity',
-                       model=op.models.phase.thermal_conductivity.liquid_pure)
+                       model=op.models.phase.thermal_conductivity.liquid_pure_gismr)
         liq2.add_model(propname='pore.thermal_conductivity',
-                       model=op.models.phase.thermal_conductivity.liquid_pure)
+                       model=op.models.phase.thermal_conductivity.liquid_pure_gismr)
         mix = op.phase.LiquidMixture(network=pn, components=[liq1, liq2])
         mix.x(liq1, 0.5)
         mix.x(liq2, 0.5)
         mix.add_model(propname='pore.thermal_conductivity',
-                      model=op.models.phase.thermal_conductivity.liquid_mixture)
+                      model=op.models.phase.thermal_conductivity.liquid_mixture_DIPPR9H)
         args = get_mixture_model_args(mix, composition='ws',
                                       args={'ks': 'pore.thermal_conductivity'})
         temp = chemicals.thermal_conductivity.DIPPR9H(**args)

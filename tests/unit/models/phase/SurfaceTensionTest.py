@@ -22,9 +22,9 @@ class SurfaceTensionTest:
         pn = op.network.Demo()
         A = op.phase.Species(network=pn, species='chlorobenzene')
         A.add_model(propname='pore.surface_tension',
-                    model=op.models.phase.surface_tension.liquid_pure)
+                    model=op.models.phase.surface_tension.liquid_pure_bb)
         A.add_model(propname='pore.density',
-                    model=op.models.phase.density.liquid_pure)
+                    model=op.models.phase.density.liquid_pure_COSTALD)
         A['pore.molar_density'] = A['pore.density']/(A['param.molecular_weight']/1000)
         s_calc = A['pore.surface_tension'][0]
         s_ref = chemicals.interface.Brock_Bird(
@@ -37,9 +37,9 @@ class SurfaceTensionTest:
 
         B = op.phase.Species(network=pn, species='benzene')
         B.add_model(propname='pore.surface_tension',
-                    model=op.models.phase.surface_tension.liquid_pure)
+                    model=op.models.phase.surface_tension.liquid_pure_bb)
         B.add_model(propname='pore.density',
-                    model=op.models.phase.density.liquid_pure)
+                    model=op.models.phase.density.liquid_pure_COSTALD)
         B['pore.molar_density'] = B['pore.density']/(B['param.molecular_weight']/1000)
         s_calc = B['pore.surface_tension'][0]
         s_ref = chemicals.interface.Brock_Bird(
@@ -54,7 +54,7 @@ class SurfaceTensionTest:
         vodka.x(A, 0.5)
         vodka.x(B, 0.5)
         vodka.add_model(propname='pore.surface_tension',
-                        model=op.models.phase.surface_tension.liquid_mixture)
+                        model=op.models.phase.surface_tension.liquid_mixture_wsd)
         s_calc = vodka['pore.surface_tension'][0]
         args = get_mixture_model_args(
             target=vodka,

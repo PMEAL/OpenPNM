@@ -7,10 +7,10 @@ docstr = Docorator()
 
 __all__ = [
     'water_correlation',
-    'gas_pure',
-    'liquid_pure',
-    'gas_mixture',
-    'liquid_mixture',
+    'gas_pure_gismr',
+    'liquid_pure_gismr',
+    'gas_mixture_whz',
+    'liquid_mixture_DIPPR9H',
 ]
 
 
@@ -70,7 +70,7 @@ def water_correlation(
     return value
 
 
-def gas_pure(
+def gas_pure_gismr(
     target,
     T='pore.temperature',
     MW='param.molecular_weight',
@@ -78,7 +78,7 @@ def gas_pure(
     Pc='param.critical_pressure',
     omega='param.acentric_factor',
 ):
-    # gharagheizi method
+    # gharagheizi method: doi:10.1002/aic.13938
     T = target[T]
     MW = target[MW]
     Tb = target[Tb]
@@ -94,7 +94,7 @@ def gas_pure(
     return k
 
 
-def liquid_pure(
+def liquid_pure_gismr(
     target,
     T='pore.temperature',
     MW='param.molecular_weight',
@@ -102,7 +102,7 @@ def liquid_pure(
     Pc='param.critical_pressure',
     omega='param.acentric_factor',
 ):
-    # gharagheizi metho
+    # gharagheizi method: doi:10.1002/aic.13938
     T = target[T]
     MW = target[MW]
     Tb = target[Tb]
@@ -115,7 +115,7 @@ def liquid_pure(
     return k
 
 
-def liquid_pure_sato_riedel(
+def liquid_pure_sr(
     target,
     T="pore.temperature",
     Tc='param.critical_temperature',
@@ -171,7 +171,7 @@ def liquid_mixture_DIPPR9I(
     return kmix
 
 
-def liquid_mixture(
+def liquid_mixture_DIPPR9H(
     target,
     ks='pore.thermal_conductivity.*',
     MWs='param.molecular_weight.*',
@@ -187,7 +187,7 @@ def liquid_mixture(
     return kmix
 
 
-def gas_mixture(
+def gas_mixture_whz(
     target,
     T='pore.temperature',
     ks='pore.thermal_conductivity.*',

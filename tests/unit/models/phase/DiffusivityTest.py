@@ -11,7 +11,7 @@ class DiffusivityTest:
         self.phase['pore.viscosity'] = 1.75e-5  # Pa.s
 
     def test_fuller(self):
-        f = op.models.phase.diffusivity.gas_mixture_fuller
+        f = op.models.phase.diffusivity.gas_mixture_fesg
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
                              MWs=[31.9988, 28.0134],

@@ -3,14 +3,14 @@ from openpnm.models.phase.mixtures import mixing_rule
 
 
 __all__ = [
-    'gas_mixture',
-    'gas_pure',
-    'liquid_pure',
-    'liquid_mixture',
+    'gas_mixture_yweighted',
+    'gas_pure_TRC',
+    'liquid_pure_rp',
+    'liquid_mixture_xweighted',
 ]
 
 
-def liquid_pure(
+def liquid_pure_rp(
     target,
     T='pore.temperature',
     Tc='param.critical_temperature',
@@ -36,7 +36,7 @@ def liquid_pure(
     return Cp
 
 
-def gas_pure(
+def gas_pure_TRC(
     target,
     T='pore.temperature',
     a=[],
@@ -59,7 +59,7 @@ def gas_pure(
     return Cp
 
 
-def gas_mixture(
+def gas_mixture_yweighted(
     target,
     Cps='pore.heat_capacity.*',
 ):
@@ -69,7 +69,7 @@ def gas_mixture(
     return Cpmix
 
 
-def liquid_mixture(
+def liquid_mixture_xweighted(
     target,
     Cps='pore.heat_capacity.*',
 ):

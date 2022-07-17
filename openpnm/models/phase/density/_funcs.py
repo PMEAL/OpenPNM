@@ -8,8 +8,8 @@ docstr = Docorator()
 __all__ = [
     "ideal_gas",
     "water_correlation",
-    "liquid_mixture",
-    "liquid_pure",
+    "liquid_mixture_COSTALD",
+    "liquid_pure_COSTALD",
     "mass_to_molar",
 ]
 
@@ -104,7 +104,7 @@ def water_correlation(
     return value
 
 
-def liquid_mixture(
+def liquid_mixture_COSTALD(
     target,
     T='pore.temperature',
     MWs='param.molecular_weight.*',
@@ -160,7 +160,7 @@ def liquid_mixture(
     MWs = target.get_comp_vals('param.molecular_weight')
     MWm = np.vstack([Xs[k]*MWs[k] for k in Xs.keys()]).sum(axis=0)
     T = target[T]
-    rhoL = liquid_pure(
+    rhoL = liquid_pure_COSTALD(
         target=target,
         T=T,
         MW=MWm,
@@ -171,7 +171,7 @@ def liquid_mixture(
     return rhoL
 
 
-def liquid_pure(
+def liquid_pure_COSTALD(
     target,
     T='pore.temperature',
     Tc='param.critical_temperature',

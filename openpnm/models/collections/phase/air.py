@@ -16,7 +16,7 @@ _air = {
         'model': mods.phase.density.mass_to_molar,
     },
     'pore.diffusivity': {
-        'model': mods.phase.diffusivity.gas_mixture_fuller,
+        'model': mods.phase.diffusivity.gas_mixture_fesg,
         'MWs': [31.9988, 28.0134],
         'Vdms': [16.6, 17.9],
     },

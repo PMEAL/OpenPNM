@@ -7,8 +7,8 @@ docstr = Docorator()
 
 __all__ = [
     "water_correlation",
-    "liquid_pure",
-    "liquid_mixture",
+    "liquid_pure_bb",
+    "liquid_mixture_wsd",
 ]
 
 
@@ -61,7 +61,7 @@ def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
 
 
 @docstr.dedent
-def liquid_pure(
+def liquid_pure_bb(
     target,
     T='pore.temperature',
     Tc='param.critical_temperature',
@@ -97,7 +97,7 @@ def liquid_pure(
     return sigma
 
 
-def liquid_mixture(
+def liquid_mixture_wsd(
     target,
     sigmas='pore.surface_tension.*',
     rhos='pore.density.*',

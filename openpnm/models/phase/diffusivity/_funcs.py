@@ -6,14 +6,14 @@ docstr = Docorator()
 
 
 __all__ = [
-    "liquid_mixture_tyn_calus",
-    "gas_mixture_chapman_enskog",
-    "gas_mixture_fuller",
+    "liquid_mixture_tc",
+    "gas_mixture_ce",
+    "gas_mixture_fesg",
     # "gas_mixture_wilke_fuller",
 ]
 
 
-def liquid_mixture_tyn_calus(
+def liquid_mixture_tc(
     target,
     T='pore.temperature',
     mu='pore.viscosity',
@@ -49,7 +49,7 @@ def liquid_mixture_tyn_calus(
     return value
 
 
-def gas_mixture_chapman_enskog(
+def gas_mixture_ce(
     target,
     T='pore.temperature',
     P='pore.pressure',
@@ -112,7 +112,7 @@ def gas_mixture_chapman_enskog(
     return DAB
 
 
-def gas_mixture_fuller(
+def gas_mixture_fesg(
     target,
     T='pore.temperature',
     P='pore.pressure',
@@ -121,7 +121,7 @@ def gas_mixture_fuller(
 ):
     r"""
     Estimates the diffusion coefficient of both species in a binary gas
-    mixture using the Fuller correlation
+    mixture using the Fuller et al correlation [1]
 
     Parameters
     ----------
@@ -141,6 +141,14 @@ def gas_mixture_fuller(
     Dij : dict containing ND-arrys
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
+
+    References
+    ----------
+    [1] Fuller, E. N., and J. C. Giddings: J. Gas Chromatogr., 3: 222 (1965).
+    [2] Fuller, E. N., P. D. Schettler, and J. C. Giddings: Ind. Eng. Chem.,
+        58(5): 18 (1966).
+    [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,
+        73: 3679 (1969).
     """
     T = target[T]
     P = target[P]
@@ -159,7 +167,7 @@ def gas_mixture_fuller(
     return DAB
 
 
-def gas_mixture_wilke_fuller(
+def gas_mixture_fw(
     target,
     T='pore.temperature',
     P='pore.pressure',
@@ -198,6 +206,7 @@ def gas_mixture_wilke_fuller(
     Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
     """
+    raise Exception('This function is not ready yet')
     comps = list(target.components.values())
     values = {}
     for i in range(len(comps)):
@@ -206,11 +215,11 @@ def gas_mixture_wilke_fuller(
         for j in range(len(comps)):
             if i != j:
                 B = comps[j]
-                D = fuller_mixture(target=target,
-                                   molecular_weight=molecular_weight,
-                                   molar_diffusion_volume=molar_diffusion_volume,
-                                   temperature=T,
-                                   pressure=P)
+                D = gas_mixture_fesg(target=target,
+                                     molecular_weight=MW_pair,
+                                     molar_diffusion_volume=Vdm_pair,
+                                     temperature=T,
+                                     pressure=P)
                 yB = target['pore.mole_fraction.' + B.name]
                 denom += yB/D
         yA = target['pore.mole_fraction.' + A.name]

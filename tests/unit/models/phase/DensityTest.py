@@ -14,7 +14,7 @@ class DensityTest:
     def test_standard(self):
         # Liquid water
         self.phase.add_model(propname='pore.density',
-                             model=op.models.phase.density.liquid_pure)
+                             model=op.models.phase.density.liquid_pure_COSTALD)
         assert_approx_equal(self.phase['pore.density'].mean(), 992.345519756)
 
     def test_ideal_gas(self):
@@ -109,7 +109,7 @@ class DensityTest:
         pn = op.network.Demo()
         h2o = op.phase.Species(network=pn, species='water')
         h2o.add_model(propname='pore.density',
-                      model=op.models.phase.density.liquid_pure)
+                      model=op.models.phase.density.liquid_pure_COSTALD)
         Vm = chemicals.COSTALD(
             T=h2o['pore.temperature'][0],
             Tc=h2o['param.critical_temperature'],
@@ -122,13 +122,13 @@ class DensityTest:
 
         etoh = op.phase.Species(network=pn, species='ethanol')
         etoh.add_model(propname='pore.density',
-                       model=op.models.phase.density.liquid_pure)
+                       model=op.models.phase.density.liquid_pure_COSTALD)
 
         vodka = op.phase.LiquidMixture(network=pn, components=[h2o, etoh])
         vodka.x(h2o.name, 0.5)
         vodka.x(etoh.name, 0.5)
         vodka.add_model(propname='pore.density',
-                        model=op.models.phase.density.liquid_mixture)
+                        model=op.models.phase.density.liquid_mixture_COSTALD)
         args = get_mixture_model_args(
             target=vodka,
             composition='xs',

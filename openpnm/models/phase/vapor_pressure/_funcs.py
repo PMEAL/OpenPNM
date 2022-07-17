@@ -8,7 +8,7 @@ docstr = Docorator()
 __all__ = [
     "water_correlation",
     "liquid_pure_antoine",
-    "liquid_pure_lee_kesler",
+    "liquid_pure_lk",
 ]
 
 
@@ -59,7 +59,7 @@ def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
     return value
 
 
-def liquid_pure_lee_kesler(
+def liquid_pure_lk(
     target,
     T='pore.temperature',
     Tc='param.critical_temperature',
@@ -68,6 +68,7 @@ def liquid_pure_lee_kesler(
 ):
     r"""
     """
+    # Lee Kesler method
     T = target[T]
     Tc = target[Tc]
     Tr = T/Tc
@@ -87,6 +88,7 @@ def liquid_pure_antoine(
 ):
     r"""
     """
+    # either antoine or extended antoine using constants from RPP
     CAS = target.params['CAS']
     Tc = target[Tc]
     T = target[T]

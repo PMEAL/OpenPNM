@@ -17,7 +17,7 @@ class ViscosityTest:
         pn = op.network.Demo()
         gas = op.phase.Species(network=pn, species='ch4')
         gas.add_model(propname='pore.viscosity',
-                      model=op.models.phase.viscosity.gas_pure)
+                      model=op.models.phase.viscosity.gas_pure_gesmr)
         temp = chemicals.viscosity.viscosity_gas_Gharagheizi(
             T=gas['pore.temperature'][0],
             Tc=gas['param.critical_temperature'],
@@ -30,7 +30,7 @@ class ViscosityTest:
         pn = op.network.Demo()
         liq = op.phase.Species(network=pn, species='h2o')
         liq.add_model(propname='pore.viscosity',
-                      model=op.models.phase.viscosity.liquid_pure)
+                      model=op.models.phase.viscosity.liquid_pure_ls)
         temp = chemicals.viscosity.Letsou_Stiel(
             T=liq['pore.temperature'][0],
             Tc=liq['param.critical_temperature'],
@@ -45,14 +45,14 @@ class ViscosityTest:
         gas1 = op.phase.Species(network=pn, species='ch4')
         gas2 = op.phase.Species(network=pn, species='co2')
         gas1.add_model(propname='pore.viscosity',
-                       model=op.models.phase.viscosity.gas_pure)
+                       model=op.models.phase.viscosity.gas_pure_gesmr)
         gas2.add_model(propname='pore.viscosity',
-                       model=op.models.phase.viscosity.gas_pure)
+                       model=op.models.phase.viscosity.gas_pure_gesmr)
         mix = op.phase.GasMixture(network=pn, components=[gas1, gas2])
         mix.y(gas1, 0.5)
         mix.y(gas2, 0.5)
         mix.add_model(propname='pore.viscosity',
-                      model=op.models.phase.viscosity.gas_mixture)
+                      model=op.models.phase.viscosity.gas_mixture_hz)
         args = get_mixture_model_args(mix, composition='zs',
                                       args={'mus': 'pore.viscosity',
                                             'MWs': 'param.molecular_weight'})
@@ -64,14 +64,14 @@ class ViscosityTest:
         liq1 = op.phase.Species(network=pn, species='h2o')
         liq2 = op.phase.Species(network=pn, species='etoh')
         liq1.add_model(propname='pore.viscosity',
-                       model=op.models.phase.viscosity.liquid_pure)
+                       model=op.models.phase.viscosity.liquid_pure_ls)
         liq2.add_model(propname='pore.viscosity',
-                       model=op.models.phase.viscosity.liquid_pure)
+                       model=op.models.phase.viscosity.liquid_pure_ls)
         mix = op.phase.LiquidMixture(network=pn, components=[liq1, liq2])
         mix.x(liq1, 0.5)
         mix.x(liq2, 0.5)
         mix.add_model(propname='pore.viscosity',
-                      model=op.models.phase.viscosity.liquid_mixture)
+                      model=op.models.phase.viscosity.liquid_mixture_xweighted)
         args = get_mixture_model_args(mix, composition='fracs',
                                       args={'props': 'pore.viscosity'})
         temp = chemicals.utils.mixing_simple(**args)

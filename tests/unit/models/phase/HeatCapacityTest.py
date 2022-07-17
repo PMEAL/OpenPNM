@@ -49,7 +49,7 @@ class HeatCapacityTest:
             Tc=ch4['param.critical_temperature'],
             omega=ch4['param.acentric_factor'],
             Cpgm=ch4['pore.heat_capacity_gas'][0])
-        Cp_calc = op.models.phase.heat_capacity.liquid_pure(ch4)
+        Cp_calc = op.models.phase.heat_capacity.liquid_pure_rp(ch4)
         assert_allclose(Cp_ref, Cp_calc, rtol=1e-10)
 
 
