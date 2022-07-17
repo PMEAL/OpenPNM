@@ -13,9 +13,10 @@ def _fetch_chemical_props(a):
         temp['dipole_moment'] = a.dipole
         temp['LJ_diameter'] = a.molecular_diameter
         temp['LJ_energy'] = a.Stockmayer*k
-        temp['molar_volume_Tb'] = a.Vml_Tb
+        # Change temperature to Tb to evaluate surface tension at Tb
         a.T = a.Tb
         temp['surface_tension_Tb'] = a.sigma
+        temp['molar_volume_Tb'] = a.Vml_Tb  # Already at Tb
     else:
         temp['formula'] = a.formulas
         temp['mole_fractions'] = a.zs

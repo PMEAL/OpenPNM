@@ -8,8 +8,8 @@ docstr = Docorator()
 __all__ = [
     "liquid_mixture_tyn_calus",
     "gas_mixture_chapman_enskog",
-    "gas_mixture_wilke_fuller",
     "gas_mixture_fuller",
+    # "gas_mixture_wilke_fuller",
 ]
 
 
@@ -144,6 +144,7 @@ def gas_mixture_fuller(
     """
     T = target[T]
     P = target[P]
+    # The following is to accomodate proper mixtures AND normal Phase objects
     try:
         MA, MB = target[MWs].values()
     except AttributeError:

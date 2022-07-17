@@ -103,7 +103,7 @@ class DiffusiveConductanceTest:
         assert_allclose(g[:, 0][[0, 1, 3, 4]], g[:, 1][[0, 1, 3, 4]])
         # G12 and G21 at interface must differ (ratio must be K_water_air)
         assert_allclose(g[2, 0] / g[2, 1], 1 / K_water_air)
-        assert_allclose(g.mean(), 7.54400e-7, rtol=1e-5)
+        assert_allclose(g.mean(), 7.64303956e-7, rtol=1e-5)
 
     def test_taylor_aris_diffusion(self):
         self.net['throat.diffusive_size_factors'] = self.size_factors_dict

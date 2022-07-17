@@ -17,7 +17,7 @@ _air = {
     },
     'pore.diffusivity': {
         'model': mods.phase.diffusivity.gas_mixture_fuller,
-        'MWs': [32.0, 16.0],
+        'MWs': [31.9988, 28.0134],
         'Vdms': [16.6, 17.9],
     },
     'pore.thermal_conductivity': {
