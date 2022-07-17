@@ -1,6 +1,7 @@
 def _fetch_chemical_props(a):
     temp = {}
-    if not hasattr(a, 'zs'):
+    k = 1.380649e-23  # Boltzmann constant
+    if not hasattr(a, 'zs'):  # If NOT a mixture
         temp['CAS'] = a.CAS
         temp['common_name'] = a.name
         temp['charge'] = a.charge
@@ -10,6 +11,8 @@ def _fetch_chemical_props(a):
         temp['triple_point_temperature'] = a.Tt
         temp['triple_point_pressure'] = a.Pt
         temp['dipole_moment'] = a.dipole
+        temp['LJ_diameter'] = a.molecular_diameter
+        temp['LJ_energy'] = a.Stockmayer*k
     else:
         temp['formula'] = a.formulas
         temp['mole_fractions'] = a.zs

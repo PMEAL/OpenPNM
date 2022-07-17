@@ -46,4 +46,7 @@ _gas_mixture = {
     'pore.viscosity': {
         'model': mods.phase.viscosity.gas_mixture,
     },
+    'pore.diffusivity': {
+        'model': mods.phase.diffusivity.gas_mixture_chapman_enskog,
+    },
 }

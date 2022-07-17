@@ -1,6 +1,5 @@
 from openpnm.utils import Docorator
 import numpy as np
-import scipy.constants as const
 
 
 docstr = Docorator()
@@ -11,9 +10,6 @@ __all__ = [
     "gas_mixture_chapman_enskog",
     "gas_mixture_wilke_fuller",
     "gas_mixture_fuller",
-    "gas_mixture_LJ_collision_integral",
-    "gas_mixture_LJ_epsilon",
-    "gas_mixture_LJ_sigma",
 ]
 
 
@@ -57,9 +53,12 @@ def gas_mixture_chapman_enskog(
     target,
     T='pore.temperature',
     P='pore.pressure',
-    sigmas='pore.LJ_sigma.*',
-    epsilons='pore.LJ_omega.*',
+    Tcs='param.critical_temperature.*',
+    Pcs='param.critical_pressure.*',
+    omegas='param.acentric_factor.*',
     MWs='param.molecular_weight.*',
+    epsilons='param.LJ_energy.*',
+    sigmas='param.LJ_diameter.*',
 ):
     r"""
     Calculate gas phase diffusion coefficient using Chapman-Enskog equation.
@@ -71,8 +70,6 @@ def gas_mixture_chapman_enskog(
         The molecular mass of species A and B in units of kg/mol
     sigma_AB : scalar
         The collision diameter in units of Angstroms
-    omega_AB : scalar
-        The collision integral
     %(models.phase.T)s
     %(models.phase.P)s
 
@@ -82,22 +79,36 @@ def gas_mixture_chapman_enskog(
     """
     # Fetch values from components
     T = target[T]
-    P = target[P]/101325
-    MA, MB = target.get_comp_vals(MWs).values()
-    sA, sB = target.get_comp_vals(sigmas).values()
-    eA, eB = target.get_comp_vals(epsilons).values()
-    # Compute collision integral using Neufeld's correlation (RPP Eq.(11-3.6))
+    P = target[P]
+    try:
+        MA, MB = target.get_comp_vals(MWs).values()
+    except ValueError:
+        raise Exception('This function only works on binary mixtures')
+    MWAB = 2/(1/MA + 1/MB)
+    omega = target[omegas].values()
+    Tc = target[Tcs].values()
+    Pc = target[Pcs].values()
     k = 1.380649e-23  # Boltzmann constant
+    try:
+        eA, eB = target.get_comp_vals(epsilons).values()
+    except Exception:
+        # Use correlation of Tee, Gotoh, & Stewart
+        eA, eB = (0.7915 + 0.1693*omega)*Tc*k
+    eAB = (eA*eB)**0.5
+    # Compute collision integral using Neufeld's correlation (RPP Eq.(11-3.6))
     A, B, C, D, E, F, G, H = (1.06036, 0.15610, 0.19300, 0.47635, 1.03587,
                               1.52996, 1.76474, 3.89411)
-    eAB = (eA*eB)**0.5
     Tstar = k*T/eAB
     Omega = Omega = A/(Tstar**B) + C/np.exp(D*Tstar) + E/np.exp(F*Tstar) \
         + G/np.exp(H*Tstar)
     # Now apply RPP Eq.(11-3.2)
+    try:
+        sA, sB = target.get_comp_vals(sigmas).values()
+    except:
+        # Use correlation of Tee, Gotoh, & Stewart
+        sA, sB = (2.3551 - 0.08847*omega)*(Tc/Pc)**(1/3)
     sAB = (sA + sB)/2
-    MWAB = 2/(1/MA + 1/MB)
-    DAB = 0.00266 * (T**1.5) / (P * MWAB**0.5 * sAB**2 * Omega) * 1e-4
+    DAB = 0.00266 * (T**1.5) / (P/101325 * MWAB**0.5 * sAB**2 * Omega) * 1e-4
     return DAB
 
 
@@ -132,10 +143,16 @@ def gas_mixture_fuller(
         diffusion coefficient of that component at each location.
     """
     T = target[T]
-    P = target[P].values()
-    MA, MB = target[MWs].values()
-    vA, vB = target[Vdms]
-    MAB = 2*(1.0/MA + 1.0/MB)**(-1)
+    P = target[P]
+    try:
+        MA, MB = target[MWs].values()
+    except AttributeError:
+        MA, MB = target[MWs]
+    try:
+        vA, vB = target[Vdms].values()
+    except AttributeError:
+        vA, vB = target[Vdms]
+    MAB = 2/(1/MA + 1/MB)
     P = P/101325
     DAB = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3) + vB**(1./3))**2)*1e-4
     return DAB

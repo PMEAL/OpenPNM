@@ -42,6 +42,26 @@ class MixtureTest:
         for item in m:
             assert item in vodka.keys()
 
+    def test_standard_gas_mixture(self):
+        net = op.network.Demo()
+        A = op.phase.StandardGas(network=net, species='o2')
+        A.regenerate_models()
+        B = op.phase.StandardGas(network=net, species='n2')
+        B.regenerate_models()
+        air = op.phase.StandardGasMixture(network=net, components=[A, B])
+        air.y(A.name, 0.21)
+        air.y(B.name, 0.78)
+        # Ensure models are NOT run during init (no point without mol fracs)
+        m = air.models._info.keys()
+        for item in m:
+            assert item not in air.keys()
+        # Make sure models run without complaining
+        air.regenerate_models()
+        # Make sure all models were actually run
+        m = air.models._info.keys()
+        for item in m:
+            assert item in air.keys()
+
     def test_add_and_remove_component_method(self):
         net = op.network.Demo()
         o2 = op.phase.Species(network=net, species='o2', name='pure_O2')
