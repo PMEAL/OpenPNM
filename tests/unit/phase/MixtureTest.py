@@ -43,7 +43,7 @@ class MixtureTest:
             assert item in vodka.keys()
 
         vodka.add_model(propname='pore.diffusivity',
-                        model=op.models.phase.diffusivity.liquid_mixture_tyn_calus)
+                        model=op.models.phase.diffusivity.liquid_mixture_tc)
 
     def test_standard_gas_mixture(self):
         net = op.network.Demo()
@@ -66,7 +66,7 @@ class MixtureTest:
             assert item in air.keys()
 
         air.add_model(propname='pore.diffusivity',
-                      model=op.models.phase.diffusivity.gas_mixture_chapman_enskog)
+                      model=op.models.phase.diffusivity.gas_mixture_ce)
 
     def test_add_and_remove_component_method(self):
         net = op.network.Demo()
