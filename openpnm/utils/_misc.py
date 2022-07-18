@@ -632,3 +632,34 @@ def get_model_collection(collection, regen_mode=None, domain=None):
         if domain:
             v['domain'] = domain
     return d
+
+
+def _is_transient(algorithms):
+    # check that algorithms is a list
+    if type(algorithms) is not list:
+        algorithms = [algorithms]
+    # return True if any algorithm is transient
+    for alg in algorithms:
+        quantity = alg.settings['quantity']
+        soln_type = type(alg.soln[quantity])
+        if 'TransientSolution' in str(soln_type):
+            return True
+    return False
+
+
+def nbr_to_str(nbr, t_precision=12):
+    r"""
+    Converts a scalar into a string in scientific (exponential) notation
+    without the decimal point.
+    Parameters
+    ----------
+    nbr : scalar
+        The number to be converted into a scalar.
+    t_precision : integer
+        The time precision (number of decimal places). Default value is 12.
+    """
+    from decimal import Decimal as dc
+    n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent
+            * (round(nbr, t_precision) != int(nbr)))
+    nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
+    return nbr_str
