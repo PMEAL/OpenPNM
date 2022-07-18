@@ -25,6 +25,19 @@ _docstr.params['models.phase.SI_note'] = \
     units on values and arrays, however the use of SI is assumed."""
 
 
+from matplotlib.docstring import Substitution as _sub
+_phasedocs = _sub(
+    T=
+    r"""T : dict key (str) or scalar
+            Name of the dictionary key on ``phase`` containing the array of
+            temperature values. If a scalar is passed it get used directly.""",
+    P=
+    r"""P : dict key (str) of scalar
+            Name of the dictionary key on ``phase`` containing the array of
+            temperature values. If a scalar is passed it get used directly.""",
+)
+
+
 from . import critical_props
 from . import density
 from . import diffusivity

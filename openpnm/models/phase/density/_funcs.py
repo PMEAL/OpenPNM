@@ -1,6 +1,6 @@
 from openpnm.utils import Docorator
+from openpnm.models.phase import _phasedocs
 import numpy as np
-
 
 docstr = Docorator()
 
@@ -14,6 +14,7 @@ __all__ = [
 ]
 
 
+@_phasedocs
 def ideal_gas(
     target,
     P='pore.pressure',
@@ -25,16 +26,14 @@ def ideal_gas(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(T)s
+    %(P)s
     mol_weight : str
         Name of the dictionary key on ``target`` where the array containing
         molecular weight values is stored
 
     Returns
     -------
-    %(models.phase.density.returns)s
 
     """
     P = target[P]
@@ -50,6 +49,7 @@ def ideal_gas(
     return value
 
 
+@_phasedocs
 def water_correlation(
     target,
     T='pore.temperature',
@@ -63,17 +63,17 @@ def water_correlation(
 
     Parameters
     ----------
+    %(T)s
 
     Returns
     -------
-    %(models.phase.density.returns)s
 
     Notes
     -----
-     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
-        thousand)
+    ``T`` must be in K, and ``salinity`` in g of salt per kg of phase, or
+    ppt (parts per thousand)
     VALIDITY: 273 < T < 453 K; 0 < S < 160 g/kg;
-    ACCURACY: 0.1 %
+    ACCURACY: 0.1 pct
 
     References
     ----------
@@ -104,6 +104,7 @@ def water_correlation(
     return value
 
 
+@_phasedocs
 def liquid_mixture_COSTALD(
     target,
     T='pore.temperature',
@@ -118,6 +119,7 @@ def liquid_mixture_COSTALD(
 
     Parameters
     ----------
+    %(T)s
 
 
     Returns
