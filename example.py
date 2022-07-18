@@ -29,18 +29,6 @@ pn.add_model_collection(collections.geometry.pyramids_and_cuboids(),
 # FIXME: Must regenerate network models, otherwise, phase models will complain
 pn.regenerate_models()
 
-<<<<<<< HEAD
-# %% Perform Stokes flow simulation
-sf = op.algorithms.StokesFlow(network=pn, phase=water)
-sf.set_value_BC(pores=pn.pores('left'), values=101325)
-sf.set_value_BC(pores=pn.pores('right'), values=0)
-sf.run()
-water.update(sf.results())
-# calculate absolute permeability in x direction
-perm = op.metrics.AbsolutePermeability(network=pn)
-K = perm.run()
-# assert K == 7.51015925e-13
-=======
 # Create phase and add phase/physics models
 air = op.phase.Air(network=pn, name="air")
 air.add_model_collection(collections.physics.standard(),
@@ -64,7 +52,6 @@ air.add_model(propname='pore.reaction2',
               A1=-1, A2=2, A3=0,
               domain='reaction_sites',
               regen_mode='deferred')
->>>>>>> dev
 
 # Run Fickian diffusion with reaction
 rxn = op.algorithms.FickianDiffusion(network=pn, phase=air)
