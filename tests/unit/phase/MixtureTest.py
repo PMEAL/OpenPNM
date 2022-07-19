@@ -25,9 +25,7 @@ class MixtureTest:
     def test_standard_liquid_mixture(self):
         net = op.network.Demo()
         A = op.phase.StandardLiquid(network=net, species='ethanol')
-        A.regenerate_models()
         B = op.phase.StandardLiquid(network=net, species='h2o')
-        B.regenerate_models()
         vodka = op.phase.StandardLiquidMixture(network=net, components=[A, B])
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
