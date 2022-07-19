@@ -46,12 +46,10 @@ class MixtureTest:
     def test_standard_gas_mixture(self):
         net = op.network.Demo()
         A = op.phase.StandardGas(network=net, species='o2')
-        A.regenerate_models()
         B = op.phase.StandardGas(network=net, species='n2')
-        B.regenerate_models()
         air = op.phase.StandardGasMixture(network=net, components=[A, B])
         air.y(A.name, 0.21)
-        air.y(B.name, 0.78)
+        air.y(B.name, 0.79)
         # Ensure models are NOT run during init (no point without mol fracs)
         m = air.models._info.keys()
         for item in m:
