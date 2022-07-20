@@ -6,6 +6,7 @@ from openpnm.models.collections.phase import standard_liquid_mixture
 from openpnm.models.collections.phase import standard_gas_mixture
 from openpnm.utils import HealthDict
 from openpnm.utils import Docorator, Workspace
+from openpnm.utils import get_printable_props, get_printable_labels
 
 
 logger = logging.getLogger(__name__)
@@ -168,17 +169,19 @@ class Mixture(Phase):
         return z
 
     def __str__(self):
-        horizontal_rule = '―' * 78
-        temp = super().__str__().split(horizontal_rule)
-        lines = ''
-        lines = '\n'.join((lines, 'Component Phases', horizontal_rule))
+        hr = '―' * 78
+        temp = super().__str__().split(hr)
+        lines = ''.join(('\n', 'Component Phases'))
         for item in self.components.values():
-            module = self.__module__
-            module = ".".join([x for x in module.split(".") if not x.startswith("_")])
-            cname = module + '.' + item.__class__.__name__
-            lines = '\n'.join((lines, cname + ' : ' + item.name))
-        temp.insert(2, lines + '\n')
-        lines = horizontal_rule.join(temp)
+            lines = ''.join((lines, '\n', "═"*78, '\n', item.__repr__(), '\n', hr))
+            a = get_printable_props(item)
+            lines = ''.join((lines, a))
+            lines = '\n'.join((lines, hr))
+            b = get_printable_labels(item)
+            lines = ''.join((lines, b))
+            # lines = '\n'.join((lines, hr))
+        temp.insert(-1, lines + '\n')
+        lines = hr.join(temp)
         return lines
 
     def _get_comps(self):

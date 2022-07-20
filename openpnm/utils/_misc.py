@@ -38,6 +38,8 @@ __all__ = [
     'dict_to_struct',
     'struct_to_dict',
     'get_mixture_model_args',
+    'get_printable_props',
+    'get_printable_labels',
 ]
 
 
@@ -671,3 +673,32 @@ def get_mixture_model_args(
         temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
         vals[item] = temp
     return vals
+
+
+def get_printable_props(item):
+    lines = ''
+    for i, k in enumerate(item.props()):
+        s = [' ']*78
+        s[:3] = str(i+1).rjust(3)
+        prop = k + '.' + f'{item.name}'
+        s[5:5+len(prop)] = prop
+        element = k.split('.', 1)[0]
+        valid = str(np.sum(~np.isnan(item[k]))) + ' / ' + str(item._count(element))
+        s[-20:] = valid.rjust(20)
+        a = ''.join(s)
+        lines = '\n'.join((lines, a))
+    return lines
+
+
+def get_printable_labels(item):
+    lines = ''
+    for i, k in enumerate(item.labels()):
+        s = [' ']*78
+        s[:3] = str(i+1).rjust(3)
+        prop = k + '.' + f'{item.name}'
+        s[5:5+len(prop)] = prop
+        valid = str(np.sum(item[k]))
+        s[-12:] = valid.rjust(12)
+        a = ''.join(s)
+        lines = '\n'.join((lines, a))
+    return lines

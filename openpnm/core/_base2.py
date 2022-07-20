@@ -84,7 +84,7 @@ class Base2(dict):
         module = self.__module__
         module = ".".join([x for x in module.split(".") if not x.startswith("_")])
         cname = self.__class__.__name__
-        return f'<{module}.{cname} at {hex(id(self))}>'
+        return f'{self.name} : <{module}.{cname} at {hex(id(self))}>'
 
     def __setitem__(self, key, value):
         if value is None:
@@ -421,18 +421,14 @@ class Base2(dict):
         return vals
 
     def __str__(self):
-        module = self.__module__
-        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
-        cname = self.__class__.__name__
-        horizontal_rule = '―' * 78
-        lines = [horizontal_rule]
-        lines.append(f"{module}.{cname} : {self.name}")
-        lines.append(horizontal_rule)
+        hr = '―' * 78
+        lines = [''.join((hr, '\n', self.__repr__()))]
+        lines.append(hr)
         lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
                                                         'Properties',
                                                         'Valid Values'))
         fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
-        lines.append(horizontal_rule)
+        lines.append(hr)
         props = self.props()
         props.sort()
         for i, item in enumerate(props):
@@ -455,7 +451,7 @@ class Base2(dict):
                     required = arr.shape[0]*len(k)
                     defined = sum([sum(~np.isnan(arr[i])) for i in k])
                 lines.append(fmt.format(i + 1, prop, defined, required))
-        lines.append(horizontal_rule)
+        lines.append(hr)
         return '\n'.join(lines)
 
 
