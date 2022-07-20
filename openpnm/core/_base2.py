@@ -15,6 +15,8 @@ from openpnm.utils import (
     PrintableDict,
     Docorator,
     parse_mode,
+    get_printable_props,
+    get_printable_labels,
 )
 
 
@@ -422,37 +424,13 @@ class Base2(dict):
 
     def __str__(self):
         hr = '―' * 78
-        lines = [''.join((hr, '\n', self.__repr__()))]
-        lines.append(hr)
-        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
-                                                        'Properties',
-                                                        'Valid Values'))
-        fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
-        lines.append(hr)
-        props = self.props()
-        props.sort()
-        for i, item in enumerate(props):
-            arr = self[item]
-            prop = item
-            required = self._count(item.split('.', 1)[0])
-            if len(prop) > 35:  # Trim overly long prop names
-                prop = prop[0:32] + '...'
-            if arr.dtype == object:  # Print objects differently
-                invalid = [i for i in arr if i is None]
-                defined = np.size(arr) - len(invalid)
-                lines.append(fmt.format(i + 1, prop, defined, required))
-            elif '._' not in prop:
-                try:  # normal ndarray
-                    a = np.isnan(arr)
-                    defined = np.shape(arr)[0] \
-                        - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
-                except TypeError:  # numpy struct array
-                    k = arr.dtype.names
-                    required = arr.shape[0]*len(k)
-                    defined = sum([sum(~np.isnan(arr[i])) for i in k])
-                lines.append(fmt.format(i + 1, prop, defined, required))
-        lines.append(hr)
-        return '\n'.join(lines)
+        lines = ''
+        lines += '\n' + "═"*78 + '\n' + self.__repr__() + '\n' + hr + '\n'
+        lines += get_printable_props(self)
+        lines += '\n' + hr + '\n'
+        lines += get_printable_labels(self)
+        lines += '\n' + hr
+        return lines
 
 
 class ModelMixin2:

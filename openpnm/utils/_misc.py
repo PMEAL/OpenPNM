@@ -278,13 +278,15 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
+
+
 def _format_time(timespan, precision=3):
     """Formats the timespan in a human readable form"""
 
     if timespan >= 60.0:
         # we have more than a minute, format that in a human readable form
         # Idea from http://snipplr.com/view/5713/
-        parts = [("d", 60*60*24),("h", 60*60),("min", 60), ("s", 1)]
+        parts = [("d", 60*60*24), ("h", 60*60), ("min", 60), ("s", 1)]
         time = []
         leftover = timespan
         for suffix, length in parts:
@@ -296,17 +298,16 @@ def _format_time(timespan, precision=3):
                 break
         return " ".join(time)
 
-
     # Unfortunately the unicode 'micro' symbol can cause problems in
     # certain terminals.
     # See bug: https://bugs.launchpad.net/ipython/+bug/348466
     # Try to prevent crashes by being more secure than it needs to
     # E.g. eclipse is able to print a µ, but has no sys.stdout.encoding set.
-    units = [u"s", u"ms",u'us',"ns"] # the save value
+    units = [u"s", u"ms", u'us', "ns"]  # the save value
     if hasattr(sys.stdout, 'encoding') and sys.stdout.encoding:
         try:
             u'\xb5'.encode(sys.stdout.encoding)
-            units = [u"s", u"ms",u'\xb5s',"ns"]
+            units = [u"s", u"ms", u'\xb5s', "ns"]
         except:
             pass
     scaling = [1, 1e3, 1e6, 1e9]
@@ -675,27 +676,41 @@ def get_mixture_model_args(
     return vals
 
 
-def get_printable_props(item):
-    lines = ''
+def get_printable_props(item, suffix='', hr=78*'―'):
+    if suffix and not suffix.startswith('.'):
+        suffix = '.' + suffix
+    header = [' ']*78
+    header[2] = '#'
+    header[5:15] = 'Properties'
+    header[-12:] = 'Valid Values'
+    lines = ''.join(header) + '\n' + hr
     for i, k in enumerate(item.props()):
         s = [' ']*78
         s[:3] = str(i+1).rjust(3)
-        prop = k + '.' + f'{item.name}'
+        prop = k + suffix
         s[5:5+len(prop)] = prop
         element = k.split('.', 1)[0]
-        valid = str(np.sum(~np.isnan(item[k]))) + ' / ' + str(item._count(element))
+        arr = item[k]
+        nans = np.any(np.isnan(np.atleast_2d(arr.T)), axis=0)
+        valid = str(np.sum(~nans)) + ' / ' + str(item._count(element))
         s[-20:] = valid.rjust(20)
         a = ''.join(s)
         lines = '\n'.join((lines, a))
     return lines
 
 
-def get_printable_labels(item):
-    lines = ''
+def get_printable_labels(item, suffix='', hr=78*'―'):
+    if suffix and not suffix.startswith('.'):
+        suffix = '.' + suffix
+    header = [' ']*78
+    header[2] = '#'
+    header[5:11] = 'Labels'
+    header[-18:] = 'Assigned Locations'
+    lines = ''.join(header) + '\n' + hr
     for i, k in enumerate(item.labels()):
         s = [' ']*78
         s[:3] = str(i+1).rjust(3)
-        prop = k + '.' + f'{item.name}'
+        prop = k + suffix
         s[5:5+len(prop)] = prop
         valid = str(np.sum(item[k]))
         s[-12:] = valid.rjust(12)

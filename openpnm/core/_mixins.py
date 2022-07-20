@@ -856,25 +856,3 @@ class LabelMixin:
         labels = set(self.labels())
         props = props.difference(labels)
         return PrintableList(props)
-
-    def __str__(self):
-        s = super().__str__()
-        # s = s.rpartition('\n')[0]
-        horizontal_rule = '―' * 78
-        lines = []
-        lines.append(s)
-        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
-                                                        'Labels',
-                                                        'Assigned Locations'))
-        lines.append(horizontal_rule)
-        labels = self.labels()
-        labels.sort()
-        fmt = "{0:<5d} {1:<45s} {2:<10d}"
-        for i, item in enumerate(labels):
-            prop = item
-            if len(prop) > 35:
-                prop = prop[0:32] + '...'
-            if '._' not in prop:
-                lines.append(fmt.format(i + 1, prop, np.sum(self[item])))
-        lines.append(horizontal_rule)
-        return '\n'.join(lines)

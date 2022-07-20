@@ -170,16 +170,13 @@ class Mixture(Phase):
 
     def __str__(self):
         hr = '―' * 78
-        temp = super().__str__().split(hr)
         lines = ''.join(('\n', 'Component Phases'))
         for item in self.components.values():
-            lines = ''.join((lines, '\n', "═"*78, '\n', item.__repr__(), '\n', hr))
-            a = get_printable_props(item)
-            lines = ''.join((lines, a))
-            lines = '\n'.join((lines, hr))
-            b = get_printable_labels(item)
-            lines = ''.join((lines, b))
-            # lines = '\n'.join((lines, hr))
+            lines += '\n' + "═"*78 + '\n' + item.__repr__() + '\n' + hr + '\n'
+            lines += get_printable_props(item, suffix=item.name)
+            lines += '\n' + hr + '\n'
+            lines += get_printable_labels(item, suffix=item.name)
+        temp = super().__str__().split(hr)
         temp.insert(-1, lines + '\n')
         lines = hr.join(temp)
         return lines
