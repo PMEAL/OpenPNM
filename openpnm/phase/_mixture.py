@@ -170,7 +170,7 @@ class Mixture(Phase):
 
     def __str__(self):
         hr = '―' * 78
-        lines = ''.join(('\n', 'Component Phases'))
+        lines = '\n' + 'Component Phases'
         for item in self.components.values():
             lines += '\n' + "═"*78 + '\n' + item.__repr__() + '\n' + hr + '\n'
             lines += get_printable_props(item, suffix=item.name)
