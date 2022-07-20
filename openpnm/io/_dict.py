@@ -1,5 +1,6 @@
 import logging
 from openpnm.utils import NestedDict
+from openpnm.utils._misc import _is_transient, nbr_to_str
 
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,7 @@ def project_to_dict(project, categorize_by=['name'], flatten=False, element=None
     """
     network = project.network
     phases = project.phases
+    algs = project.algorithms
 
     if flatten:
         d = {}
@@ -81,5 +83,20 @@ def project_to_dict(project, categorize_by=['name'], flatten=False, element=None
         for key in phase.props(element=element) + phase.labels(element=element):
             path = build_path(obj=phase, key=key)
             d[path] = phase[key]
+
+    for alg in algs:
+        try:  # 'quantity' is missing for multiphysics algorithm
+            key = alg.settings['quantity']
+        except AttributeError:
+            break
+        # only for transient algs
+        transient = _is_transient(alg)
+        path = build_path(alg, key)
+        if transient:
+            times = alg.soln[key].t
+            for i, t in enumerate(times):
+                d[path + '#' + nbr_to_str(t)] = alg.soln[key][:, i]
+        else:
+            d[path] = alg.soln[key]
 
     return d
