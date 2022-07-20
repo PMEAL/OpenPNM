@@ -51,6 +51,17 @@ class Mixture(Phase):
         self.components = components
 
     def __getitem__(self, key):
+        # Provisional support for hashtag notation
+        if type(key) == str:
+            delim = '#'
+            if delim in key:
+                comps = self.components
+                if key[-1] in [delim, '*']:  # Wildcard, get all comps as dict
+                    vals = self.get_comp_vals(key.split(delim)[0])
+                else:
+                    vals = comps[key.split(delim)[-1]][key.split(delim)[0]]
+                return vals
+        # Below is the original support using the ".*" notation
         try:
             vals = super().__getitem__(key)
         except KeyError:
@@ -66,6 +77,17 @@ class Mixture(Phase):
             else:
                 raise KeyError(key)
         return vals
+
+    # def __setitem__(self, key, value):
+    #     if key == 'pore.mole_fraction':
+    #         raise Exception("Cannot write a mole fraction without a .<compname>")
+    #     element, propname = key.split('.', 1)
+    #     if propname.split('.')[-1] in self.components.keys():
+    #         obj = self.components[key.split('.')[-1]]
+    #         key = '.'.join(key.split('.')[:-1])
+    #         obj[key] = value
+    #     else:
+    #         super().__setitem__(key, value)
 
     def get_comp_vals(self, propname):
         r"""
