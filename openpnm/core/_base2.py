@@ -386,9 +386,9 @@ class Base2(dict):
             element = [element]
         props = []
         for k, v in self.items():
-            if v.dtype != bool:
-                if k.split('.', 1)[0] in element:
-                    props.append(k)
+            el, prop = k.split('.', 1)
+            if (el in element) and (v.dtype != bool) and not prop.startswith('_'):
+                props.append(k)
         return props
 
     def interpolate_data(self, propname, mode='mean'):

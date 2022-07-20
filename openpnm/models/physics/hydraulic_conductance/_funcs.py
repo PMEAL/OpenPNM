@@ -36,7 +36,7 @@ def generic_hydraulic(
 
     """
     network = target.network
-    throats = target.throats(to_global=True)
+    throats = target.throats()
     conns = network.conns[throats]
     phase = target
     F = network[size_factors]

@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 ws = op.Workspace()
 ws.clear()
 
-
 pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
 
 # Create domain1
