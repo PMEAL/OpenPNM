@@ -251,11 +251,9 @@ class LabelMixin:
         element : str
             Controls whether pore or throat labels are returned.  If empty then
             both are returned (default).
-
         pores (or throats) : array_like
             The pores (or throats) whose labels are sought.  If left empty a
             list containing all pore and throat labels is returned.
-
         mode : str, optional
             Controls how the query should be performed.  Only applicable
             when ``pores`` or ``throats`` are specified:
@@ -300,7 +298,7 @@ class LabelMixin:
         elif np.size(throats) > 0:
             labels = self._get_labels(element='throat', locations=throats,
                                       mode=mode)
-        return labels
+        return sorted(labels)
 
     def set_label(self, label, pores=None, throats=None, mode='add'):
         r"""
@@ -632,10 +630,3 @@ class LabelMixin:
         Ts = self._get_indices(labels=labels, mode=mode, element='throat')
         Nt = np.shape(Ts)[0]
         return Nt
-
-    def props(self, *args, **kwargs):
-        # Overload props on base to remove labels
-        props = set(super().props(*args, **kwargs))
-        labels = set(self.labels())
-        props = props.difference(labels)
-        return PrintableList(props)

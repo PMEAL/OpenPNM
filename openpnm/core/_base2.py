@@ -389,7 +389,7 @@ class Base2(dict):
             el, prop = k.split('.', 1)
             if (el in element) and (v.dtype != bool) and not prop.startswith('_'):
                 props.append(k)
-        return props
+        return sorted(props)
 
     def interpolate_data(self, propname, mode='mean'):
         from openpnm.models.misc import from_neighbor_throats, from_neighbor_pores
