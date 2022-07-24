@@ -44,8 +44,8 @@ def _poisson_conductance(target,
     D1, D2 = phase[pore_conductivity][cn].T
     # If individual size factors for conduit constiuents are known
     SF = network[size_factors]
-    if isinstance(SF, dict):
-        F1, Ft, F2 = SF.values()
+    if SF.ndim == 2:
+        F1, Ft, F2 = SF.T
         g1 = D1 * F1[throats]
         gt = Dt * Ft[throats]
         g2 = D2 * F2[throats]

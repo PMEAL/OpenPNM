@@ -39,9 +39,10 @@ def spheres_and_cylinders(
 
     Returns
     -------
-    size_factors : dict
-        A dictionary containing the diffusive size factors, which can be
-        accessed via the dict keys 'pore1', 'pore2', and 'throat'.
+    size_factors : ndarray
+        Array (Nt by 3) containing conduit values for each element
+        of the pore-throat-pore conduits. The array is formatted as
+        ``[pore1, throat, pore2]``.
 
     Notes
     -----
@@ -70,7 +71,8 @@ def spheres_and_cylinders(
     F2 = 2 / (D2 * _np.pi) * _np.arctanh(2 * L2 / D2)
     Ft = Lt / (_np.pi / 4 * Dt ** 2)
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 @docstr.dedent
@@ -111,7 +113,8 @@ def circles_and_rectangles(
     F2 = 0.5 * _np.arcsin(2 * L2 / D2)
     Ft = Lt / Dt
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 @docstr.dedent
@@ -152,7 +155,8 @@ def cones_and_cylinders(
     F2 = 4 * L2 / (D2 * Dt * _np.pi)
     Ft = Lt / (_np.pi * Dt**2 / 4)
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 @docstr.dedent
@@ -199,7 +203,8 @@ def trapezoids_and_rectangles(
     mask = _np.isclose(D2, Dt)
     F2[mask] = (L2 / D2)[mask]
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 def pyramids_and_cuboids(
@@ -239,7 +244,8 @@ def pyramids_and_cuboids(
     F2 = L2 / (D2 * Dt)
     Ft = Lt / Dt**2
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 @docstr.dedent
@@ -286,7 +292,8 @@ def cubes_and_cuboids(
     F2 = L2 / D2**2
     Ft = Lt / Dt**2
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 @docstr.dedent
@@ -333,7 +340,8 @@ def squares_and_rectangles(
     F2 = L2 / D2
     Ft = Lt / Dt
 
-    return {"pore1": 1 / F1, "throat": 1 / Ft, "pore2": 1 / F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
 
 
 def intersecting_cones(
@@ -472,4 +480,5 @@ def ncylinders_in_series(
     F2 = 1 / _np.sum(1 / gtemp, axis=1)
     Ft = (_np.pi * (Dt / 2)**2 / (Lt)).T
 
-    return {"pore1": F1, "throat": Ft, "pore2": F2}
+    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals

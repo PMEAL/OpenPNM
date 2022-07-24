@@ -194,9 +194,9 @@ def taylor_aris_diffusion(target,
 
     # Calculate diffusive conductance
     if isinstance(F, dict):
-        g1 = D1 * (1 + Pe1**2 / 192) * F["pore1"][throats]
-        gt = Dt * (1 + Pet**2 / 192) * F["throat"][throats]
-        g2 = D2 * (1 + Pe2**2 / 192) * F["pore2"][throats]
+        g1 = D1 * (1 + Pe1**2 / 192) * F[throats, 0]
+        gt = Dt * (1 + Pet**2 / 192) * F[throats, 1]
+        g2 = D2 * (1 + Pe2**2 / 192) * F[throats, 2]
         return 1 / (1/g1 + 1/gt + 1/g2)
     return Dt * (1 + Pet**2 / 192) * F[throats]
 

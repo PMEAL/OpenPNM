@@ -123,8 +123,8 @@ def electroneutrality(
 
     # Apply size factors and calculate the final conductance
     if isinstance(SF, dict):
-        g1 *= SF[f"{size_factors}.pore1"][throats]
-        gt *= SF[f"{size_factors}.throat"][throats]
-        g2 *= SF[f"{size_factors}.pore2"][throats]
+        g1 *= SF[f"{size_factors}"][throats, 0]
+        gt *= SF[f"{size_factors}"][throats, 1]
+        g2 *= SF[f"{size_factors}"][throats, 2]
         return 1 / (1/g1 + 1/gt + 1/g2)
     return gt * SF
