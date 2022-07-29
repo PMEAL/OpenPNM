@@ -168,7 +168,21 @@ class Mixture(Phase):
             z = z**(1/power)
         return z
 
-    def __str__(self):
+    # def __str__(self):
+    #     hr = '―' * 78
+    #     lines = '\n' + 'Component Phases'
+    #     for item in self.components.values():
+    #         lines += '\n' + "═"*78 + '\n' + item.__repr__() + '\n' + hr + '\n'
+    #         lines += get_printable_props(item, suffix=item.name)
+    #         lines += '\n' + hr + '\n'
+    #         lines += get_printable_labels(item, suffix=item.name)
+    #     temp = super().__str__().split(hr)
+    #     temp.insert(-1, lines + '\n')
+    #     lines = hr.join(temp)
+    #     return lines
+
+    @property
+    def info(self):
         hr = '―' * 78
         lines = '\n' + 'Component Phases'
         for item in self.components.values():
@@ -179,7 +193,7 @@ class Mixture(Phase):
         temp = super().__str__().split(hr)
         temp.insert(-1, lines + '\n')
         lines = hr.join(temp)
-        return lines
+        print(lines)
 
     def _get_comps(self):
         comps = {}

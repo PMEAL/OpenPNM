@@ -9,33 +9,9 @@ def water(regen_mode=None, domain=None):
 
 
 _water = {
-    'pore.molecular_weight': {
-        'model': mods.misc.constant,
-        'value': 0.01802,
-    },
-    'pore.critical_pressure': {
-        'model': mods.misc.constant,
-        'value': 2.2064E7,
-    },
-    'pore.critical_temperature': {
-        'model': mods.misc.constant,
-        'value': 647.1,
-    },
-    'pore.critical_volume': {
-        'model': mods.misc.constant,
-        'value': 0.003106,
-    },
     'pore.contact_angle': {
         'model': mods.misc.constant,
         'value': 110.0,
-    },
-    'pore.electrical_conductivity': {
-        'model': mods.misc.constant,
-        'value': 1e-15,
-    },
-    'pore.diffusivity': {
-        'model': mods.misc.constant,
-        'value': 1e-9,
     },
     'pore.density': {
         'model': mods.phase.density.water_correlation,

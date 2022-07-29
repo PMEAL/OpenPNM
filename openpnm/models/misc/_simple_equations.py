@@ -85,7 +85,7 @@ def linear(target, m, b, prop):
     return value
 
 
-def polynomial(target, a, prop, **kwargs):
+def polynomial(target, a, prop):
     r"""
     Calculates a property as a polynomial function of a given property
 
@@ -110,8 +110,8 @@ def polynomial(target, a, prop, **kwargs):
         polynomial with coefficients stored in ``a``.
 
     """
-    x = target[prop]
+    x = target[prop].astype(float)
     value = 0.0
     for i in range(0, len(a)):
-        value += a[i]*x**i
+        value += a[i]*(x**i)
     return value
