@@ -389,8 +389,8 @@ class BaseTest:
 
     def test_props_hidden_keys(self):
         self.net['pore._blah'] = 1.0
-        # assert 'pore._blah' not in self.net.__str__()
-        # assert 'pore._blah' not in self.net.props()
+        assert 'pore._blah' not in self.net.__str__()
+        assert 'pore._blah' not in self.net.props()
         assert 'pore._blah' in self.net.keys()
 
     def test_labels(self):

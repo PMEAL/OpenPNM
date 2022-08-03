@@ -40,7 +40,7 @@ class MultiPhaseSettings:
 @docstr.dedent
 class MultiPhase(Phase):
     """
-    Creates Phase object that represents a multiphase system consisting of
+    Creates a Phase object that represents a multiphase system consisting of
     a given list of Phases.
 
     Parameters
@@ -55,7 +55,7 @@ class MultiPhase(Phase):
 
     """
 
-    def __init__(self, phases=[], name='mphase_#', **kwargs):
+    def __init__(self, phases=[], name='mphase_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(MultiPhaseSettings())
 

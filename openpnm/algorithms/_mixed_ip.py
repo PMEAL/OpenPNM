@@ -70,7 +70,7 @@ class MixedInvasionPercolation(Algorithm):
 
     """
 
-    def __init__(self, name='mixedip_#', **kwargs):
+    def __init__(self, name='mixedip_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(MixedIPSettings())
 

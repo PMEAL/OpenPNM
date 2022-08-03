@@ -42,7 +42,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     """
 
-    def __init__(self, phase, name='trans_react_#', **kwargs):
+    def __init__(self, phase, name='trans_react_?', **kwargs):
         super().__init__(phase=phase, name=name, **kwargs)
         self.settings._update(TransientReactiveTransportSettings())
         self.settings['phase'] = phase.name

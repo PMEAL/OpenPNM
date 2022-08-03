@@ -4,44 +4,15 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
-__all__ = ["antoine", "water"]
 
-@docstr.get_sections(base='models.phase.vapor_pressure', sections=['Returns'])
-@docstr.dedent
-def antoine(target, A, B, C, temperature='pore.temperature'):
-    r"""
-    Uses Antoine equation to estimate vapor pressure of a pure component
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    A, B, C :  scalars
-        Antoine vapor pressure coefficients for pure compounds. Since virtually
-        all Antoine coefficients are reported for units of mmHg and C for
-        historical reasons, this method assumes these A, B and C values are for
-        mmHg and C, but converts all properties internally to return Pascals.
-    %(models.phase.T)s
-
-    Returns
-    -------
-    value : ndarray
-        Array containing vapor pressure values [Pa]
-
-    References
-    ----------
-    ::
-
-        Antoine, C. (1888), Vapor Pressure: a new relationship between pressure
-        and temperature, Comptes Rendus des Séances de l'Académie des Sciences
-        (in French) 107: 681–684, 778–780, 836–837
-
-    """
-    T = target[temperature] - 273.15
-    value = (10**(A-B/(C+T)))/760*101325
-    return value
+__all__ = [
+    "water_correlation",
+    "liquid_pure_antoine",
+    "liquid_pure_lk",
+]
 
 
-def water(target, temperature='pore.temperature', salinity='pore.salinity'):
+def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates vapor pressure of pure water or seawater given by [1] based on
     Raoult's law. The pure water vapor pressure is given by [2]
@@ -71,7 +42,7 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     [2] ASHRAE handbook: Fundamentals, ASHRAE; 2005.
 
     """
-    T = target[temperature]
+    T = target[T]
     if salinity in target.keys():
         S = target[salinity]
     else:
@@ -86,3 +57,52 @@ def water(target, temperature='pore.temperature', salinity='pore.salinity'):
     Pv_sw = Pv_w/(1+0.57357*(S/(1000-S)))
     value = Pv_sw
     return value
+
+
+def liquid_pure_lk(
+    target,
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+    Pc='param.critical_pressure',
+    omega='param.acentric_factor',
+):
+    r"""
+    """
+    # Lee Kesler method
+    T = target[T]
+    Tc = target[Tc]
+    Tr = T/Tc
+    Pc = target[Pc]
+    omega = target[omega]
+    f0 = 5.92714 - 6.09648/Tr - 1.28862*np.log(Tr) + 0.169347*(Tr**6)
+    f1 = 15.2518 - 15.6875/Tr - 13.4721*np.log(Tr) + 0.43577*(Tr**6)
+    Pr = np.exp(f0 + omega*f1)
+    Pvap = Pr*Pc
+    return Pvap
+
+
+def liquid_pure_antoine(
+    target,
+    T='pore.temperature',
+    Tc='param.critical_temperature',
+):
+    r"""
+    """
+    # either antoine or extended antoine using constants from RPP
+    CAS = target.params['CAS']
+    Tc = target[Tc]
+    T = target[T]
+    try:
+        from chemicals.vapor_pressure import Psat_data_AntoineExtended
+        coeffs = Psat_data_AntoineExtended.loc[CAS]
+        _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
+        # Pvap = TRC_Antoine_extended(T, A, B, C, n, E, F)
+        x = (T - to - 273.15)/Tc
+        x = np.clip(x, 0, None)
+        Pvap = 10**(A - B/(T+C) + 0.43429*(x**n) + E*(x**8) + F*(x**12))
+    except KeyError:
+        from chemicals.vapor_pressure import Psat_data_AntoinePoling
+        coeffs = Psat_data_AntoinePoling.loc[CAS]
+        _, A, B, C, Tmin, Tmax = coeffs
+        Pvap = 10**(A - B/(T + C))
+    return Pvap

@@ -4,17 +4,21 @@ from openpnm.utils import Docorator
 
 docstr = Docorator()
 
+
 __all__ = [
-    "salinity",
-    "mole_weighted_average",
-    "fuller_diffusivity",
-    "wilke_fuller_diffusivity"
+    'salinity',
+    'mixing_rule',
+    'mole_summation',
+    'from_component',
 ]
 
+
 @docstr.dedent
-def salinity(target,
-             temperature='pore.temperature',
-             concentration='pore.concentration'):
+def salinity(
+    target,
+    T='pore.temperature',
+    M='pore.concentration',
+    ):
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
 
@@ -43,8 +47,8 @@ def salinity(target,
     solute)
 
     """
-    C = target[concentration]
-    T = target[temperature]
+    C = target[M]
+    T = target[T]
     a = 8.73220929e+00
     b = 6.00389629e+01
     c = -1.19083743e-01
@@ -56,144 +60,99 @@ def salinity(target,
     return S
 
 
-@docstr.dedent
-def mole_weighted_average(target, prop):
+def mixing_rule(
+    target,
+    prop,
+    mode='logarithmic',
+    power=1,
+):
     r"""
+    Computes the property of a mixture using the specified mixing rule
+
+    Parameters
+    ----------
+    target : dict
+        The openpnm object to which this model applies
+    prop : str
+        The dictionary key containing the property of interest on each
+        component
+    mode : str
+        The mixing rule to to use. Options are:
+
+        ============== ========================================================
+        mode
+        ============== ========================================================
+        'logarithmic'  (default) Uses the natural logarithm of the property as:
+                       :math:`ln(z) = \Sigma (x_i \cdot ln(\z_i))`
+        'linear'       Basic mole fraction weighting of the form
+                       :math:`z = \Sigma (x_i \cdot \z_i)`
+        'power         Applies an exponent to the property as:
+                       :math:`\z^{power} = \Sigma (x_i \cdot \z_i^{power})`
+        ============== ========================================================
+
+    power : scalar
+        If ``mode='power'`` this indicates the value of the exponent,
+        otherwise this is ignored.
+    """
+    xs = target['pore.mole_fraction']
+    ys = target.get_comp_vals(prop)
+    z = 0.0
+    if mode == 'logarithmic':
+        for i in xs.keys():
+            z += xs[i]*np.log(ys[i])
+        z = np.exp(z)
+    elif mode in ['linear', 'simple']:
+        for i in xs.keys():
+            z += xs[i]*ys[i]
+    elif mode == 'power':
+        for i in xs.keys():
+            z += xs[i]*ys[i]**power
+        z = z**(1/power)
+    return z
+
+
+@docstr.dedent
+def mole_summation(target):
+    r"""
+    Computes total mole fraction in each pore given component values
 
     Parameters
     ----------
     %(models.target.parameters)s
-    prop : str
-        The dictionary key to the property to be averaged.
 
     Returns
     -------
     vals : ND-array
-        An ND-array containing the mole fraction weighted average value of the
-        specified property.
+        An ND-array containing the total mole fraction.  Note that this is not
+        guaranteed to sum to 1.0.
     """
-    comps = target.components.values()
-    element = prop.split('.', 1)[0]
-    if len(comps) == 0:
-        vals = np.zeros(target._count(element))*np.nan
+    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    if len(xs) > 0:
+        xs = np.sum(xs, axis=0)
     else:
-        vals = np.zeros(target._count(element))
-        for item in comps:
-            frac = target[element + '.mole_fraction.' + item.name]
-            temp = item[prop]
-            vals += temp*frac
-    return vals
-
-
-def fuller_diffusivity(target, molecular_weight='pore.molecular_weight',
-                       molar_diffusion_volume='pore.molar_diffusion_volume',
-                       temperature='pore.temperature',
-                       pressure='pore.pressure'):
-    r"""
-    Estimates the diffusion coeffient of both species in a binary gas
-    mixture using the Fuller correlation
-
-    Parameters
-    ----------
-    %(models.target.parameters)s
-    molecular_weight : str
-        Dictionary key containing the molecular weight of each species.  The
-        default is 'pore.molecular_weight'
-    molar_diffusion_volume : str
-        Dictionary key containing the molar diffusion volume of each species.
-        This is used by the Fuller correlation.  The default is
-        'pore.molar_diffusion_volume'
-    %(models.phase.T)s
-    %(models.phase.P)s
-
-    Returns
-    -------
-    Dij : dict containing ND-arrys
-        The dict contains one array for each component, containing the
-        diffusion coefficient of that component at each location.
-    """
-    species_A, species_B = target.components.values()
-    T = target[temperature]
-    P = target[pressure]
-    MA = species_A[molecular_weight]
-    MB = species_B[molecular_weight]
-    vA = species_A[molar_diffusion_volume]
-    vB = species_B[molar_diffusion_volume]
-    MAB = 1e3*2*(1.0/MA + 1.0/MB)**(-1)
-    P = P*1e-5
-    value = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3) + vB**(1./3))**2)*1e-4
-    return value
+        xs = np.nan
+    return xs
 
 
 @docstr.dedent
-def wilke_fuller_diffusivity(
-        target,
-        molecular_weight='pore.molecular_weight',
-        molar_diffusion_volume='pore.molar_diffusion_volume',
-        temperature='pore.temperature',
-        pressure='pore.pressure'):
+def from_component(target, prop, compname):
     r"""
-    Estimates the diffusion coeffient of each species in a gas mixture
-
-    Uses the fuller equation to estimate binary diffusivity between pairs, then
-    uses the correction of Fairbanks and Wilke to account for the composition
-    of the gas mixture.
+    Fetches the given values from the specified object
 
     Parameters
     ----------
     %(models.target.parameters)s
-    molecular_weight : str
-        Dictionary key containing the molecular weight of each species.  The
-        default is 'pore.molecular_weight'
-    molar_diffusion_volume : str
-        Dictionary key containing the molar diffusion volume of each species.
-        This is used by the Fuller correlation.  The default is
-        'pore.molar_diffusion_volume'
-    %(models.phase.T)s
-    %(models.phase.P)s
+
+    prop : str
+        The name of the array to retreive
+    compname : str
+        The name of the object possessing the desired data
 
     Returns
     -------
-    Dij : dict containing ND-arrys
-        The dict contains one array for each component, containing the
-        diffusion coefficient of that component at each location.
-
-    References
-    ----------
-    Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
-    Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
-    `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
-
+    vals : ND-array
+        An ND-array containing the request data
     """
-    comps = list(target.components.values())
-    values = {}
-    for i in range(len(comps)):
-        A = comps[i]
-        denom = 0.0
-        for j in range(len(comps)):
-            if i != j:
-                B = comps[j]
-                temp = MixDict(target=target, components=(A, B))
-                D = fuller_diffusivity(target=temp,
-                                       molecular_weight=molecular_weight,
-                                       molar_diffusion_volume=molar_diffusion_volume,
-                                       temperature=temperature,
-                                       pressure=pressure)
-                yB = target['pore.mole_fraction.' + B.name]
-                denom += yB/D
-        yA = target['pore.mole_fraction.' + A.name]
-        values[A.name] = (1 - yA)/denom
-    return values
-
-
-class MixDict(dict):
-    r"""
-    This utility dict is used to create a temporary mixture object containing
-    only two components of a mixture that has several.  This is necessary for
-    use of the fuller model for calculating binary diffusivities.
-    """
-    def __init__(self, target, components):
-        super().__init__(target)
-        self.components = {}
-        for item in components:
-            self.components.update({item.name: item})
+    comp = target.project[compname]
+    vals = comp[prop]
+    return vals

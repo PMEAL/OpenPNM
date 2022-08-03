@@ -61,7 +61,7 @@ class Transport(Algorithm):
 
     """
 
-    def __init__(self, phase, name='trans_#', **kwargs):
+    def __init__(self, phase, name='trans_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(TransportSettings())
         self.settings['phase'] = phase.name

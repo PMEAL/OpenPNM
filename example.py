@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 ws = op.Workspace()
 ws.clear()
 
-
 pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
 
 # Create domain1
@@ -66,5 +65,5 @@ rxn2.set_source(pores=air.pores('reaction_sites'), propname='pore.reaction2')
 rxn2.run()
 
 # Plot concentration profile
-fig, ax = plt.subplots()
-ax.pcolormesh(rxn.x.reshape([25, 25]))
+# fig, ax = plt.subplots()
+# ax.pcolormesh(rxn.x.reshape([25, 25]))

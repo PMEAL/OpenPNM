@@ -28,6 +28,6 @@ class TransientAdvectionDiffusion(TransientReactiveTransport,
     of pure diffusion and advection-diffusion problems.
     """
 
-    def __init__(self, name='trans_ad_#', **kwargs):
+    def __init__(self, name='trans_ad_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(TransientAdvectionDiffusionSettings())

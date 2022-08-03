@@ -11,46 +11,13 @@ class DiffusivityTest:
         self.phase['pore.viscosity'] = 1.75e-5  # Pa.s
 
     def test_fuller(self):
-        f = op.models.phase.diffusivity.fuller
+        f = op.models.phase.diffusivity.gas_mixture_fesg
         self.phase.add_model(propname='pore.diffusivity',
                              model=f,
-                             MA=0.032,
-                             MB=0.028,
-                             vA=16.6,
-                             vB=17.9)
+                             MWs=[31.9988, 28.0134],
+                             Vdms=[16.6, 17.9],)
         self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
-
-    def test_fuller_scaling(self):
-        f = op.models.phase.diffusivity.fuller_scaling
-        self.phase.add_model(propname='pore.diffusivity',
-                             model=f,
-                             DABo=1.79712526e-05,
-                             Po=100000,
-                             To=273)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 2.06754784e-05)
-
-    def test_tyn_calus(self):
-        f = op.models.phase.diffusivity.tyn_calus
-        self.phase.add_model(propname='pore.diffusivity',
-                             model=f,
-                             VA=16.5,
-                             VB=17.9,
-                             sigma_A=1,
-                             sigma_B=1)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 9.84851806e-05)
-
-    def test_tyn_calus_scaling(self):
-        f = op.models.phase.diffusivity.tyn_calus_scaling
-        self.phase.add_model(propname='pore.diffusivity',
-                             model=f,
-                             DABo=5.26300839e-05,
-                             mu_o=3e-5,
-                             To=273)
-        self.phase.regenerate_models()
-        assert_approx_equal(self.phase['pore.diffusivity'].mean(), 9.84851806e-05)
+        assert_approx_equal(self.phase['pore.diffusivity'][0], 2.094693935e-05)
 
 
 if __name__ == '__main__':
