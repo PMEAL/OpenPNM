@@ -71,6 +71,13 @@ class MultiPhase(Phase):
         # Add supplied phases to phases dict and initialize occupancy to 0
         self.add_phases(phases)
 
+    def __getitem__(self, key):
+        try:
+            vals = super().__getitem__(key)
+        except KeyError:
+            vals = self._interleave_data(key)
+        return vals
+
     @property
     def phases(self):
         phases = {self.project[item].name: self.project[item]
