@@ -40,7 +40,7 @@ class MultiPhaseSettings:
 @docstr.dedent
 class MultiPhase(Phase):
     """
-    Creates Phase object that represents a multiphase system consisting of
+    Creates a Phase object that represents a multiphase system consisting of
     a given list of Phases.
 
     Parameters
@@ -70,13 +70,6 @@ class MultiPhase(Phase):
 
         # Add supplied phases to phases dict and initialize occupancy to 0
         self.add_phases(phases)
-
-    def __getitem__(self, key):
-        try:
-            vals = super().__getitem__(key)
-        except KeyError:
-            vals = self._interleave_data(key)
-        return vals
 
     @property
     def phases(self):
