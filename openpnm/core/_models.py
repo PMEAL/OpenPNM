@@ -90,7 +90,7 @@ class ModelsDict(PrintableDict):
             propname = model.split("@")[0]
             dtree.add_node(propname)
             # Filter pore/throat props only
-            args = op.utils.flat_list2(self[model].values())
+            args = op.utils.flat_list(self[model].values())
             dependencies = [arg for arg in args if is_valid_propname(arg)]
             # Add dependency from model's parameters
             for d in dependencies:
