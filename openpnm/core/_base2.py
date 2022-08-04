@@ -14,7 +14,6 @@ from openpnm.utils import (
     PrintableList,
     PrintableDict,
     Docorator,
-    parse_mode,
     get_printable_props,
     get_printable_labels,
 )
@@ -241,9 +240,8 @@ class Base2(dict):
         if mode is None:
             super().clear()
         else:
-            mode = parse_mode(obj=self, mode=mode, allowed=['props',
-                                                            'labels',
-                                                            'models'])
+            if isinstance(mode, str):
+                mode = [mode]
             if 'props' in mode:
                 for item in self.props():
                     if item not in ['pore.coords', 'throat.conns']:
@@ -260,10 +258,8 @@ class Base2(dict):
         if mode is None:
             return super().keys()
         else:
-            mode = parse_mode(obj=self, mode=mode, allowed=['props',
-                                                            'labels',
-                                                            'models',
-                                                            'constants'])
+            if isinstance(mode, str):
+                mode = [mode]
             vals = set()
             if 'props' in mode:
                 for item in self.props():
