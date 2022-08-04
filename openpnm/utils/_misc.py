@@ -17,9 +17,8 @@ __all__ = [
     'Docorator',
     'PrintableList',
     'PrintableDict',
-    'SubDict',
-    'NestedDict',
     'HealthDict',
+    'NestedDict',
     'tic',
     'toc',
     'unique_list',
@@ -33,7 +32,6 @@ __all__ = [
     'is_symmetric',
     'is_valid_propname',
     'prettify_logger_message',
-    'remove_prop_deep',
     'get_model_collection',
     'dict_to_struct',
     'struct_to_dict',
@@ -53,7 +51,7 @@ class Docorator(DocstringProcessor):
 
         # Add custom parameter type sections
         a = DocstringProcessor.param_like_sections
-        Docorator.__instance__.param_like_sections = a + [] # ["Attributes", "Settings"]
+        Docorator.__instance__.param_like_sections = a + []  # ["Attributes", "Settings"]
         # Add custom text type sections
         a = Docorator.__instance__.text_sections
         Docorator.__instance__.text_sections = a + []
@@ -142,15 +140,6 @@ class PrintableDict(OrderedDict):
                 lines.append("{0:<35s} {1}".format(item, self[item]))
         lines.append(header)
         return "\n".join(lines)
-
-
-class SubDict(dict):
-    """Brief explanation of 'SubDict'"""
-    def __getitem__(self, key):
-        for item in self.keys():
-            if item.endswith('.' + key):
-                key = item
-        return super().__getitem__(key)
 
 
 class NestedDict(dict):
@@ -490,7 +479,7 @@ def models_to_table(obj, params=True):
             for param in temp.keys():
                 p1 = param
                 if len(p1) > 16:
-                    p1 = p1[:14] + "..."
+                    p1 = p1[:13] + "..."
                 p2 = str(temp[param])
                 if len(p2) > 24:
                     p2 = p2[:21] + "..."
@@ -623,14 +612,6 @@ def prettify_logger_message(msg):
     return indent.join(temp)
 
 
-def remove_prop_deep(obj, propname):
-    """Hierarchically deletes the given propname and its children"""
-    for k in list(obj.keys()):
-        obj._parse_element(propname)
-        if k.startswith(propname):
-            del obj[k]
-
-
 def get_model_collection(collection, regen_mode=None, domain=None):
     d = deepcopy(collection)
     for k, v in d.items():
@@ -642,12 +623,39 @@ def get_model_collection(collection, regen_mode=None, domain=None):
 
 
 def dict_to_struct(d):
-    struct = rf.unstructured_to_structured(np.vstack(list(d.values())),
+    r"""
+    Converts a dictionary of numpy arrays to a numpy struct
+
+    Parameters
+    ----------
+    d : dict
+        A dictionary wtih numpy arrays in each key.
+
+    Returns
+    -------
+    s : numpy struct
+        A numpy struct with the fields or names take from the dictionary keys
+    """
+    struct = rf.unstructured_to_structured(np.vstack(list(d.values())).T,
                                            names=list(d.keys()))
     return struct
 
 
 def struct_to_dict(s):
+    r"""
+    Converts a numpy struct array into a dictionary using the struct labels as
+    keys
+
+    Parameters
+    ----------
+    s : numpy struct
+        The struct array
+
+    Returns
+    -------
+    d : dict
+        A dictionary with the struct labels or fields as the keys
+    """
     d = {}
     for key in s.dtype.names:
         d[key] = s[key]
@@ -677,6 +685,39 @@ def get_mixture_model_args(
 
 
 def get_printable_props(item, suffix='', hr=78*'―'):
+    r"""
+    This function is used by the __str__ methods on all classes to get a
+    nicely formatted list of properties on the object.
+
+    Parameters
+    ----------
+    item : dict
+        The OpenPNM dictionary object with each dictionary key containing a
+        numpy array
+    suffix : str, optional
+        If provided, this will be attached to the end of every dictionary
+        key so that 'pore.viscosity' becomes 'pore.viscosity.phase_01'.  This
+        is a workaround to enhance the printing of component information on
+        mixtures.
+    hr : str, optional
+        The horizontal rule to use between the table heading and body
+
+    Returns
+    -------
+    table : str
+        A formatted string that will output a 78 character wide table when
+        printed
+
+    Notes
+    -----
+    The table returned by this function only contains items that are numerical
+    arrays.  Any boolean arrays are ignored.
+
+    See Also
+    --------
+    get_printable_labels
+
+    """
     if suffix and not suffix.startswith('.'):
         suffix = '.' + suffix
     header = [' ']*78
@@ -700,6 +741,38 @@ def get_printable_props(item, suffix='', hr=78*'―'):
 
 
 def get_printable_labels(item, suffix='', hr=78*'―'):
+    r"""
+    This function is used by the __str__ methods on all classes to get a
+    nicely formatted list of labels on the object.
+
+    Parameters
+    ----------
+    item : dict
+        The OpenPNM dictionary object with each dictionary key containing a
+        numpy array
+    suffix : str, optional
+        If provided, this will be attached to the end of every dictionary
+        key so that 'pore.viscosity' becomes 'pore.viscosity.phase_01'.  This
+        is a workaround to enhance the printing of component information on
+        mixtures.
+    hr : str, optional
+        The horizontal rule to use between the table heading and body
+
+    Returns
+    -------
+    table : str
+        A formatted string that will output a 78 character wide table when
+        printed
+
+    Notes
+    -----
+    The table returned by this function only contains items that boolean
+    arrays.  Any numerical arrays are ignored.
+
+    See Also
+    --------
+    get_printable_props
+    """
     if suffix and not suffix.startswith('.'):
         suffix = '.' + suffix
     header = [' ']*78
@@ -736,12 +809,18 @@ def nbr_to_str(nbr, t_precision=12):
     r"""
     Converts a scalar into a string in scientific (exponential) notation
     without the decimal point.
+
     Parameters
     ----------
     nbr : scalar
         The number to be converted into a scalar.
     t_precision : integer
         The time precision (number of decimal places). Default value is 12.
+
+    Returns
+    -------
+    num : str
+        The string represenation of the given number in scientific notation
     """
     from decimal import Decimal as dc
     n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent

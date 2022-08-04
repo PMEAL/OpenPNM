@@ -1,7 +1,6 @@
 import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
-from openpnm.utils import remove_prop_deep
 
 
 class DiffusiveConductanceTest:
