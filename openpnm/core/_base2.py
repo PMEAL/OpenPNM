@@ -13,6 +13,7 @@ from openpnm.utils import (
     SettingsAttr,
     PrintableList,
     PrintableDict,
+    HealthDict,
     Docorator,
     parse_mode,
     get_printable_props,
@@ -433,6 +434,35 @@ class Base2(dict):
         lines += get_printable_labels(self)
         lines += '\n' + hr
         return lines
+
+    @property
+    def data_health(self):
+        r"""
+        Checks the health of pore and throat data arrays.
+
+        Parameters
+        ----------
+        obj : Base
+            A handle of the object to be checked
+
+        Returns
+        -------
+        health : dict
+            Returns a HealthDict object which is a basic dictionary with an
+            added ``health`` attribute that is ``True`` is all entries in the
+            dict are deemed healthy (empty lists), or ``False`` otherwise.
+
+        """
+        health = HealthDict()
+        for item in self.props():
+            health[item] = []
+            if self[item].dtype == 'O':
+                health[item] = 'No checks on object'
+            elif np.sum(np.isnan(self[item])) > 0:
+                health[item] = 'Has NaNs'
+            elif np.shape(self[item])[0] != self._count(item.split('.', 1)[0]):
+                health[item] = 'Wrong Length'
+        return health
 
 
 class ModelMixin2:

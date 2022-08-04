@@ -1,12 +1,18 @@
+
 import logging
 import numpy as np
 import scipy.sparse as sprs
 import scipy.spatial as sptl
+import openpnm.models.network as mods
 from openpnm.core import Domain
 from openpnm import topotools
-from openpnm.utils import Docorator
-from openpnm.utils import Workspace
-import openpnm.models.network as mods
+from openpnm.utils import (
+    Docorator,
+    Workspace,
+    HealthDict,
+)
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
 docstr = Docorator()
@@ -839,3 +845,64 @@ class Network(Domain):
     def coords(self):
         r"""Returns the list of pore coordinates of the network."""
         return self['pore.coords']
+
+    @property
+    def network_health(self):
+        r"""
+        This method checks the topological health of the network
+
+        The following aspects are checked for:
+
+            (1) Isolated pores
+            (2) Disconnected clusters of pores
+            (3) Duplicate throats
+            (4) Headless throats
+            (5) Bidirectional throats
+
+        Returns
+        -------
+        health : dict
+            A dictionary containing the offending pores or throat numbers
+            under each named key.
+
+        Notes
+        -----
+        It also returns a list of which pores and throats should be trimmed
+        from the network to restore health.  This list is a suggestion only,
+        and is based on keeping the largest cluster and trimming the others.
+
+        - Does not yet check for duplicate pores
+        - Does not yet suggest which throats to remove
+        - This is just a 'check' and does not 'fix' the problems it finds
+
+        """
+        import openpnm.models.network as mods
+
+        health = HealthDict()
+
+        # Check for headless throats
+        headless = mods.headless_throats(self)
+        health['headless_throats'] = np.where(headless)[0].tolist()
+
+        # Check for throats that loop back onto the same pore
+        looped = mods.looped_throats(self)
+        health['looped_throats'] = np.where(looped)[0].tolist()
+
+        # Check for individual isolated pores
+        isolated = mods.isolated_pores(self)
+        health['isolated_pores'] = np.where(isolated)[0].tolist()
+
+        # Check for separated clusters of pores
+        size = mods.cluster_size(self)
+        mx = np.max(size)
+        health['disconnected_pores'] = np.where(size < mx)[0].tolist()
+
+        # Check for duplicate throats
+        dupes = mods.duplicate_throats(self)
+        health['duplicate_throats'] = np.where(dupes)[0].tolist()
+
+        # Check for bidirectional throats
+        bidir = mods.bidirectional_throats(self)
+        health['bidirectional_throats'] = np.where(bidir)[0].tolist()
+
+        return health

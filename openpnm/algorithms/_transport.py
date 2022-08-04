@@ -4,7 +4,6 @@ import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator, TypedSet, Workspace
-from openpnm.utils import check_data_health
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
 
@@ -293,7 +292,7 @@ class Transport(Algorithm):
         dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
         d = {}  # maps prop -> obj.name
         for obj in objs:
-            for k, v in check_data_health(obj).items():
+            for k, v in obj.data_health.items():
                 if "Has NaNs" in v:
                     # FIXME: The next line doesn't cover multi-level props
                     base_prop = ".".join(k.split(".")[:2])
