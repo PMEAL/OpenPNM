@@ -53,7 +53,7 @@ pn.add_model(propname='throat.diffusive_size_factors',
              model=op.models.geometry.diffusive_size_factors.pyramids_and_cuboids)
 
 pn.regenerate_models()
-h = op.utils.check_network_health(pn)
+h = pn.network_health
 op.topotools.trim(network=pn, pores=h['disconnected_pores'])
 gas = op.phase.Phase(network=pn)
 gas['pore.diffusivity'] = 1.0
