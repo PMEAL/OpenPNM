@@ -1,9 +1,7 @@
 import logging
-import inspect
 import openpnm as op
-from openpnm.utils import PrintableDict, PrintableList, Workspace
+from openpnm.utils import PrintableDict, Workspace
 from openpnm.utils import is_valid_propname
-from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
