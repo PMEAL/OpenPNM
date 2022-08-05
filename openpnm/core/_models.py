@@ -1,9 +1,7 @@
 import logging
-import inspect
 import openpnm as op
-from openpnm.utils import PrintableDict, PrintableList, Workspace
+from openpnm.utils import PrintableDict, Workspace
 from openpnm.utils import is_valid_propname
-from openpnm.utils import prettify_logger_message
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -92,7 +90,7 @@ class ModelsDict(PrintableDict):
             propname = model.split("@")[0]
             dtree.add_node(propname)
             # Filter pore/throat props only
-            args = op.utils.flat_list2(self[model].values())
+            args = op.utils.flat_list(self[model].values())
             dependencies = [arg for arg in args if is_valid_propname(arg)]
             # Add dependency from model's parameters
             for d in dependencies:

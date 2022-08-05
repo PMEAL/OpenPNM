@@ -1,7 +1,6 @@
 import openpnm as op
 import numpy as _np
 from numpy.testing import assert_allclose
-from openpnm.utils import remove_prop_deep
 
 
 class HydraulicConductanceTest:

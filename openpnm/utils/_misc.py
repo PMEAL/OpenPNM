@@ -17,27 +17,20 @@ __all__ = [
     'Docorator',
     'PrintableList',
     'PrintableDict',
-    'SubDict',
-    'NestedDict',
     'HealthDict',
-    'tic',
-    'toc',
-    'unique_list',
+    'NestedDict',
     'flat_list',
-    'flat_list2',
     'sanitize_dict',
     'methods_to_table',
     'models_to_table',
-    'catch_module_not_found',
     'ignore_warnings',
     'is_symmetric',
     'is_valid_propname',
+    'is_transient',
+    'get_mixture_model_args',
     'prettify_logger_message',
-    'remove_prop_deep',
-    'get_model_collection',
     'dict_to_struct',
     'struct_to_dict',
-    'get_mixture_model_args',
     'get_printable_props',
     'get_printable_labels',
 ]
@@ -53,7 +46,7 @@ class Docorator(DocstringProcessor):
 
         # Add custom parameter type sections
         a = DocstringProcessor.param_like_sections
-        Docorator.__instance__.param_like_sections = a + [] # ["Attributes", "Settings"]
+        Docorator.__instance__.param_like_sections = a + []  # ["Attributes", "Settings"]
         # Add custom text type sections
         a = Docorator.__instance__.text_sections
         Docorator.__instance__.text_sections = a + []
@@ -142,15 +135,6 @@ class PrintableDict(OrderedDict):
                 lines.append("{0:<35s} {1}".format(item, self[item]))
         lines.append(header)
         return "\n".join(lines)
-
-
-class SubDict(dict):
-    """Brief explanation of 'SubDict'"""
-    def __getitem__(self, key):
-        for item in self.keys():
-            if item.endswith('.' + key):
-                key = item
-        return super().__getitem__(key)
 
 
 class NestedDict(dict):
@@ -242,157 +226,11 @@ class HealthDict(PrintableDict):
 
     health = property(fget=_get_health)
 
-
-"""
-BSD 3-Clause License
-
-- Copyright (c) 2008-Present, IPython Development Team
-- Copyright (c) 2001-2007, Fernando Perez <fernando.perez@colorado.edu>
-- Copyright (c) 2001, Janko Hauser <jhauser@zscout.de>
-- Copyright (c) 2001, Nathaniel Gray <n8gray@caltech.edu>
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
-
-
-def _format_time(timespan, precision=3):
-    """Formats the timespan in a human readable form"""
-
-    if timespan >= 60.0:
-        # we have more than a minute, format that in a human readable form
-        # Idea from http://snipplr.com/view/5713/
-        parts = [("d", 60*60*24), ("h", 60*60), ("min", 60), ("s", 1)]
-        time = []
-        leftover = timespan
-        for suffix, length in parts:
-            value = int(leftover / length)
-            if value > 0:
-                leftover = leftover % length
-                time.append(u'%s%s' % (str(value), suffix))
-            if leftover < 1:
-                break
-        return " ".join(time)
-
-    # Unfortunately the unicode 'micro' symbol can cause problems in
-    # certain terminals.
-    # See bug: https://bugs.launchpad.net/ipython/+bug/348466
-    # Try to prevent crashes by being more secure than it needs to
-    # E.g. eclipse is able to print a µ, but has no sys.stdout.encoding set.
-    units = [u"s", u"ms", u'us', "ns"]  # the save value
-    if hasattr(sys.stdout, 'encoding') and sys.stdout.encoding:
-        try:
-            u'\xb5'.encode(sys.stdout.encoding)
-            units = [u"s", u"ms", u'\xb5s', "ns"]
-        except:
-            pass
-    scaling = [1, 1e3, 1e6, 1e9]
-
-    if timespan > 0.0:
-        order = min(-int(math.floor(math.log10(timespan)) // 3), 3)
-    else:
-        order = 3
-    return u"%.*g %s" % (precision, timespan * scaling[order], units[order])
-
-
-def tic():
-    r"""
-    Homemade version of matlab tic and toc function, tic starts or resets
-    the clock, toc reports the time since the last call of tic.
-
-    See Also
-    --------
-    toc
-
-    """
-    global _startTime_for_tictoc
-    _startTime_for_tictoc = time.time()
-
-
-def toc(quiet=False):
-    r"""
-    Homemade version of matlab tic and toc function, tic starts or resets
-    the clock, toc reports the time since the last call of tic.
-
-    Parameters
-    ----------
-    quiet : bool, default is False
-        If False then a message is output to the console. If
-        True the message is not displayed and the elapsed time is returned.
-
-    See Also
-    --------
-    tic
-
-    """
-    if "_startTime_for_tictoc" not in globals():
-        raise Exception("Start time not set, call tic first")
-    t = time.time() - _startTime_for_tictoc
-    if quiet is False:
-        print(f"Elapsed time: {_format_time(t)}")
-    return t
-
-
-def unique_list(input_list):
-    r"""
-    For a given list (of points) remove any duplicates
-    """
-    output_list = []
-    if len(input_list) > 0:
-        dim = np.shape(input_list)[1]
-        for i in input_list:
-            match = False
-            for j in output_list:
-                if dim == 3:
-                    if i[0] == j[0] and i[1] == j[1] and i[2] == j[2]:
-                        match = True
-                elif dim == 2:
-                    if i[0] == j[0] and i[1] == j[1]:
-                        match = True
-                elif dim == 1:
-                    if i[0] == j[0]:
-                        match = True
-            if match is False:
-                output_list.append(i)
-    return output_list
+    def __bool__(self):
+        return self.health
 
 
 def flat_list(input_list):
-    r"""
-    Given a list of nested lists of arbitrary depth, returns a single
-    level or 'flat' list.
-    """
-    x = input_list
-    if isinstance(x, list):
-        return [a for i in x for a in flat_list(i)]
-    return [x]
-
-
-def flat_list2(input_list):
     r"""
     Given a list of nested lists of arbitrary depth, returns a single
     level or 'flat' list.
@@ -424,7 +262,19 @@ def sanitize_dict(input_dict):
 
 
 def methods_to_table(obj):
-    """Brief explanation of 'methods_to_table'"""
+    r"""
+    Converts a methods on an object to a ReST compatible table
+
+    Parameters
+    ----------
+    obj : Base
+        Any object that has a methods
+    params : bool
+        Indicates whether or not to include a list of parameter
+        values in the table. Set to False for just a list of models, and
+        True for a more verbose table with all parameter values.
+
+    """
     parent = obj.__class__.__mro__[1]
     temp = inspect.getmembers(parent, predicate=inspect.isroutine)
     parent_funcs = [i[0] for i in temp if not i[0].startswith("_")]
@@ -454,7 +304,7 @@ def methods_to_table(obj):
 
 def models_to_table(obj, params=True):
     r"""
-    Converts a ModelsDict object to a ReST compatible table
+    Converts a all the models on an object to a ReST compatible table
 
     Parameters
     ----------
@@ -490,27 +340,13 @@ def models_to_table(obj, params=True):
             for param in temp.keys():
                 p1 = param
                 if len(p1) > 16:
-                    p1 = p1[:14] + "..."
+                    p1 = p1[:13] + "..."
                 p2 = str(temp[param])
                 if len(p2) > 24:
                     p2 = p2[:21] + "..."
                 lines.append(fmt.format("|", "", "|", "", "|", p1, "|", p2, "|"))
                 lines.append(row)
     return "\n".join(lines)
-
-
-def catch_module_not_found(function):
-    r"""
-    A decorator that wraps the passed in function and catches
-    ModuleNotFound exception.
-    """
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        try:
-            return function(*args, **kwargs)
-        except ModuleNotFoundError:
-            pass
-    return wrapper
 
 
 def ignore_warnings(warning=RuntimeWarning):
@@ -585,6 +421,202 @@ def is_symmetric(a, rtol=1e-10):
     return issym
 
 
+def prettify_logger_message(msg):
+    """Prettifies logger messages by breaking them up into multi lines"""
+    from textwrap import wrap
+    linewidth = 75 - 13
+    indent = "\n" + " " * 13
+    temp = wrap(msg, width=linewidth)
+    return indent.join(temp)
+
+
+def get_mixture_model_args(
+    target,
+    composition='xs',
+    args={
+        'mus': 'pore.viscosity',
+        'MWs': 'param.molecular_weight',
+    }
+):
+    r"""
+    This is used in tests to run models generically
+    """
+    from openpnm.models.phase.misc import mole_to_mass_fraction
+    vals = {}
+    if composition in ['ws']:
+        temp = np.vstack(list(mole_to_mass_fraction(target=target).values()))[:, 0]
+        vals[composition] = temp
+    else:
+        temp = np.vstack(list(target['pore.mole_fraction'].values()))[:, 0]
+        vals[composition] = temp
+    for item in args.keys():
+        temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
+        vals[item] = temp
+    return vals
+
+
+def dict_to_struct(d):
+    r"""
+    Converts a dictionary of numpy arrays to a numpy struct
+
+    Parameters
+    ----------
+    d : dict
+        A dictionary wtih numpy arrays in each key. The arrays must be all
+        the same size.
+
+    Returns
+    -------
+    s : numpy struct
+        A numpy struct with the fields or names take from the dictionary keys
+    """
+    struct = rf.unstructured_to_structured(np.vstack(list(d.values())).T,
+                                           names=list(d.keys()))
+    return struct
+
+
+def struct_to_dict(s):
+    r"""
+    Converts a numpy struct array into a dictionary using the struct labels as
+    keys
+
+    Parameters
+    ----------
+    s : numpy struct
+        The struct array
+
+    Returns
+    -------
+    d : dict
+        A dictionary with the struct labels or fields as the keys
+    """
+    d = {}
+    for key in s.dtype.names:
+        d[key] = s[key]
+    return d
+
+
+def get_printable_props(item, suffix='', hr=78*'―'):
+    r"""
+    This function is used by the __str__ methods on all classes to get a
+    nicely formatted list of properties on the object.
+
+    Parameters
+    ----------
+    item : dict
+        The OpenPNM dictionary object with each dictionary key containing a
+        numpy array
+    suffix : str, optional
+        If provided, this will be attached to the end of every dictionary
+        key so that 'pore.viscosity' becomes 'pore.viscosity.phase_01'.  This
+        is a workaround to enhance the printing of component information on
+        mixtures.
+    hr : str, optional
+        The horizontal rule to use between the table heading and body
+
+    Returns
+    -------
+    table : str
+        A formatted string that will output a 78 character wide table when
+        printed
+
+    Notes
+    -----
+    The table returned by this function only contains items that are numerical
+    arrays.  Any boolean arrays are ignored.
+
+    See Also
+    --------
+    get_printable_labels
+
+    """
+    if suffix and not suffix.startswith('.'):
+        suffix = '.' + suffix
+    header = [' ']*78
+    header[2] = '#'
+    header[5:15] = 'Properties'
+    header[-12:] = 'Valid Values'
+    lines = ''.join(header) + '\n' + hr
+    for i, k in enumerate(item.props()):
+        s = [' ']*78
+        s[:3] = str(i+1).rjust(3)
+        prop = k + suffix
+        s[5:5+len(prop)] = prop
+        element = k.split('.', 1)[0]
+        arr = item[k]
+        nans = np.any(np.isnan(np.atleast_2d(arr.T)), axis=0)
+        valid = str(np.sum(~nans)) + ' / ' + str(item._count(element))
+        s[-20:] = valid.rjust(20)
+        a = ''.join(s)
+        lines = '\n'.join((lines, a))
+    return lines
+
+
+def get_printable_labels(item, suffix='', hr=78*'―'):
+    r"""
+    This function is used by the __str__ methods on all classes to get a
+    nicely formatted list of labels on the object.
+
+    Parameters
+    ----------
+    item : dict
+        The OpenPNM dictionary object with each dictionary key containing a
+        numpy array
+    suffix : str, optional
+        If provided, this will be attached to the end of every dictionary
+        key so that 'pore.viscosity' becomes 'pore.viscosity.phase_01'.  This
+        is a workaround to enhance the printing of component information on
+        mixtures.
+    hr : str, optional
+        The horizontal rule to use between the table heading and body
+
+    Returns
+    -------
+    table : str
+        A formatted string that will output a 78 character wide table when
+        printed
+
+    Notes
+    -----
+    The table returned by this function only contains items that boolean
+    arrays.  Any numerical arrays are ignored.
+
+    See Also
+    --------
+    get_printable_props
+    """
+    if suffix and not suffix.startswith('.'):
+        suffix = '.' + suffix
+    header = [' ']*78
+    header[2] = '#'
+    header[5:11] = 'Labels'
+    header[-18:] = 'Assigned Locations'
+    lines = ''.join(header) + '\n' + hr
+    for i, k in enumerate(item.labels()):
+        s = [' ']*78
+        s[:3] = str(i+1).rjust(3)
+        prop = k + suffix
+        s[5:5+len(prop)] = prop
+        valid = str(np.sum(item[k]))
+        s[-12:] = valid.rjust(12)
+        a = ''.join(s)
+        lines = '\n'.join((lines, a))
+    return lines
+
+
+def is_transient(algorithms):
+    # check that algorithms is a list
+    if type(algorithms) is not list:
+        algorithms = [algorithms]
+    # return True if any algorithm is transient
+    for alg in algorithms:
+        quantity = alg.settings['quantity']
+        soln_type = type(alg.soln[quantity])
+        if 'TransientSolution' in str(soln_type):
+            return True
+    return False
+
+
 def is_valid_propname(propname):
     r"""
     Checks if ``propname`` is a valid OpenPNM propname, i.e. starts with
@@ -614,134 +646,22 @@ def is_valid_propname(propname):
     return True
 
 
-def prettify_logger_message(msg):
-    """Prettifies logger messages by breaking them up into multi lines"""
-    from textwrap import wrap
-    linewidth = 75 - 13
-    indent = "\n" + " " * 13
-    temp = wrap(msg, width=linewidth)
-    return indent.join(temp)
-
-
-def remove_prop_deep(obj, propname):
-    """Hierarchically deletes the given propname and its children"""
-    for k in list(obj.keys()):
-        obj._parse_element(propname)
-        if k.startswith(propname):
-            del obj[k]
-
-
-def get_model_collection(collection, regen_mode=None, domain=None):
-    d = deepcopy(collection)
-    for k, v in d.items():
-        if regen_mode:
-            v['regen_mode'] = regen_mode
-        if domain:
-            v['domain'] = domain
-    return d
-
-
-def dict_to_struct(d):
-    struct = rf.unstructured_to_structured(np.vstack(list(d.values())),
-                                           names=list(d.keys()))
-    return struct
-
-
-def struct_to_dict(s):
-    d = {}
-    for key in s.dtype.names:
-        d[key] = s[key]
-    return d
-
-
-def get_mixture_model_args(
-    target,
-    composition='xs',
-    args={
-        'mus': 'pore.viscosity',
-        'MWs': 'param.molecular_weight',
-    }
-):
-    from openpnm.models.phase.misc import mole_to_mass_fraction
-    vals = {}
-    if composition in ['ws']:
-        temp = np.vstack(list(mole_to_mass_fraction(target=target).values()))[:, 0]
-        vals[composition] = temp
-    else:
-        temp = np.vstack(list(target['pore.mole_fraction'].values()))[:, 0]
-        vals[composition] = temp
-    for item in args.keys():
-        temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
-        vals[item] = temp
-    return vals
-
-
-def get_printable_props(item, suffix='', hr=78*'―'):
-    if suffix and not suffix.startswith('.'):
-        suffix = '.' + suffix
-    header = [' ']*78
-    header[2] = '#'
-    header[5:15] = 'Properties'
-    header[-12:] = 'Valid Values'
-    lines = ''.join(header) + '\n' + hr
-    for i, k in enumerate(item.props()):
-        s = [' ']*78
-        s[:3] = str(i+1).rjust(3)
-        prop = k + suffix
-        s[5:5+len(prop)] = prop
-        element = k.split('.', 1)[0]
-        arr = item[k]
-        nans = np.any(np.isnan(np.atleast_2d(arr.T)), axis=0)
-        valid = str(np.sum(~nans)) + ' / ' + str(item._count(element))
-        s[-20:] = valid.rjust(20)
-        a = ''.join(s)
-        lines = '\n'.join((lines, a))
-    return lines
-
-
-def get_printable_labels(item, suffix='', hr=78*'―'):
-    if suffix and not suffix.startswith('.'):
-        suffix = '.' + suffix
-    header = [' ']*78
-    header[2] = '#'
-    header[5:11] = 'Labels'
-    header[-18:] = 'Assigned Locations'
-    lines = ''.join(header) + '\n' + hr
-    for i, k in enumerate(item.labels()):
-        s = [' ']*78
-        s[:3] = str(i+1).rjust(3)
-        prop = k + suffix
-        s[5:5+len(prop)] = prop
-        valid = str(np.sum(item[k]))
-        s[-12:] = valid.rjust(12)
-        a = ''.join(s)
-        lines = '\n'.join((lines, a))
-    return lines
-
-
-def _is_transient(algorithms):
-    # check that algorithms is a list
-    if type(algorithms) is not list:
-        algorithms = [algorithms]
-    # return True if any algorithm is transient
-    for alg in algorithms:
-        quantity = alg.settings['quantity']
-        soln_type = type(alg.soln[quantity])
-        if 'TransientSolution' in str(soln_type):
-            return True
-    return False
-
-
 def nbr_to_str(nbr, t_precision=12):
     r"""
     Converts a scalar into a string in scientific (exponential) notation
     without the decimal point.
+
     Parameters
     ----------
     nbr : scalar
         The number to be converted into a scalar.
     t_precision : integer
         The time precision (number of decimal places). Default value is 12.
+
+    Returns
+    -------
+    num : str
+        The string represenation of the given number in scientific notation
     """
     from decimal import Decimal as dc
     n = int(-dc(str(round(nbr, t_precision))).as_tuple().exponent

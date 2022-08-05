@@ -28,5 +28,5 @@ class Water(Phase):
         a = Chemical('h2o')
         temp = _fetch_chemical_props(a)
         self.params.update(temp)
-        self.models.update(water())
+        self.models.update(water)
         self.regenerate_models()

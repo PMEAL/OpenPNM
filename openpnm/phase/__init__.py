@@ -30,6 +30,29 @@ def _fetch_chemical_props(a):
     return temp
 
 
+def _get_mixture_model_args(
+    target,
+    composition='xs',
+    args={
+        'mus': 'pore.viscosity',
+        'MWs': 'param.molecular_weight',
+    }
+):
+    from openpnm.models.phase.misc import mole_to_mass_fraction
+    from numpy import vstack
+    vals = {}
+    if composition in ['ws']:
+        temp = vstack(list(mole_to_mass_fraction(target=target).values()))[:, 0]
+        vals[composition] = temp
+    else:
+        temp = vstack(list(target['pore.mole_fraction'].values()))[:, 0]
+        vals[composition] = temp
+    for item in args.keys():
+        temp = vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
+        vals[item] = temp
+    return vals
+
+
 from ._phase import *
 from ._mixture import *
 from ._species import *

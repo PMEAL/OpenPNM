@@ -1,14 +1,7 @@
 import openpnm.models as mods
-from openpnm.utils import get_model_collection
 
 
-def air(regen_mode=None, domain=None):
-    return get_model_collection(collection=_air,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_air = {
+air = {
     'pore.density': {
         'model': mods.phase.density.ideal_gas,
     },

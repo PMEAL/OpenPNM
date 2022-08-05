@@ -60,7 +60,7 @@ class StandardLiquid(Species):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_model_collection(standard_liquid())
+        self.add_model_collection(standard_liquid)
         self.regenerate_models()
 
 
@@ -68,5 +68,5 @@ class StandardGas(Species):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_model_collection(standard_gas())
+        self.add_model_collection(standard_gas)
         self.regenerate_models()

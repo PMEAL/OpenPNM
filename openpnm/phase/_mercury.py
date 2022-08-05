@@ -24,5 +24,5 @@ class Mercury(Phase):
         a = Chemical('hg')
         temp = _fetch_chemical_props(a)
         self.params.update(temp)
-        self.add_model_collection(mercury())
+        self.add_model_collection(mercury)
         self.regenerate_models()

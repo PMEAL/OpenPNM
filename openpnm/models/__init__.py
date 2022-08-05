@@ -1,6 +1,6 @@
 r"""
-Collection of pore-scale models for manipulating data
-=====================================================
+Collection of pore-scale models
+===============================
 
 """
 

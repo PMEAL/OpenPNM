@@ -1,7 +1,7 @@
 import numpy as np
-from copy import deepcopy
 import inspect
 import uuid
+from copy import deepcopy
 from openpnm.core import (
     LabelMixin,
     ModelsDict,
@@ -14,7 +14,6 @@ from openpnm.utils import (
     PrintableList,
     PrintableDict,
     Docorator,
-    parse_mode,
     get_printable_props,
     get_printable_labels,
 )
@@ -241,9 +240,8 @@ class Base2(dict):
         if mode is None:
             super().clear()
         else:
-            mode = parse_mode(obj=self, mode=mode, allowed=['props',
-                                                            'labels',
-                                                            'models'])
+            if isinstance(mode, str):
+                mode = [mode]
             if 'props' in mode:
                 for item in self.props():
                     if item not in ['pore.coords', 'throat.conns']:
@@ -260,10 +258,8 @@ class Base2(dict):
         if mode is None:
             return super().keys()
         else:
-            mode = parse_mode(obj=self, mode=mode, allowed=['props',
-                                                            'labels',
-                                                            'models',
-                                                            'constants'])
+            if isinstance(mode, str):
+                mode = [mode]
             vals = set()
             if 'props' in mode:
                 for item in self.props():
@@ -462,9 +458,7 @@ class ModelMixin2:
             self.run_model(propname+'@'+domain)
 
     def add_model_collection(self, models, regen_mode='deferred', domain='all'):
-        # Catch un-run function
-        if hasattr(models, '__call__'):
-            models = models()
+        models = deepcopy(models)
         for k, v in models.items():
             if 'domain' not in v.keys():
                 v['domain'] = domain
