@@ -23,13 +23,11 @@ __all__ = [
     'sanitize_dict',
     'methods_to_table',
     'models_to_table',
-    'catch_module_not_found',
     'ignore_warnings',
     'is_symmetric',
     'is_valid_propname',
     'is_transient',
     'prettify_logger_message',
-    'get_model_collection',
     'dict_to_struct',
     'struct_to_dict',
     'get_printable_props',
@@ -350,20 +348,6 @@ def models_to_table(obj, params=True):
     return "\n".join(lines)
 
 
-def catch_module_not_found(function):
-    r"""
-    A decorator that wraps the passed in function and catches
-    ModuleNotFound exception.
-    """
-    @functools.wraps(function)
-    def wrapper(*args, **kwargs):
-        try:
-            return function(*args, **kwargs)
-        except ModuleNotFoundError:
-            pass
-    return wrapper
-
-
 def ignore_warnings(warning=RuntimeWarning):
     r"""
     Decorator for catching warnings. Useful in pore-scale models where
@@ -443,16 +427,6 @@ def prettify_logger_message(msg):
     indent = "\n" + " " * 13
     temp = wrap(msg, width=linewidth)
     return indent.join(temp)
-
-
-def get_model_collection(collection, regen_mode=None, domain=None):
-    d = deepcopy(collection)
-    for k, v in d.items():
-        if regen_mode:
-            v['regen_mode'] = regen_mode
-        if domain:
-            v['domain'] = domain
-    return d
 
 
 def dict_to_struct(d):
