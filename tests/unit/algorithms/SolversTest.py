@@ -3,7 +3,6 @@ import importlib
 import numpy as np
 import numpy.testing as nt
 import openpnm as op
-from openpnm.utils import catch_module_not_found
 
 
 class SolversTest:
