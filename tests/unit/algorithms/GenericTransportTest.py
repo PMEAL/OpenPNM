@@ -9,13 +9,11 @@ class TransportTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[9, 9, 9])
         self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders()
-        )
+            op.models.collections.geometry.spheres_and_cylinders)
         self.net.regenerate_models()
         self.phase = op.phase.Air(network=self.net)
         self.phase.add_model_collection(
-            op.models.collections.physics.basic()
-        )
+            op.models.collections.physics.basic)
         self.phase.regenerate_models()
         self.phase['pore.mole_fraction'] = 0
         self.phase['throat.diffusive_conductance'] = 1.0
@@ -164,8 +162,7 @@ class TransportTest:
     # def test_rate_Nt_by_2_conductance(self):
     #     net = op.network.Cubic(shape=[1, 6, 1])
     #     net.add_model_collection(
-    #         op.models.collections.geometry.spheres_and_cylinders()
-    #     )
+    #         op.models.collections.geometry.spheres_and_cylinders)
     #     net.regenerate_models()
     #     air = op.phase.Air(network=net)
     #     water = op.phase.Water(network=net)

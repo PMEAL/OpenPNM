@@ -10,8 +10,7 @@ class TransientReactiveTransportTest:
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
         self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders()
-        )
+            op.models.collections.geometry.spheres_and_cylinders)
         self.net.regenerate_models()
         self.net['pore.volume'] = 1e-12
         self.phase = op.phase.Phase(network=self.net)

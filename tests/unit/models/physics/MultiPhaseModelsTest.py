@@ -9,8 +9,7 @@ class MultiPhaseModelsTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
         self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders()
-        )
+            op.models.collections.geometry.spheres_and_cylinders)
         self.net.regenerate_models()
         self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.occupancy'] = np.ones(self.net.Np)
@@ -18,9 +17,7 @@ class MultiPhaseModelsTest:
         self.phase['pore.occupancy'][[6, 7, 19, 25]] = 0
         self.phase['throat.occupancy'][[1, 2, 3]] = 0
         np.random.seed(0)
-        self.phase.add_model_collection(
-            op.models.collections.physics.standard()
-        )
+        self.phase.add_model_collection(op.models.collections.physics.standard)
         self.phase['throat.capillary_pressure'] = 7000*np.random.rand(self.phase.Nt)
         self.phase['throat.diffusive_conductance'] = 2
 
