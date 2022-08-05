@@ -13,18 +13,6 @@ class UtilsTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_tic_toc(self):
-        with pytest.raises(Exception):
-            op.utils.toc()
-        op.utils.tic()
-        sleep(0.5)
-        t1 = op.utils.toc(quiet=True)
-        assert t1 >= 0
-        op.utils.tic()
-        sleep(0.5)
-        t2 = op.utils.toc()
-        assert t2 >= 0
-
     def test_nested_dict(self):
         d = op.utils.NestedDict()
         d['top']['middle']['bottom'] = 1
@@ -57,16 +45,11 @@ class UtilsTest:
     def test_is_symmetric_FickianDiffusion_must_be_symmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         net.add_model_collection(
-            op.models.collections.geometry.cones_and_cylinders()
-        )
+            op.models.collections.geometry.cones_and_cylinders)
         net.regenerate_models()
         air = op.phase.Air(network=net)
-        air.add_model_collection(
-            op.models.collections.phase.air()
-        )
-        air.add_model_collection(
-            op.models.collections.physics.standard()
-        )
+        air.add_model_collection(op.models.collections.phase.air)
+        air.add_model_collection(op.models.collections.physics.standard)
         air.regenerate_models()
         fd = op.algorithms.FickianDiffusion(network=net, phase=air)
         fd.set_value_BC(pores=net.pores("left"), values=1.0)
@@ -76,16 +59,12 @@ class UtilsTest:
     def test_is_symmetric_AdvectionDiffusion_must_be_nonsymmetric(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         net.add_model_collection(
-            op.models.collections.geometry.cones_and_cylinders()
-        )
+            op.models.collections.geometry.cones_and_cylinders)
         net.regenerate_models()
         air = op.phase.Air(network=net)
         air.add_model_collection(
-            op.models.collections.phase.air()
-        )
-        air.add_model_collection(
-            op.models.collections.physics.standard()
-        )
+            op.models.collections.phase.air)
+        air.add_model_collection(op.models.collections.physics.standard)
         air.regenerate_models()
         ad = op.algorithms.AdvectionDiffusion(network=net, phase=air)
         ad.set_value_BC(pores=net.pores("left"), values=1.0)

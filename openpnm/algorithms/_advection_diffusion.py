@@ -45,7 +45,7 @@ class AdvectionDiffusion(ReactiveTransport):
     A subclass of ReactiveTransport to simulate advection-diffusion
     """
 
-    def __init__(self, name='ad_#', **kwargs):
+    def __init__(self, name='ad_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(AdvectionDiffusionSettings())
         self['pore.bc.outflow'] = np.nan

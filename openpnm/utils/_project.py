@@ -172,8 +172,8 @@ class Project(SimpleList):
         if name in [None, '']:
             name = 'obj_01'  # Give basic name, then let rest of func fix it
         warn = True
-        if name.endswith('_#'):
-            name = name.replace('_#', '_01')
+        if name.endswith('_?'):
+            name = name.replace('_?', '_01')
             warn = False
         if name in self.names:  # If proposed name is taken, increment it
             proposed_name = name
@@ -224,14 +224,11 @@ class Project(SimpleList):
         return ws
 
     def __str__(self):
-        s = []
         hr = '―'*78
-        s.append('═'*78)
-        s.append(' {0:<15} '.format('Object Name')
-                 + '{0:<65}'.format('Object ID'))
-        s.append(hr)
+        s = '═'*78 + '\n'
+        s += 'Object Name : Object Class and ID' + '\n'
+        s += hr + '\n'
         for item in self:
-            s.append(' {0:<15} '.format(item.name)
-                     + '{0:<65}'.format(item.__repr__()))
-        s.append(hr)
-        return '\n'.join(s)
+            s += item.__repr__() + '\n'
+        s += hr
+        return s

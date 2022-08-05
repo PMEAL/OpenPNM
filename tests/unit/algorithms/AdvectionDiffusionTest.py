@@ -11,8 +11,7 @@ class AdvectionDiffusionTest:
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[4, 3, 1], spacing=1.)
         self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders()
-        )
+            op.models.collections.geometry.spheres_and_cylinders)
         self.net.regenerate_models()
 
         self.phase = op.phase.Phase(network=self.net)

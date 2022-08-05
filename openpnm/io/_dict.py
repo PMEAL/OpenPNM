@@ -1,6 +1,6 @@
 import logging
 from openpnm.utils import NestedDict
-from openpnm.utils._misc import _is_transient, nbr_to_str
+from openpnm.utils._misc import is_transient, nbr_to_str
 
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ def project_to_dict(project, categorize_by=['name'], flatten=False, element=None
         except AttributeError:
             break
         # only for transient algs
-        transient = _is_transient(alg)
+        transient = is_transient(alg)
         path = build_path(alg, key)
         if transient:
             times = alg.soln[key].t

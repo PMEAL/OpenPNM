@@ -8,10 +8,10 @@ class BCTest:
     def setup_class(self):
         np.random.seed(0)
         self.pn = op.network.Cubic(shape=[3, 3, 1], spacing=1e-4)
-        self.pn.add_model_collection(collections.geometry.cones_and_cylinders())
+        self.pn.add_model_collection(collections.geometry.cones_and_cylinders)
         self.pn.regenerate_models()
         self.air = op.phase.Air(network=self.pn, name="air")
-        self.air.add_model_collection(collections.physics.standard())
+        self.air.add_model_collection(collections.physics.standard)
         self.air.regenerate_models()
 
     def test_add(self):

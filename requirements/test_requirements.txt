@@ -6,3 +6,4 @@ pytest
 pytest-cache
 pytest-codestyle
 pytest-cov
+thermo

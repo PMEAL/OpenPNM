@@ -9,6 +9,11 @@ logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
+__all__ = [
+    'Phase',
+]
+
+
 @docstr.get_sections(base='PhaseSettings', sections=['Parameters'])
 @docstr.dedent
 class PhaseSettings:
@@ -38,7 +43,7 @@ class Phase(Domain):
 
     """
 
-    def __init__(self, network, name='phase_#', **kwargs):
+    def __init__(self, network, name='phase_?', **kwargs):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(PhaseSettings())
         self['pore.all'] = np.ones([network.Np, ], dtype=bool)
@@ -80,7 +85,9 @@ class Phase(Domain):
             vals = self.network[element + '.' + prop]
         else:
             if self.settings['auto_interpolate']:
-                if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                if element == 'param':
+                    raise KeyError(key)
+                elif (element == 'pore') and ('throat.'+prop not in self.keys()):
                     msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
                     raise KeyError(msg)
                 elif (element == 'throat') and ('pore.'+prop not in self.keys()):
@@ -90,16 +97,3 @@ class Phase(Domain):
             else:
                 raise KeyError(key)
         return vals[locs]
-
-
-
-
-
-
-
-
-
-
-
-
-

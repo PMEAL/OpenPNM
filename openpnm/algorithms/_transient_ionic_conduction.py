@@ -33,6 +33,6 @@ class TransientIonicConduction(TransientReactiveTransport,
     of pure diffusion and advection-diffusion problems.
     """
 
-    def __init__(self, name='trans_ionic_#', **kwargs):
+    def __init__(self, name='trans_ionic_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(TransientIonicConductionSettings())

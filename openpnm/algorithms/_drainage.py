@@ -44,7 +44,7 @@ class DrainageSettings:
 
 class Drainage(Algorithm):
 
-    def __init__(self, phase, name='drainage_#', **kwargs):
+    def __init__(self, phase, name='drainage_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name

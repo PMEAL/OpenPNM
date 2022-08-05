@@ -1,8 +1,33 @@
 import numpy as np
 from collections import namedtuple
 from openpnm.utils import PrintableList
+from matplotlib.docstring import Substitution
 
-__all__ = ['ParserMixin', 'LabelMixin', 'LegacyMixin']
+
+__all__ = ['ParserMixin', 'LabelMixin']
+
+
+_doctxt = Substitution(
+    mode_table=
+    """
+    ==============  =====================================================
+    mode            meaning
+    ==============  =====================================================
+    'or'            Returns the labels that are assigned to *any* of the
+                    given locations. Also accepts 'union' and 'any'
+    'and'           Labels that are present on all the given locations.
+                    also accepts 'intersection' and 'all'
+    'xor'           Labels that are present on *only one*
+                    of the given locations.Also accepts 'exclusive_or'
+    'nor'           Labels that are *not* present on any of
+                    the given locations. Also accepts 'not' and 'none'
+    'nand'          Labels that are present on *all but one* of the given
+                    locations
+    'xnor'          Labels that are present on *more than one* of the given
+                    locations.
+    ==============  =====================================================
+    """
+)
 
 
 class ParserMixin:
@@ -179,100 +204,6 @@ class ParserMixin:
         return element + '.' + propname
 
 
-class LegacyMixin:
-    """Brief explanation of LegacyMixin"""
-
-    def tomask(self, *args, **kwargs):
-        """Brief explanation of tomask"""
-        return self.to_mask(*args, **kwargs)
-
-    def toindices(self, *args, **kwargs):
-        """Brief explanation of tomask"""
-        return self.to_indices(*args, **kwargs)
-
-    def _map(self, ids, element, filtered):
-        ids = np.array(ids, dtype=np.int64)
-        locations = self._get_indices(element=element)
-        self_in_ids = np.isin(ids, self[element+'._id'], assume_unique=True)
-        ids_in_self = np.isin(self[element+'._id'], ids, assume_unique=True)
-        mask = np.zeros(shape=ids.shape, dtype=bool)
-        mask[self_in_ids] = True
-        ind = np.ones_like(mask, dtype=np.int64) * -1
-        ind[self_in_ids] = locations[ids_in_self]
-        if filtered:
-            return ind[mask]
-        t = namedtuple('index_map', ('indices', 'mask'))
-        return t(ind, mask)
-
-    def map_pores(self, pores, origin, filtered=True):
-        r"""
-        Given a list of pore on a target object, finds indices of those pores
-        on the calling object
-
-        Parameters
-        ----------
-        pores : array_like
-            The indices of the pores on the object specifiedin ``origin``
-
-        origin : Base
-            The object corresponding to the indices given in ``pores``
-
-        filtered : bool (default is ``True``)
-            If ``True`` then a ndarray of indices is returned with missing
-            indices removed, otherwise a named-tuple containing both the
-            ``indices`` and a boolean ``mask`` with ``False`` indicating
-            which locations were not found.
-
-        Returns
-        -------
-        Pore indices on the calling object corresponding to the same pores
-        on the ``origin`` object.  Can be an array or a tuple containing an
-        array and a mask, depending on the value of ``filtered``.
-
-        See Also
-        --------
-        pores
-        map_throats
-
-        """
-        ids = origin['pore._id'][pores]
-        return self._map(element='pore', ids=ids, filtered=filtered)
-
-    def map_throats(self, throats, origin, filtered=True):
-        r"""
-        Given a list of throats on a target object, finds indices of
-        those throats on the calling object
-
-        Parameters
-        ----------
-        throats : array_like
-            The indices of the throats on the object specified in ``origin``
-        origin : Base
-            The object corresponding to the indices given in ``throats``
-        filtered : bool, default is ``True``
-            If ``True`` then a ndarray of indices is returned with missing
-            indices removed, otherwise a named-tuple containing both the
-            ``indices`` and a boolean ``mask`` with ``False`` indicating
-            which locations were not found.
-
-        Returns
-        -------
-        ndarray
-            Throat indices on the calling object corresponding to the same
-            throats on the ``origin`` object.  Can be an array or a tuple
-            containing an array and a mask, depending on the value of
-            ``filtered``.
-
-        See Also
-        --------
-        throats
-        map_pores
-
-        """
-        ids = origin['throat._id'][throats]
-        return self._map(element='throat', ids=ids, filtered=filtered)
-
-
 class LabelMixin:
     """Brief explanation of LabelMixin"""
 
@@ -307,6 +238,7 @@ class LabelMixin:
             raise Exception('Unrecognized mode:'+str(mode))
         return PrintableList(temp)
 
+    @_doctxt
     def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
         Returns a list of labels present on the object
@@ -319,31 +251,14 @@ class LabelMixin:
         element : str
             Controls whether pore or throat labels are returned.  If empty then
             both are returned (default).
-
         pores (or throats) : array_like
             The pores (or throats) whose labels are sought.  If left empty a
             list containing all pore and throat labels is returned.
-
         mode : str, optional
             Controls how the query should be performed.  Only applicable
             when ``pores`` or ``throats`` are specified:
 
-            ==============  =====================================================
-            mode            meaning
-            ==============  =====================================================
-            'or'            Returns the labels that are assigned to *any* of the
-                            given locations. Also accepts 'union' and 'any'
-            'and'           Labels that are present on all the given locations.
-                            also accepts 'intersection' and 'all'
-            'xor'           Labels that are present on *only one*
-                            of the given locations.Also accepts 'exclusive_or'
-            'nor'           Labels that are *not* present on any of
-                            the given locations. Also accepts 'not' and 'none'
-            'nand'          Labels that are present on *all but one* of the given
-                            locations
-            'xnor'          Labels that are present on *more than one* of the given
-                            locations.
-            ==============  =====================================================
+            %(mode_table)s
 
         Returns
         -------
@@ -362,12 +277,6 @@ class LabelMixin:
         of the labels but these are not included.  This makes the returned list
         more useful.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.labels(pores=[11, 12])
-        ['pore.left', 'pore.surface']
         """
         # Short-circuit query when no pores or throats are given
         if (np.size(pores) == 0) and (np.size(throats) == 0):
@@ -377,7 +286,8 @@ class LabelMixin:
                 element = [element]
             labels = PrintableList()
             for k, v in self.items():
-                if (k.split('.', 1)[0] in element) and (v.dtype == bool):
+                el, prop = k.split('.', 1)
+                if (el in element) and (v.dtype == bool) and not prop.startswith('_'):
                     labels.append(k)
         elif (np.size(pores) > 0) and (np.size(throats) > 0):
             raise Exception('Cannot perform label query on pores and '
@@ -388,7 +298,7 @@ class LabelMixin:
         elif np.size(throats) > 0:
             labels = self._get_labels(element='throat', locations=throats,
                                       mode=mode)
-        return labels
+        return sorted(labels)
 
     def set_label(self, label, pores=None, throats=None, mode='add'):
         r"""
@@ -512,7 +422,8 @@ class LabelMixin:
         ind = ind.astype(dtype=int)
         return ind
 
-    def pores(self, labels=None, mode='or', asmask=False, to_global=False):
+    @_doctxt
+    def pores(self, labels=None, mode='or', asmask=False):
         r"""
         Returns pore indicies where given labels exist, according to the logic
         specified by the ``mode`` argument.
@@ -525,30 +436,11 @@ class LabelMixin:
         mode : str
             Specifies how the query should be performed.  The options are:
 
-            ==============  =====================================================
-            mode            meaning
-            ==============  =====================================================
-            'or'            Pores with *one or more* of the given labels are
-                            returned. Also accepts 'union' and 'any'.
-            'and'           Pores with all of the given labels are returned.
-                            Also accepts 'intersection' and 'all'.
-            'xor'           Pores with *only one* of the given labels are returned.
-                            Also accepts 'exclusive_or'.
-            'nor'           Pores with *none* of the given labels are returned.
-                            Also accepts 'not' and 'none'.
-            'nand'          Pores with *not all* of the given labels are
-                            returned.
-            'xnor'          Pores with *more than one* of the given labels are
-                            returned.
-            ==============  =====================================================
+            %(mode_table)s
 
         asmask : bool
             If ``True`` then a boolean array of length Np is returned with
             ``True`` values indicating the pores that satisfy the query.
-        to_global : bool
-            If ``True``, the returned indices will be indexed relative to the
-            full domain.  This only has an effect when the calling object
-            is a Subdomain.
 
         Returns
         -------
@@ -569,29 +461,16 @@ class LabelMixin:
         the result a a boolean mask (``asmask=True``), then manipulate the
         arrays manually.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> Ps = pn.pores(labels=['top', 'back'], mode='union')
-        >>> Ps[:5]  # Look at first 5 pore indices
-        array([ 4,  9, 14, 19, 20])
-        >>> pn.pores(labels=['top', 'back'], mode='xnor')
-        array([ 24,  49,  74,  99, 124])
         """
         if labels is None:
             labels = self.name
         ind = self._get_indices(element='pore', labels=labels, mode=mode)
-        if to_global and hasattr(self, 'to_global'):
-            ind = self.to_global(pores=ind)
-            if asmask:
-                ind = self._domain.to_mask(pores=ind)
-        else:
-            if asmask:
-                ind = self.to_mask(pores=ind)
+        if asmask:
+            ind = self.to_mask(pores=ind)
         return ind
 
-    def throats(self, labels=None, mode='or', asmask=False, to_global=False):
+    @_doctxt
+    def throats(self, labels=None, mode='or', asmask=False):
         r"""
         Returns throat locations where given labels exist, according to the
         logic specified by the ``mode`` argument.
@@ -605,30 +484,11 @@ class LabelMixin:
         mode : str
             Specifies how the query should be performed. The options are:
 
-            ==============  =====================================================
-            mode            meaning
-            ==============  =====================================================
-            'or'            Throats with *one or more* of the given labels are
-                            returned. Also accepts 'union' and 'any'.
-            'and'           Throats with all of the given labels are returned.
-                            Also accepts 'intersection' and 'all'.
-            'xor'           Throats with *only one* of the given labels are returned.
-                            Also accepts 'exclusive_or'.
-            'nor'           Throats with *none* of the given labels are returned.
-                            Also accepts 'not' and 'none'.
-            'nand'          Throats with *not all* of the given labels are
-                            returned.
-            'xnor'          Throats with *more than one* of the given labels are
-                            returned.
-            ==============  =====================================================
+            %(mode_table)s
 
         asmask : bool
             If ``True`` then a boolean array of length Nt is returned with
             ``True`` values indicating the throats that satisfy the query.
-        to_global : bool
-            If ``True``, the returned indices will be indexed relative to the
-            full domain.  This only has an effect when the calling object
-            is a Subdomain.
 
         Returns
         -------
@@ -639,27 +499,15 @@ class LabelMixin:
         --------
         pores
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[3, 3, 3])
-        >>> Ts = pn.throats()
-        >>> Ts[0:5]  # Look at first 5 throat indices
-        array([0, 1, 2, 3, 4])
-
         """
         if labels is None:
             labels = self.name
         ind = self._get_indices(element='throat', labels=labels, mode=mode)
-        if to_global and hasattr(self, 'to_global'):
-            ind = self.to_global(throats=ind)
-            if asmask:
-                ind = self._domain.to_mask(throats=ind)
-        else:
-            if asmask:
-                ind = self.to_mask(throats=ind)
+        if asmask:
+            ind = self.to_mask(throats=ind)
         return ind
 
+    @_doctxt
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
@@ -675,22 +523,7 @@ class LabelMixin:
             Controls how the filter is applied. The default value is
             'or'. Options include:
 
-            ===========  =====================================================
-            mode         meaning
-            ===========  =====================================================
-            'or'         Returns a list of the given locations where *any* of
-                         the given labels exist. Also accepts 'union' and 'any'.
-            'and'        Only locations where *all* the given labels are
-                         found. Also accepts 'intersection' and 'all'.
-            'xor'        Only locations where exactly *one* of the given
-                         labels are found.
-            'nor'        Only locations where *none* of the given labels are
-                         found. Also accepts 'none' and 'not'
-            'nand'       Only locations with *some but not all* of the given
-                         labels are returned
-            'xnor'       Only locations with *more than one* of the given
-                         labels are returned
-            ===========  =====================================================
+            %(mode_table)s
 
         Returns
         -------
@@ -703,16 +536,6 @@ class LabelMixin:
         pores
         throats
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.filter_by_label(pores=[0, 1, 25, 32], labels='left')
-        array([0, 1])
-        >>> Ps = pn.pores(['top', 'bottom', 'back'], mode='or')
-        >>> pn.filter_by_label(pores=Ps, labels=['top', 'back'],
-        ...                    mode='and')
-        array([ 24,  49,  74,  99, 124])
         """
         # Convert inputs to locations and element
         if (np.size(throats) > 0) and (np.size(pores) > 0):
@@ -732,6 +555,7 @@ class LabelMixin:
         ind = mask[locations]
         return locations[ind]
 
+    @_doctxt
     def num_pores(self, labels='all', mode='or'):
         r"""
         Returns the number of pores of the specified labels
@@ -746,23 +570,7 @@ class LabelMixin:
         mode : str, optional
             Specifies how the count should be performed. The options are:
 
-            ==============  =====================================================
-            mode            meaning
-            ==============  =====================================================
-            'or'            Pores with *one or more* of the given labels are
-                            counted. Also accepts 'union' and 'any'.
-            'and'           Pores with all of the given labels are returned.
-                            Also accepts 'intersection' and 'all'.
-            'xor'           Pores with *only one* of the given labels are
-                            counted. Also accepts 'exclusive_or'.
-            'nor'           Pores with *none* of the given labels are counted.
-                            Also accepts 'not' and 'none'.
-            'nand'          Pores with *not all* of the given labels are
-                            counted.
-            'xnor'          Pores with *more than one* of the given labels are
-                            counted.
-            ==============  =====================================================
-
+            %(mode_table)s
 
         Returns
         -------
@@ -780,25 +588,13 @@ class LabelMixin:
         of the labels, however, to make the count more useful these are not
         included.
 
-        Examples
-        --------
-        >>> import openpnm as op
-        >>> pn = op.network.Cubic(shape=[5, 5, 5])
-        >>> pn.num_pores()
-        125
-        >>> pn.num_pores(labels=['top'])
-        25
-        >>> pn.num_pores(labels=['top', 'front'], mode='or')
-        45
-        >>> pn.num_pores(labels=['top', 'front'], mode='xnor')
-        5
-
         """
         # Count number of pores of specified type
         Ps = self._get_indices(labels=labels, mode=mode, element='pore')
         Np = np.shape(Ps)[0]
         return Np
 
+    @_doctxt
     def num_throats(self, labels='all', mode='union'):
         r"""
         Return the number of throats of the specified labels
@@ -811,22 +607,7 @@ class LabelMixin:
         mode : str, optional
             Specifies how the count should be performed.  The options are:
 
-            ==============  =====================================================
-            mode            meaning
-            ==============  =====================================================
-            'or'            Throats with *one or more* of the given labels are
-                            counted. Also accepts 'union' and 'any'.
-            'and'           Throats with all of the given labels are returned.
-                            Also accepts 'intersection' and 'all'.
-            'xor'           Throats with *only one* of the given labels are
-                            counted. Also accepts 'exclusive_or'.
-            'nor'           Throats with *none* of the given labels are counted.
-                            Also accepts 'not' and 'none'.
-            'nand'          Throats with *not all* of the given labels are
-                            counted.
-            'xnor'          Throats with *more than one* of the given labels are
-                            counted.
-            ==============  =====================================================
+            %(mode_table)s
 
         Returns
         -------
@@ -849,32 +630,3 @@ class LabelMixin:
         Ts = self._get_indices(labels=labels, mode=mode, element='throat')
         Nt = np.shape(Ts)[0]
         return Nt
-
-    def props(self, *args, **kwargs):
-        # Overload props on base to remove labels
-        props = set(super().props(*args, **kwargs))
-        labels = set(self.labels())
-        props = props.difference(labels)
-        return PrintableList(props)
-
-    def __str__(self):
-        s = super().__str__()
-        # s = s.rpartition('\n')[0]
-        horizontal_rule = '―' * 78
-        lines = []
-        lines.append(s)
-        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
-                                                        'Labels',
-                                                        'Assigned Locations'))
-        lines.append(horizontal_rule)
-        labels = self.labels()
-        labels.sort()
-        fmt = "{0:<5d} {1:<45s} {2:<10d}"
-        for i, item in enumerate(labels):
-            prop = item
-            if len(prop) > 35:
-                prop = prop[0:32] + '...'
-            if '._' not in prop:
-                lines.append(fmt.format(i + 1, prop, np.sum(self[item])))
-        lines.append(horizontal_rule)
-        return '\n'.join(lines)

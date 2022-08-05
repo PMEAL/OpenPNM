@@ -51,7 +51,7 @@ class MixedInvasionPercolationCoop(MixedInvasionPercolation):
 
     """
 
-    def __init__(self, name='mixedip_coop_#', **kwargs):
+    def __init__(self, name='mixedip_coop_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(MixedIPCoopSettings())
 
