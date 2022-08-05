@@ -289,7 +289,19 @@ def sanitize_dict(input_dict):
 
 
 def methods_to_table(obj):
-    """Brief explanation of 'methods_to_table'"""
+    r"""
+    Converts a methods on an object to a ReST compatible table
+
+    Parameters
+    ----------
+    obj : Base
+        Any object that has a methods
+    params : bool
+        Indicates whether or not to include a list of parameter
+        values in the table. Set to False for just a list of models, and
+        True for a more verbose table with all parameter values.
+
+    """
     parent = obj.__class__.__mro__[1]
     temp = inspect.getmembers(parent, predicate=inspect.isroutine)
     parent_funcs = [i[0] for i in temp if not i[0].startswith("_")]
@@ -319,7 +331,7 @@ def methods_to_table(obj):
 
 def models_to_table(obj, params=True):
     r"""
-    Converts a ModelsDict object to a ReST compatible table
+    Converts a all the models on an object to a ReST compatible table
 
     Parameters
     ----------
