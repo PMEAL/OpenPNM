@@ -13,18 +13,6 @@ class UtilsTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_tic_toc(self):
-        with pytest.raises(Exception):
-            op.utils.toc()
-        op.utils.tic()
-        sleep(0.5)
-        t1 = op.utils.toc(quiet=True)
-        assert t1 >= 0
-        op.utils.tic()
-        sleep(0.5)
-        t2 = op.utils.toc()
-        assert t2 >= 0
-
     def test_nested_dict(self):
         d = op.utils.NestedDict()
         d['top']['middle']['bottom'] = 1

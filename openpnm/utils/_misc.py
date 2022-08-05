@@ -19,7 +19,6 @@ __all__ = [
     'PrintableDict',
     'HealthDict',
     'NestedDict',
-    'unique_list',
     'flat_list',
     'sanitize_dict',
     'methods_to_table',
@@ -231,30 +230,6 @@ class HealthDict(PrintableDict):
 
     def __bool__(self):
         return self.health
-
-
-def unique_list(input_list):
-    r"""
-    For a given list (of points) remove any duplicates
-    """
-    output_list = []
-    if len(input_list) > 0:
-        dim = np.shape(input_list)[1]
-        for i in input_list:
-            match = False
-            for j in output_list:
-                if dim == 3:
-                    if i[0] == j[0] and i[1] == j[1] and i[2] == j[2]:
-                        match = True
-                elif dim == 2:
-                    if i[0] == j[0] and i[1] == j[1]:
-                        match = True
-                elif dim == 1:
-                    if i[0] == j[0]:
-                        match = True
-            if match is False:
-                output_list.append(i)
-    return output_list
 
 
 def flat_list(input_list):

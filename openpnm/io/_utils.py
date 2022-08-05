@@ -65,18 +65,12 @@ def _parse_filename(filename, ext=""):
 
 
 def _parse_args(network, phases):
-    # Convert network to a list, even if empty
-    if network is None:
-        network = []
-    else:
+    try:
+        project = network.project
         network = [network]
-    # Ensure phases is a list, even if empty
-    phases = list(phases)
-    # Get handle to project object
-    if len(network) == 0:
-        if len(phases) == 0:
-            raise Exception("Must specify one of network or phase")
-        project = phases[0].project
-    else:
+    except AttributeError:
         project = network[0].project
+    # Ensure phases is a list, even if empty
+    if not isinstance(phases, list):
+        phases = [phases]
     return (project, network, phases)
