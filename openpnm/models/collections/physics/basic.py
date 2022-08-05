@@ -1,14 +1,7 @@
 import openpnm.models.physics as mods
-from openpnm.utils import get_model_collection
 
 
-def basic(regen_mode=None, domain=None):
-    return get_model_collection(collection=_basic,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_basic = {
+basic = {
     'throat.hydraulic_conductance': {
         'model': mods.hydraulic_conductance.generic_hydraulic,
     },

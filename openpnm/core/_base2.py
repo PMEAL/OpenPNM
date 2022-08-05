@@ -1,7 +1,7 @@
 import numpy as np
-from copy import deepcopy
 import inspect
 import uuid
+from copy import deepcopy
 from openpnm.core import (
     LabelMixin,
     ModelsDict,
@@ -458,9 +458,7 @@ class ModelMixin2:
             self.run_model(propname+'@'+domain)
 
     def add_model_collection(self, models, regen_mode='deferred', domain='all'):
-        # Catch un-run function
-        if hasattr(models, '__call__'):
-            models = models()
+        models = deepcopy(models)
         for k, v in models.items():
             if 'domain' not in v.keys():
                 v['domain'] = domain

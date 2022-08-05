@@ -30,7 +30,7 @@ class Air(Phase):
         a = Mixture(IDs=['o2', 'n2'], zs=[0.21, 0.79])
         temp = _fetch_chemical_props(a)
         self.params.update(temp)
-        self.models.update(air())
+        self.models.update(air)
         self.regenerate_models()
 
 

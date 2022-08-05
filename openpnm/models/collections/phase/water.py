@@ -1,14 +1,7 @@
 import openpnm.models as mods
-from openpnm.utils import get_model_collection
 
 
-def water(regen_mode=None, domain=None):
-    return get_model_collection(collection=_water,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_water = {
+water = {
     'pore.contact_angle': {
         'model': mods.misc.constant,
         'value': 110.0,

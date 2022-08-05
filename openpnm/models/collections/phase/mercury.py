@@ -1,14 +1,7 @@
 import openpnm.models as mods
-from openpnm.utils import get_model_collection
 
 
-def mercury(regen_mode=None, domain=None):
-    return get_model_collection(collection=_mercury,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_mercury = {
+mercury = {
     'throat.contact_angle': {
         'model': mods.misc.constant,
         'value': 140,

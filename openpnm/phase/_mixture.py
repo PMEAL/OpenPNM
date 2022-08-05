@@ -337,8 +337,8 @@ class StandardLiquidMixture(LiquidMixture):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_model_collection(standard_liquid_mixture())
-        # Running models doesn't make sense in compositions are not set yet
+        self.add_model_collection(standard_liquid_mixture)
+        # Running models doesn't make sense as compositions are not set yet
         # self.regenerate_models()
 
 
@@ -346,6 +346,6 @@ class StandardGasMixture(GasMixture):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_model_collection(standard_gas_mixture())
-        # Running models doesn't make sense in compositions are not set yet
+        self.add_model_collection(standard_gas_mixture)
+        # Running models doesn't make sense as compositions are not set yet
         # self.regenerate_models()
