@@ -525,14 +525,14 @@ class ModelMixin2:
             propname = f'{element}.{prop}'
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
-            kwargs = {'target': self, 'domain': f'{element}.{domain}'}
+            kwargs = {'domain': f'{element}.{domain}'}
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
             # Deal with models that don't have domain argument yet
             if 'domain' not in inspect.getfullargspec(mod_dict['model']).args:
                 _ = kwargs.pop('domain', None)
-                vals = mod_dict['model'](**kwargs)
+                vals = mod_dict['model'](self, **kwargs)
                 if isinstance(vals, dict):  # Handle models that return a dict
                     for k, v in vals.items():
                         v = np.atleast_1d(v)

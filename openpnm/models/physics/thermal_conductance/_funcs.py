@@ -6,7 +6,7 @@ __all__ = ["generic_thermal", "series_resistors"]
 
 
 @_doctxt
-def generic_thermal(target,
+def generic_thermal(phase,
                     pore_conductivity='pore.thermal_conductivity',
                     throat_conductivity='throat.thermal_conductivity',
                     size_factors='throat.diffusive_size_factors'):
@@ -28,13 +28,13 @@ def generic_thermal(target,
     %(return_arr)s thermal conductance
 
     """
-    return _poisson_conductance(target=target,
+    return _poisson_conductance(phase=phase,
                                 pore_conductivity=pore_conductivity,
                                 throat_conductivity=throat_conductivity,
                                 size_factors=size_factors)
 
 
-def series_resistors(target,
+def series_resistors(phase,
                      pore_thermal_conductivity='pore.thermal_conductivity',
                      throat_thermal_conductivity='throat.thermal_conductivity',
                      size_factors='throat.diffusive_size_factors'):
@@ -56,7 +56,7 @@ def series_resistors(target,
     %(return_arr)s thermal conductance
 
     """
-    return _poisson_conductance(target=target,
+    return _poisson_conductance(phase=phase,
                                 pore_conductivity=pore_thermal_conductivity,
                                 throat_conductivity=throat_thermal_conductivity,
                                 size_factors=size_factors)

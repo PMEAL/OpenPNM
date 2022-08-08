@@ -23,7 +23,7 @@ docstr = Docorator()
                      sections=['Parameters', 'Returns', 'Notes'])
 @docstr.dedent
 def spheres_and_cylinders(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -59,9 +59,9 @@ def spheres_and_cylinders(
     pores on each end.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -88,7 +88,7 @@ def spheres_and_cylinders(
 
 @docstr.dedent
 def circles_and_rectangles(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -109,9 +109,9 @@ def circles_and_rectangles(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.circles_and_rectangles(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -129,7 +129,7 @@ def circles_and_rectangles(
 
 @docstr.dedent
 def cones_and_cylinders(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -150,9 +150,9 @@ def cones_and_cylinders(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -175,7 +175,7 @@ def cones_and_cylinders(
 
 @docstr.dedent
 def trapezoids_and_rectangles(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -199,9 +199,9 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -219,7 +219,7 @@ def trapezoids_and_rectangles(
 
 @docstr.dedent
 def pyramids_and_cuboids(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
 ):
@@ -240,9 +240,9 @@ def pyramids_and_cuboids(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.pyramids_and_cuboids(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -265,7 +265,7 @@ def pyramids_and_cuboids(
 
 @docstr.dedent
 def cubes_and_cuboids(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_aspect=[1, 1, 1],
@@ -292,9 +292,9 @@ def cubes_and_cuboids(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.cubes_and_cuboids(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -317,7 +317,7 @@ def cubes_and_cuboids(
 
 @docstr.dedent
 def squares_and_rectangles(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     pore_aspect=[1, 1],
@@ -347,9 +347,9 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.squares_and_rectangles(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T
@@ -367,7 +367,7 @@ def squares_and_rectangles(
 
 @docstr.dedent
 def intersecting_cones(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -395,7 +395,7 @@ def intersecting_cones(
 
 @docstr.dedent
 def intersecting_trapezoids(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -427,7 +427,7 @@ def intersecting_trapezoids(
 
 @docstr.dedent
 def intersecting_pyramids(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     midpoint=None,
@@ -455,7 +455,7 @@ def intersecting_pyramids(
 
 @docstr.dedent
 def ncylinders_in_series(
-    target,
+    network,
     pore_diameter="pore.diameter",
     throat_diameter="throat.diameter",
     n=5,
@@ -479,11 +479,11 @@ def ncylinders_in_series(
     %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     # Ensure throats are never bigger than connected pores
     Dt = _np.minimum(Dt, 0.99 * _np.minimum(D1, D2))
     L1, Lt, L2 = _conduit_lengths.spheres_and_cylinders(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     ).T

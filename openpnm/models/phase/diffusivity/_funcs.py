@@ -14,7 +14,7 @@ __all__ = [
 
 
 def liquid_mixture_tc(
-    target,
+    phase,
     T='pore.temperature',
     mu='pore.viscosity',
     Vms_at_Tb='param.molar_volume_Tb.*',
@@ -39,10 +39,10 @@ def liquid_mixture_tc(
     -------
     %(models.phase.diffusivity.returns)s
     """
-    T = target[T]
-    mu = target[mu]
-    sigma_A, sigma_B = target.get_comp_vals(sigmas_at_Tb).values()
-    VA, VB = target.get_comp_vals(Vms_at_Tb).values()
+    T = phase[T]
+    mu = phase[mu]
+    sigma_A, sigma_B = phase.get_comp_vals(sigmas_at_Tb).values()
+    VA, VB = phase.get_comp_vals(Vms_at_Tb).values()
     A = 8.93e-8*(VB*1e6)**0.267/(VA*1e6)**0.433*T
     B = (sigma_B/sigma_A)**0.15/(mu*1e3)
     value = A*B*1e-4
@@ -50,7 +50,7 @@ def liquid_mixture_tc(
 
 
 def gas_mixture_ce(
-    target,
+    phase,
     T='pore.temperature',
     P='pore.pressure',
     Tcs='param.critical_temperature.*',
@@ -78,19 +78,19 @@ def gas_mixture_ce(
     %(models.phase.diffusivity.returns)s
     """
     # Fetch values from components
-    T = target[T]
-    P = target[P]
+    T = phase[T]
+    P = phase[P]
     try:
-        MA, MB = target.get_comp_vals(MWs).values()
+        MA, MB = phase.get_comp_vals(MWs).values()
     except ValueError:
         raise Exception('This function only works on binary mixtures')
     MWAB = 2/(1/MA + 1/MB)
-    omega = target[omegas].values()
-    Tc = target[Tcs].values()
-    Pc = target[Pcs].values()
+    omega = phase[omegas].values()
+    Tc = phase[Tcs].values()
+    Pc = phase[Pcs].values()
     k = 1.380649e-23  # Boltzmann constant
     try:
-        eA, eB = target.get_comp_vals(epsilons).values()
+        eA, eB = phase.get_comp_vals(epsilons).values()
     except Exception:
         # Use correlation of Tee, Gotoh, & Stewart
         eA, eB = (0.7915 + 0.1693*omega)*Tc*k
@@ -103,7 +103,7 @@ def gas_mixture_ce(
         + G/np.exp(H*Tstar)
     # Now apply RPP Eq.(11-3.2)
     try:
-        sA, sB = target.get_comp_vals(sigmas).values()
+        sA, sB = phase.get_comp_vals(sigmas).values()
     except:
         # Use correlation of Tee, Gotoh, & Stewart
         sA, sB = (2.3551 - 0.08847*omega)*(Tc/Pc)**(1/3)
@@ -113,7 +113,7 @@ def gas_mixture_ce(
 
 
 def gas_mixture_fesg(
-    target,
+    phase,
     T='pore.temperature',
     P='pore.pressure',
     MWs='param.molecular_weight.*',
@@ -125,7 +125,7 @@ def gas_mixture_fesg(
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(models.phase.parameters)s
     molecular_weight : string
         Dictionary key containing the molecular weight of each species. The
         default is 'pore.molecular_weight'
@@ -150,17 +150,17 @@ def gas_mixture_fesg(
     [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,
         73: 3679 (1969).
     """
-    T = target[T]
-    P = target[P]
+    T = phase[T]
+    P = phase[P]
     # The following is to accomodate proper mixtures AND normal Phase objects
     try:
-        MA, MB = target[MWs].values()
+        MA, MB = phase[MWs].values()
     except AttributeError:
-        MA, MB = target[MWs]
+        MA, MB = phase[MWs]
     try:
-        vA, vB = target[Vdms].values()
+        vA, vB = phase[Vdms].values()
     except AttributeError:
-        vA, vB = target[Vdms]
+        vA, vB = phase[Vdms]
     MAB = 2/(1/MA + 1/MB)
     P = P/101325
     DAB = 0.00143*T**1.75/(P*(MAB**0.5)*(vA**(1./3) + vB**(1./3))**2)*1e-4
@@ -168,7 +168,7 @@ def gas_mixture_fesg(
 
 
 def gas_mixture_fw(
-    target,
+    phase,
     T='pore.temperature',
     P='pore.pressure',
     MWs='param.molecular_weight.*',
@@ -207,7 +207,7 @@ def gas_mixture_fw(
     `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
     """
     raise Exception('This function is not ready yet')
-    comps = list(target.components.values())
+    comps = list(phase.components.values())
     values = {}
     for i in range(len(comps)):
         A = comps[i]
@@ -215,13 +215,13 @@ def gas_mixture_fw(
         for j in range(len(comps)):
             if i != j:
                 B = comps[j]
-                D = gas_mixture_fesg(target=target,
+                D = gas_mixture_fesg(phase=phase,
                                      molecular_weight=MW_pair,
                                      molar_diffusion_volume=Vdm_pair,
                                      temperature=T,
                                      pressure=P)
-                yB = target['pore.mole_fraction.' + B.name]
+                yB = phase['pore.mole_fraction.' + B.name]
                 denom += yB/D
-        yA = target['pore.mole_fraction.' + A.name]
+        yA = phase['pore.mole_fraction.' + A.name]
         values[A.name] = (1 - yA)/denom
     return values

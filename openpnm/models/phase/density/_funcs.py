@@ -16,7 +16,7 @@ __all__ = [
 
 @_phasedocs
 def ideal_gas(
-    target,
+    phase,
     P='pore.pressure',
     T='pore.temperature',
     MW='param.molecular_weight',
@@ -29,21 +29,21 @@ def ideal_gas(
     %(T)s
     %(P)s
     mol_weight : str
-        Name of the dictionary key on ``target`` where the array containing
+        Name of the dictionary key on ``phase`` where the array containing
         molecular weight values is stored
 
     Returns
     -------
 
     """
-    P = target[P]
-    T = target[T]
+    P = phase[P]
+    T = phase[T]
     try:
-        # If target is a pure species, it should have molecular weight in params
-        MW = target[MW]
+        # If phase is a pure species, it should have molecular weight in params
+        MW = phase[MW]
     except KeyError:
         # Otherwise, get the mole weighted average value
-        MW = target.get_mix_vals(MW)
+        MW = phase.get_mix_vals(MW)
     R = 8.314462618  # J/(mol.K)
     value = P/(R*T)*(MW/1000)  # Convert to kg/m3
     return value
@@ -51,7 +51,7 @@ def ideal_gas(
 
 @_phasedocs
 def water_correlation(
-    target,
+    phase,
     T='pore.temperature',
     salinity='pore.salinity',
 ):
@@ -81,9 +81,9 @@ def water_correlation(
     Water Treatment, 2010.
 
     """
-    T = target[T]
-    if salinity in target.keys():
-        S = target[salinity]
+    T = phase[T]
+    if salinity in phase.keys():
+        S = phase[salinity]
     else:
         S = 0
     a1 = 9.9992293295E+02
@@ -106,7 +106,7 @@ def water_correlation(
 
 @_phasedocs
 def liquid_mixture_COSTALD(
-    target,
+    phase,
     T='pore.temperature',
     MWs='param.molecular_weight.*',
     Tcs='param.critical_temperature.*',
@@ -141,10 +141,10 @@ def liquid_mixture_COSTALD(
 
     """
     # Fetch parameters for each pure component
-    Tcs = target.get_comp_vals(Tcs)
-    Vcs = target.get_comp_vals(Vcs)
-    omegas = target.get_comp_vals(omegas)
-    Xs = target['pore.mole_fraction']
+    Tcs = phase.get_comp_vals(Tcs)
+    Vcs = phase.get_comp_vals(Vcs)
+    omegas = phase.get_comp_vals(omegas)
+    Xs = phase['pore.mole_fraction']
     # Compute mixture values
     omegam = np.vstack([Xs[k]*omegas[k] for k in Xs.keys()]).sum(axis=0)
     Vm1 = np.vstack([Xs[k]*Vcs[k] for k in Xs.keys()]).sum(axis=0)
@@ -159,11 +159,11 @@ def liquid_mixture_COSTALD(
         Tcm += inner
     Tcm = Tcm/Vm
     # Convert molar volume to normal mass density
-    MWs = target.get_comp_vals('param.molecular_weight')
+    MWs = phase.get_comp_vals('param.molecular_weight')
     MWm = np.vstack([Xs[k]*MWs[k] for k in Xs.keys()]).sum(axis=0)
-    T = target[T]
+    T = phase[T]
     rhoL = liquid_pure_COSTALD(
-        target=target,
+        phase=phase,
         T=T,
         MW=MWm,
         Tc=Tcm,
@@ -174,7 +174,7 @@ def liquid_mixture_COSTALD(
 
 
 def liquid_pure_COSTALD(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
     Vc='param.critical_volume',
@@ -183,22 +183,22 @@ def liquid_pure_COSTALD(
 ):
     r"""
     """
-    Vc = target[Vc]
-    Tc = target[Tc]
-    omega = target[omega]
-    T = target[T]
+    Vc = phase[Vc]
+    Tc = phase[Tc]
+    omega = phase[omega]
+    T = phase[T]
     Tr = T/Tc
     V0 = 1 - 1.52816*(1-Tr)**(1/3) + 1.43907*(1-Tr)**(2/3) - 0.81446*(1-Tr) + \
         0.190454*(1-Tr)**(4/3)
     V1 = (-0.296123 + 0.386914*Tr - 0.0427258*Tr**2 - 0.0480645*Tr**3)/(Tr - 1.00001)
     Vs = Vc*V0*(1-omega*V1)
-    MW = target[MW]
+    MW = phase[MW]
     rhoL = 1e-3*MW/Vs
     return rhoL
 
 
 def mass_to_molar(
-    target,
+    phase,
     MW='param.molecular_weight',
     rho='pore.density',
 ):
@@ -219,7 +219,7 @@ def mass_to_molar(
         A numpy ndrray containing molar density values [mol/m3]
 
     """
-    MW = target[MW]
-    rho = target[rho]
+    MW = phase[MW]
+    rho = phase[rho]
     value = rho/MW
     return value

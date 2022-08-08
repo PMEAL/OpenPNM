@@ -11,7 +11,7 @@ __all__ = [
 
 
 def liquid_pure_rp(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
     omega='param.acentric_factor',
@@ -20,10 +20,10 @@ def liquid_pure_rp(
     r"""
     """
     # Rowlinson and Poling
-    T = target[T]
-    Tc = target[Tc]
-    omega = target[omega]
-    Cpgm = target[Cpg]
+    T = phase[T]
+    Tc = phase[Tc]
+    omega = phase[omega]
+    Cpgm = phase[Cpg]
     Tr = T/Tc
     if np.any(Tr > 1):
         raise Exception('Cannot calculate liquid property of fluid above'
@@ -37,7 +37,7 @@ def liquid_pure_rp(
 
 
 def gas_pure_TRC(
-    target,
+    phase,
     T='pore.temperature',
     a=[],
 ):
@@ -45,9 +45,9 @@ def gas_pure_TRC(
     """
     # TRCCp
     from chemicals.heat_capacity import TRC_gas_data
-    T = target[T]
+    T = phase[T]
     if len(a) == 0:
-        c = TRC_gas_data.loc[target.params['CAS']]
+        c = TRC_gas_data.loc[phase.params['CAS']]
         a = list(c[3:11])
     R = 8.314462618
     y = np.zeros_like(T)
@@ -60,20 +60,20 @@ def gas_pure_TRC(
 
 
 def gas_mixture_yweighted(
-    target,
+    phase,
     Cps='pore.heat_capacity.*',
 ):
     r"""
     """
-    Cpmix = mixing_rule(target=target, prop=Cps, mode='linear')
+    Cpmix = mixing_rule(phase=phase, prop=Cps, mode='linear')
     return Cpmix
 
 
 def liquid_mixture_xweighted(
-    target,
+    phase,
     Cps='pore.heat_capacity.*',
 ):
     r"""
     """
-    Cpmix = mixing_rule(target=target, prop=Cps, mode='linear')
+    Cpmix = mixing_rule(phase=phase, prop=Cps, mode='linear')
     return Cpmix

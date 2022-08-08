@@ -13,7 +13,7 @@ __all__ = [
 
 
 @docstr.dedent
-def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
+def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric
     pressure using Eq. (28) given by Sharqawy et al. Values at
@@ -45,9 +45,9 @@ def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
     Water Treatment, 2010.
 
     """
-    T = target[T]
-    if salinity in target.keys():
-        S = target[salinity]
+    T = phase[T]
+    if salinity in phase.keys():
+        S = phase[salinity]
     else:
         S = 0
     sigma_w = 0.2358*((1-(T/647.096))**1.256)*(1-0.625*(1-(T/647.096)))
@@ -62,7 +62,7 @@ def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
 
 @docstr.dedent
 def liquid_pure_bb(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
     Tb='param.boiling_temperature',
@@ -86,19 +86,19 @@ def liquid_pure_bb(
 
     """
     # brock_bird
-    T = target[T]
-    Tc = target[Tc]
+    T = phase[T]
+    Tc = phase[Tc]
     Tr = T/Tc
-    Tb = target[Tb]
+    Tb = phase[Tb]
     Tbr = Tb/Tc
-    Pc = target[Pc]/100000
+    Pc = phase[Pc]/100000
     Q = 0.1196*(1 + Tbr*np.log(Pc/1.01325)/(1-Tbr))-0.279
     sigma = 1e-3 * Q * (Pc**(2/3)) * (Tc**(1/3)) * ((1-Tr)**(11/9))
     return sigma
 
 
 def liquid_mixture_wsd(
-    target,
+    phase,
     sigmas='pore.surface_tension.*',
     rhos='pore.density.*',
     MWs='param.molecular_weight.*',
@@ -106,10 +106,10 @@ def liquid_mixture_wsd(
     r"""
     """
     # winterfelf_scriven_davis
-    sigmas = target.get_comp_vals(sigmas)
-    xs = target['pore.mole_fraction']
-    rhos = target.get_comp_vals(rhos)  # kg/m3
-    MWs = target.get_comp_vals(MWs)  # g/mol
+    sigmas = phase.get_comp_vals(sigmas)
+    xs = phase['pore.mole_fraction']
+    rhos = phase.get_comp_vals(rhos)  # kg/m3
+    MWs = phase.get_comp_vals(MWs)  # g/mol
     rhoms = {k: rhos[k]/(MWs[k]/1000) for k in xs.keys()}  # mol/m3
     rhom_mix = np.vstack([rhoms[k]*xs[k] for k in xs.keys()]).sum(axis=0)
     sigma = 0.0

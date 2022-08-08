@@ -31,7 +31,7 @@ def _fetch_chemical_props(a):
 
 
 def _get_mixture_model_args(
-    target,
+    phase,
     composition='xs',
     args={
         'mus': 'pore.viscosity',
@@ -42,13 +42,13 @@ def _get_mixture_model_args(
     from numpy import vstack
     vals = {}
     if composition in ['ws']:
-        temp = vstack(list(mole_to_mass_fraction(target=target).values()))[:, 0]
+        temp = vstack(list(mole_to_mass_fraction(phase=phase).values()))[:, 0]
         vals[composition] = temp
     else:
-        temp = vstack(list(target['pore.mole_fraction'].values()))[:, 0]
+        temp = vstack(list(phase['pore.mole_fraction'].values()))[:, 0]
         vals[composition] = temp
     for item in args.keys():
-        temp = vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
+        temp = vstack(list(phase.get_comp_vals(args[item]).values()))[:, 0]
         vals[item] = temp
     return vals
 

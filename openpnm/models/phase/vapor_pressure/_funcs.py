@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
+def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates vapor pressure of pure water or seawater given by [1] based on
     Raoult's law. The pure water vapor pressure is given by [2]
@@ -42,9 +42,9 @@ def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
     [2] ASHRAE handbook: Fundamentals, ASHRAE; 2005.
 
     """
-    T = target[T]
-    if salinity in target.keys():
-        S = target[salinity]
+    T = phase[T]
+    if salinity in phase.keys():
+        S = phase[salinity]
     else:
         S = 0
     a1 = -5.8002206E+03
@@ -60,7 +60,7 @@ def water_correlation(target, T='pore.temperature', salinity='pore.salinity'):
 
 
 def liquid_pure_lk(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
     Pc='param.critical_pressure',
@@ -69,11 +69,11 @@ def liquid_pure_lk(
     r"""
     """
     # Lee Kesler method
-    T = target[T]
-    Tc = target[Tc]
+    T = phase[T]
+    Tc = phase[Tc]
     Tr = T/Tc
-    Pc = target[Pc]
-    omega = target[omega]
+    Pc = phase[Pc]
+    omega = phase[omega]
     f0 = 5.92714 - 6.09648/Tr - 1.28862*np.log(Tr) + 0.169347*(Tr**6)
     f1 = 15.2518 - 15.6875/Tr - 13.4721*np.log(Tr) + 0.43577*(Tr**6)
     Pr = np.exp(f0 + omega*f1)
@@ -82,16 +82,16 @@ def liquid_pure_lk(
 
 
 def liquid_pure_antoine(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
 ):
     r"""
     """
     # either antoine or extended antoine using constants from RPP
-    CAS = target.params['CAS']
-    Tc = target[Tc]
-    T = target[T]
+    CAS = phase.params['CAS']
+    Tc = phase[Tc]
+    T = phase[T]
     try:
         from chemicals.vapor_pressure import Psat_data_AntoineExtended
         coeffs = Psat_data_AntoineExtended.loc[CAS]

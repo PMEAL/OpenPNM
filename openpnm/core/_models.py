@@ -241,7 +241,7 @@ class ModelWrapper(dict):
         for k, v in self.items():
             if k not in ['model', 'regen_mode']:
                 kwargs[k] = v
-        return model(target=target, **kwargs)
+        return model(target, **kwargs)
 
     def _find_parent(self):
         r"""
@@ -415,10 +415,10 @@ class ModelWrapper(dict):
 #         if regen_mode == 'constant':
 #             # Only regenerate if data not already in dictionary
 #             if prop not in self.keys():
-#                 self[prop] = model(target=self, **kwargs)
+#                 self[prop] = model(self, **kwargs)
 #         else:
 #             try:
-#                 self[prop] = model(target=self, **kwargs)
+#                 self[prop] = model(self, **kwargs)
 #             except KeyError as e:
 #                 msg = (f"{prop} was not run since the following property"
 #                        f" is missing: {e}")
