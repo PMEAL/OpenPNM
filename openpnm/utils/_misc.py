@@ -431,7 +431,7 @@ def prettify_logger_message(msg):
 
 
 def get_mixture_model_args(
-    target,
+    phase,
     composition='xs',
     args={
         'mus': 'pore.viscosity',
@@ -444,13 +444,13 @@ def get_mixture_model_args(
     from openpnm.models.phase.misc import mole_to_mass_fraction
     vals = {}
     if composition in ['ws']:
-        temp = np.vstack(list(mole_to_mass_fraction(target=target).values()))[:, 0]
+        temp = np.vstack(list(mole_to_mass_fraction(phase=phase).values()))[:, 0]
         vals[composition] = temp
     else:
-        temp = np.vstack(list(target['pore.mole_fraction'].values()))[:, 0]
+        temp = np.vstack(list(phase['pore.mole_fraction'].values()))[:, 0]
         vals[composition] = temp
     for item in args.keys():
-        temp = np.vstack(list(target.get_comp_vals(args[item]).values()))[:, 0]
+        temp = np.vstack(list(phase.get_comp_vals(args[item]).values()))[:, 0]
         vals[item] = temp
     return vals
 

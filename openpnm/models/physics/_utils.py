@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-def _poisson_conductance(target,
+def _poisson_conductance(phase,
                          pore_conductivity=None,
                          throat_conductivity=None,
                          size_factors=None):
@@ -20,7 +20,7 @@ def _poisson_conductance(target,
 
     Parameters
     ----------
-    target : OpenPNM Phase
+    phase : OpenPNM Phase
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
@@ -43,25 +43,22 @@ def _poisson_conductance(target,
     already be calculated.
 
     """
-    network = target.network
-    domain = target._domain
-    throats = domain.throats(target.name)
-    phase = target
-    cn = network.conns[throats]
-    Dt = phase[throat_conductivity][throats]
+    network = phase.network
+    cn = network.conns
+    Dt = phase[throat_conductivity]
     D1, D2 = phase[pore_conductivity][cn].T
     # If individual size factors for conduit constiuents are known
     SF = network[size_factors]
     if SF.ndim == 2:
         F1, Ft, F2 = SF.T
-        g1 = D1 * F1[throats]
-        gt = Dt * Ft[throats]
-        g2 = D2 * F2[throats]
+        g1 = D1 * F1
+        gt = Dt * Ft
+        g2 = D2 * F2
         return 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
         # Otherwise, i.e., the size factor for the entire conduit is only known
         F = network[size_factors]
-        return Dt * F[throats]
+        return Dt * F
 
 
 def _get_key_props(phase=None,

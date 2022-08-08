@@ -17,39 +17,39 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-def weibull(target, shape, scale, loc, seeds='pore.seed'):
-    return _misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
+def weibull(network, shape, scale, loc, seeds='pore.seed'):
+    return _misc.weibull(target=network, shape=shape, scale=scale, loc=loc,
                          seeds=seeds)
 
 
 weibull.__doc__ = _misc.weibull.__doc__
 
 
-def normal(target, scale, loc, seeds='pore.seed'):
-    return _misc.normal(target=target, scale=scale, loc=loc,
+def normal(network, scale, loc, seeds='pore.seed'):
+    return _misc.normal(target=network, scale=scale, loc=loc,
                         seeds=seeds)
 
 
 normal.__doc__ = _misc.normal.__doc__
 
 
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target=target, element='pore', seed=seed,
+def random(network, seed=None, num_range=[0, 1]):
+    return _misc.random(target=network, element='pore', seed=seed,
                         num_range=num_range)
 
 
 random.__doc__ = _misc.random.__doc__
 
 
-def generic_distribution(target, func, seeds='pore.seed'):
-    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
+def generic_distribution(network, func, seeds='pore.seed'):
+    return _misc.generic_distribution(target=network, func=func, seeds=seeds)
 
 
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
-def from_neighbor_throats(target, prop, mode='max'):
-    return _misc.from_neighbor_throats(target=target,
+def from_neighbor_throats(network, prop, mode='max'):
+    return _misc.from_neighbor_throats(target=network,
                                        prop=prop,
                                        mode=mode)
 
@@ -58,7 +58,7 @@ from_neighbor_throats.__doc__ = _misc.from_neighbor_throats.__doc__
 
 
 @docstr.dedent
-def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
+def largest_sphere(network, fixed_diameter='pore.fixed_diameter', iters=5):
     r"""
     Finds the maximum diameter pore that can be placed in each location without
     overlapping any neighbors.
@@ -100,7 +100,6 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     again.
 
     """
-    network = target.project.network
     P12 = network['throat.conns']
     C1 = network['pore.coords'][network['throat.conns'][:, 0]]
     C2 = network['pore.coords'][network['throat.conns'][:, 1]]
@@ -126,11 +125,11 @@ def largest_sphere(target, fixed_diameter='pore.fixed_diameter', iters=5):
     if _np.any(D < 0):
         logger.info('Negative pore diameters found!  Neighboring pores are '
                     + 'larger than the pore spacing.')
-    return D[network.pores(target.name)]
+    return D
 
 
 @docstr.dedent
-def equivalent_diameter(target, pore_volume='pore.volume',
+def equivalent_diameter(network, pore_volume='pore.volume',
                         pore_shape='sphere'):
     r"""
     Calculate the diameter of a sphere or edge-length of a cube with same
@@ -153,7 +152,7 @@ def equivalent_diameter(target, pore_volume='pore.volume',
 
     """
     from scipy.special import cbrt
-    pore_vols = target[pore_volume]
+    pore_vols = network[pore_volume]
     if pore_shape.startswith('sph'):
         value = cbrt(6*pore_vols/_np.pi)
     elif pore_shape.startswith('cub'):

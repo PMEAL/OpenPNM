@@ -12,7 +12,7 @@ __all__ = [
 
 
 @docstr.dedent
-def mix_and_match(target, prop, phases, occupancy):
+def mix_and_match(phase, prop, phases, occupancy):
     r"""
     Return the given property by looking it up from a list of given phases
     based on occupancy.
@@ -47,11 +47,11 @@ def mix_and_match(target, prop, phases, occupancy):
 
 
 def mole_to_mass_fraction(
-    target,
+    phase,
     MWs='param.molecular_weight.*',
 ):
-    MWs = target.get_comp_vals(MWs)
-    xs = target['pore.mole_fraction']
+    MWs = phase.get_comp_vals(MWs)
+    xs = phase['pore.mole_fraction']
     ms = {}
     # Find the actual masses in each pore
     for c in xs.keys():

@@ -242,7 +242,7 @@ class Mixture(Phase):
         h = HealthDict()
         h['mole_fraction_too_low'] = []
         h['mole_fraction_too_high'] = []
-        conc = mole_summation(target=self)
+        conc = mole_summation(phase=self)
         lo = np.where(conc < 1.0)[0]
         hi = np.where(conc > 1.0)[0]
         if len(lo) > 0:

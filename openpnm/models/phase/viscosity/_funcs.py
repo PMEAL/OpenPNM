@@ -14,7 +14,7 @@ __all__ = [
 
 
 def water_correlation(
-    target,
+    phase,
     T='pore.temperature',
     salinity='pore.salinity'
 ):
@@ -26,7 +26,7 @@ def water_correlation(
 
     Parameters
     ----------
-    target : Phase
+    phase : Phase
         The object for which these values are being calculated.
     temperature : str
         The dictionary key containing the temperature values. Temperature must
@@ -53,9 +53,9 @@ def water_correlation(
         Water Treatment, 2010.
 
     """
-    T = target[T]
-    if salinity in target.keys():
-        S = target[salinity]
+    T = phase[T]
+    if salinity in phase.keys():
+        S = phase[salinity]
     else:
         S = 0
     TC = T-273.15
@@ -79,7 +79,7 @@ def water_correlation(
 
 
 def air_correlation(
-    target,
+    phase,
     T='pore.temperature',
     n_V='pore.molar_density',
 ):
@@ -87,8 +87,8 @@ def air_correlation(
     """
     raise Exception("This function does not work yet")
     # Get props from object
-    T = target[T]
-    rho = target[n_V]
+    T = phase[T]
+    rho = phase[n_V]
     # Declare given constants
     MW = 28.9586  # g/mol
     Tc = 132.6312  # K
@@ -116,17 +116,17 @@ def air_correlation(
 
 
 def gas_pure_st(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
     Pc='param.critical_pressure',
     MW='param.molecular_weight',
 ):
     #  stiel-thodos
-    T = target[T]
-    Tc = target[Tc]
-    Pc = target[Pc]/101325
-    MW = target[MW]
+    T = phase[T]
+    Tc = phase[Tc]
+    Pc = phase[Pc]/101325
+    MW = phase[MW]
 
     mu = np.zeros_like(T)
     Tr = T/Tc
@@ -140,7 +140,7 @@ def gas_pure_st(
 
 
 def gas_pure_gesmr(
-    target,
+    phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
     Pc='param.critical_pressure',
@@ -149,10 +149,10 @@ def gas_pure_gesmr(
     r"""
     """
     # Gharagheizi method from chemicals
-    T = target[T]
-    MW = target[MW]
-    Pc = target[Pc]
-    Tc = target[Tc]
+    T = phase[T]
+    MW = phase[MW]
+    Pc = phase[Pc]
+    Tc = phase[Tc]
     Tr = T/Tc
     mu = (1e-5)*Pc*Tr + (0.091 - 0.477/MW)*T + \
         MW*((1e-5)*Pc - 8.0*(MW**2)/(T**2))*(10.7639/Tc - 4.1929/T)
@@ -162,7 +162,7 @@ def gas_pure_gesmr(
 
 
 def gas_pure_cls(
-    target,
+    phase,
     T='pore.temperature',
     MW='param.molecular_weight',
     Tc='param.critical_temperature',
@@ -174,7 +174,7 @@ def gas_pure_cls(
 
     Parameters
     ----------
-    target : Phase
+    phase : Phase
         The object for which these values are being calculated.  This
         controls the length of the calculated array, and also provides
         access to other necessary thermofluid properties.
@@ -199,10 +199,10 @@ def gas_pure_cls(
         Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
 
     """
-    T = target[T]
-    MW = target[MW]
-    Tc = target[Tc]
-    Vc = target[Vc]
+    T = phase[T]
+    MW = phase[MW]
+    Tc = phase[Tc]
+    Vc = phase[Vc]
     Tr = T / Tc
     Tstar = 1.2593*Tr
     A = 1.161415
@@ -218,7 +218,7 @@ def gas_pure_cls(
 
 
 def gas_mixture_hz(
-    target,
+    phase,
     mus='pore.viscosity.*',
     MWs='param.molecular_weight.*',
 ):
@@ -228,7 +228,7 @@ def gas_mixture_hz(
 
     Parameters
     ----------
-    target : dict
+    phase : dict
         The openpnm object to which this model applies
     molecular_weight : str
         The location of the molecular weights of each species. The default is
@@ -243,9 +243,9 @@ def gas_mixture_hz(
         An ndarray of Np length containing the viscosity of the mixture in
         each pore
     """
-    MWs = target.get_comp_vals(MWs)
-    mus = target.get_comp_vals(mus)
-    xs = target['pore.mole_fraction']
+    MWs = phase.get_comp_vals(MWs)
+    mus = phase.get_comp_vals(mus)
+    xs = phase['pore.mole_fraction']
     num = 0.0
     denom = 0.0
     for k in xs.keys():
@@ -256,7 +256,7 @@ def gas_mixture_hz(
 
 
 def liquid_pure_ls(
-    target,
+    phase,
     T='pore.temperature',
     MW='param.molecular_weight',
     Tc='param.critical_temperature',
@@ -266,11 +266,11 @@ def liquid_pure_ls(
     r"""
     """
     # Letsou_Stiel
-    T = target[T]
-    MW = target[MW]
-    Tc = target[Tc]
-    Pc = target[Pc]
-    omega = target[omega]
+    T = phase[T]
+    MW = phase[MW]
+    Tc = phase[Tc]
+    Pc = phase[Pc]
+    omega = phase[omega]
     Tr = T/Tc
     zeta = 2173.424 * (Tc**(1/6))/((MW**(0.5))*(Pc**(2/3)))
     zeta0 = (1.5174 - 2.135*Tr + 0.75*(Tr**2))*1e-5
@@ -280,12 +280,12 @@ def liquid_pure_ls(
 
 
 def liquid_mixture_xweighted(
-    target,
+    phase,
     prop='pore.viscosity.*',
     mode='logarithmic',
     power=1,
 ):
-    return mixing_rule(target=target, prop=prop, mode=mode, power=power)
+    return mixing_rule(phase=phase, prop=prop, mode=mode, power=power)
 
 
 liquid_mixture_xweighted.__doc__ = mixing_rule.__doc__

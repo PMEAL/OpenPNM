@@ -10,7 +10,7 @@ __all__ = ["poisson", "electroneutrality"]
 
 @_doctxt
 def poisson(
-    target,
+    phase,
     pore_permittivity='pore.permittivity',
     throat_permittivity='throat.permittivity',
     size_factors='throat.diffusive_size_factors'
@@ -35,7 +35,7 @@ def poisson(
 
     """
     epsilon0 = 8.854187817e-12
-    tmp = _poisson_conductance(target=target,
+    tmp = _poisson_conductance(phase=phase,
                                pore_conductivity=pore_permittivity,
                                throat_conductivity=throat_permittivity,
                                size_factors=size_factors)
@@ -43,7 +43,7 @@ def poisson(
 
 
 def electroneutrality(
-    target,
+    phase,
     pore_diffusivity='pore.diffusivity',
     throat_diffusivity='throat.diffusivity',
     size_factors="throat.diffusive_size_factors",
@@ -89,11 +89,8 @@ def electroneutrality(
     if ions == []:
         raise Exception('List of ions must be provided')
 
-    network = target.network
-    domain = target._domain
-    throats = domain.throats(target.name)
-    phase = target
-    cn = network.conns[throats]
+    network = phase.network
+    cn = network.conns
 
     # Fetch model parameters
     R = 8.3145
@@ -101,7 +98,7 @@ def electroneutrality(
     SF = network[size_factors]
     V1, V2 = network[pore_volume][cn].T
     T1, T2 = phase[pore_temperature][cn].T
-    Tt = phase[throat_temperature][throats]
+    Tt = phase[throat_temperature]
     # Pre-allocate g vectors
     g1, g2, gt = _np.zeros((3, len(cn)))
 
@@ -113,9 +110,9 @@ def electroneutrality(
             c1, c2 = _np.zeros(network.Np)[cn].T
         ct = (c1*V1 + c2*V2)/(V1 + V2)
         D1, D2 = phase[f"{pore_diffusivity}.{ion}"][cn].T
-        Dt = phase[f"{throat_diffusivity}.{ion}"][throats]
+        Dt = phase[f"{throat_diffusivity}.{ion}"]
         v1, v2 = phase[f"{pore_valence}.{ion}"][cn].T
-        vt = phase[f"{throat_valence}.{ion}"][throats]
+        vt = phase[f"{throat_valence}.{ion}"]
         # Add the contribute of the ion to g
         g1 += F**2 * v1**2 * D1*c1 / (R*T1)
         g2 += F**2 * v2**2 * D2*c2 / (R*T2)
@@ -123,8 +120,8 @@ def electroneutrality(
 
     # Apply size factors and calculate the final conductance
     if isinstance(SF, dict):
-        g1 *= SF[f"{size_factors}"][throats, 0]
-        gt *= SF[f"{size_factors}"][throats, 1]
-        g2 *= SF[f"{size_factors}"][throats, 2]
+        g1 *= SF[f"{size_factors}"][:, 0]
+        gt *= SF[f"{size_factors}"][:, 1]
+        g2 *= SF[f"{size_factors}"][:, 2]
         return 1 / (1/g1 + 1/gt + 1/g2)
     return gt * SF

@@ -19,7 +19,7 @@ __all__ = [
 
 
 @_doctxt
-def charge_conservation(target, phase, p_alg, e_alg, assumption):
+def charge_conservation(phase, p_alg, e_alg, assumption):
     r"""
     Applies the source term on the charge conservation equation when solving
     for ions transport.
@@ -98,7 +98,7 @@ def charge_conservation(target, phase, p_alg, e_alg, assumption):
 
 
 @_doctxt
-def standard_kinetics(target, X, prefactor, exponent):
+def standard_kinetics(phase, X, prefactor, exponent):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of ``X``:
@@ -138,9 +138,9 @@ def standard_kinetics(target, X, prefactor, exponent):
             rate = S_{1} X + S_{2}
 
     """
-    X = target[X]
-    A = target[prefactor]
-    b = target[exponent]
+    X = phase[X]
+    A = phase[prefactor]
+    b = phase[exponent]
 
     r = A*(X**b)
     S1 = A*b*(X**(b - 1))
@@ -150,7 +150,7 @@ def standard_kinetics(target, X, prefactor, exponent):
 
 
 @_doctxt
-def linear(target, X, A1=0.0, A2=0.0):
+def linear(phase, X, A1=0.0, A2=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of ``X``:
@@ -162,10 +162,10 @@ def linear(target, X, A1=0.0, A2=0.0):
     ----------
     %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
+        The dictionary key on the phase object containing the the quantity
         of interest
     A1 -> A2 : str
-        The dictionary keys on the target object containing the coefficients
+        The dictionary keys on the phase object containing the coefficients
         values to be used in the source term model
 
     Returns
@@ -189,15 +189,15 @@ def linear(target, X, A1=0.0, A2=0.0):
             rate = S_{1} X + S_{2}
 
     """
-    r = target[A1] * target[X] + target[A2]
-    S1 = target[A1]
-    S2 = target[A2]
+    r = phase[A1] * phase[X] + phase[A2]
+    S1 = phase[A1]
+    S2 = phase[A2]
     values = {'S1': S1, 'S2': S2, 'rate': r}
     return values
 
 
 @_doctxt
-def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
+def power_law(phase, X, A1=0.0, A2=0.0, A3=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of *X*:
@@ -209,10 +209,10 @@ def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
     ----------
     %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
+        The dictionary key on the phase object containing the the quantity
         of interest
     A1 -> A3 : str
-        The dictionary keys on the target object containing the coefficients
+        The dictionary keys on the phase object containing the coefficients
         values to be used in the source term model
 
     Returns
@@ -236,10 +236,10 @@ def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
             rate = S_{1} X + S_{2}
 
     """
-    A = target[A1]
-    B = target[A2]
-    C = target[A3]
-    X = target[X]
+    A = phase[A1]
+    B = phase[A2]
+    C = phase[A3]
+    X = phase[X]
 
     r = A * X ** B + C
     S1 = A * B * X ** (B - 1)
@@ -249,7 +249,7 @@ def power_law(target, X, A1=0.0, A2=0.0, A3=0.0):
 
 
 @_doctxt
-def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
+def exponential(phase, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -261,10 +261,10 @@ def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     ----------
     %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
+        The dictionary key on the phase object containing the the quantity
         of interest
     A1 -> A6 : str
-        The dictionary keys on the target object containing the coefficients
+        The dictionary keys on the phase object containing the coefficients
         values to be used in the source term model
 
     Returns
@@ -288,13 +288,13 @@ def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
             rate = S_{1} X + S_{2}
 
     """
-    A = target[A1]
-    B = target[A2]
-    C = target[A3]
-    D = target[A4]
-    E = target[A5]
-    F = target[A6]
-    X = target[X]
+    A = phase[A1]
+    B = phase[A2]
+    C = phase[A3]
+    D = phase[A4]
+    E = phase[A5]
+    F = phase[A6]
+    X = phase[X]
 
     r = A * B ** (C * X ** D + E) + F
     S1 = A * C * D * X ** (D - 1) * _np.log(B) * B ** (C * X ** D + E)
@@ -304,7 +304,7 @@ def exponential(target, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
 
 
 @_doctxt
-def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
+def natural_exponential(phase, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -316,10 +316,10 @@ def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
     ----------
     %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
+        The dictionary key on the phase object containing the the quantity
         of interest
     A1 -> A5 : str
-        The dictionary keys on the target object containing the coefficients
+        The dictionary keys on the phase object containing the coefficients
         values to be used in the source term model
 
     Returns
@@ -343,12 +343,12 @@ def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
             rate = S_{1} X + S_{2}
 
     """
-    A = target[A1]
-    B = target[A2]
-    C = target[A3]
-    D = target[A4]
-    E = target[A5]
-    X = target[X]
+    A = phase[A1]
+    B = phase[A2]
+    C = phase[A3]
+    D = phase[A4]
+    E = phase[A5]
+    X = phase[X]
 
     r = A * _np.exp(B * X ** C + D) + E
     S1 = A * B * C * X ** (C - 1) * _np.exp(B * X ** C + D)
@@ -358,7 +358,7 @@ def natural_exponential(target, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
 
 
 @_doctxt
-def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
+def logarithm(phase, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -370,10 +370,10 @@ def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
     ----------
     %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
+        The dictionary key on the phase object containing the the quantity
         of interest
     A1 -> A6 : str
-        The dictionary keys on the target object containing the coefficients
+        The dictionary keys on the phase object containing the coefficients
         values to be used in the source term model
 
     Returns
@@ -397,13 +397,13 @@ def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
             rate = S_{1} X + S_{2}
 
     """
-    A = target[A1]
-    B = target[A2]
-    C = target[A3]
-    D = target[A4]
-    E = target[A5]
-    F = target[A6]
-    X = target[X]
+    A = phase[A1]
+    B = phase[A2]
+    C = phase[A3]
+    D = phase[A4]
+    E = phase[A5]
+    F = phase[A6]
+    X = phase[X]
 
     r = (A * _np.log(C * X ** D + E)/_np.log(B) + F)
     S1 = A * C * D * X ** (D - 1) / (_np.log(B) * (C * X ** D + E))
@@ -414,7 +414,7 @@ def logarithm(target, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
 
 
 @_doctxt
-def natural_logarithm(target, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
+def natural_logarithm(phase, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
     r"""
     Calculates the rate, as well as slope and intercept of the following
     function at the given value of `X`:
@@ -426,10 +426,10 @@ def natural_logarithm(target, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
     ----------
     %(target_blurb)s
     X : str
-        The dictionary key on the target object containing the the quantity
+        The dictionary key on the phase object containing the the quantity
         of interest
     A1 -> A5 : str
-        The dictionary keys on the target object containing the coefficients
+        The dictionary keys on the phase object containing the coefficients
         values to be used in the source term model
 
     Returns
@@ -453,12 +453,12 @@ def natural_logarithm(target, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
             rate = S_{1} X + S_{2}
 
     """
-    A = target[A1]
-    B = target[A2]
-    C = target[A3]
-    D = target[A4]
-    E = target[A5]
-    X = target[X]
+    A = phase[A1]
+    B = phase[A2]
+    C = phase[A3]
+    D = phase[A4]
+    E = phase[A5]
+    X = phase[X]
 
     r = A*_np.log(B*X**C + D) + E
     S1 = A*B*C*X**(C - 1) / (B * X ** C + D)
@@ -483,7 +483,7 @@ def _build_func(eq, **args):
 
 
 @_doctxt
-def general_symbolic(target, eqn, x, **kwargs):
+def general_symbolic(phase, eqn, x, **kwargs):
     r"""
     A general function to interpret a sympy equation and evaluate the linear
     components of the source term.
@@ -500,9 +500,9 @@ def general_symbolic(target, eqn, x, **kwargs):
         All additional keyword arguments are converted to sympy variables
         using the ``symbols`` function.  Note that IF the arguments are
         strs, it is assumed they are dictionary keys pointing to arrays
-        on the ``target`` object.  If they are numerical values they are
+        on the ``phase`` object.  If they are numerical values they are
         used 'as is'.  Numpy arrays are not accepted.  These must be stored
-        in the ``target`` dictionary and referenced by key.
+        in the ``phase`` dictionary and referenced by key.
 
     Examples
     --------
@@ -526,11 +526,11 @@ def general_symbolic(target, eqn, x, **kwargs):
     from sympy import symbols, sympify
     eqn = sympify(eqn)
     # Get the data
-    data = {'x': target[x]}
+    data = {'x': phase[x]}
     args = {'x': symbols('x')}
     for key in kwargs.keys():
         if isinstance(kwargs[key], str):
-            data[key] = target[kwargs[key]]
+            data[key] = phase[kwargs[key]]
         else:
             data[key] = kwargs[key]
         args[key] = symbols(key)
@@ -544,7 +544,7 @@ def general_symbolic(target, eqn, x, **kwargs):
 
 @_doctxt
 def butler_volmer_conc(
-    target, X, n, i0_ref, c_ref, beta,
+    phase, X, n, i0_ref, c_ref, beta,
     gamma=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
@@ -649,17 +649,14 @@ def butler_volmer_conc(
     For more details read Chapter8:Electrode kinetics (e.g. Eqs: 8.6,8.10,8.24).
 
     """
-    network = target.project.network
-    domain = target._domain
-    pores = domain.pores(target.name)
 
     # Fetch model variables
-    X = target[X]
-    T = target[temperature]
-    phi_met = target[solid_voltage]
-    phi_soln = target[electrolyte_voltage]
-    U_eq = target[open_circuit_voltage]
-    A_rxn = network[reaction_area][pores]
+    X = phase[X]
+    T = phase[temperature]
+    phi_met = phase[solid_voltage]
+    phi_soln = phase[electrolyte_voltage]
+    U_eq = phase[open_circuit_voltage]
+    A_rxn = phase.network[reaction_area]
     F = _sp.constants.physical_constants["Faraday constant"][0]
     R = _sp.constants.R
     # Linearize with respect to X (electrolyte concentration)
@@ -679,7 +676,7 @@ def butler_volmer_conc(
 
 
 def butler_volmer_voltage(
-    target, X, n, i0_ref, c_ref, beta,
+    phase, X, n, i0_ref, c_ref, beta,
     gamma=1,
     temperature="pore.temperature",
     reaction_area="pore.reaction_area",
@@ -693,8 +690,8 @@ def butler_volmer_voltage(
 
     Parameters
     ----------
-    target : OpenPNM Phase
-        The Physics object where the result will be applied.
+    phase : OpenPNM Phase
+        The Phase object where the result will be applied.
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
         to be solved; in this case, electrolyte voltage).
@@ -784,17 +781,13 @@ def butler_volmer_voltage(
     John Wiley & Sons, third edition, 2004.
     For more details read Chapter8:Electrode kinetics (e.g. Eqs: 8.6,8.10,8.24).
     """
-    network = target.project.network
-    domain = target._domain
-    pores = domain.pores(target.name)
-
     # Fetch model variables
-    A_rxn = network[reaction_area][pores]
-    phi_met = target[solid_voltage]
-    U_eq = target[open_circuit_voltage]
-    c = target[electrolyte_concentration]
-    T = target[temperature]
-    X = target[X]
+    A_rxn = phase.network[reaction_area]
+    phi_met = phase[solid_voltage]
+    U_eq = phase[open_circuit_voltage]
+    c = phase[electrolyte_concentration]
+    T = phase[temperature]
+    X = phase[X]
     F = _sp.constants.physical_constants["Faraday constant"][0]
     R = _sp.constants.R
 

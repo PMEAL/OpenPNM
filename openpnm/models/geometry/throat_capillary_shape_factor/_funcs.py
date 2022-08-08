@@ -11,7 +11,7 @@ docstr = Docorator()
 @docstr.get_sections(base='models.geometry.throat_capillary_shape_factor',
                      sections=['Parameters', 'Returns'])
 @docstr.dedent
-def compactness(target, throat_perimeter='throat.perimeter',
+def compactness(network, throat_perimeter='throat.perimeter',
                 throat_area='throat.cross_sectional_area'):
     r"""
     Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
@@ -41,14 +41,14 @@ def compactness(target, throat_perimeter='throat.perimeter',
 
     """
     # Only apply to throats with an area
-    ts = target.throats()[target[throat_area] > 0]
-    P = target[throat_perimeter]
-    A = target[throat_area]
-    C = _np.ones(target.num_throats())
+    ts = network.throats()[network[throat_area] > 0]
+    P = network[throat_perimeter]
+    A = network[throat_area]
+    C = _np.ones(network.num_throats())
     C[ts] = P[ts]**2/A[ts]
     alpha = _np.ones_like(C)*8*_np.pi
-    if 'throat.offset_vertices' in target.props():
-        verts = target['throat.offset_vertices']
+    if 'throat.offset_vertices' in network.props():
+        verts = network['throat.offset_vertices']
         for i in ts:
             if ~_np.any(_np.isnan(verts[i])):
                 if len(verts[i]) == 3:
@@ -67,7 +67,7 @@ def compactness(target, throat_perimeter='throat.perimeter',
     return alpha
 
 
-def mason_morrow(target, throat_perimeter='throat.perimeter',
+def mason_morrow(network, throat_perimeter='throat.perimeter',
                  throat_area='throat.cross_sectional_area'):
     r"""
     Mason and Morrow relate the capillary pressure to the shape factor in a
@@ -89,15 +89,15 @@ def mason_morrow(target, throat_perimeter='throat.perimeter',
 
     """
     # Only apply to throats with an area
-    ts = target.throats()[target[throat_area] <= 0]
-    P = target[throat_perimeter]
-    A = target[throat_area]
+    ts = network.throats()[network[throat_area] <= 0]
+    P = network[throat_perimeter]
+    A = network[throat_area]
     value = A/(P**2)
     value[ts] = 1/(4*_np.pi)
     return value
 
 
-def jenkins_rao(target, throat_perimeter='throat.perimeter',
+def jenkins_rao(network, throat_perimeter='throat.perimeter',
                 throat_area='throat.cross_sectional_area',
                 throat_diameter='throat.indiameter'):
     r"""
@@ -119,9 +119,9 @@ def jenkins_rao(target, throat_perimeter='throat.perimeter',
     mercury porosimetry results. Powder technology, 38(2), pp.177-180. (1984)
 
     """
-    P = target[throat_perimeter]
-    A = target[throat_area]
-    r = target[throat_diameter]/2
+    P = network[throat_perimeter]
+    A = network[throat_area]
+    r = network[throat_diameter]/2
     # Normalized by value for perfect circle
     value = (P/A)/(2/r)
     return value

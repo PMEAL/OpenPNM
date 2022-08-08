@@ -7,7 +7,7 @@ __all__ = ["generic_electrical", "series_resistors"]
 
 @_doctxt
 def generic_electrical(
-    target,
+    phase,
     pore_conductivity='pore.electrical_conductivity',
     throat_conductivity='throat.electrical_conductivity',
     size_factors='throat.diffusive_size_factors'
@@ -31,14 +31,14 @@ def generic_electrical(
     %(return_arr)s electrical conductance
 
     """
-    return _poisson_conductance(target=target,
+    return _poisson_conductance(phase=phase,
                                 pore_conductivity=pore_conductivity,
                                 throat_conductivity=throat_conductivity,
                                 size_factors=size_factors)
 
 
 def series_resistors(
-    target,
+    phase,
     pore_conductivity='pore.electrical_conductivity',
     throat_conductivity='throat.electrical_conductivity',
     size_factors='throat.diffusive_size_factors'
@@ -62,7 +62,7 @@ def series_resistors(
     %(return_arr)s electrical conductance
 
     """
-    return _poisson_conductance(target=target,
+    return _poisson_conductance(phase=phase,
                                 pore_conductivity=pore_conductivity,
                                 throat_conductivity=throat_conductivity,
                                 size_factors=size_factors)

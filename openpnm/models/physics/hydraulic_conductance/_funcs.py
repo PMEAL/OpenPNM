@@ -12,7 +12,7 @@ __all__ = [
 
 @_doctxt
 def generic_hydraulic(
-    target,
+    phase,
     pore_viscosity='pore.viscosity',
     throat_viscosity='throat.viscosity',
     size_factors='throat.hydraulic_size_factors'
@@ -35,9 +35,8 @@ def generic_hydraulic(
     %(return_arr)s hydraulic conductance
 
     """
-    network = target.network
+    network = phase.network
     conns = network.conns
-    phase = target
     mu1, mu2 = phase[pore_viscosity][conns].T
     mut = phase[throat_viscosity]
 
@@ -57,7 +56,7 @@ def generic_hydraulic(
 
 @_doctxt
 def hagen_poiseuille(
-    target,
+    phase,
     pore_viscosity="pore.viscosity",
     throat_viscosity="throat.viscosity",
     size_factors="throat.hydraulic_size_factors"
@@ -80,7 +79,7 @@ def hagen_poiseuille(
     %(return_arr)s hydraulic conductance
 
     """
-    return generic_hydraulic(target=target,
+    return generic_hydraulic(phase=phase,
                              pore_viscosity=pore_viscosity,
                              throat_viscosity=throat_viscosity,
                              size_factors=size_factors)
@@ -88,7 +87,7 @@ def hagen_poiseuille(
 
 @_doctxt
 def hagen_poiseuille_power_law(
-    target,
+    phase,
     pore_area="pore.area",
     throat_area="throat.cross_sectional_area",
     pore_viscosity_min="pore.viscosity_min",
@@ -140,31 +139,26 @@ def hagen_poiseuille_power_law(
     %(return_arr)s hydraulic conductance
 
     """
-    network = target.project.network
-    domain = target._domain
-    throats = domain.throats(target.name)
-    phase = target
-    cn = network.conns[throats]
+    network = phase.network
+    cn = network.conns
 
     # Fetch model parameters
     A1, A2 = network[pore_area][cn].T
-    At = network[throat_area][throats]
-    L1 = network[conduit_lengths][throats, 0]
-    L2 = network[conduit_lengths][throats, 1]
-    Lt = network[conduit_lengths][throats, 2]
+    At = network[throat_area]
+    L1, Lt, L2 = network[conduit_lengths].T
     P = phase[pore_pressure]
     t_prop = 'throat.'+pore_pressure.split('.', 1)[-1]
-    Pt = phase.interpolate_data(propname=t_prop)[throats]
+    Pt = phase.interpolate_data(propname=t_prop)
 
     mu_min = phase[pore_viscosity_min][cn]
-    mu_mint = phase[throat_viscosity_min][throats]
+    mu_mint = phase[throat_viscosity_min]
     mu_max = phase[pore_viscosity_max][cn]
-    mu_maxt = phase[throat_viscosity_max][throats]
+    mu_maxt = phase[throat_viscosity_max]
 
     C1, C2 = phase[pore_consistency][cn].T
-    Ct = phase[throat_consistency][throats]
+    Ct = phase[throat_consistency]
     n1, n2 = phase[pore_flow_index][cn].T
-    nt = phase[throat_flow_index][throats]
+    nt = phase[throat_flow_index]
 
     # Pressure differences dP
     dP1 = _np.absolute(P[cn[:, 0]] - Pt).clip(min=1e-20)
@@ -183,16 +177,16 @@ def hagen_poiseuille_power_law(
 
     F = network[size_factors]
     if isinstance(F, dict):
-        g1 = F[f"{size_factors}"][throats, 0] / mu1
-        gt = F[f"{size_factors}"][throats, 1] / mut
-        g2 = F[f"{size_factors}"][throats, 2] / mu2
+        g1 = F[f"{size_factors}"][:, 0] / mu1
+        gt = F[f"{size_factors}"][:, 1] / mut
+        g2 = F[f"{size_factors}"][:, 2] / mu2
         return 1 / (1 / g1 + 1 / gt + 1 / g2)
-    return F[throats] / mut
+    return F / mut
 
 
 @_doctxt
 def valvatne_blunt(
-    target,
+    phase,
     pore_viscosity="pore.viscosity",
     throat_viscosity="throat.viscosity",
     pore_shape_factor="pore.shape_factor",
@@ -268,10 +262,10 @@ def valvatne_blunt(
     J. Colloid Interface Sci., 236, 295–304.
 
     """
-    network = target.network
+    network = phase.network
     conns = network["throat.conns"]
-    mu_p = target[pore_viscosity]
-    mu_t = target[throat_viscosity]
+    mu_p = phase[pore_viscosity]
+    mu_t = phase[throat_viscosity]
 
     # Fetch model parameters
     L1, Lt, L2 = network[conduit_lengths].T

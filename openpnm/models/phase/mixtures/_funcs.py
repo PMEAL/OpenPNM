@@ -15,10 +15,10 @@ __all__ = [
 
 @docstr.dedent
 def salinity(
-    target,
+    phase,
     T='pore.temperature',
     M='pore.concentration',
-    ):
+):
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
 
@@ -47,8 +47,8 @@ def salinity(
     solute)
 
     """
-    C = target[M]
-    T = target[T]
+    C = phase[M]
+    T = phase[T]
     a = 8.73220929e+00
     b = 6.00389629e+01
     c = -1.19083743e-01
@@ -61,7 +61,7 @@ def salinity(
 
 
 def mixing_rule(
-    target,
+    phase,
     prop,
     mode='logarithmic',
     power=1,
@@ -94,8 +94,8 @@ def mixing_rule(
         If ``mode='power'`` this indicates the value of the exponent,
         otherwise this is ignored.
     """
-    xs = target['pore.mole_fraction']
-    ys = target.get_comp_vals(prop)
+    xs = phase['pore.mole_fraction']
+    ys = phase.get_comp_vals(prop)
     z = 0.0
     if mode == 'logarithmic':
         for i in xs.keys():
@@ -112,7 +112,7 @@ def mixing_rule(
 
 
 @docstr.dedent
-def mole_summation(target):
+def mole_summation(phase):
     r"""
     Computes total mole fraction in each pore given component values
 
@@ -126,7 +126,7 @@ def mole_summation(target):
         An ND-array containing the total mole fraction.  Note that this is not
         guaranteed to sum to 1.0.
     """
-    xs = [target['pore.mole_fraction.' + c.name] for c in target.components.values()]
+    xs = [phase['pore.mole_fraction.' + c.name] for c in phase.components.values()]
     if len(xs) > 0:
         xs = np.sum(xs, axis=0)
     else:
@@ -135,7 +135,7 @@ def mole_summation(target):
 
 
 @docstr.dedent
-def from_component(target, prop, compname):
+def from_component(phase, prop, compname):
     r"""
     Fetches the given values from the specified object
 
@@ -153,6 +153,6 @@ def from_component(target, prop, compname):
     vals : ND-array
         An ND-array containing the request data
     """
-    comp = target.project[compname]
+    comp = phase.project[compname]
     vals = comp[prop]
     return vals

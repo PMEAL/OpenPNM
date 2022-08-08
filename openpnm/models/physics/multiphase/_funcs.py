@@ -6,7 +6,7 @@ __all__ = ["conduit_conductance", "late_filling"]
 
 
 @_doctxt
-def conduit_conductance(target, throat_conductance,
+def conduit_conductance(phase, throat_conductance,
                         throat_occupancy='throat.occupancy',
                         pore_occupancy='pore.occupancy',
                         mode='strict', factor=1e-6):
@@ -50,9 +50,7 @@ def conduit_conductance(target, throat_conductance,
     %(return_arr)s adjusted conductance values
 
     """
-    network = target.project.network
-    domain = target._domain
-    phase = target
+    network = phase.network
     Tinv = phase[throat_occupancy] < 0.5
     P12 = network['throat.conns']
     Pinv = phase[pore_occupancy][P12] < 0.5
@@ -66,13 +64,11 @@ def conduit_conductance(target, throat_conductance,
         raise Exception('Unrecongnized mode '+mode)
     value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
-    # Now map throats onto target object
-    Ts = domain.throats(target.name)
-    return value[Ts]
+    return value
 
 
 @_doctxt
-def late_filling(target, pressure='pore.pressure',
+def late_filling(phase, pressure='pore.pressure',
                  Pc_star='pore.pc_star',
                  Swp_star=0.2, eta=3):
     r"""
@@ -106,20 +102,10 @@ def late_filling(target, pressure='pore.pressure',
     percolation algorithm of some sort.
 
     """
-    element = pressure.split('.', 1)[0]
-    domain = target._domain
-    phase = target
     pc_star = phase[Pc_star]
     Pc = phase[pressure]
     # Remove any 0's from the Pc array to prevent numpy div by 0 warning
     Pc = np.maximum(Pc, 1e-9)
     Swp = Swp_star*((pc_star/Pc)**eta)
     values = np.clip(1 - Swp, 0.0, 1.0)
-    # Now map element onto target object
-    if element == 'throat':
-        Ts = domain.throats(target.name)
-        values = values[Ts]
-    else:
-        Ps = domain.pores(target.name)
-        values = values[Ps]
     return values

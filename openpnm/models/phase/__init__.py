@@ -76,13 +76,13 @@ default_argmap = {
 }
 
 
-def chemicals_wrapper(target, f, **kwargs):
+def chemicals_wrapper(phase, f, **kwargs):
     r"""
     Wrapper function for calling models in the ``chemicals`` package
 
     Parameters
     ----------
-    target : dict
+    phase : dict
         The OpenPNM Species object for which this model should calculate
         values. This object should ideally have all the necessary chemical
         properties in its ``params`` attribute, although this is optional as
@@ -93,10 +93,10 @@ def chemicals_wrapper(target, f, **kwargs):
     kwargs
         By default this function will use
         ``openpnm.models.phase.default_argmap`` to determine which names on
-        ``target`` correspond to each argument required by ``f``. For
+        ``phase`` correspond to each argument required by ``f``. For
         instance, ``default_argmap['Tc'] = 'param.critical_temperature'``
         so any functions that need ``Tc`` will receive
-        ``target['param.critical_temperature']``. Some models only require
+        ``phase['param.critical_temperature']``. Some models only require
         the normal thermodynamic parameters, like ``T``, ``Tc``, and ``Pc``,
         so in many cases no additional arguments are needed beyond whats in the
         default argument map. However, other models require values that are
@@ -104,7 +104,7 @@ def chemicals_wrapper(target, f, **kwargs):
         list of constants like ``a0``, ``a1``, etc. It is necessary to provide
         these as keyword arguments, and they will be included in
         ``default_argmap`` as new entries or overwriting existing ones.
-        So ``mu='pore.blah'`` will pass ``target['pore.blah']`` to the
+        So ``mu='pore.blah'`` will pass ``phase['pore.blah']`` to the
         ``mu`` argument of ``f``. Any arguments ending with an ``s`` are
         assumed to refer to the individual properties of pure components in a
         mixture. So ``mus`` means fetch the viscosity of each component as a
@@ -132,14 +132,14 @@ def chemicals_wrapper(target, f, **kwargs):
     argmap = default_argmap.copy()
     for k, v in kwargs.items():
         argmap[k] = v
-    args = _get_items_from_target(target, f, argmap)
+    args = _get_items_from_target(phase, f, argmap)
     # f = getattr(_chemicals.numba_vectorized, f.__name__)
     msg = f"Numba version failed for {f.__name__}, reverting to pure python"
     if len(set(['xs', 'yz', 'zs']).intersection(args.keys())):
         # Call function in for-loop for each pore since they are not vectorized
         logger.info(msg)
-        vals = _np.zeros(target.Np)
-        for pore in target.Ps:
+        vals = _np.zeros(phase.Np)
+        for pore in phase.Ps:
             a = {}
             for item in args.keys():
                 if item.endswith('s'):
@@ -162,7 +162,7 @@ def chemicals_wrapper(target, f, **kwargs):
     return vals
 
 
-def _get_items_from_target(target, f, argmap):
+def _get_items_from_target(phase, f, argmap):
     import chemicals as _chemicals
     try:
         arginfo = _inspect.getfullargspec(f)
@@ -170,29 +170,29 @@ def _get_items_from_target(target, f, argmap):
         temp = getattr(_chemicals, f.__name__)
         arginfo = _inspect.getfullargspec(temp)
 
-    # Scan args and pull values from target
+    # Scan args and pull values from phase
     args = {}
     for item in arginfo.args:
         # Treat mole fraction specially, since it can be xs, ys, or zs
         if item in ['xs', 'ys', 'zs']:
-            args[item] = list(target['pore.mole_fraction'].values())
+            args[item] = list(phase['pore.mole_fraction'].values())
             continue
-        if 'pore.' + item in target.keys():
+        if 'pore.' + item in phase.keys():
             # If eg. pore.Zc was added to dict directly, no argmap needed
-            args[item] = target[f"{'pore.'+item}"]
+            args[item] = phase[f"{'pore.'+item}"]
             continue
-        if item in target.params.keys():
+        if item in phase.params.keys():
             # If a parameter is in params but not in default_argmap
-            args[item] = target.params[item]
+            args[item] = phase.params[item]
             continue
         if item.endswith('s'):  # Deal specifically with props that end in s
             if item[:-1] in argmap.keys():
-                v = list(target.get_comp_vals(argmap[item[:-1]]).values())
+                v = list(phase.get_comp_vals(argmap[item[:-1]]).values())
                 args[item] = v
             elif item in argmap.keys():
-                v = list(target.get_comp_vals(argmap[item]).values())
+                v = list(phase.get_comp_vals(argmap[item]).values())
                 args[item] = v
         else:
             if item in argmap.keys():  # Get basic mixture properties like T&P
-                args[item] = target[argmap[item]]
+                args[item] = phase[argmap[item]]
     return args
