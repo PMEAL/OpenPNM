@@ -53,22 +53,43 @@ class Phase(Domain):
         self['pore.pressure'] = 101325.0
 
     def __getitem__(self, key):
-        try:
+        try:  # If key exists, just get it
             return super().__getitem__(key)
         except KeyError:
             pass
 
-        try:
+        try:  # Allow look-up from network mostly for label/domain info
             return self.network[key]
         except KeyError:
             pass
 
         # Parse the key
-        element, prop, domain = key.split('.', 1) + ['all']
+        element, prop = key.split('.', 1)
         if '@' in prop:
             prop, domain = prop.split('@')
+        else:
+            domain = 'all'
 
-        # Start by getting locs
+        # Get params directly if appropriate
+        if element == 'param':
+            return self.params[prop]
+
+        # Next get the data arrays, this is the case if @ notation was used
+        if element + '.' + prop in self.keys():
+            vals = super().__getitem__(element + '.' + prop)
+        elif element + '.' + prop in self.network.keys():
+            vals = self.network[element + '.' + prop]
+        else:  # If above are not triggered then try to interpolate
+            if self.settings['auto_interpolate']:
+                if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                    raise KeyError(key)
+                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
+                    raise KeyError(key)
+                vals = self.interpolate_data(element + '.' + prop)
+            else:
+                raise KeyError(key)
+
+        # Finally get locs
         if domain == 'all':
             locs = np.ones(self._count(element), dtype=bool)
         elif element + '.' + domain in self.keys():
@@ -78,22 +99,4 @@ class Phase(Domain):
         else:
             raise KeyError(element + '.' + domain)
 
-        # Next get the data arrays
-        if element + '.' + prop in self.keys():
-            vals = super().__getitem__(element + '.' + prop)
-        elif element + '.' + prop in self.network.keys():
-            vals = self.network[element + '.' + prop]
-        else:
-            if self.settings['auto_interpolate']:
-                if element == 'param':
-                    raise KeyError(key)
-                elif (element == 'pore') and ('throat.'+prop not in self.keys()):
-                    msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
-                    raise KeyError(msg)
-                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                    msg = f"'pore.{prop}', cannot interpolate '{element+'.'+prop}'"
-                    raise KeyError(msg)
-                vals = self.interpolate_data(element + '.' + prop)
-            else:
-                raise KeyError(key)
         return vals[locs]
