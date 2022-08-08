@@ -97,7 +97,7 @@ class ThermalConductivityTest:
         a = op.phase.Species(network=self.net, species='nitrogen')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_wrapper(target=a, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(phase=a, f=f).mean())
         assert_allclose(vals, 2.898e-2, rtol=.2)
 
     def test_generic_chemicals_for_pure_liq(self):
@@ -116,7 +116,7 @@ class ThermalConductivityTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(vals, 2.898e-1, rtol=1.5)
 
 

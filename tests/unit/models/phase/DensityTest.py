@@ -43,7 +43,7 @@ class DensityTest:
         n2['pore.temperature'] = 400
         Vm = []
         for f in mods:
-            Vm.append(op.models.phase.chemicals_wrapper(target=n2, f=f).mean())
+            Vm.append(op.models.phase.chemicals_wrapper(n2, f=f).mean())
         assert_allclose(Vm, 8.795e-6, rtol=.3)
 
     def test_chemicals_wrapper_for_pure_liq_molar_volume(self):
@@ -62,7 +62,7 @@ class DensityTest:
         h2o = op.phase.Species(network=self.net, species='water')
         Vm = []
         for f in mods:
-            Vm.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
+            Vm.append(op.models.phase.chemicals_wrapper(h2o, f=f).mean())
         assert_allclose(Vm, 1.88e-5, rtol=0.2)
 
     def test_chemicals_wrapper_for_pure_liq_with_args(self):
@@ -71,7 +71,7 @@ class DensityTest:
         temp = Chemical('h2o')
         h2o['pore.density'] = temp.rhol
         Vm = op.models.phase.chemicals_wrapper(
-            target=h2o,
+            phase=h2o,
             f=chemicals.volume.CRC_inorganic,
             rho0='pore.density',
             k=1,
@@ -81,7 +81,7 @@ class DensityTest:
         h2o['pore.Psat'] = temp.Psat
         h2o['pore.Vs'] = temp.Vms
         Vm = op.models.phase.chemicals_wrapper(
-            target=h2o,
+            phase=h2o,
             f=chemicals.volume.COSTALD_compressed,
             rho='pore.density',
         )
@@ -94,13 +94,13 @@ class DensityTest:
         vodka.x(h2o.name, 0.60)
         vodka.x(etoh.name, 0.40)
         Vm = op.models.phase.chemicals_wrapper(
-            target=vodka,
+            phase=vodka,
             f=chemicals.volume.COSTALD_mixture,
         )
         h2o['param.Zr'] = 0.001
         etoh['param.Zr'] = 0.001
         Vm = op.models.phase.chemicals_wrapper(
-            target=vodka,
+            phase=vodka,
             f=chemicals.volume.Rackett_mixture,
             Zrs='param.Zr',
         )
@@ -130,7 +130,7 @@ class DensityTest:
         vodka.add_model(propname='pore.density',
                         model=op.models.phase.density.liquid_mixture_COSTALD)
         args = get_mixture_model_args(
-            target=vodka,
+            phase=vodka,
             composition='xs',
             args={
                 'Tcs': 'param.critical_temperature',

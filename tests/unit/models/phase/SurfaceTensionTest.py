@@ -57,7 +57,7 @@ class SurfaceTensionTest:
                         model=op.models.phase.surface_tension.liquid_mixture_wsd)
         s_calc = vodka['pore.surface_tension'][0]
         args = get_mixture_model_args(
-            target=vodka,
+            phase=vodka,
             composition='xs',
             args={
                 'sigmas': 'pore.surface_tension.*',
@@ -82,7 +82,7 @@ class SurfaceTensionTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(vals, 2.898e-1, rtol=.8)
 
 

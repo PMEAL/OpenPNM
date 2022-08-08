@@ -24,7 +24,7 @@ class LatentHeatTest:
         a = Chemical('h2o')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(vals, a.Hvapm, rtol=0.5)
 
 

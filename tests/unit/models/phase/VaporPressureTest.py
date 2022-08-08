@@ -55,7 +55,7 @@ class VaporPressureTest:
         h2o = op.phase.Species(network=self.net, species='water')
         vals = []
         for f in mods:
-            vals.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
+            vals.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(vals, 2.762e3, rtol=.5)
 
 

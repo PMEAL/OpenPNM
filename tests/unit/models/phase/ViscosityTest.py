@@ -89,7 +89,7 @@ class ViscosityTest:
         mu = []
         for m in mods:
             f = getattr(chemicals.viscosity, m)
-            mu.append(op.models.phase.chemicals_wrapper(target=o2, f=f).mean())
+            mu.append(op.models.phase.chemicals_wrapper(phase=o2, f=f).mean())
         assert_array_almost_equal(mu, 2.05e-5, decimal=6)
 
     def test_generic_chemicals_for_pure_liq_viscosity(self):
@@ -107,7 +107,7 @@ class ViscosityTest:
         mu = []
         for m in mods:
             f = getattr(chemicals.viscosity, m)
-            mu.append(op.models.phase.chemicals_wrapper(target=h2o, f=f).mean())
+            mu.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(mu, 0.000621, rtol=0.02)
 
 

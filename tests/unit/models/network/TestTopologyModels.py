@@ -120,7 +120,7 @@ class TopologyModelsTest:
         a = np.mean(net.num_neighbors(pores=net.Ps, flatten=False))
         b = 20.952
         assert a == b
-        trim = op.models.network.reduce_coordination(target=net, z=6)
+        trim = op.models.network.reduce_coordination(net, z=6)
         op.topotools.trim(network=net, throats=trim)
         a = np.mean(net.num_neighbors(pores=net.Ps, flatten=False))
         b = 6.0
