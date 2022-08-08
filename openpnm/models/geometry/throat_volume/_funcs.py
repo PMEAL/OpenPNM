@@ -14,7 +14,7 @@ docstr = Docorator()
 @docstr.get_sections(base='models.geometry.throat_volume',
                      sections=['Parameters', 'Returns'])
 @docstr.dedent
-def cylinder(target, throat_length='throat.length',
+def cylinder(network, throat_length='throat.length',
              throat_diameter='throat.diameter'):
     r"""
     Calculate throat volume assuing a cylindrical shape
@@ -38,14 +38,14 @@ def cylinder(target, throat_length='throat.length',
     volume.
 
     """
-    leng = target[throat_length]
-    diam = target[throat_diameter]
+    leng = network[throat_length]
+    diam = network[throat_diameter]
     value = _np.pi/4*leng*diam**2
     return value
 
 
 @docstr.dedent
-def cuboid(target, throat_length='throat.length',
+def cuboid(network, throat_length='throat.length',
            throat_diameter='throat.diameter'):
     r"""
     Calculate throat volume assuing a square cross-section
@@ -64,14 +64,14 @@ def cuboid(target, throat_length='throat.length',
     intersection of the throat with a spherical pore body.
 
     """
-    leng = target[throat_length]
-    diam = target[throat_diameter]
+    leng = network[throat_length]
+    diam = network[throat_diameter]
     value = leng*diam**2
     return value
 
 
 @docstr.dedent
-def rectangle(target, throat_length='throat.length',
+def rectangle(network, throat_length='throat.length',
               throat_diameter='throat.diameter'):
     r"""
     Calculate throat volume assuing a rectangular shape
@@ -89,11 +89,11 @@ def rectangle(target, throat_length='throat.length',
     At present this models does NOT account for the volume reprsented by the
     intersection of the throat with a spherical pore body.
     """
-    return target[throat_length] * target[throat_diameter]
+    return network[throat_length] * network[throat_diameter]
 
 
 @docstr.dedent
-def extrusion(target, throat_length='throat.length',
+def extrusion(network, throat_length='throat.length',
               throat_area='throat.cross_sectional_area'):
     r"""
     Calculate throat volume from the throat area and the throat length. This
@@ -116,14 +116,14 @@ def extrusion(target, throat_length='throat.length',
     intersection of the throat with a spherical pore body.
 
     """
-    leng = target[throat_length]
-    area = target[throat_area]
+    leng = network[throat_length]
+    area = network[throat_area]
     value = leng*area
     return value
 
 
 @docstr.dedent
-def lens(target, throat_diameter='throat.diameter',
+def lens(network, throat_diameter='throat.diameter',
          pore_diameter='pore.diameter'):
     r"""
     Calculates the volume residing the hemispherical caps formed by the
@@ -152,10 +152,9 @@ def lens(target, throat_diameter='throat.diameter',
     --------
     pendular_ring
     """
-    network = target.network
     conns = network['throat.conns']
-    Rp = target[pore_diameter]/2
-    Rt = target[throat_diameter]/2
+    Rp = network[pore_diameter]/2
+    Rt = network[throat_diameter]/2
     a = _np.atleast_2d(Rt).T
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)
@@ -165,7 +164,7 @@ def lens(target, throat_diameter='throat.diameter',
 
 
 @docstr.dedent
-def pendular_ring(target, throat_diameter='throat.diameter',
+def pendular_ring(network, throat_diameter='throat.diameter',
                   pore_diameter='pore.diameter'):
     r"""
     Calculates the volume of the pendular rings residing between the end of
@@ -195,10 +194,9 @@ def pendular_ring(target, throat_diameter='throat.diameter',
     --------
     lens
     """
-    network = target.network
     conns = network['throat.conns']
-    Rp = target[pore_diameter]/2
-    Rt = target[throat_diameter]/2
+    Rp = network[pore_diameter]/2
+    Rt = network[throat_diameter]/2
     a = _np.atleast_2d(Rt).T
     q = _np.arcsin(a/Rp[conns])
     b = Rp[conns]*_np.cos(q)

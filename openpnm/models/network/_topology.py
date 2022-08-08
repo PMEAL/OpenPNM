@@ -18,20 +18,18 @@ __all__ = [  # Keep this alphabetical for easier inspection of what's imported
 ]
 
 
-def coordination_number(target):
+def coordination_number(network):
     r"""
     Find the number of neighbors for each pore
     """
-    network = target.network
     N = network.num_neighbors(pores=network.Ps, flatten=False)
     return N
 
 
-def pore_to_pore_distance(target):
+def pore_to_pore_distance(network):
     r"""
     Find the center to center distance between each pair of pores
     """
-    network = target.project.network
     cn = network['throat.conns']
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -39,11 +37,10 @@ def pore_to_pore_distance(target):
     return values
 
 
-def distance_to_nearest_neighbor(target):
+def distance_to_nearest_neighbor(network):
     r"""
     Find the distance between each pore and its closest topological neighbor
     """
-    network = target.project.network
     cn = network['throat.conns']
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -54,12 +51,11 @@ def distance_to_nearest_neighbor(target):
     return np.array(values)
 
 
-def distance_to_furthest_neighbor(target):
+def distance_to_furthest_neighbor(network):
     r"""
     Find the distance between each pore and its furthest topological neighbor
     """
-    network = target.project.network
-    throats = network.throats(target.name)
+    throats = network.throats(network.name)
     cn = network['throat.conns'][throats]
     C1 = network['pore.coords'][cn[:, 0]]
     C2 = network['pore.coords'][cn[:, 1]]
@@ -70,21 +66,20 @@ def distance_to_furthest_neighbor(target):
     return np.array(values)
 
 
-def distance_to_nearest_pore(target):
+def distance_to_nearest_pore(network):
     r"""
     Find distance to and index of nearest pore even if not topologically
     connected
     """
     import scipy.spatial as sptl
-    net = target.network
-    coords = net.coords
+    coords = network.coords
     tree = sptl.KDTree(coords)
     ds, ids = tree.query(coords, k=2)
     values = ds[:, 1]
     return values
 
 
-def reduce_coordination(target, z):
+def reduce_coordination(network, z):
     r"""
     Deletes throats on network to match specified average coordination number
 
@@ -111,7 +106,6 @@ def reduce_coordination(target, z):
     to trim is generated randomly from the throats *not* on the spanning tree.
 
     """
-    network = target
     # Find minimum spanning tree using random weights
     am = network.create_adjacency_matrix(weights=np.random.rand(network.Nt),
                                          triu=False)

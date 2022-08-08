@@ -21,18 +21,17 @@ __all__ = [
 ]
 
 
-def cluster_number(target):
+def cluster_number(network):
     r"""
     Assign a cluster number to each pore
     """
-    net = target.network
     from scipy.sparse import csgraph as csg
-    am = net.create_adjacency_matrix(fmt='coo', triu=True)
+    am = network.create_adjacency_matrix(fmt='coo', triu=True)
     N, Cs = csg.connected_components(am, directed=False)
     return Cs
 
 
-def cluster_size(target, cluster=None):
+def cluster_size(network, cluster=None):
     r"""
     Find the size of the cluster to which each pore belongs
 
@@ -51,73 +50,67 @@ def cluster_size(target, cluster=None):
         belongs
 
     """
-    net = target.network
     if cluster is None:
         from scipy.sparse import csgraph as csg
-        am = net.create_adjacency_matrix(fmt='coo', triu=True)
+        am = network.create_adjacency_matrix(fmt='coo', triu=True)
         N, cluster_num = csg.connected_components(am, directed=False)
     else:
-        cluster_num = net[cluster]
+        cluster_num = network[cluster]
     Cs, ind, N = np.unique(cluster_num, return_inverse=True, return_counts=True)
     values = N[ind]
     return values
 
 
-def isolated_pores(target):
+def isolated_pores(network):
     r"""
     Find which pores, if any, are not connected to a throat
     """
-    net = target.network
-    values = np.ones(net.Np, dtype=bool)
-    hits = np.unique(net.conns)
-    if np.any(hits >= target.Np):
+    values = np.ones(network.Np, dtype=bool)
+    hits = np.unique(network.conns)
+    if np.any(hits >= network.Np):
         logger.warning("Some throats point to non-existent pores")
-        hits = hits[hits < target.Np]
+        hits = hits[hits < network.Np]
     values[hits] = False
     return values
 
 
-def reversed_throats(target):
+def reversed_throats(network):
     r"""
     Find any throat connections that are pointing from j -> i where j > i
     """
-    net = target.network
-    hits = net.conns[:, 0] > net.conns[:, 1]
+    hits = network.conns[:, 0] > network.conns[:, 1]
     return hits
 
 
-def looped_throats(target):
+def looped_throats(network):
     r"""
     Find any throats that are connected to the same pore on both ends
     """
-    net = target.network
-    hits = net.conns[:, 0] == net.conns[:, 1]
+    hits = network.conns[:, 0] == network.conns[:, 1]
     return hits
 
 
-def headless_throats(target):
+def headless_throats(network):
     r"""
     Find any throats that point to a non-existent pore
     """
-    net = target.network
-    hits = np.any(net.conns > (net.Np - 1), axis=1)
+    hits = np.any(network.conns > (network.Np - 1), axis=1)
     return hits
 
 
-def duplicate_throats(target):
+def duplicate_throats(network):
     r"""
     Find repeat occurrences of throat connections
     """
-    net = target.network
-    conns = net.conns
+    conns = network.conns
     iconns = conns[:, 0] + 1j*conns[:, 1]
     hits, inds = np.unique(iconns, return_inverse=True)
-    values = np.ones(net.Nt, dtype=bool)
+    values = np.ones(network.Nt, dtype=bool)
     values[inds] = False
     return values
 
 
-def count_coincident_pores(target, thresh=1e-6):
+def count_coincident_pores(network, thresh=1e-6):
     r"""
     Count number of pores that are spatially coincident with other pores
 
@@ -136,18 +129,17 @@ def count_coincident_pores(target, thresh=1e-6):
     # This needs to be a bit complicated because it cannot be assumed
     # the coincident pores are topologically connected
     import scipy.spatial as sptl
-    net = target.network
-    coords = net.coords
+    coords = network.coords
     tree = sptl.KDTree(coords)
     hits = tree.query_pairs(r=thresh)
     arr = np.array(list(hits)).flatten()
     v, n = np.unique(arr, return_counts=True)
-    values = np.zeros(net.Np, dtype=int)
+    values = np.zeros(network.Np, dtype=int)
     values[v.astype(int)] = n
     return values
 
 
-def find_coincident_pores(target, thresh=1e-6):
+def find_coincident_pores(network, thresh=1e-6):
     r"""
     Find the indices of coincident pores
 
@@ -169,7 +161,6 @@ def find_coincident_pores(target, thresh=1e-6):
     # This needs to be a bit complicated because it cannot be assumed
     # the coincident pores are topologically connected
     import scipy.spatial as sptl
-    network = target.network
     coords = network['pore.coords']
     tree = sptl.KDTree(coords)
     a = tree.sparse_distance_matrix(tree, max_distance=thresh,
@@ -182,7 +173,6 @@ def find_coincident_pores(target, thresh=1e-6):
     return a.rows
 
 
-def bidirectional_throats(target):
-    net = target
-    biTs = net['throat.conns'][:, 0] > net['throat.conns'][:, 1]
+def bidirectional_throats(network):
+    biTs = network['throat.conns'][:, 0] > network['throat.conns'][:, 1]
     return biTs

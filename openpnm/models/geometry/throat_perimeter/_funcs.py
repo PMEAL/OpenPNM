@@ -10,7 +10,7 @@ docstr = Docorator()
 
 @docstr.get_sections(base='models.geometry.throat_perimeter',
                      sections=['Parameters', 'Returns'])
-def cylinder(target, throat_diameter='throat.diameter'):
+def cylinder(network, throat_diameter='throat.diameter'):
     r"""
     Calcuate the throat perimeter assuming a circular cross-section
 
@@ -30,11 +30,11 @@ def cylinder(target, throat_diameter='throat.diameter'):
         A numpy ndarray containing throat perimeter values
 
     """
-    return target[throat_diameter]*_np.pi
+    return network[throat_diameter]*_np.pi
 
 
 @docstr.dedent
-def cuboid(target, throat_diameter='throat.diameter'):
+def cuboid(network, throat_diameter='throat.diameter'):
     r"""
     Calcuate the throat perimeter assuming a square cross-section
 
@@ -47,10 +47,10 @@ def cuboid(target, throat_diameter='throat.diameter'):
     %(models.geometry.throat_perimeter.returns)s
 
     """
-    return target[throat_diameter]*4
+    return network[throat_diameter]*4
 
 
-def rectangle(target, throat_diameter='throat.diameter'):
+def rectangle(network, throat_diameter='throat.diameter'):
     r"""
     Calcuate the throat perimeter assuming a rectangular cross-section (2D)
 
