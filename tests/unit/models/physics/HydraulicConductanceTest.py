@@ -1,5 +1,5 @@
 import openpnm as op
-import numpy as _np
+import numpy as np
 from numpy.testing import assert_allclose
 
 
@@ -13,14 +13,14 @@ class HydraulicConductanceTest:
         self.net['throat.cross_sectional_area'] = 0.5
         self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.viscosity'] = 1e-5
-        self.size_factors_dict = {"pore1": 0.123, "throat": 0.981, "pore2": 0.551}
+        self.size_factors = np.ones([self.net.Nt, 3])*(0.123, 0.981, 0.551)
 
     def teardown_class(self):
         mgr = op.Workspace()
         mgr.clear()
 
     def test_generic_hydraulic_size_factors_as_dict(self):
-        self.net['throat.hydraulic_size_factors'] = self.size_factors_dict
+        self.net['throat.hydraulic_size_factors'] = self.size_factors
         mod = op.models.physics.hydraulic_conductance.generic_hydraulic
         self.phase.add_model(propname='throat.g_hydraulic_conductance', model=mod)
         self.phase.regenerate_models()
@@ -38,18 +38,16 @@ class HydraulicConductanceTest:
         # del self.phase['throat.g_hydraulic_conductance']
 
     def test_hagen_poiseuille(self):
-        self.net['throat.hydraulic_size_factors'] = self.size_factors_dict
+        self.net['throat.hydraulic_size_factors'] = self.size_factors
         mod = op.models.physics.hydraulic_conductance.hagen_poiseuille
         self.phase.add_model(propname='throat.hydraulic_conductance', model=mod)
         actual = self.phase['throat.hydraulic_conductance'].mean()
         assert_allclose(actual, desired=9120.483231751232)
 
     def test_valvatne_blunt(self):
-        self.net['throat.conduit_lengths.pore1'] = 0.15
-        self.net['throat.conduit_lengths.throat'] = 0.2
-        self.net['throat.conduit_lengths.pore2'] = 0.26
-        self.net['pore.shape_factor'] = _np.ones(self.net.Np) * 0.15
-        self.net['throat.shape_factor'] = _np.ones(self.net.Nt) * 0.15
+        self.net['throat.conduit_lengths'] = np.ones([self.net.Nt, 3])*(0.15, 0.2, 0.26)
+        self.net['pore.shape_factor'] = np.ones(self.net.Np) * 0.15
+        self.net['throat.shape_factor'] = np.ones(self.net.Nt) * 0.15
         mod = op.models.physics.hydraulic_conductance.valvatne_blunt
         self.phase.add_model(propname='throat.valvatne_conductance', model=mod)
         actual = self.phase['throat.valvatne_conductance'].mean()

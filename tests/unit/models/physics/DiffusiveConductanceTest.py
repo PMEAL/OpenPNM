@@ -15,10 +15,10 @@ class DiffusiveConductanceTest:
         self.phase['pore.diffusivity'] = 1.3
         self.phase['pore.molecular_weight'] = 0.029
         self.phase['pore.temperature'] = 345.0
-        self.size_factors_dict = {"pore1": 0.123, "throat": 0.981, "pore2": 0.551}
+        self.size_factors = np.ones([self.net.Nt, 3])*(0.123, 0.981, 0.551)
 
     def test_generic_diffusive_size_factors_as_dict(self):
-        self.net['throat.diffusive_size_factors'] = self.size_factors_dict
+        self.net['throat.diffusive_size_factors'] = self.size_factors
         mod = op.models.physics.diffusive_conductance.generic_diffusive
         self.phase.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phase.regenerate_models()
@@ -54,7 +54,7 @@ class DiffusiveConductanceTest:
         # assert len(phase['throat.diffusive_conductance']) == 5
 
     def test_ordinary_diffusion_size_factors_given_as_dict(self):
-        self.net['throat.diffusive_size_factors'] = self.size_factors_dict
+        self.net['throat.diffusive_size_factors'] = self.size_factors
         mod = op.models.physics.diffusive_conductance.ordinary_diffusion
         self.phase.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phase.regenerate_models()
@@ -72,7 +72,7 @@ class DiffusiveConductanceTest:
         del self.net["throat.diffusive_size_factors"]
 
     def test_mixed_diffusion(self):
-        self.net['throat.diffusive_size_factors'] = self.size_factors_dict
+        self.net['throat.diffusive_size_factors'] = self.size_factors
         mod = op.models.physics.diffusive_conductance.mixed_diffusion
         self.phase.add_model(propname='throat.diffusive_conductance', model=mod)
         self.phase.regenerate_models()
@@ -106,7 +106,7 @@ class DiffusiveConductanceTest:
     #     assert_allclose(g.mean(), 7.64303956e-7, rtol=1e-5)
 
     def test_taylor_aris_diffusion(self):
-        self.net['throat.diffusive_size_factors'] = self.size_factors_dict
+        self.net['throat.diffusive_size_factors'] = self.size_factors
         self.phase['pore.pressure'] = np.linspace(0, 20, self.net.Np)
         self.phase['throat.hydraulic_conductance'] = 1
         mod = op.models.physics.diffusive_conductance.taylor_aris_diffusion

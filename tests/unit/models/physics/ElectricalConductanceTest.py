@@ -9,9 +9,8 @@ class ElectricalConductanceTest:
         self.net = op.network.Cubic(shape=[4, 4, 4])
         self.net['pore.diameter'] = 1.0
         self.net['throat.diameter'] = 0.5
-        self.net['throat.diffusive_size_factors'] = {
-            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
-        }
+        self.net['throat.diffusive_size_factors'] = \
+            np.ones([self.net.Nt, 3])*(0.123, 0.981, 0.551)
         self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.electrical_conductivity'] = 1.0
 

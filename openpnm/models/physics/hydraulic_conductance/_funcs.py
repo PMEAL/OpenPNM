@@ -274,7 +274,7 @@ def valvatne_blunt(
     mu_t = target[throat_viscosity]
 
     # Fetch model parameters
-    L1, Lt, L2 = network.get_conduit_data(conduit_lengths).T
+    L1, Lt, L2 = network[conduit_lengths].T
     Gp = network[pore_shape_factor]
     Gt = network[throat_shape_factor]
     Ap = network[pore_area]

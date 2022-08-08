@@ -1,4 +1,5 @@
 import openpnm as op
+import numpy as np
 from numpy.testing import assert_allclose
 
 
@@ -6,9 +7,8 @@ class ThermalConductanceTest:
 
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 4, 4])
-        self.net['throat.diffusive_size_factors'] = {
-            "pore1": 0.4, "throat": 0.2, "pore2": 0.3
-        }
+        self.net['throat.diffusive_size_factors'] = \
+            np.ones([self.net.Nt, 3])*(0.4, 0.2, 0.3)
         self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.thermal_conductivity'] = 0.5
 

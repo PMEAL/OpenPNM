@@ -830,17 +830,6 @@ class BaseTest:
         with pytest.raises(KeyError):
             pn.get_conduit_data('blah')
 
-    def test_get_conduit_data_dict(self):
-        pn = op.network.Cubic(shape=[3, 3, 3])
-        pn['throat.conduit_lengths.pore1'] = 1.0
-        pn['throat.conduit_lengths.throat'] = 2.0
-        pn['throat.conduit_lengths.pore2'] = 3.0
-        d = pn.get_conduit_data('throat.conduit_lengths')
-        assert d.shape == (54, 3)
-        del pn['throat.conduit_lengths.pore1']
-        with pytest.raises(AttributeError):
-            d = pn.get_conduit_data('throat.conduit_lengths')
-
 
 if __name__ == '__main__':
 
