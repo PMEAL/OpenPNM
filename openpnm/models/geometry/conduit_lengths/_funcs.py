@@ -36,7 +36,7 @@ def spheres_and_cylinders(
     Returns
     -------
     lengths : ndarray
-        Array (Nt by 3) containing conduit length values for each element
+        Array (Nt by 3) containing conduit values for each element
         of the pore-throat-pore conduits. The array is formatted as
         ``[pore1, throat, pore2]``.
 

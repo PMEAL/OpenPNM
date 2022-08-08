@@ -36,19 +36,23 @@ def generic_hydraulic(
 
     """
     network = target.network
-    throats = target.throats()
-    conns = network.conns[throats]
+    conns = network.conns
     phase = target
-    F = network[size_factors]
     mu1, mu2 = phase[pore_viscosity][conns].T
-    mut = phase[throat_viscosity][throats]
+    mut = phase[throat_viscosity]
 
-    if isinstance(F, dict):
-        g1 = F["pore1"][throats] / mu1
-        gt = F["throat"][throats] / mut
-        g2 = F["pore2"][throats] / mu2
-        return 1 / (1/g1 + 1/gt + 1/g2)
-    return F[throats] / mut
+    SF = network[size_factors]
+    if isinstance(SF, dict):  # Legacy approach
+        F1, Ft, F2 = SF.values()
+    elif SF.ndim > 1:  # Nt-by-3 array
+        F1, Ft, F2 = SF.T
+    else:  # Nt array, like from network extraction predictions
+        F1, Ft, F2 = _np.inf, SF, _np.inf
+
+    g1 = F1 / mu1
+    gt = Ft / mut
+    g2 = F2 / mu2
+    return 1 / (1/g1 + 1/gt + 1/g2)
 
 
 @_doctxt
@@ -145,9 +149,9 @@ def hagen_poiseuille_power_law(
     # Fetch model parameters
     A1, A2 = network[pore_area][cn].T
     At = network[throat_area][throats]
-    L1 = network[conduit_lengths + ".pore1"][throats]
-    L2 = network[conduit_lengths + ".pore2"][throats]
-    Lt = network[conduit_lengths + ".throat"][throats]
+    L1 = network[conduit_lengths][throats, 0]
+    L2 = network[conduit_lengths][throats, 1]
+    Lt = network[conduit_lengths][throats, 2]
     P = phase[pore_pressure]
     t_prop = 'throat.'+pore_pressure.split('.', 1)[-1]
     Pt = phase.interpolate_data(propname=t_prop)[throats]
@@ -179,9 +183,9 @@ def hagen_poiseuille_power_law(
 
     F = network[size_factors]
     if isinstance(F, dict):
-        g1 = F[f"{size_factors}.pore1"][throats] / mu1
-        gt = F[f"{size_factors}.throat"][throats] / mut
-        g2 = F[f"{size_factors}.pore2"][throats] / mu2
+        g1 = F[f"{size_factors}"][throats, 0] / mu1
+        gt = F[f"{size_factors}"][throats, 1] / mut
+        g2 = F[f"{size_factors}"][throats, 2] / mu2
         return 1 / (1 / g1 + 1 / gt + 1 / g2)
     return F[throats] / mut
 
@@ -270,9 +274,7 @@ def valvatne_blunt(
     mu_t = target[throat_viscosity]
 
     # Fetch model parameters
-    L1 = network[conduit_lengths + ".pore1"]
-    Lt = network[conduit_lengths + ".throat"]
-    L2 = network[conduit_lengths + ".pore2"]
+    L1, Lt, L2 = network[conduit_lengths].T
     Gp = network[pore_shape_factor]
     Gt = network[throat_shape_factor]
     Ap = network[pore_area]

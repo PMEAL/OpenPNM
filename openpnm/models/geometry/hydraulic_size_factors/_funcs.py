@@ -39,9 +39,10 @@ def spheres_and_cylinders(
 
     Returns
     -------
-    size_factors : dict
-        A dictionary containing the hydraulic size factors, which can be
-        accessed via the dict keys 'pore1', 'pore2', and 'throat'.
+    size_factors : ndarray
+        Array (Nt by 3) containing conduit values for each element
+        of the pore-throat-pore conduits. The array is formatted as
+        ``[pore1, throat, pore2]``.
 
     Notes
     -----
@@ -82,7 +83,7 @@ def spheres_and_cylinders(
     St = 1 / (16 * _np.pi**2 * It * Ft)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -123,7 +124,7 @@ def circles_and_rectangles(
     # S is 1 / (12 * F)
     S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -169,7 +170,7 @@ def cones_and_cylinders(
     St = 1 / (16 * _np.pi**2 * It * Ft)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -213,7 +214,7 @@ def trapezoids_and_rectangles(
     # S is 1 / (12 * F)
     S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -259,7 +260,7 @@ def pyramids_and_cuboids(
     St = 1 / (16 * _np.pi**2 * It * Ft)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -311,7 +312,7 @@ def cubes_and_cuboids(
     St = 1 / (16 * _np.pi**2 * It * Ft)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -361,7 +362,7 @@ def squares_and_rectangles(
     # S is 1 / (12 * F)
     S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
 
-    return {"pore1": S1, "throat": St, "pore2": S2}
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -422,6 +423,7 @@ def intersecting_trapezoids(
 
     """
     raise NotImplementedError
+
 
 @docstr.dedent
 def intersecting_pyramids(
@@ -496,4 +498,4 @@ def ncylinders_in_series(
     F2 = 1 / _np.sum(1 / gtemp, axis=1)
     Ft = (_np.pi * (Dt / 2) ** 4 / (8 * Lt)).T
 
-    return {"pore1": F1, "throat": Ft, "pore2": F2}
+    return _np.vstack([F1, Ft, F2]).T

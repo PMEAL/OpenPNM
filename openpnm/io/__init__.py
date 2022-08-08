@@ -18,7 +18,7 @@ from ._marock import network_from_marock
 from ._porespy import network_from_porespy
 from ._paraview import project_to_paraview
 from ._networkx import network_to_networkx, network_from_networkx
-from ._statoil import network_to_statoil, network_from_statoil
+from ._statoil import network_from_statoil  # , network_to_statoil
 from ._pergeos import network_to_pergeos, network_from_pergeos
 from ._jsongraph import network_to_jsongraph, network_from_jsongraph
 from ._stl import network_to_stl
