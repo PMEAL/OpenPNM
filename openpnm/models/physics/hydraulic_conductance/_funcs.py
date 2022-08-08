@@ -36,19 +36,23 @@ def generic_hydraulic(
 
     """
     network = target.network
-    throats = target.throats()
-    conns = network.conns[throats]
+    conns = network.conns
     phase = target
-    F = network[size_factors]
     mu1, mu2 = phase[pore_viscosity][conns].T
-    mut = phase[throat_viscosity][throats]
+    mut = phase[throat_viscosity]
 
-    if F.ndim == 2:
-        g1 = F[throats, 0] / mu1
-        gt = F[throats, 1] / mut
-        g2 = F[throats, 2] / mu2
-        return 1 / (1/g1 + 1/gt + 1/g2)
-    return F[throats] / mut
+    SF = network[size_factors]
+    if isinstance(SF, dict):  # Legacy approach
+        F1, Ft, F2 = SF.values()
+    elif SF.ndim > 1:  # Nt-by-3 array
+        F1, Ft, F2 = SF.T
+    else:  # Nt array, like from network extraction predictions
+        F1, Ft, F2 = _np.inf, SF, _np.inf
+
+    g1 = F1 / mu1
+    gt = Ft / mut
+    g2 = F2 / mu2
+    return 1 / (1/g1 + 1/gt + 1/g2)
 
 
 @_doctxt
@@ -270,9 +274,7 @@ def valvatne_blunt(
     mu_t = target[throat_viscosity]
 
     # Fetch model parameters
-    L1 = network[conduit_lengths, 0]
-    Lt = network[conduit_lengths, 1]
-    L2 = network[conduit_lengths, 2]
+    L1, Lt, L2 = network.get_conduit_data(conduit_lengths).T
     Gp = network[pore_shape_factor]
     Gt = network[throat_shape_factor]
     Ap = network[pore_area]

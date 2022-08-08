@@ -14,7 +14,10 @@ class ConduitDiffusiveSizeFactorsTest:
         self.air.regenerate_models()
 
     def test_spheres_and_cylinders(self):
-        S_actual = mods.spheres_and_cylinders(self.net)
+        SF = mods.spheres_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.93875728, 0.97459088]),
             'throat': array([1.25663706e+14, 4.05813214e-01]),
@@ -24,7 +27,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_circles_and_rectangles(self):
-        S_actual = mods.circles_and_rectangles(self.net)
+        SF = mods.circles_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([1.53390798, 1.80140852]),
             'throat': array([4.00000000e+14, 1.29174358e+00]),
@@ -34,17 +40,23 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_cones_and_cylinders(self):
-        S_actual = mods.cones_and_cylinders(self.net)
+        SF = mods.cones_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.65138854, 0.62831853]),
             'throat': array([1.25663706e+14, 6.28318531e-01]),
-            'pore2': array([0.6712008 , 0.62831853])
+            'pore2': array([0.6712008, 0.62831853])
         }
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
 
     def test_trapezoids_and_rectangles(self):
-        S_actual = mods.trapezoids_and_rectangles(self.net)
+        SF = mods.trapezoids_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([1.25821405, 1.37016859]),
             'throat': array([4.e+14, 2.e+00]),
@@ -54,7 +66,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_pyramids_and_cuboids(self):
-        S_actual = mods.pyramids_and_cuboids(self.net)
+        SF = mods.pyramids_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.82937365, 0.8]),
             'throat': array([1.6e+14, 8.0e-01]),
@@ -64,7 +79,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_cubes_and_cuboids(self):
-        S_actual = mods.cubes_and_cuboids(self.net)
+        SF = mods.cubes_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([2.4, 1.8]),
             'throat': array([1.6e+14, 8.0e-01]),
@@ -74,7 +92,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_squares_and_rectangles(self):
-        S_actual = mods.squares_and_rectangles(self.net)
+        SF = mods.squares_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([2., 2.]),
             'throat': array([4.e+14, 2.e+00]),
@@ -84,11 +105,14 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_ncylinders_in_series(self):
-        S_actual = mods.ncylinders_in_series(self.net)
+        SF = mods.ncylinders_in_series(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.49260457, 0.77443401]),
             'throat': array([1.25663706e+14, 4.05813214e-01]),
-            'pore2': array([0.563723  , 0.84600371])
+            'pore2': array([0.563723, 0.84600371])
         }
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])

@@ -192,13 +192,14 @@ def taylor_aris_diffusion(target,
     Pe2 = u2 * ((4 * A2 / _np.pi) ** 0.5) / D2
     Pet = ut * ((4 * At / _np.pi) ** 0.5) / Dt
 
-    # Calculate diffusive conductance
-    if isinstance(F, dict):
+    if F.ndim > 1:
         g1 = D1 * (1 + Pe1**2 / 192) * F[throats, 0]
         gt = Dt * (1 + Pet**2 / 192) * F[throats, 1]
         g2 = D2 * (1 + Pe2**2 / 192) * F[throats, 2]
-        return 1 / (1/g1 + 1/gt + 1/g2)
-    return Dt * (1 + Pet**2 / 192) * F[throats]
+        gtot = 1 / (1/g1 + 1/gt + 1/g2)
+    else:
+        gtot = Dt * (1 + Pet**2 / 192) * F[throats]
+    return gtot
 
 
 @_doctxt
@@ -233,7 +234,13 @@ def multiphase_diffusion(target,
     """
     network = target.network
     cn = network.conns
-    F1, Ft, F2 = network[size_factors].values()
+    SF = network[size_factors]
+    if isinstance(SF, dict):
+        F1, Ft, F2 = SF.values()
+    elif SF.ndim > 1:
+        F1, Ft, F2 = SF.T
+    else:
+        F1, Ft, F2 = _np.inf, SF, _np.inf
 
     # Fetch model parameters
     D1, D2 = target[pore_diffusivity][cn].T

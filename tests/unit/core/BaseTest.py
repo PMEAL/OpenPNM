@@ -729,11 +729,6 @@ class BaseTest:
     #     assert a.size == self.geo.Nt
     #     assert np.isclose(a.mean(), 0.5)
 
-    # def test_get_no_matches(self):
-    #     self.geo.pop('pore.blah', None)
-    #     with pytest.raises(KeyError):
-    #         _ = self.geo['pore.blah']
-
     def test_get_string(self):
         a = self.net.get('pore.coords')
         assert a.shape == (self.net.Np, 3)
@@ -746,123 +741,6 @@ class BaseTest:
         assert len(d) == 2
         assert 'bar' in d.keys()
         assert 'baz' in d.keys()
-
-    # def test_subdict_getitem_on_network_from_one_geometry(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     pn['pore.foo.bar'] = 1
-    #     pn['pore.foo.baz'] = 2
-    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-    #                                       throats=pn.Ts)
-    #     d = geo['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-
-    # def test_subdict_getitem_on_network_from_two_geometries(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     pn['pore.foo.bar'] = 1
-    #     pn['pore.foo.baz'] = 2
-    #     geo1 = op.geometry.GenericGeometry(network=pn,
-    #                                        pores=pn.Ps[:75],
-    #                                        throats=pn.Ts[:75])
-    #     geo2 = op.geometry.GenericGeometry(network=pn,
-    #                                        pores=pn.Ps[75:],
-    #                                        throats=pn.Ts[75:])
-    #     d = geo1['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-    #     assert d['pore.foo.bar'].size == geo1.Np
-    #     assert d['pore.foo.baz'].size == geo1.Np
-    #     d = geo2['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-    #     assert d['pore.foo.bar'].size == geo2.Np
-    #     assert d['pore.foo.baz'].size == geo2.Np
-
-    # def test_subdict_getitem_on_phase_from_phase(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     air = op.phase.Phase(network=pn)
-    #     air['pore.foo.bar'] = 1
-    #     air['pore.foo.baz'] = 2
-    #     d = air['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-
-    # def test_subdict_getitem_on_phase_from_one_physics(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-    #                                       throats=pn.Ts)
-    #     air = op.phase.Phase(network=pn)
-    #     phys = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo)
-    #     air['pore.foo.bar'] = 1
-    #     air['pore.foo.baz'] = 2
-    #     d = phys['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-
-    # def test_subdict_getitem_on_phase_from_two_physics(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     geo1 = op.geometry.GenericGeometry(network=pn,
-    #                                        pores=pn.Ps[:75],
-    #                                        throats=pn.Ts[:75])
-    #     geo2 = op.geometry.GenericGeometry(network=pn,
-    #                                        pores=pn.Ps[75:],
-    #                                        throats=pn.Ts[75:])
-    #     air = op.phase.Phase(network=pn)
-    #     phys1 = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo1)
-    #     phys2 = op.physics.GenericPhysics(network=pn, phase=air, geometry=geo2)
-    #     air['pore.foo.bar'] = 1
-    #     air['pore.foo.baz'] = 2
-
-    #     d = phys1['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-    #     assert d['pore.foo.bar'].size == geo1.Np
-    #     assert d['pore.foo.baz'].size == geo1.Np
-    #     d = phys2['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-    #     assert d['pore.foo.bar'].size == geo2.Np
-    #     assert d['pore.foo.baz'].size == geo2.Np
-
-    # def test_subdict_getitem_on_one_geometry(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     geo = op.geometry.GenericGeometry(network=pn, pores=pn.Ps,
-    #                                       throats=pn.Ts)
-    #     geo['pore.foo.bar'] = 1
-    #     geo['pore.foo.baz'] = 2
-    #     d = pn['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-
-    # def test_subdict_getitem_on_two_geometries(self):
-    #     pn = op.network.Cubic(shape=[5, 5, 5])
-    #     geo1 = op.geometry.GenericGeometry(network=pn,
-    #                                        pores=pn.Ps[:75],
-    #                                        throats=pn.Ts[:75])
-    #     geo2 = op.geometry.GenericGeometry(network=pn,
-    #                                        pores=pn.Ps[75:],
-    #                                        throats=pn.Ts[75:])
-    #     geo1['pore.foo.bar'] = 1
-    #     geo1['pore.foo.baz'] = 2
-    #     d = pn['pore.foo']
-    #     assert len(d) == 2
-    #     assert 'pore.foo.bar' in d.keys()
-    #     assert 'pore.foo.baz' in d.keys()
-    #     assert np.any(np.isnan(d['pore.foo.bar']))
-    #     assert np.any(np.isnan(d['pore.foo.baz']))
-    #     geo2['pore.foo.bar'] = 1
-    #     geo2['pore.foo.baz'] = 2
-    #     d = pn['pore.foo']
-    #     assert np.all(~np.isnan(d['pore.foo.bar']))
-    #     assert np.all(~np.isnan(d['pore.foo.baz']))
 
     def test_subdict_lookup_errors(self):
         pn = op.network.Cubic(shape=[5, 5, 5])
@@ -952,29 +830,16 @@ class BaseTest:
         with pytest.raises(KeyError):
             pn.get_conduit_data('blah')
 
-    # def test_get_conduit_data_different_props(self):
-    #     pn = op.network.Cubic(shape=[3, 3, 3])
-    #     pn['pore.diameter'] = 2.0
-    #     pn['throat.volume'] = 1.0
-    #     a = pn.get_conduit_data(poreprop='pore.diameter',
-    #                             throatprop='throat.volume')
-    #     assert np.all(a.shape == (54, 3))
-    #     assert np.all(a[:, 1] == 1.0)
-    #     assert np.all(a[:, 0] == 2.0)
-    #     assert np.all(a[:, 2] == 2.0)
-
-    # def test_del_nested_dicts(self):
-    #     pn = op.network.Cubic(shape=[3, 3, 3])
-    #     geo = op.geometry.SpheresAndCylinders(network=pn,
-    #                                           pores=pn.Ps,
-    #                                           throats=pn.Ts)
-    #     assert 'throat.hydraulic_size_factors.pore1' in geo.keys()
-    #     del geo['throat.hydraulic_size_factors']
-    #     assert 'throat.hydraulic_size_factors.pore1' not in geo.keys()
-    #     with pytest.raises(KeyError):
-    #         geo['throat.hydraulic_size_factors']
-    #     with pytest.raises(KeyError):
-    #         del geo['pore.blah']
+    def test_get_conduit_data_dict(self):
+        pn = op.network.Cubic(shape=[3, 3, 3])
+        pn['throat.conduit_lengths.pore1'] = 1.0
+        pn['throat.conduit_lengths.throat'] = 2.0
+        pn['throat.conduit_lengths.pore2'] = 3.0
+        d = pn.get_conduit_data('throat.conduit_lengths')
+        assert d.shape == (54, 3)
+        del pn['throat.conduit_lengths.pore1']
+        with pytest.raises(AttributeError):
+            d = pn.get_conduit_data('throat.conduit_lengths')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,14 @@
 r"""
 Pore-scale models for calculating the conductance of conduits.
 """
+from numpy import vstack
+
+
+__all__ = [
+    '_poisson_conductance',
+    '_get_key_props',
+]
+
 
 def _poisson_conductance(target,
                          pore_conductivity=None,

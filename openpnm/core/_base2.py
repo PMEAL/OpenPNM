@@ -402,12 +402,35 @@ class Base2(dict):
             values = from_neighbor_throats(target=self, prop='throat.'+prop, mode=mode)
         return values
 
-    def get_conduit_data(self, propname, mode='mean'):
+    def get_conduit_data(self, propname):
+        r"""
+        Fetches an Nt-by-3 array of the request property in the form of
+        [pore1, throat, pore2].
+
+        Parameters
+        ----------
+        propname : str
+            The dictionary key of the property to fetch.
+
+        Returns
+        -------
+        data : ndarray
+            An Nt-by-3 array with each column containing the requrested data
+            for pore1, throat, and pore2 respectively.
+
+        """
+        # If requested data is already in the form of conduit data, return it
+        if propname in self.keys():
+            vals = self[propname]
+            if (vals.ndim == 2) and (vals.shape[1] == self.Nt):
+                return vals
         poreprop = 'pore.' + propname.split('.', 1)[-1]
         throatprop = 'throat.' + propname.split('.', 1)[-1]
         conns = self.network.conns
         try:
             T = self[throatprop]
+            if T.ndim > 1:
+                raise Exception(f'{throatprop} must be a single column wide')
         except KeyError:
             T = np.ones([self.Nt, ], dtype=float)*np.nan
         try:

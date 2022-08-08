@@ -480,5 +480,5 @@ def ncylinders_in_series(
     F2 = 1 / _np.sum(1 / gtemp, axis=1)
     Ft = (_np.pi * (Dt / 2)**2 / (Lt)).T
 
-    vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    vals = _np.vstack([F1, Ft, F2]).T
     return vals
