@@ -1,4 +1,7 @@
 import numpy as np
+import inspect
+import uuid
+from copy import deepcopy
 from openpnm.core import (
     LabelMixin,
     ModelsDict,
@@ -11,12 +14,9 @@ from openpnm.utils import (
     PrintableList,
     PrintableDict,
     Docorator,
-    parse_mode,
+    get_printable_props,
+    get_printable_labels,
 )
-from copy import deepcopy
-import inspect
-import uuid
-import numpy.lib.recfunctions as rf
 
 
 docstr = Docorator()
@@ -64,7 +64,7 @@ class Base2(dict):
         instance.settings['uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, network=None, name='obj_#'):
+    def __init__(self, network=None, name='obj_?'):
         super().__init__()
         # Add default settings
         self.settings._update(BaseSettings())
@@ -85,7 +85,7 @@ class Base2(dict):
         module = self.__module__
         module = ".".join([x for x in module.split(".") if not x.startswith("_")])
         cname = self.__class__.__name__
-        return f'<{module}.{cname} at {hex(id(self))}>'
+        return f'{self.name} : <{module}.{cname} at {hex(id(self))}>'
 
     def __setitem__(self, key, value):
         if value is None:
@@ -93,6 +93,7 @@ class Base2(dict):
 
         # Intercept parameters
         if key.startswith('param'):
+            _, key = key.split('.', 1)
             self._params[key] = value
             return
 
@@ -123,13 +124,6 @@ class Base2(dict):
             for k, v in value.items():
                 self[f'{key}.{k}'] = v
             return
-        # Catch dictionaries and convert to struct arrays and back
-        # if isinstance(value, dict):
-        #     s = self._dict_to_struct(d=value, element=element)
-        #     d = self._struct_to_dict(s=s)
-        #     for k, v in d.items():
-        #         self[f'{element}.{prop}.{k}'] = v
-        #     return
 
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
@@ -160,17 +154,23 @@ class Base2(dict):
             return key
 
         if key.startswith('param'):
+            _, key = key.split('.', 1)
             try:
                 return self._params[key]
             except KeyError:
                 return self.network._params[key]
 
-        # If key starts with conduit, then call the get_conduit_data method
+        # If key starts with 'conduit.', then call the get_conduit_data method
         # to build an Nt-by-3 array of pore1-throat-pore2 values
         if key.startswith('conduit'):
+            domain = None
             if '@' in key:
-                raise Exception('@domain syntax does not work with conduit prefix')
-            return self.get_conduit_data(propname=key.split('.', 1)[1])
+                key, domain = key.split('@')
+            vals = self.get_conduit_data(propname=key.split('.', 1)[1])
+            if domain is not None:
+                locs = self['throat.'+domain]
+                vals = vals[locs]
+            return vals
 
         # If key contains an @ symbol then return a subset of values at the
         # requested locations, by recursively calling __getitem__
@@ -184,13 +184,13 @@ class Base2(dict):
             return vals[locs]
 
         # This allows for lookup of all data that 'ends with' a certain
-        # string. Is probably gimmicky and should be deleted.  Was mostly
-        # meant for exploring the idea of putting phase values in the
-        # network dict, like pn['pore.temperature.air'], but we're not doing
-        # that now.
-        if '*' in key:
+        # string, like pn[]*diameter'] will return a dict with pore and throat
+        # as the dict keys
+        if key.startswith('*'):
             d = {}
-            key = key[1:]
+            key = key[1:]  # Remove astrisk
+            if key.startswith('.'):  # Remove leading dot if *. was given
+                key = key[1:]
             for k, v in self.items():
                 if k.endswith(key):
                     d[k[:-len(key)-1]] = super().__getitem__(k)
@@ -240,9 +240,8 @@ class Base2(dict):
         if mode is None:
             super().clear()
         else:
-            mode = parse_mode(obj=self, mode=mode, allowed=['props',
-                                                            'labels',
-                                                            'models'])
+            if isinstance(mode, str):
+                mode = [mode]
             if 'props' in mode:
                 for item in self.props():
                     if item not in ['pore.coords', 'throat.conns']:
@@ -259,10 +258,8 @@ class Base2(dict):
         if mode is None:
             return super().keys()
         else:
-            mode = parse_mode(obj=self, mode=mode, allowed=['props',
-                                                            'labels',
-                                                            'models',
-                                                            'constants'])
+            if isinstance(mode, str):
+                mode = [mode]
             vals = set()
             if 'props' in mode:
                 for item in self.props():
@@ -313,14 +310,10 @@ class Base2(dict):
 
     def _set_settings(self, settings):
         self._settings = deepcopy(settings)
-        # if (self._settings_docs is None) and (settings.__doc__ is not None):
-        #     self._settings_docs = settings.__doc__
 
     def _get_settings(self):
         if self._settings is None:
             self._settings = SettingsAttr()
-        # if self._settings_docs is not None:
-        #     self._settings.__dict__['__doc__'] = self._settings_docs
         return self._settings
 
     def _del_settings(self):
@@ -332,18 +325,19 @@ class Base2(dict):
     def network(self):
         return self.project.network
 
+    @property
     def params(self):
         return self._params
-
-    # TODO: Delete this once codes stops asking for it
-    @property
-    def _domain(self):
-        return self
 
     def _count(self, element):
         for k, v in self.items():
             if k.startswith(element):
                 return v.shape[0]
+
+    # TODO: Delete this once codes stops asking for it
+    @property
+    def _domain(self):
+        return self
 
     @property
     def Nt(self):
@@ -388,9 +382,11 @@ class Base2(dict):
             element = [element]
         props = []
         for k, v in self.items():
-            if v.dtype != bool:
-                if k.split('.', 1)[0] in element:
-                    props.append(k)
+            el, prop = k.split('.', 1)
+            if (el in element) and (v.dtype != bool) and not prop.startswith('_'):
+                props.append(k)
+        props = sorted(props)
+        props = PrintableList(props)
         return props
 
     def interpolate_data(self, propname, mode='mean'):
@@ -406,12 +402,35 @@ class Base2(dict):
             values = from_neighbor_throats(target=self, prop='throat.'+prop, mode=mode)
         return values
 
-    def get_conduit_data(self, propname, mode='mean'):
+    def get_conduit_data(self, propname):
+        r"""
+        Fetches an Nt-by-3 array of the request property in the form of
+        [pore1, throat, pore2].
+
+        Parameters
+        ----------
+        propname : str
+            The dictionary key of the property to fetch.
+
+        Returns
+        -------
+        data : ndarray
+            An Nt-by-3 array with each column containing the requrested data
+            for pore1, throat, and pore2 respectively.
+
+        """
+        # If requested data is already in the form of conduit data, return it
+        if propname in self.keys():
+            vals = self[propname]
+            if (vals.ndim == 2) and (vals.shape[1] == self.Nt):
+                return vals
         poreprop = 'pore.' + propname.split('.', 1)[-1]
         throatprop = 'throat.' + propname.split('.', 1)[-1]
         conns = self.network.conns
         try:
             T = self[throatprop]
+            if T.ndim > 1:
+                raise Exception(f'{throatprop} must be a single column wide')
         except KeyError:
             T = np.ones([self.Nt, ], dtype=float)*np.nan
         try:
@@ -424,64 +443,15 @@ class Base2(dict):
             raise KeyError(f'{propname} not found')
         return vals
 
-    def _dict_to_struct(self, d, element):
-        for k, v in d.items():
-            self[element+'._.'+k] = v
-        # Do it 2nd loop so that any @ domains are all written before popping
-        d2 = {}
-        for k, v in d.items():
-            # Since key can only be popped once, but may be in items > once
-            temp = self.pop(element+'._.'+k.split('@')[0], None)
-            if temp is not None:
-                d2.update({k.split('@')[0]: temp})
-        struct = rf.unstructured_to_structured(np.vstack(list(d2.values())).T,
-                                               names=list(d2.keys()))
-        return struct
-
-    def _struct_to_dict(self, s):
-        d = {}
-        for key in s.dtype.names:
-            d[key] = s[key]
-        return d
-
     def __str__(self):
-        module = self.__module__
-        module = ".".join([x for x in module.split(".") if not x.startswith("_")])
-        cname = self.__class__.__name__
-        horizontal_rule = '―' * 78
-        lines = [horizontal_rule]
-        lines.append(f"{module}.{cname} : {self.name}")
-        lines.append(horizontal_rule)
-        lines.append("{0:<5s} {1:<45s} {2:<10s}".format('#',
-                                                        'Properties',
-                                                        'Valid Values'))
-        fmt = "{0:<5d} {1:<45s} {2:>5d} / {3:<5d}"
-        lines.append(horizontal_rule)
-        props = self.props()
-        props.sort()
-        for i, item in enumerate(props):
-            prop = item
-            required = self._count(item.split('.', 1)[0])
-            if len(prop) > 35:  # Trim overly long prop names
-                prop = prop[0:32] + '...'
-            if self[item].dtype == object:  # Print objects differently
-                invalid = [i for i in self[item] if i is None]
-                defined = np.size(self[item]) - len(invalid)
-                lines.append(fmt.format(i + 1, prop, defined, required))
-            elif '._' not in prop:
-                try:  # normal ndarray
-                    a = np.isnan(self[item])
-                    defined = np.shape(self[item])[0] \
-                        - a.sum(axis=0, keepdims=(a.ndim-1) == 0)[0]
-                except TypeError:  # numpy struct array
-                    k = self[item].dtype.names
-                    required = self[item].shape[0]*len(k)
-                    defined = sum([sum(~np.isnan(self[item][i])) for i in k])
-                lines.append(fmt.format(i + 1, prop, defined, required))
-        lines.append(horizontal_rule)
-        # lines = lines.rpartition('\n')[0]
-        # lines = lines.append(self._params.__str__())
-        return '\n'.join(lines)
+        hr = '―' * 78
+        lines = ''
+        lines += '\n' + "═"*78 + '\n' + self.__repr__() + '\n' + hr + '\n'
+        lines += get_printable_props(self)
+        lines += '\n' + hr + '\n'
+        lines += get_printable_labels(self)
+        lines += '\n' + hr
+        return lines
 
 
 class ModelMixin2:
@@ -511,9 +481,7 @@ class ModelMixin2:
             self.run_model(propname+'@'+domain)
 
     def add_model_collection(self, models, regen_mode='deferred', domain='all'):
-        # Catch un-run function
-        if hasattr(models, '__call__'):
-            models = models()
+        models = deepcopy(models)
         for k, v in models.items():
             if 'domain' not in v.keys():
                 v['domain'] = domain
@@ -557,14 +525,14 @@ class ModelMixin2:
             propname = f'{element}.{prop}'
             mod_dict = self.models[propname+'@'+domain]
             # Collect kwargs
-            kwargs = {'target': self, 'domain': f'{element}.{domain}'}
+            kwargs = {'domain': f'{element}.{domain}'}
             for item in mod_dict.keys():
                 if item not in ['model', 'regen_mode']:
                     kwargs[item] = mod_dict[item]
             # Deal with models that don't have domain argument yet
             if 'domain' not in inspect.getfullargspec(mod_dict['model']).args:
                 _ = kwargs.pop('domain', None)
-                vals = mod_dict['model'](**kwargs)
+                vals = mod_dict['model'](self, **kwargs)
                 if isinstance(vals, dict):  # Handle models that return a dict
                     for k, v in vals.items():
                         v = np.atleast_1d(v)

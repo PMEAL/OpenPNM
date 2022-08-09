@@ -1,7 +1,6 @@
 import logging
 import numpy as np
 from pathlib import Path
-from openpnm.utils import flat_list
 
 
 __all__ = [
@@ -9,7 +8,6 @@ __all__ = [
     '_update_network',
     '_parse_filename',
     '_parse_args',
-    '_is_transient',
 ]
 
 
@@ -67,22 +65,12 @@ def _parse_filename(filename, ext=""):
 
 
 def _parse_args(network, phases):
-    # Convert network to a list, even if empty
-    if network is None:
-        network = []
-    else:
-        network = flat_list(network)
-    # Ensure phases is a list, even if empty
-    phases = flat_list(phases)
-    # Get handle to project object
-    if len(network) == 0:
-        if len(phases) == 0:
-            raise Exception("Must specify one of network or phase")
-        project = phases[0].project
-    else:
+    try:
+        project = network.project
+        network = [network]
+    except AttributeError:
         project = network[0].project
+    # Ensure phases is a list, even if empty
+    if not isinstance(phases, list):
+        phases = [phases]
     return (project, network, phases)
-
-
-def _is_transient(phases):
-    raise Exception("this function does not work any more!")

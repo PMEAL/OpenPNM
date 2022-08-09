@@ -10,9 +10,13 @@ docstr = Docorator()
 
 __all__ = ["gaseous_species_in_water"]
 
+
 @docstr.dedent
-def gaseous_species_in_water(target, chemical_formula,
-                             temperature="throat.temperature"):
+def gaseous_species_in_water(
+    target,
+    chemical_formula,
+    T="throat.temperature"
+):
     r"""
     Calculate Henry's law constant for gaseous species dissolved in water.
 
@@ -44,7 +48,7 @@ def gaseous_species_in_water(target, chemical_formula,
     row = df[df.Formula == chemical_formula]
     A, B, C, D = row.iloc[0, 3:7].astype(float)
     Tmin, Tmax = row.iloc[0, 7:9].astype(float)
-    T = target[temperature]
+    T = target[T]
 
     if (T.min() < Tmin) or (T.max() > Tmax):
         logger.critical("The correlation is only accurate for temperatures in the "

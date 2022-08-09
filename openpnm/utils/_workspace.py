@@ -288,11 +288,9 @@ class Workspace(dict):
         return proj
 
     def __str__(self):
-        s = []
         hr = '―'*78
-        s.append(hr)
-        s.append(hr)
+        s = hr + '\n'
         for item in self.values():
-            s.append(' ' + item.name)
-            s.append(item.__str__())
-        return '\n'.join(s)
+            s += item.name + '\n'
+            s += item.__str__() + '\n'
+        return s

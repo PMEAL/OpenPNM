@@ -8,7 +8,7 @@ __all__ = ["purcell", "sinusoidal", "general_toroidal"]
 
 
 def general_toroidal(
-    target,
+    phase,
     profile_equation='elliptical',
     mode='max',
     target_Pc=None,
@@ -94,16 +94,16 @@ def general_toroidal(
     from sympy import pi as sym_pi
 
     # Get data from dictionary keys
-    network = target.project.network
-    surface_tension = target[surface_tension]
-    contact = target[contact_angle]
+    network = phase.network
+    surface_tension = phase[surface_tension]
+    contact = phase[contact_angle]
     # Contact Angle in radians
     contact = np.deg2rad(contact)
     # Network properties
     throatRad = network[throat_diameter]/2
     # Scaling parameters for throat profile
-    fa = target[throat_scale_a]
-    fb = target[throat_scale_b]
+    fa = phase[throat_scale_a]
+    fb = phase[throat_scale_b]
     # Governing equations
     x, a, b, rt, sigma, theta = symbols('x, a, b, rt, sigma, theta')
     if profile_equation == 'elliptical':
@@ -222,7 +222,7 @@ def general_toroidal(
 
 
 def sinusoidal(
-    target,
+    phase,
     mode='max',
     target_Pc=None,
     num_points=1e3,
@@ -262,9 +262,9 @@ def sinusoidal(
         J. ECS. 163, 9, F1038-F1048 (2016).
 
     """
-    target['throat.scale_a'] = r_toroid
-    target['throat.scale_b'] = r_toroid
-    output = general_toroidal(target=target,
+    phase['throat.scale_a'] = r_toroid
+    phase['throat.scale_b'] = r_toroid
+    output = general_toroidal(phase=phase,
                               mode=mode,
                               profile_equation='sinusoidal',
                               target_Pc=target_Pc,
@@ -277,7 +277,7 @@ def sinusoidal(
 
 
 def purcell(
-    target,
+    phase,
     mode='max',
     target_Pc=None,
     num_points=1e3,
@@ -307,9 +307,9 @@ def purcell(
     [2] Missing reference
 
     """
-    target['throat.scale_a'] = r_toroid
-    target['throat.scale_b'] = r_toroid
-    output = general_toroidal(target=target,
+    phase['throat.scale_a'] = r_toroid
+    phase['throat.scale_b'] = r_toroid
+    output = general_toroidal(phase=phase,
                               mode=mode,
                               profile_equation='elliptical',
                               target_Pc=target_Pc,

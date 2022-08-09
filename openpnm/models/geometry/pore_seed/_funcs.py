@@ -10,15 +10,18 @@ __all__ = ["random",
 docstr = Docorator()
 
 
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target, element='pore', seed=seed, num_range=num_range)
+def random(network, seed=None, num_range=[0, 1]):
+    return _misc.random(target=network,
+                        element='pore',
+                        seed=seed,
+                        num_range=num_range)
 
 
 random.__doc__ = _misc.random.__doc__
 
 
 @docstr.dedent
-def spatially_correlated(target, weights=None, strel=None):
+def spatially_correlated(network, weights=None, strel=None):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
@@ -66,18 +69,9 @@ def spatially_correlated(target, weights=None, strel=None):
            layers for polymer electrolyte membrane fuel cells. J Power Sources
            v173, pp277–290 (2007)
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[10, 10, 10])
-    >>> Ps, Ts = pn.Ps, pn.Ts
-    >>> mod = op.models.geometry.pore_seed.spatially_correlated
-    >>> pn.add_model(propname='pore.seed', model=mod, weights=[2, 2, 2])
-
     """
     import scipy.ndimage as spim
     from openpnm.topotools import get_shape
-    network = target.project.network
     # The following will only work on Cubic networks
     x, y, z = get_shape(network)
     im = _np.random.rand(x, y, z)
@@ -96,5 +90,4 @@ def spatially_correlated(target, weights=None, strel=None):
     im = (im - _np.mean(im))/_np.std(im)
     im = 1/2*_sp.special.erfc(-im/_np.sqrt(2))
     values = im.flatten()
-    values = values[network.pores(target.name)]
     return values

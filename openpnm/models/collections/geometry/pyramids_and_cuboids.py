@@ -1,14 +1,7 @@
 import openpnm.models as mods
-from openpnm.utils import get_model_collection
 
 
-def pyramids_and_cuboids(regen_mode=None, domain=None):
-    return get_model_collection(collection=_pyramids_and_cuboids,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_pyramids_and_cuboids = {
+pyramids_and_cuboids = {
     'pore.seed': {
         'model': mods.misc.random,
         'element': 'pore',

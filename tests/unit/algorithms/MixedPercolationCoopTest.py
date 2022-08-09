@@ -17,8 +17,7 @@ class MixedPercolationCoopTest:
         # Create Topological Network object
         self.net = op.network.Cubic([Np, Np, 1], spacing=1)
         self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders()
-        )
+            op.models.collections.geometry.spheres_and_cylinders)
         self.net.regenerate_models()
         self.net['pore.diameter'] = 0.5
         self.net['throat.diameter'] = 0.25
@@ -56,8 +55,7 @@ class MixedPercolationCoopTest:
     # def test_coop_pore_filling(self):
     #     pn = op.network.Cubic(shape=[3, 3, 3], spacing=2.5e-5)
     #     pn.add_model_collection(
-    #         op.models.collections.geometry.spheres_and_cylinders()
-    #     )
+    #         op.models.collections.geometry.spheres_and_cylinders)
     #     pn.regenerate_models()
     #     pn['throat.diameter'] = 1.5e-5
     #     pn['pore.diameter'] = 2e-5

@@ -9,6 +9,9 @@ properties. These models are to be added to a Geometry object.
 
 # The following bits are to initialize some boilerplate docstrings for docrep
 from openpnm.utils import Docorator as _doc
+from matplotlib.docstring import Substitution as _sub
+
+
 _docstr = _doc()
 _docstr.params['models.geometry.pdia'] = \
     r"""pore_diameter : str
@@ -34,6 +37,30 @@ _docstr.params['models.geometry.tarea'] = \
     r"""throat_area : str
             Name of the dictionary key on ``target`` where the array containing
             throat area values is stored"""
+
+
+_doctxt = _sub(
+    Pdia=
+    r"""pore_diameter : str
+            Name of the dictionary key on ``target`` where the array containing
+            pore diameter values is stored""",
+    Tdia=
+    r"""throat_diameter : str
+            Name of the dictionary key on ``target`` where the array containing
+            pore diameter values is stored""",
+    Pvol=
+    r"""pore_volume : str
+            Name of the dictionary key on ``target`` where the array containing
+            pore volume values is stored""",
+    Tvol=
+    r"""throat_volume : str
+            Name of the dictionary key on ``target`` where the array containing
+            throat volume values is stored""",
+    Tlen=
+    r"""throat_length : str
+            Name of the dictionary key on ``target`` where the array containing
+            throat length values is stored""",
+)
 
 # Perform imports
 from . import pore_size

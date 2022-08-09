@@ -4,6 +4,7 @@ from flatdict import FlatDict
 from xml.etree import ElementTree as ET
 from openpnm.io import project_to_dict, _parse_filename
 from openpnm.utils import Workspace
+from openpnm.utils._misc import is_transient
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
@@ -62,8 +63,9 @@ def project_to_vtk(project, filename="", delim=" | ",
     """
     network = project.network
     phases = project.phases
+    algs = project.algorithms
     # Check if any of the phases has time series
-    transient = False
+    transient = is_transient(algs)
     if transient:
         logger.warning(
             "vtp format does not support transient data, " + "use xdmf instead"

@@ -14,7 +14,7 @@ docstr = Docorator()
 @docstr.get_sections(base='models.geometry.pore_volume',
                      sections=['Parameters', 'Returns'])
 @docstr.dedent
-def sphere(target, pore_diameter='pore.diameter'):
+def sphere(network, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
@@ -29,11 +29,11 @@ def sphere(target, pore_diameter='pore.diameter'):
         Numpy ndarray containing pore volume values
 
     """
-    return _pi/6*target[pore_diameter]**3
+    return _pi/6*network[pore_diameter]**3
 
 
 @docstr.dedent
-def cube(target, pore_diameter='pore.diameter'):
+def cube(network, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a cubic pore body
 
@@ -46,10 +46,10 @@ def cube(target, pore_diameter='pore.diameter'):
     %(models.geometry.pore_volume.returns)s
 
     """
-    return target[pore_diameter]**3
+    return network[pore_diameter]**3
 
 
-def circle(target, pore_diameter='pore.diameter'):
+def circle(network, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
@@ -62,10 +62,10 @@ def circle(target, pore_diameter='pore.diameter'):
     %(models.geometry.pore_volume.returns)s
 
     """
-    return _pi/4 * target[pore_diameter]**2
+    return _pi/4 * network[pore_diameter]**2
 
 
-def square(target, pore_diameter='pore.diameter'):
+def square(network, pore_diameter='pore.diameter'):
     r"""
     Calculate pore volume from diameter assuming a cubic pore body
 
@@ -78,10 +78,10 @@ def square(target, pore_diameter='pore.diameter'):
     %(models.geometry.pore_volume.returns)s
 
     """
-    return target[pore_diameter]**2
+    return network[pore_diameter]**2
 
 
-def effective(target, pore_volume='pore.volume',
+def effective(network, pore_volume='pore.volume',
               throat_volume='throat.volume'):
     r"""
     Calculate the effective pore volume for optional use in transient
@@ -99,13 +99,10 @@ def effective(target, pore_volume='pore.volume',
     %(models.geometry.pore_volume.returns)s
 
     """
-    network = target.project.network
     cn = network['throat.conns']
     P1 = cn[:, 0]
     P2 = cn[:, 1]
     eff_vol = np.copy(network[pore_volume])
     np.add.at(eff_vol, P1, 1/2*network[throat_volume])
     np.add.at(eff_vol, P2, 1/2*network[throat_volume])
-    pores = network.pores(target.name)
-    value = eff_vol[pores]
-    return value
+    return eff_vol

@@ -49,7 +49,7 @@ class FickianDiffusion(ReactiveTransport):
 
     """
 
-    def __init__(self, name='fick_#', **kwargs):
+    def __init__(self, name='fick_?', **kwargs):
         super().__init__(**kwargs)
         self.settings._update(FickianDiffusionSettings())
         self.name = name

@@ -11,7 +11,7 @@ __all__ = ["cylinder", "cuboid", "rectangle"]
 
 
 @docstr.dedent
-def cylinder(target, throat_diameter='throat.diameter'):
+def cylinder(network, throat_diameter='throat.diameter'):
     r"""
     Calculate throat cross-sectional area for a cylindrical throat
 
@@ -25,13 +25,13 @@ def cylinder(target, throat_diameter='throat.diameter'):
     %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
-    diams = target[throat_diameter]
+    diams = network[throat_diameter]
     value = _pi / 4 * diams**2
     return value
 
 
 @docstr.dedent
-def cuboid(target, throat_diameter='throat.diameter'):
+def cuboid(network, throat_diameter='throat.diameter'):
     r"""
     Calculate throat cross-sectional area for a cuboid throat
 
@@ -45,12 +45,12 @@ def cuboid(target, throat_diameter='throat.diameter'):
     %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
-    diams = target[throat_diameter]
+    diams = network[throat_diameter]
     value = (diams)**2
     return value
 
 
-def rectangle(target, throat_diameter='throat.diameter'):
+def rectangle(network, throat_diameter='throat.diameter'):
     r"""
     Calculate throat cross-sectional area for a rectangular throat
 
@@ -64,4 +64,4 @@ def rectangle(target, throat_diameter='throat.diameter'):
     %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
-    return target[throat_diameter]
+    return network[throat_diameter]

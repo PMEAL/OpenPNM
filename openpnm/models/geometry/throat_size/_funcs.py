@@ -12,38 +12,38 @@ __all__ = ["weibull",
 docstr = Docorator()
 
 
-def weibull(target, shape, scale, loc, seeds='throat.seed'):
-    return _misc.weibull(target=target, shape=shape, scale=scale, loc=loc,
+def weibull(network, shape, scale, loc, seeds='throat.seed'):
+    return _misc.weibull(target=network, shape=shape, scale=scale, loc=loc,
                          seeds=seeds)
 
 
 weibull.__doc__ = _misc.weibull.__doc__
 
 
-def normal(target, scale, loc, seeds='throat.seed'):
-    return _misc.normal(target=target, scale=scale, loc=loc, seeds=seeds)
+def normal(network, scale, loc, seeds='throat.seed'):
+    return _misc.normal(target=network, scale=scale, loc=loc, seeds=seeds)
 
 
 normal.__doc__ = _misc.normal.__doc__
 
 
-def generic_distribution(target, func, seeds='throat.seed'):
-    return _misc.generic_distribution(target=target, func=func, seeds=seeds)
+def generic_distribution(network, func, seeds='throat.seed'):
+    return _misc.generic_distribution(target=network, func=func, seeds=seeds)
 
 
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target=target, element='throat', seed=seed,
+def random(network, seed=None, num_range=[0, 1]):
+    return _misc.random(target=network, element='throat', seed=seed,
                         num_range=num_range)
 
 
 random.__doc__ = _misc.random.__doc__
 
 
-def from_neighbor_pores(target, prop='pore.diameter', mode='min'):
-    return _misc.from_neighbor_pores(target=target, prop=prop,
+def from_neighbor_pores(network, prop='pore.diameter', mode='min'):
+    return _misc.from_neighbor_pores(target=network, prop=prop,
                                      mode=mode)
 
 
@@ -51,7 +51,7 @@ from_neighbor_pores.__doc__ = _misc.from_neighbor_pores.__doc__
 
 
 @docstr.dedent
-def equivalent_diameter(target, throat_area='throat.cross_sectional_area',
+def equivalent_diameter(network, throat_area='throat.cross_sectional_area',
                         throat_shape='circle'):
     r"""
     Calculates the diameter of a cirlce or edge-length of a sqaure with same
@@ -74,7 +74,7 @@ def equivalent_diameter(target, throat_area='throat.cross_sectional_area',
         A numpy ndarray containing throat diameter values
 
     """
-    area = target[throat_area]
+    area = network[throat_area]
     if throat_shape.startswith('circ'):
         value = 2*_np.sqrt(area/_np.pi)
     elif throat_shape.startswith('square'):

@@ -14,7 +14,7 @@ docstr = Docorator()
 @docstr.get_sections(base='models.geometry.throat_length',
                      sections=['Parameters', 'Returns'])
 def spheres_and_cylinders(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -24,15 +24,15 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    target : OpenPNM Base object
+    network : OpenPNM Base object
         Object with which this model is associated. This controls
         the length of the calculated array, and also provides access to
         other necessary properties.
     pore_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
+        Name of the dictionary key on ``network`` where the array containing
         pore diameter values is stored
     throat_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
+        Name of the dictionary key on ``network`` where the array containing
         throat diameter values is stored
 
     Returns
@@ -43,7 +43,7 @@ def spheres_and_cylinders(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.spheres_and_cylinders(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )
@@ -51,7 +51,7 @@ def spheres_and_cylinders(
 
 
 def circles_and_rectangles(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -70,7 +70,7 @@ def circles_and_rectangles(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.circles_and_rectangles(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )
@@ -78,7 +78,7 @@ def circles_and_rectangles(
 
 
 def cones_and_cylinders(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -97,7 +97,7 @@ def cones_and_cylinders(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.cones_and_cylinders(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )
@@ -105,7 +105,7 @@ def cones_and_cylinders(
 
 
 def trapezoids_and_rectangles(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -124,7 +124,7 @@ def trapezoids_and_rectangles(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.trapezoids_and_rectangles(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )
@@ -132,7 +132,7 @@ def trapezoids_and_rectangles(
 
 
 def pyramids_and_cuboids(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -151,7 +151,7 @@ def pyramids_and_cuboids(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.pyramids_and_cuboids(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )
@@ -159,7 +159,7 @@ def pyramids_and_cuboids(
 
 
 def cubes_and_cuboids(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -178,7 +178,7 @@ def cubes_and_cuboids(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.cubes_and_cuboids(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )
@@ -186,7 +186,7 @@ def cubes_and_cuboids(
 
 
 def squares_and_rectangles(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_diameter='throat.diameter'
 ):
@@ -205,7 +205,7 @@ def squares_and_rectangles(
     """
     from openpnm.models.geometry import conduit_lengths
     out = conduit_lengths.squares_and_rectangles(
-        target=target,
+        network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
     )

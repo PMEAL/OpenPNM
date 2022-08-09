@@ -2,6 +2,7 @@ import logging
 from flatdict import FlatDict
 import xml.etree.cElementTree as ET
 from openpnm.io import project_to_dict, _parse_filename
+from openpnm.utils._misc import is_transient
 import h5py
 
 
@@ -31,9 +32,10 @@ def project_to_xdmf(project, filename=''):
 
     network = project.network
     phases = project.phases
+    algs = project.algorithms
 
     # Check if any of the phases has time series
-    transient = False
+    transient = is_transient(algs)
 
     if filename == '':
         filename = project.name
@@ -47,8 +49,8 @@ def project_to_xdmf(project, filename=''):
     t_steps = []
     if transient:
         for key in D.keys():
-            if '@' in key:
-                t_steps.append(key.split('@')[1])
+            if '#' in key:
+                t_steps.append(key.split('#')[1])
     t_steps = list(set(t_steps))
     t_grid = create_grid(Name="TimeSeries", GridType="Collection",
                          CollectionType="Temporal")
@@ -64,7 +66,7 @@ def project_to_xdmf(project, filename=''):
         if not transient:
             fname_hdf = path.stem+".hdf"
         else:
-            fname_hdf = path.stem+'@'+t_step+".hdf"
+            fname_hdf = path.stem+'#'+t_step+".hdf"
         path_p = path.parent
         f = h5py.File(path_p.joinpath(fname_hdf), "w")
         # Add coordinate and connection information to top of HDF5 file
@@ -96,13 +98,13 @@ def project_to_xdmf(project, filename=''):
                 del D[item]
             elif 'U' in str(D[item][0].dtype):
                 pass
-            elif ('@' in item and t_step == item.split('@')[1]):
-                f.create_dataset(name='/'+item.split('@')[0]+'@t',
+            elif ('#' in item and t_step == item.split('#')[1]):
+                f.create_dataset(name='/'+item.split('#')[0]+'#t',
                                  shape=D[item].shape,
                                  dtype=D[item].dtype,
                                  data=D[item],
                                  compression="gzip")
-            elif ('@' not in item and i == 0):
+            elif ('#' not in item and i == 0):
                 f.create_dataset(name='/'+item, shape=D[item].shape,
                                  dtype=D[item].dtype, data=D[item],
                                  compression="gzip")
@@ -113,19 +115,19 @@ def project_to_xdmf(project, filename=''):
         # Add pore and throat properties
         for item in D.keys():
             if item not in ['coordinates', 'connections']:
-                if ("@" in item and t_step == item.split("@")[1]) or (
-                    "@" not in item
+                if ("#" in item and t_step == item.split("#")[1]) or (
+                    "#" not in item
                 ):
                     attr_type = 'Scalar'
                     shape = D[item].shape
                     dims = (' '.join([str(i) for i in shape]))
-                    if '@' in item:
-                        item = item.split('@')[0]+'@t'
+                    if '#' in item:
+                        item = item.split('#')[0]+'#t'
                         hdf_loc = fname_hdf + ":" + item
-                    elif ('@' not in item and i == 0):
+                    elif ('#' not in item and i == 0):
                         hdf_loc = fname_hdf + ":" + item
-                    elif ('@' not in item and i > 0):
-                        hdf_loc = path.stem + '@' + t_steps[0] + ".hdf" + ":" + item
+                    elif ('#' not in item and i > 0):
+                        hdf_loc = path.stem + '#' + t_steps[0] + ".hdf" + ":" + item
                     attr = create_data_item(value=hdf_loc,
                                             Dimensions=dims,
                                             Format='HDF',

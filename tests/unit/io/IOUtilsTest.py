@@ -76,15 +76,6 @@ class IOUtilsTest:
         assert isinstance(net, list)
         assert isinstance(phases, list)
 
-    def test_parse_args_repeated(self):
-        proj1, net1, phases1 = op.io._parse_args(network=[self.net],
-                                                 phases=[self.phase])
-        proj2, net2, phases2 = op.io._parse_args(network=[net1],
-                                                 phases=[phases1])
-        assert proj1 == proj2
-        assert net1 == net2
-        assert phases1 == phases2
-
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file

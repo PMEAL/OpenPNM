@@ -32,6 +32,6 @@ class OhmicConduction(ReactiveTransport):
 
     """
 
-    def __init__(self, name='ohmic_#', **kwargs):
+    def __init__(self, name='ohmic_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(OhmicConductionSettings())

@@ -1,14 +1,7 @@
 import openpnm.models as mods
-from openpnm.utils import get_model_collection
 
 
-def spheres_and_cylinders(regen_mode=None, domain=None):
-    return get_model_collection(collection=_spheres_and_cylinders,
-                                regen_mode=regen_mode,
-                                domain=domain)
-
-
-_spheres_and_cylinders = {
+spheres_and_cylinders = {
     'pore.seed': {
         'model': mods.misc.random,
         'element': 'pore',

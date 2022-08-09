@@ -14,7 +14,10 @@ class ConduitHydraulicSizeFactorsTest:
         self.net["pore.diameter"] = [1.2, 0.9, 0.7]
 
     def test_spheres_and_cylinders(self):
-        S_actual = mods.spheres_and_cylinders(self.net)
+        SF = mods.spheres_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.01068901, 0.01195694]),
             'throat': array([6.28318531e+11, 2.02906607e-03]),
@@ -24,7 +27,10 @@ class ConduitHydraulicSizeFactorsTest:
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_circles_and_rectangles(self):
-        S_actual = mods.circles_and_rectangles(self.net)
+        SF = mods.circles_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.06563123, 0.06697876]),
             'throat': array([5.33333333e+12, 1.72232477e-02]),
@@ -34,7 +40,10 @@ class ConduitHydraulicSizeFactorsTest:
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_cones_and_cylinders(self):
-        S_actual = mods.cones_and_cylinders(self.net)
+        SF = mods.cones_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.00676442, 0.0057399]),
             'throat': array([6.28318531e+11, 3.14159265e-03]),
@@ -44,7 +53,10 @@ class ConduitHydraulicSizeFactorsTest:
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_trapezoids_and_rectangles(self):
-        S_actual = mods.trapezoids_and_rectangles(self.net)
+        SF = mods.trapezoids_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.04146868, 0.03692308]),
             'throat': array([5.33333333e+12, 2.66666667e-02]),
@@ -54,7 +66,10 @@ class ConduitHydraulicSizeFactorsTest:
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_pyramids_and_cuboids(self):
-        S_actual = mods.pyramids_and_cuboids(self.net)
+        SF = mods.pyramids_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.01047182, 0.00888579]),
             'throat': array([9.72683363e+11, 4.86341681e-03]),
@@ -64,7 +79,10 @@ class ConduitHydraulicSizeFactorsTest:
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_cubes_and_cuboids(self):
-        S_actual = mods.cubes_and_cuboids(self.net)
+        SF = mods.cubes_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.13131225, 0.05539736]),
             'throat': array([9.72683363e+11, 4.86341681e-03]),
@@ -74,19 +92,25 @@ class ConduitHydraulicSizeFactorsTest:
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_squares_and_rectangles(self):
-        S_actual = mods.squares_and_rectangles(self.net)
+        SF = mods.squares_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.24 , 0.135]),
+            'pore1': array([0.24, 0.135]),
             'throat': array([5.33333333e+12, 2.66666667e-02]),
-            'pore2': array([0.151875  , 0.08166667])
+            'pore2': array([0.151875, 0.08166667])
         }
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
     def test_ncylinders_in_series(self):
-        S_actual = mods.ncylinders_in_series(self.net)
+        SF = mods.ncylinders_in_series(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.0020471 , 0.00612218]),
+            'pore1': array([0.0020471, 0.00612218]),
             'throat': array([6.28318531e+11, 2.02906607e-03]),
             'pore2': array([0.00261812, 0.00661558])
         }

@@ -1,6 +1,5 @@
 import numpy as np
 import openpnm as op
-from openpnm.phase import mixtures
 from numpy.testing import assert_allclose
 
 
@@ -14,9 +13,8 @@ class IonicConductanceTest:
         self.net['throat.cross_sectional_area'] = 1.0
         self.net['pore.volume'] = 1.0
         self.net['throat.volume'] = 1.0
-        self.net["throat.diffusive_size_factors"] = {
-            "pore1": 0.123, "throat": 0.981, "pore2": 0.551
-        }
+        self.net['throat.diffusive_size_factors'] = \
+            np.ones([self.net.Nt, 3])*(0.123, 0.981, 0.551)
         self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.permittivity'] = 78.0
 
