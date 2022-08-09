@@ -64,16 +64,16 @@ class Base2(dict):
         instance.settings['uuid'] = str(uuid.uuid4())
         return instance
 
-    def __init__(self, network=None, name='obj_?'):
+    def __init__(self, network=None, project=None, name='obj_?'):
         super().__init__()
         # Add default settings
         self.settings._update(BaseSettings())
         # Add parameters attr
         self._params = PrintableDict(key="Parameters", value="Value")
         # Associate with project
-        if network is None:
+        if (network is None) and (project is None):
             project = ws.new_project()
-        else:
+        elif project is None:
             project = network.project
         project.append(self)
         self.name = name
