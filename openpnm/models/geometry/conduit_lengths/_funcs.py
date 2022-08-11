@@ -127,6 +127,39 @@ def cones_and_cylinders(
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
     return _np.vstack((L1, Lt, L2)).T
 
+@docstr.dedent
+def intersecting_cones(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords"
+):
+    r"""
+    Calculates conduit lengths in the network assuming pores are cones
+    and throats are cylinders.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
+
+    Parameters
+    ----------
+    %(models.geometry.conduit_lengths.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.conduit_lengths.returns)s
+
+    """
+    P12 = network['throat.conns']
+    p_coords = network[pore_coords]
+    t_coords = network[throat_coords]
+    PT1 = _np.sqrt(_np.sum(((p_coords[P12[:, 0]]-t_coords))**2,
+                           axis=1))
+    PT2 = _np.sqrt(_np.sum(((p_coords[P12[:, 1]]-t_coords))**2,
+                           axis=1))
+    L1 = _np.copy(PT1)
+    L2 = _np.copy(PT2)
+    Lt = _np.zeros(len(network.Ts))
+    return _np.vstack((L1, Lt, L2)).T
+
 
 @docstr.dedent
 def trapezoids_and_rectangles(
