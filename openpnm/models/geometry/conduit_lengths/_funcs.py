@@ -127,6 +127,7 @@ def cones_and_cylinders(
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
     return _np.vstack((L1, Lt, L2)).T
 
+
 @docstr.dedent
 def intersecting_cones(
     network,
@@ -135,9 +136,10 @@ def intersecting_cones(
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
-    and throats are cylinders.
+    that intersect. Therefore, the throat is the cross sectional plane where
+    two pores meet and has negligible/zero volume.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
+    A conduit is defined as ( 1/2 pore - 1/2 pore ).
 
     Parameters
     ----------

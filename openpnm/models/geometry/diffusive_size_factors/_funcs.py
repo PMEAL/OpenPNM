@@ -160,6 +160,45 @@ def cones_and_cylinders(
 
 
 @docstr.dedent
+def intersecting_cones(
+    target,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes diffusive shape coefficient assuming pores are intersecting cones.
+
+    Parameters
+    ----------
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.diffusive_size_factor.notes)s
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[1]).T
+    L1, Lt, L2 = _conduit_lengths.intersecting_cones(
+        target,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A) dx, x = [0, Li]
+    F1 = 4 * L1 / (D1 * Dt * _np.pi)
+    F2 = 4 * L2 / (D2 * Dt * _np.pi)
+
+    vals = _np.vstack([1/F1, _np.inf, 1/F2]).T
+    return vals
+
+
+@docstr.dedent
 def trapezoids_and_rectangles(
     target,
     pore_diameter="pore.diameter",
