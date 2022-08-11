@@ -153,13 +153,52 @@ def intersecting_cones(
     P12 = network['throat.conns']
     p_coords = network[pore_coords]
     t_coords = network[throat_coords]
-    PT1 = _np.sqrt(_np.sum(((p_coords[P12[:, 0]]-t_coords))**2,
+    L1 = _np.sqrt(_np.sum(((p_coords[P12[:, 0]]-t_coords))**2,
                            axis=1))
-    PT2 = _np.sqrt(_np.sum(((p_coords[P12[:, 1]]-t_coords))**2,
+    L2 = _np.sqrt(_np.sum(((p_coords[P12[:, 1]]-t_coords))**2,
                            axis=1))
-    L1 = _np.copy(PT1)
-    L2 = _np.copy(PT2)
     Lt = _np.zeros(len(network.Ts))
+    return _np.vstack((L1, Lt, L2)).T
+
+
+@docstr.dedent
+def hybrid_cones_and_cylinders(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Calculates conduit lengths in the network assuming pores are cones
+    and throats are cylinders.
+
+    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
+
+    Parameters
+    ----------
+    %(models.geometry.conduit_lengths.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.conduit_lengths.returns)s
+
+    """
+    L_ctc = network['throat.spacing']
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+
+    L1 = D1 / 2
+    L2 = D2 / 2
+    Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
+    # Handle intersecting pores
+    XYp = network.coords[network.conns][network.throats(to_global=True)]
+    XYt = network[throat_coords]
+    _L1, _L2 = _np.linalg.norm(XYp - XYt[:, None], axis=2).T
+    mask1 = _L1 < L1
+    mask2 = _L2 < L2
+    mask = _np.logical_or(mask1, mask2)
+    if mask.any():
+        L1[mask] = _L1[mask]
+        L2[mask] = _L2[mask]
+        Lt[mask] = 0.0
     return _np.vstack((L1, Lt, L2)).T
 
 

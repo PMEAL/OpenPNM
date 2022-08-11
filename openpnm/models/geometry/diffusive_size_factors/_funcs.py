@@ -199,6 +199,55 @@ def intersecting_cones(
 
 
 @docstr.dedent
+def hybrid_cones_and_cylinders(
+    target,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes diffusive shape coefficient assuming pores are truncated cones
+    and throats are cylinders.
+
+    Parameters
+    ----------
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.diffusive_size_factor.notes)s
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[1]).T
+    L1, Lt, L2 = _conduit_lengths.hybrid_cones_and_cylinders(
+        target,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A) dx, x = [0, Li]
+    F1 = 4 * L1 / (D1 * Dt * _np.pi)
+    F2 = 4 * L2 / (D2 * Dt * _np.pi)
+    Ft = Lt / (_np.pi * Dt**2 / 4)
+    mask = Lt == 0.0
+    if mask.any():
+        inv_F_t = _np.zeros(len(Ft))
+        inv_F_t[~mask] = 1/Ft[~mask]
+        inv_F_t[mask] = _np.inf
+    else:
+        inv_F_t = 1/Ft
+
+    vals = _np.vstack([1/F1, inv_F_t, 1/F2]).T
+    return vals
+
+
+@docstr.dedent
 def trapezoids_and_rectangles(
     target,
     pore_diameter="pore.diameter",
