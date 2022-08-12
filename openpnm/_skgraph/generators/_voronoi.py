@@ -69,7 +69,3 @@ if __name__ == "__main__":
     print(vn.keys())
     print(vn['node.coords'].shape)
     print(vn['edge.conns'].shape)
-    vn, vor = voronoi(points=50, shape=[1, 0, 1])
-    print(vn.keys())
-    print(vn['node.coords'].shape)
-    print(vn['edge.conns'].shape)
