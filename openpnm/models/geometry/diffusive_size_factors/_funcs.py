@@ -7,11 +7,12 @@ __all__ = [
     "spheres_and_cylinders",
     "circles_and_rectangles",
     "cones_and_cylinders",
+    "intersecting_cones",
+    "hybrid_cones_and_cylinders",
     "trapezoids_and_rectangles",
     "pyramids_and_cuboids",
     "cubes_and_cuboids",
     "squares_and_rectangles",
-    "intersecting_cones",
     "intersecting_trapezoids",
     "intersecting_pyramids",
     "ncylinders_in_series"
@@ -430,37 +431,6 @@ def squares_and_rectangles(
 
     vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
     return vals
-
-
-def intersecting_cones(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    midpoint=None
-):
-    r"""
-    Computes diffusive size factor for conduits of intersecting cones.
-
-    Parameters
-    ----------
-    %(models.geometry.diffusive_size_factor.parameters)s
-    midpoint : str, optional
-        Name of the dictionary key on ``target`` where the array containing
-        throat midpoint values is stored
-
-    Returns
-    -------
-    %(models.geometry.diffusive_size_factor.returns)s
-
-    Notes
-    -----
-    %(models.geometry.diffusive_size_factor.notes)s
-
-    This model should only be used for true 2D networks, i.e. with planar
-    symmetry.
-
-    """
-    raise NotImplementedError
 
 
 @docstr.dedent

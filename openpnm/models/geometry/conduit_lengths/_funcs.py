@@ -5,6 +5,8 @@ from openpnm.utils import Docorator
 __all__ = ['spheres_and_cylinders',
            'circles_and_rectangles',
            'cones_and_cylinders',
+           'intersecting_cones',
+           'hybrid_cones_and_cylinders',
            'trapezoids_and_rectangles',
            'pyramids_and_cuboids',
            'cubes_and_cuboids',
@@ -113,7 +115,13 @@ def cones_and_cylinders(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = network['throat.spacing']
+    try:
+        L_ctc = network['throat.spacing']
+    except:
+        P12 = network['throat.conns']
+        C1 = network['pore.coords'][P12[:,0]]
+        C2 = network['pore.coords'][P12[:,1]]
+        L_ctc = _np.linalg.norm(C1 - C2)
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
     L1 = D1 / 2
@@ -182,14 +190,20 @@ def hybrid_cones_and_cylinders(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = network['throat.spacing']
+    try:
+        L_ctc = network['throat.spacing']
+    except:
+        P12 = network['throat.conns']
+        C1 = network['pore.coords'][P12[:,0]]
+        C2 = network['pore.coords'][P12[:,1]]
+        L_ctc = _np.linalg.norm(C1 - C2)
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
     # Handle intersecting pores
-    XYp = network.coords[network.conns][network.throats(to_global=True)]
+    XYp = network.coords[network.conns]
     XYt = network[throat_coords]
     _L1, _L2 = _np.linalg.norm(XYp - XYt[:, None], axis=2).T
     mask1 = _L1 < L1
