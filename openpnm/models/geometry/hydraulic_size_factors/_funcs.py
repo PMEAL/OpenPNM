@@ -214,8 +214,9 @@ def intersecting_cones(
     # S is 1 / (16 * pi^2 * I * F)
     S1 = 1 / (16 * _np.pi**2 * I1 * F1)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+    St = _np.full(len(Lt), _np.inf)
 
-    return _np.vstack([S1, _np.inf, S2]).T
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -355,8 +356,9 @@ def intersecting_trapezoids(
     # S is 1 / (12 * F)
     S1 = 1 / (F1 * 12)
     S2 = 1 / (F2 * 12)
+    St = _np.full(len(Lt), _np.inf)
 
-    return _np.vstack([S1, _np.inf, S2]).T
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent
@@ -498,8 +500,9 @@ def intersecting_pyramids(
     # S is 1 / (16 * pi^2 * I * F)
     S1 = 1 / (16 * _np.pi**2 * I1 * F1)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+    St = _np.full(len(Lt), _np.inf)
 
-    return _np.vstack([S1, _np.inf, S2]).T
+    return _np.vstack([S1, St, S2]).T
 
 
 @docstr.dedent

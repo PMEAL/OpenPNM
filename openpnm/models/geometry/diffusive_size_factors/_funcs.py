@@ -195,8 +195,9 @@ def intersecting_cones(
     # Fi is the integral of (1/A) dx, x = [0, Li]
     F1 = 4 * L1 / (D1 * Dt * _np.pi)
     F2 = 4 * L2 / (D2 * Dt * _np.pi)
+    inv_F_t = _np.full(len(Lt), _np.inf)
 
-    vals = _np.vstack([1/F1, _np.inf, 1/F2]).T
+    vals = _np.vstack([1/F1, inv_F_t, 1/F2]).T
     return vals
 
 
@@ -339,8 +340,9 @@ def intersecting_trapezoids(
     F1[mask] = (L1 / D1)[mask]
     mask = _np.isclose(D2, Dt)
     F2[mask] = (L2 / D2)[mask]
+    inv_F_t = _np.full(len(Lt), _np.inf)
 
-    vals = _np.vstack([1/F1, _np.inf, 1/F2]).T
+    vals = _np.vstack([1/F1, inv_F_t, 1/F2]).T
     return vals
 
 
@@ -525,8 +527,9 @@ def intersecting_pyramids(
     # Fi is the integral of (1/A) dx, x = [0, Li]
     F1 = L1 / (D1 * Dt)
     F2 = L2 / (D2 * Dt)
+    inv_F_t = _np.full(len(Lt), _np.inf)
 
-    vals = _np.vstack([1/F1, _np.inf, 1/F2]).T
+    vals = _np.vstack([1/F1, inv_F_t, 1/F2]).T
     return vals
 
 
