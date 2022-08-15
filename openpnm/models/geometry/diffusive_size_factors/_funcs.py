@@ -11,10 +11,11 @@ __all__ = [
     "hybrid_cones_and_cylinders",
     "trapezoids_and_rectangles",
     "pyramids_and_cuboids",
+    "intersecting_pyramids",
+    "hybrid_pyramids_and_cuboids",
     "cubes_and_cuboids",
     "squares_and_rectangles",
     "intersecting_trapezoids",
-    "intersecting_pyramids",
     "ncylinders_in_series"
 ]
 docstr = Docorator()
@@ -296,6 +297,7 @@ def trapezoids_and_rectangles(
     return vals
 
 
+@docstr.dedent
 def pyramids_and_cuboids(
     target,
     pore_diameter="pore.diameter",
@@ -334,6 +336,94 @@ def pyramids_and_cuboids(
     Ft = Lt / Dt**2
 
     vals = _np.vstack([1/F1, 1/Ft, 1/F2]).T
+    return vals
+
+
+@docstr.dedent
+def hybrid_pyramids_and_cuboids(
+    target,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes diffusive size factor for conduits of truncated pyramids and
+    cuboids.
+
+    Parameters
+    ----------
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.diffusive_size_factor.notes)s
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L1, Lt, L2 = _conduit_lengths.hybrid_pyramids_and_cuboids(
+        target,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A) dx, x = [0, Li]
+    F1 = L1 / (D1 * Dt)
+    F2 = L2 / (D2 * Dt)
+    Ft = Lt / Dt**2
+    mask = Lt == 0.0
+    if mask.any():
+        inv_F_t = _np.zeros(len(Ft))
+        inv_F_t[~mask] = 1/Ft[~mask]
+        inv_F_t[mask] = _np.inf
+    else:
+        inv_F_t = 1/Ft
+
+    vals = _np.vstack([1/F1, inv_F_t, 1/F2]).T
+    return vals
+
+
+@docstr.dedent
+def intersecting_pyramids(
+    target,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes diffusive size factor for conduits of pores with intersecting pyramids.
+
+    Parameters
+    ----------
+    %(models.geometry.diffusive_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.diffusive_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.diffusive_size_factor.notes)s
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = target.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L1, Lt, L2 = _conduit_lengths.intersecting_pyramids(
+        target,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A) dx, x = [0, Li]
+    F1 = L1 / (D1 * Dt)
+    F2 = L2 / (D2 * Dt)
+
+    vals = _np.vstack([1/F1, _np.inf, 1/F2]).T
     return vals
 
 
@@ -460,34 +550,6 @@ def intersecting_trapezoids(
 
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
-
-    """
-    raise NotImplementedError
-
-
-def intersecting_pyramids(
-    target,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    midpoint=None,
-):
-    r"""
-    Computes diffusive size factor for conduits of intersecting pyramids.
-
-    Parameters
-    ----------
-    %(models.geometry.diffusive_size_factor.parameters)s
-    midpoint : str, optional
-        Name of the dictionary key on ``target`` where the array containing
-        throat midpoint values is stored
-
-    Returns
-    -------
-    %(models.geometry.diffusive_size_factor.returns)s
-
-    Notes
-    -----
-    %(models.geometry.diffusive_size_factor.notes)s
 
     """
     raise NotImplementedError

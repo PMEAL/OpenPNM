@@ -9,6 +9,8 @@ __all__ = ['spheres_and_cylinders',
            'hybrid_cones_and_cylinders',
            'trapezoids_and_rectangles',
            'pyramids_and_cuboids',
+           'intersecting_pyramids',
+           'hybrid_pyramids_and_cuboids',
            'cubes_and_cuboids',
            'squares_and_rectangles']
 docstr = Docorator()
@@ -119,8 +121,8 @@ def cones_and_cylinders(
         L_ctc = network['throat.spacing']
     except:
         P12 = network['throat.conns']
-        C1 = network['pore.coords'][P12[:,0]]
-        C2 = network['pore.coords'][P12[:,1]]
+        C1 = network['pore.coords'][P12[:, 0]]
+        C2 = network['pore.coords'][P12[:, 1]]
         L_ctc = _np.linalg.norm(C1 - C2)
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
@@ -162,9 +164,9 @@ def intersecting_cones(
     p_coords = network[pore_coords]
     t_coords = network[throat_coords]
     L1 = _np.sqrt(_np.sum(((p_coords[P12[:, 0]]-t_coords))**2,
-                           axis=1))
+                          axis=1))
     L2 = _np.sqrt(_np.sum(((p_coords[P12[:, 1]]-t_coords))**2,
-                           axis=1))
+                          axis=1))
     Lt = _np.zeros(len(network.Ts))
     return _np.vstack((L1, Lt, L2)).T
 
@@ -194,8 +196,8 @@ def hybrid_cones_and_cylinders(
         L_ctc = network['throat.spacing']
     except:
         P12 = network['throat.conns']
-        C1 = network['pore.coords'][P12[:,0]]
-        C2 = network['pore.coords'][P12[:,1]]
+        C1 = network['pore.coords'][P12[:, 0]]
+        C2 = network['pore.coords'][P12[:, 1]]
         L_ctc = _np.linalg.norm(C1 - C2)
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
@@ -277,6 +279,55 @@ def pyramids_and_cuboids(
     return cones_and_cylinders(network,
                                pore_diameter=pore_diameter,
                                throat_diameter=throat_diameter)
+
+
+@docstr.dedent
+def intersecting_pyramids(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords"
+):
+    r"""
+    Calculates conduit lengths in the network assuming pores are
+    intersecting pyramids.
+
+    Parameters
+    ----------
+    %(models.geometry.conduit_lengths.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.conduit_lengths.returns)s
+
+    """
+    return intersecting_cones(network,
+                              pore_coords=pore_coords,
+                              throat_coords=throat_coords)
+
+
+@docstr.dedent
+def hybrid_pyramids_and_cuboids(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Calculates conduit lengths in the network assuming pores are truncated
+    pyramids that intersect. Therefore, the throat is the cross sectional plane where
+    two pores meet and has negligible/zero volume.
+
+    Parameters
+    ----------
+    %(models.geometry.conduit_lengths.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.conduit_lengths.returns)s
+
+    """
+    return hybrid_cones_and_cylinders(network,
+                                      pore_diameter=pore_diameter,
+                                      throat_coords=throat_coords)
 
 
 @docstr.dedent
