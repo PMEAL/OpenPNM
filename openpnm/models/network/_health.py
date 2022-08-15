@@ -5,6 +5,7 @@ Health Checks
 """
 import logging
 import numpy as np
+import pandas as pd
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -103,10 +104,7 @@ def duplicate_throats(network):
     Find repeat occurrences of throat connections
     """
     conns = network.conns
-    iconns = conns[:, 0] + 1j*conns[:, 1]
-    hits, inds = np.unique(iconns, return_inverse=True)
-    values = np.ones(network.Nt, dtype=bool)
-    values[inds] = False
+    values = pd.DataFrame(conns).duplicated()
     return values
 
 
