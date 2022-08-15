@@ -242,19 +242,67 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    L_ctc = network['throat.spacing']
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    return cones_and_cylinders(network,
+                               pore_diameter=pore_diameter,
+                               throat_diameter=throat_diameter)
 
-    L1 = D1 / 2
-    L2 = D2 / 2
 
-    # Handle throats w/ overlapping pores
-    _L1 = (4 * L_ctc**2 + D1**2 - D2**2) / (8 * L_ctc)
-    mask = L_ctc - 0.5 * (D1 + D2) < 0
-    L1[mask] = _L1[mask]
-    L2[mask] = (L_ctc - L1)[mask]
-    Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-    return _np.vstack((L1, Lt, L2)).T
+@docstr.dedent
+def intersecting_trapezoids(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords"
+):
+    r"""
+    Calculates conduit lengths in the network assuming pores are
+    intersecting trapezoids.
+
+    Parameters
+    ----------
+    %(models.geometry.conduit_lengths.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.conduit_lengths.returns)s
+
+    Notes
+    -----
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    return intersecting_cones(network,
+                              pore_coords=pore_coords,
+                              throat_coords=throat_coords)
+
+
+@docstr.dedent
+def hybrid_trapezoids_and_rectangles(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Calculates conduit lengths in the network assuming pores are
+    trapezoids and throats are rectangles.
+
+    Parameters
+    ----------
+    %(models.geometry.conduit_lengths.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.conduit_lengths.returns)s
+
+    Notes
+    -----
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    return hybrid_cones_and_cylinders(network,
+                                      pore_diameter=pore_diameter,
+                                      throat_coords=throat_coords)
 
 
 @docstr.dedent
