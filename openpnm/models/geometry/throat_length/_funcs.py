@@ -104,6 +104,59 @@ def cones_and_cylinders(
     return out[:, 1]
 
 
+def intersecting_cones(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords"
+):
+    r"""
+    Finds throat length assuming pores are intersecting cones.
+
+    Parameters
+    ----------
+    %(models.geometry.throat_length.parameters)
+
+    Returns
+    -------
+    %(models.geometry.throat_length.returns
+
+    """
+    from openpnm.models.geometry import conduit_lengths
+    out = conduit_lengths.intersecting_cones(
+        network=network,
+        pore_coords=pore_coords,
+        throat_coords=throat_coords
+    )
+    return out[:, 1]
+
+
+def hybrid_cones_and_cylinders(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Finds throat length assuming pores are cones and throats are
+    cylinders.
+
+    Parameters
+    ----------
+    %(models.geometry.throat_length.parameters)
+
+    Returns
+    -------
+    %(models.geometry.throat_length.returns
+
+    """
+    from openpnm.models.geometry import conduit_lengths
+    out = conduit_lengths.hybrid_cones_and_cylinders(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    )
+    return out[:, 1]
+
+
 def trapezoids_and_rectangles(
     network,
     pore_diameter='pore.diameter',
@@ -131,6 +184,59 @@ def trapezoids_and_rectangles(
     return out[:, 1]
 
 
+def intersecting_trapezoids(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords"
+):
+    r"""
+    Finds throat length assuming pores are intersecting trapezoids.
+
+    Parameters
+    ----------
+    %(models.geometry.throat_length.parameters)
+
+    Returns
+    -------
+    %(models.geometry.throat_length.returns
+
+    """
+    from openpnm.models.geometry import conduit_lengths
+    out = conduit_lengths.intersecting_trapezoids(
+        network=network,
+        pore_coords=pore_coords,
+        throat_coords=throat_coords
+    )
+    return out[:, 1]
+
+
+def hybrid_trapezoids_and_rectangles(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Finds throat length assuming pores are trapezoids and throats are
+    rectangles.
+
+    Parameters
+    ----------
+    %(models.geometry.throat_length.parameters)
+
+    Returns
+    -------
+    %(models.geometry.throat_length.returns
+
+    """
+    from openpnm.models.geometry import conduit_lengths
+    out = conduit_lengths.hybrid_trapezoids_and_rectangles(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    )
+    return out[:, 1]
+
+
 def pyramids_and_cuboids(
     network,
     pore_diameter='pore.diameter',
@@ -154,6 +260,59 @@ def pyramids_and_cuboids(
         network=network,
         pore_diameter=pore_diameter,
         throat_diameter=throat_diameter
+    )
+    return out[:, 1]
+
+
+def intersecting_pyramids(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords"
+):
+    r"""
+    Finds throat length assuming pores are intersecting pyramids.
+
+    Parameters
+    ----------
+    %(models.geometry.throat_length.parameters)
+
+    Returns
+    -------
+    %(models.geometry.throat_length.returns
+
+    """
+    from openpnm.models.geometry import conduit_lengths
+    out = conduit_lengths.intersecting_pyramids(
+        network=network,
+        pore_coords=pore_coords,
+        throat_coords=throat_coords
+    )
+    return out[:, 1]
+
+
+def hybrid_pyramids_and_cuboids(
+    network,
+    pore_diameter='pore.diameter',
+        throat_coords="throat.coords"
+):
+    r"""
+    Finds throat length assuming pores are pyramids and throats are
+    cuboids.
+
+    Parameters
+    ----------
+    %(models.geometry.throat_length.parameters)
+
+    Returns
+    -------
+    %(models.geometry.throat_length.returns
+
+    """
+    from openpnm.models.geometry import conduit_lengths
+    out = conduit_lengths.hybrid_pyramids_and_cuboids(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
     )
     return out[:, 1]
 
