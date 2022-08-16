@@ -47,7 +47,13 @@ def spheres_and_cylinders(
         ``[pore1, throat, pore2]``.
 
     """
-    L_ctc = network['throat.spacing']
+    try:
+        L_ctc = network['throat.spacing']
+    except:
+        P12 = network['throat.conns']
+        C1 = network['pore.coords'][P12[:, 0]]
+        C2 = network['pore.coords'][P12[:, 1]]
+        L_ctc = _np.linalg.norm(C1 - C2)
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
     # Handle the case where Dt > Dp
@@ -399,7 +405,13 @@ def cubes_and_cuboids(
     %(models.geometry.conduit_lengths.returns)s
 
     """
-    L_ctc = network['throat.spacing']
+    try:
+        L_ctc = network['throat.spacing']
+    except:
+        P12 = network['throat.conns']
+        C1 = network['pore.coords'][P12[:, 0]]
+        C2 = network['pore.coords'][P12[:, 1]]
+        L_ctc = _np.linalg.norm(C1 - C2)
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
 
     L1 = D1 / 2
