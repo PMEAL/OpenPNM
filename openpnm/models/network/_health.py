@@ -105,6 +105,7 @@ def duplicate_throats(network):
     """
     conns = network.conns
     values = pd.DataFrame(conns).duplicated()
+    values = values.to_numpy()
     return values
 
 
