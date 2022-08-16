@@ -10,6 +10,8 @@ __all__ = [
     "intersecting_cones",
     "hybrid_cones_and_cylinders",
     "trapezoids_and_rectangles",
+    "hybrid_trapezoids_and_rectangles",
+    "intersecting_trapezoids",
     "pyramids_and_cuboids",
     "intersecting_pyramids",
     "hybrid_pyramids_and_cuboids",
