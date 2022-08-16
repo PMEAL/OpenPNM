@@ -1,7 +1,9 @@
 from numpy import array
 from numpy.testing import assert_allclose
 import openpnm as op
+import numpy as np
 import openpnm.models.geometry.hydraulic_size_factors as mods
+import openpnm.models.geometry as gm
 
 
 class ConduitHydraulicSizeFactorsTest:
@@ -116,6 +118,38 @@ class ConduitHydraulicSizeFactorsTest:
         }
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k], rtol=1e-5)
+
+    def test_intersecting_cones(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        SF = mods.intersecting_cones(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([0.00782982, 0.00516591]),
+            'throat': array([np.inf, np.inf]),
+            'pore2': array([0.00516591, 0.00347602])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k], rtol=1e-5)
+
+    def test_hybrid_cones_and_cylinders(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        self.net["pore.diameter"][0] = 1.6
+        SF = mods.hybrid_cones_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([0.01148925, 0.0057399]),
+            'throat': array([np.inf, 0.00314159]),
+            'pore2': array([0.00516591, 0.00496574])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k], rtol=1e-5)
+        self.net["pore.diameter"][0] = 1.2
 
 
 if __name__ == '__main__':
