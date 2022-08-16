@@ -133,6 +133,42 @@ class ConduitLengthsTest:
         assert_allclose(L_actual, L_desired)
         self.net["pore.diameter"][0] = 0.5
 
+    def test_intersecting_pyramids(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        L_actual = mods.intersecting_pyramids(self.net)
+        L_desired = np.array([[0.5, 0., 0.5],
+                              [0.5, 0., 0.5]])
+        assert_allclose(L_actual, L_desired)
+
+    def test_hybrid_pyramids_and_cuboids(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        self.net["pore.diameter"][0] = 1.2
+        L_actual = mods.hybrid_pyramids_and_cuboids(self.net)
+        L_desired = np.array([[0.5, 0., 0.5],
+                              [0.45, 0.2, 0.35]])
+        assert_allclose(L_actual, L_desired)
+        self.net["pore.diameter"][0] = 0.5
+
+    def test_intersecting_trapezoids(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        L_actual = mods.intersecting_trapezoids(self.net)
+        L_desired = np.array([[0.5, 0., 0.5],
+                              [0.5, 0., 0.5]])
+        assert_allclose(L_actual, L_desired)
+
+    def test_hybrid_trapezoids_and_rectangles(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        self.net["pore.diameter"][0] = 1.2
+        L_actual = mods.hybrid_trapezoids_and_rectangles(self.net)
+        L_desired = np.array([[0.5, 0., 0.5],
+                              [0.45, 0.2, 0.35]])
+        assert_allclose(L_actual, L_desired)
+        self.net["pore.diameter"][0] = 0.5
+
 
 if __name__ == '__main__':
 

@@ -345,7 +345,6 @@ def intersecting_trapezoids(
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.intersecting_trapezoids(
         network=network,
-        pore_diameter=pore_diameter,
         throat_coords=throat_coords
     ).T
 
@@ -486,7 +485,6 @@ def intersecting_pyramids(
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.intersecting_pyramids(
         network=network,
-        pore_diameter=pore_diameter,
         throat_coords=throat_coords
     ).T
 
