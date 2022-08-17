@@ -103,10 +103,7 @@ def duplicate_throats(network):
     r"""
     Find repeat occurrences of throat connections
     """
-    conns = network.conns
-    values = pd.DataFrame(conns).duplicated()
-    values = values.to_numpy()
-    return values
+    return pd.DataFrame(network.conns).duplicated().to_numpy()
 
 
 def count_coincident_pores(network, thresh=1e-6):
