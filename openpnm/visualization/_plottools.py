@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
+from matplotlib.pyplot import cm
 
 
 __all__ = [
@@ -8,7 +9,8 @@ __all__ = [
     'plot_coordinates',
     'plot_networkx',
     'plot_tutorial',
-    'plot_network_jupyter',
+    'plot_notebook',
+    'plot_vispy',
     'generate_voxel_image',
 ]
 
@@ -298,11 +300,21 @@ def plot_coordinates(network,
         markersize = size_by / size_by.max() * markersize
 
     if ThreeD:
-        sc = ax.scatter(X, Y, Z, c=color, s=markersize, marker=marker, alpha=alpha, **kwargs)
+        sc = ax.scatter(X, Y, Z,
+                        c=color,
+                        s=markersize,
+                        marker=marker,
+                        alpha=alpha,
+                        **kwargs)
         _scale_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
     else:
         _X, _Y = np.column_stack((X, Y, Z))[:, dim].T
-        sc = ax.scatter(_X, _Y, c=color, s=markersize, marker=marker, alpha=alpha, **kwargs)
+        sc = ax.scatter(_X, _Y,
+                        c=color,
+                        s=markersize,
+                        marker=marker,
+                        alpha=alpha,
+                        **kwargs)
         _scale_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl))
 
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
@@ -504,13 +516,13 @@ def plot_tutorial(network,
     return gplot
 
 
-def plot_network_jupyter(network,
-                         node_color=0,
-                         edge_color=0,
-                         node_size=1,
-                         node_scale=20,
-                         edge_scale=5,
-                         colormap='viridis'):
+def plot_notebook(network,
+                  node_color=0,
+                  edge_color=0,
+                  node_size=1,
+                  node_scale=20,
+                  edge_scale=5,
+                  colormap='viridis'):
     r"""
     Visualize a network in 3D using Plotly.
 
@@ -567,8 +579,9 @@ def plot_network_jupyter(network,
     node_color = np.ones(network.Np)*node_color
     edge_color = np.ones(network.Nt)*edge_color
 
-    node_labels = [str(i)+ ': ' + str(x) for i, x in enumerate(zip(node_size, node_color))]
-    edge_labels = [str(i)+ ': ' + str(x) for i, x in enumerate(edge_color)]
+    node_labels = [str(i) + ': ' + str(x) for i, x in
+                   enumerate(zip(node_size, node_color))]
+    edge_labels = [str(i) + ': ' + str(x) for i, x in enumerate(edge_color)]
 
     # Create edges and nodes coordinates
     N = network.Nt*3
@@ -731,7 +744,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
-    Generate a voxel image from an Network
+    Generate a voxel image from a Network
 
     Parameters
     ----------
@@ -778,3 +791,88 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         eps_old = eps
         max_dim = int(max_dim * 1.25)
     return im
+
+
+def create_pore_colors_from_array(a, cmap='viridis'):
+    colormap = cm.get_cmap(cmap)
+    return colormap(a/a.max())
+
+
+def create_throat_colors_from_array(a, cmap='viridis'):
+    colormap = cm.get_cmap(cmap)
+    return np.repeat(colormap(a/a.max()), 2, axis=0)
+
+
+def plot_vispy(
+    network,
+    pore_color=None,
+    pore_size=None,
+    throat_color=None,
+    throat_size=None,
+    bgcolor='grey',
+):
+    r"""
+
+    Parameters
+    ----------
+    network
+    """
+    try:
+        from vispy import scene
+    except ModuleNotFoundError:
+        raise Exception("vispy must be installed to use this function")
+    canvas = scene.SceneCanvas(keys='interactive', show=True, bgcolor=bgcolor)
+    view = canvas.central_widget.add_view()
+    view.camera = 'turntable'
+    view.camera.fov = 30
+    view.camera.distance = 3*np.max(network['pore.coords'])
+
+    if pore_color is None:
+        pore_color = create_pore_colors_from_array(network['pore.diameter'],
+                                                   cmap='viridis')
+    else:
+        pore_color = create_pore_colors_from_array(pore_color,
+                                                   cmap='viridis')
+    if throat_color is None:
+        throat_color = create_throat_colors_from_array(network['throat.diameter'],
+                                                       cmap='viridis')
+    else:
+        throat_color = create_throat_colors_from_array(throat_color,
+                                                       cmap='viridis')
+    if pore_size is None:
+        pore_size = network['pore.diameter']
+    if throat_size is None:
+        throat_size = 2
+    else:
+        throat_size = np.max(throat_size)  # Arrays not supported here
+    # plot spheres
+    vis = scene.visuals.Markers(
+        pos=network['pore.coords'],
+        size=pore_size,
+        antialias=0,
+        face_color=pore_color,
+        edge_width=0,
+        scaling=True,
+        spherical=True,
+    )
+    vis.parent = view.scene
+    # plot axis
+    # vispy.scene.visuals.XYZAxis(parent=view.scene)
+    # set camera center
+    view.camera.center = np.array((network['pore.coords'][:, 0].max()/2,
+                                   network['pore.coords'][:, 1].max()/2,
+                                   network['pore.coords'][:, 2].max()/2))
+    # data preparation
+    lines = np.zeros((len(network['throat.conns']), 2, 3))
+    for i in range(len(network['throat.conns'])):
+        pair = network['throat.conns'][i]
+        line = np.array([[network['pore.coords'][pair[0]],
+                          network['pore.coords'][pair[1]]]])
+        lines[i, :, :] = line
+    # plot throats
+    vis2 = scene.visuals.Line(lines,
+                              width=throat_size,
+                              color=throat_color,
+                              connect='segments',
+                              antialias=True,)
+    vis2.parent = view.scene
