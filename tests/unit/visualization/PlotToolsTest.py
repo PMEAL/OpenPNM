@@ -28,7 +28,7 @@ class PlotToolsTest:
             dims = op.topotools.dimensionality(pn)
             x, y = pn["pore.coords"].T[dims]
             fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
+            m = op.visualization.plot_networkx(pn, ax=ax)
             x_plot, y_plot = np.array(m.get_offsets()).T
             np.testing.assert_allclose(x_plot, x)
             np.testing.assert_allclose(y_plot, y)
@@ -42,7 +42,7 @@ class PlotToolsTest:
             pn = op.network.Cubic(shape=shape)
             x, y = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
             fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
+            m = op.visualization.plot_networkx(pn, ax=ax)
             x_plot, y_plot = np.array(m.get_offsets()).T
             np.testing.assert_allclose(x_plot, x)
             np.testing.assert_allclose(y_plot, y)
@@ -54,7 +54,7 @@ class PlotToolsTest:
             pn = op.network.Cubic(shape=shape)
             x, = pn["pore.coords"].T[op.topotools.dimensionality(pn)]
             fig, ax = plt.subplots()
-            m = op.topotools.plot_networkx(pn, ax=ax)
+            m = op.visualization.plot_networkx(pn, ax=ax)
             x_plot, y_plot = np.array(m.get_offsets()).T
             np.testing.assert_allclose(x_plot, x)
             plt.close()
@@ -62,14 +62,14 @@ class PlotToolsTest:
     def test_plot_networkx_3d(self):
         pn = op.network.Cubic(shape=[5, 8, 3])
         with pytest.raises(Exception):
-            op.topotools.plot_networkx(pn)
+            op.visualization.plot_networkx(pn)
 
     def test_generate_voxel_image(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         pn.add_model_collection(
             op.models.collections.geometry.spheres_and_cylinders)
         pn.regenerate_models()
-        im = op.topotools.generate_voxel_image(network=pn,
+        im = op.visualization.generate_voxel_image(network=pn,
                                                pore_shape='sphere',
                                                throat_shape='cylinder',
                                                max_dim=500)
@@ -82,8 +82,8 @@ class PlotToolsTest:
             op.models.collections.geometry.spheres_and_cylinders)
         pn.regenerate_models()
         Ts = np.array([0, 4, 6, 18])
-        im = op.topotools.plot_connections(pn, throats=Ts,
-                                           color_by=pn['throat.diameter'])
+        im = op.visualization.plot_connections(pn, throats=Ts,
+                                               color_by=pn['throat.diameter'])
         colors_im = im.get_color()
         color_by = pn['throat.diameter'][Ts]
         color_calc = cm.get_cmap(name='jet')(color_by / color_by.max())
@@ -97,8 +97,8 @@ class PlotToolsTest:
             op.models.collections.geometry.spheres_and_cylinders)
         pn.regenerate_models()
         Ps = np.array([0, 4, 6, 18])
-        im = op.topotools.plot_coordinates(pn, pores=Ps,
-                                           color_by=pn['pore.diameter'])
+        im = op.visualization.plot_coordinates(pn, pores=Ps,
+                                               color_by=pn['pore.diameter'])
         colors_im = im.get_edgecolors()
         color_by = pn['pore.diameter'][Ps]
         color_calc = cm.get_cmap(name='jet')(color_by / color_by.max())

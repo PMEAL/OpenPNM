@@ -11,4 +11,3 @@ removed.
 
 from ._transient_multiphysics import *
 from ._multiphase import MultiPhase
-from ._plot_network import *

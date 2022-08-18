@@ -20,6 +20,7 @@ from . import solvers
 from . import integrators
 from . import io
 from . import contrib
+from . import visualization
 
 from .utils import Workspace, Project
 
