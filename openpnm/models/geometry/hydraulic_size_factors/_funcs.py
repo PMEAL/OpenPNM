@@ -7,13 +7,16 @@ __all__ = [
     "spheres_and_cylinders",
     "circles_and_rectangles",
     "cones_and_cylinders",
+    "intersecting_cones",
+    "hybrid_cones_and_cylinders",
     "trapezoids_and_rectangles",
+    "intersecting_trapezoids",
+    "hybrid_trapezoids_and_rectangles",
     "pyramids_and_cuboids",
+    "intersecting_pyramids",
+    "hybrid_pyramids_and_cuboids",
     "cubes_and_cuboids",
     "squares_and_rectangles",
-    "intersecting_cones",
-    "intersecting_trapezoids",
-    "intersecting_pyramids",
     "ncylinders_in_series"
 ]
 docstr = Docorator()
@@ -174,6 +177,102 @@ def cones_and_cylinders(
 
 
 @docstr.dedent
+def intersecting_cones(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes hydraulic size factors of intersecting cones.
+
+    Parameters
+    ----------
+    %(models.geometry.hydraulic_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.hydraulic_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.hydraulic_size_factor.notes)s
+
+    """
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
+    L1, Lt, L2 = _conduit_lengths.intersecting_cones(
+        network=network,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = 16 / 3 * (L1 * (D1**2 + D1 * Dt + Dt**2) / (D1**3 * Dt**3 * _np.pi**2))
+    F2 = 16 / 3 * (L2 * (D2**2 + D2 * Dt + Dt**2) / (D2**3 * Dt**3 * _np.pi**2))
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = 1 / (2 * _np.pi)
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+    St = _np.full(len(Lt), _np.inf)
+
+    return _np.vstack([S1, St, S2]).T
+
+
+@docstr.dedent
+def hybrid_cones_and_cylinders(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes hydraulic size factors for conduits assuming pores are
+    truncated cones and throats are cylinders.
+
+    Parameters
+    ----------
+    %(models.geometry.hydraulic_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.hydraulic_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.hydraulic_size_factor.notes)s
+
+    """
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
+    L1, Lt, L2 = _conduit_lengths.hybrid_cones_and_cylinders(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = 16 / 3 * (L1 * (D1**2 + D1 * Dt + Dt**2) / (D1**3 * Dt**3 * _np.pi**2))
+    F2 = 16 / 3 * (L2 * (D2**2 + D2 * Dt + Dt**2) / (D2**3 * Dt**3 * _np.pi**2))
+    Ft = Lt / (_np.pi * Dt**2 / 4) ** 2
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = It = 1 / (2 * _np.pi)
+
+    mask = Lt == 0.0
+    if mask.any():
+        inv_F_t = _np.zeros(len(Ft))
+        inv_F_t[~mask] = 1/Ft[~mask]
+        inv_F_t[mask] = _np.inf
+    else:
+        inv_F_t = 1/Ft
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    St = inv_F_t / (16 * _np.pi**2 * It)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+
+    return _np.vstack([S1, St, S2]).T
+
+
+@docstr.dedent
 def trapezoids_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -213,6 +312,104 @@ def trapezoids_and_rectangles(
 
     # S is 1 / (12 * F)
     S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
+
+    return _np.vstack([S1, St, S2]).T
+
+
+@docstr.dedent
+def intersecting_trapezoids(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes hydraulic size factors for conduits of intersecting
+    trapezoids.
+
+    Parameters
+    ----------
+    %(models.geometry.hydraulic_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.hydraulic_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.hydraulic_size_factor.notes)s
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L1, Lt, L2 = _conduit_lengths.intersecting_trapezoids(
+        network=network,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A^3) dx, x = [0, Li]
+    F1 = L1 / 2 * (D1 + Dt) / (D1 * Dt)**2
+    F2 = L2 / 2 * (D2 + Dt) / (D2 * Dt)**2
+
+    # S is 1 / (12 * F)
+    S1 = 1 / (F1 * 12)
+    S2 = 1 / (F2 * 12)
+    St = _np.full(len(Lt), _np.inf)
+
+    return _np.vstack([S1, St, S2]).T
+
+
+@docstr.dedent
+def hybrid_trapezoids_and_rectangles(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes hydraulic size factors for conduits assuming pores are
+    trapezoids and throats are rectangles.
+
+    Parameters
+    ----------
+    %(models.geometry.hydraulic_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.hydraulic_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.hydraulic_size_factor.notes)s
+
+    This model should only be used for true 2D networks, i.e. with planar
+    symmetry.
+
+    """
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L1, Lt, L2 = _conduit_lengths.hybrid_trapezoids_and_rectangles(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A^3) dx, x = [0, Li]
+    F1 = L1 / 2 * (D1 + Dt) / (D1 * Dt)**2
+    F2 = L2 / 2 * (D2 + Dt) / (D2 * Dt)**2
+    Ft = Lt / Dt**3
+
+    mask = Lt == 0.0
+    if mask.any():
+        inv_F_t = _np.zeros(len(Ft))
+        inv_F_t[~mask] = 1/Ft[~mask]
+        inv_F_t[mask] = _np.inf
+    else:
+        inv_F_t = 1/Ft
+
+    # S is 1 / (12 * F)
+    S1 = 1 / (F1 * 12)
+    St = inv_F_t / 12
+    S2 = 1 / (F2 * 12)
 
     return _np.vstack([S1, St, S2]).T
 
@@ -258,6 +455,103 @@ def pyramids_and_cuboids(
     # S is 1 / (16 * pi^2 * I * F)
     S1 = 1 / (16 * _np.pi**2 * I1 * F1)
     St = 1 / (16 * _np.pi**2 * It * Ft)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+
+    return _np.vstack([S1, St, S2]).T
+
+
+@docstr.dedent
+def intersecting_pyramids(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes hydraulic size factors of intersecting pyramids.
+
+    Parameters
+    ----------
+    %(models.geometry.hydraulic_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.hydraulic_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.hydraulic_size_factor.notes)s
+
+    """
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L1, Lt, L2 = _conduit_lengths.intersecting_pyramids(
+        network=network,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = 1 / 3 * (L1 * (D1**2 + D1 * Dt + Dt**2) / (D1**3 * Dt**3))
+    F2 = 1 / 3 * (L2 * (D2**2 + D2 * Dt + Dt**2) / (D2**3 * Dt**3))
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = 1 / 6
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    S2 = 1 / (16 * _np.pi**2 * I2 * F2)
+    St = _np.full(len(Lt), _np.inf)
+
+    return _np.vstack([S1, St, S2]).T
+
+
+@docstr.dedent
+def hybrid_pyramids_and_cuboids(
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords"
+):
+    r"""
+    Computes hydraulic size factors for conduits assuming pores are
+    truncated pyramids and throats are cuboids.
+
+    Parameters
+    ----------
+    %(models.geometry.hydraulic_size_factor.parameters)s
+
+    Returns
+    -------
+    %(models.geometry.hydraulic_size_factor.returns)s
+
+    Notes
+    -----
+    %(models.geometry.hydraulic_size_factor.notes)s
+
+    """
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L1, Lt, L2 = _conduit_lengths.hybrid_pyramids_and_cuboids(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords
+    ).T
+
+    # Fi is the integral of (1/A^2) dx, x = [0, Li]
+    F1 = 1 / 3 * (L1 * (D1**2 + D1 * Dt + Dt**2) / (D1**3 * Dt**3))
+    F2 = 1 / 3 * (L2 * (D2**2 + D2 * Dt + Dt**2) / (D2**3 * Dt**3))
+    Ft = Lt / Dt**4
+
+    # I is the integral of (y^2 + z^2) dA, divided by A^2
+    I1 = I2 = It = 1 / 6
+
+    mask = Lt == 0.0
+    if mask.any():
+        inv_F_t = _np.zeros(len(Ft))
+        inv_F_t[~mask] = 1/Ft[~mask]
+        inv_F_t[mask] = _np.inf
+    else:
+        inv_F_t = 1/Ft
+
+    # S is 1 / (16 * pi^2 * I * F)
+    S1 = 1 / (16 * _np.pi**2 * I1 * F1)
+    St = inv_F_t / (16 * _np.pi**2 * It)
     S2 = 1 / (16 * _np.pi**2 * I2 * F2)
 
     return _np.vstack([S1, St, S2]).T
@@ -363,94 +657,6 @@ def squares_and_rectangles(
     S1, St, S2 = [1 / (Fi * 12) for Fi in [F1, Ft, F2]]
 
     return _np.vstack([S1, St, S2]).T
-
-
-@docstr.dedent
-def intersecting_cones(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    midpoint=None,
-):
-    r"""
-    Computes hydraulic size factors for conduits of intersecting cones.
-
-    Parameters
-    ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
-    midpoint : str, optional
-        Dictionary key of the midpoint values.
-
-    Returns
-    -------
-    %(models.geometry.hydraulic_size_factor.returns)s
-
-    Notes
-    -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
-    """
-    raise NotImplementedError
-
-
-@docstr.dedent
-def intersecting_trapezoids(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    midpoint=None,
-):
-    r"""
-    Computes hydraulic size factors for conduits of intersecting
-    trapezoids.
-
-    Parameters
-    ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
-    midpoint : str, optional
-        Dictionary key of the midpoint values.
-
-    Returns
-    -------
-    %(models.geometry.hydraulic_size_factor.returns)s
-
-    Notes
-    -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
-    This model should only be used for true 2D networks, i.e. with planar
-    symmetry.
-
-    """
-    raise NotImplementedError
-
-
-@docstr.dedent
-def intersecting_pyramids(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter",
-    midpoint=None,
-):
-    r"""
-    Computes hydraulic size factors for conduits of intersecting pyramids.
-
-    Parameters
-    ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
-    midpoint : str, optional
-        Dictionary key of the midpoint values.
-
-    Returns
-    -------
-    %(models.geometry.hydraulic_size_factor.returns)s
-
-    Notes
-    -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
-    """
-    raise NotImplementedError
 
 
 @docstr.dedent
