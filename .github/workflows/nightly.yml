@@ -1,6 +1,8 @@
 name: Nightly Builds
 
-on: [push]
+on:
+  schedule:
+    - cron:  '10 19 * * *'
 
 jobs:
   build:
