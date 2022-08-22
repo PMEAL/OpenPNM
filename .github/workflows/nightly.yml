@@ -5,7 +5,7 @@ on:
     - cron: "*/5 * * * *"
 
 jobs:
-  build:
+  nightly:
 
     runs-on: ${{ matrix.os }}
     defaults:
