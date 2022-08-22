@@ -2,7 +2,7 @@ name: Nightly Builds
 
 on:
   schedule:
-    - cron: '41 19 * * *'
+    - cron: '15 * * * *'
 
 jobs:
   build:
