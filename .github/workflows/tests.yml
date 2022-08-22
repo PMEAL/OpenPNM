@@ -16,13 +16,12 @@ jobs:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
         # Add macos-latest to the next line once #2451 is fixed
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
-        # Uncomment the next two lines once #2451 is fixed
-        # - os: macos-latest
-        #   path: ~/Library/Caches/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
 
