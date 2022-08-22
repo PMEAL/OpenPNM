@@ -36,9 +36,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mamba install --file requirements/doc_requirements.txt
-          pip install -r requirements/pip_requirements.txt
-          pip install -e . --no-deps
+          mamba install --file requirements/docs.txt
+          pip install -r requirements.txt
 
       - name: Build the documentation
         run: |

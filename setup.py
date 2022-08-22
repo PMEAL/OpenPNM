@@ -50,7 +50,7 @@ setup(
     packages=find_packages("."),
     install_requires=[
         'chemicals',
-        'docrep>=0.3',
+        'docrep',
         'flatdict',
         'h5py',
         'jsonschema',
@@ -68,7 +68,6 @@ setup(
         'tqdm',
         'traits',
         'transforms3d',
-        'vispy'
     ],
     author='OpenPNM Team',
     author_email='jgostick@uwaterloo.ca',
