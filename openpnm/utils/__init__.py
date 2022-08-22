@@ -31,7 +31,10 @@ def _setup_logger():
     # NOTE: If the calling locations appears as 'root' it's because the logger
     # was not given a name in a file somewhere.  A good option is __name__.
 
-    terminal_width = os.get_terminal_size().columns
+    try:
+        terminal_width = os.get_terminal_size().columns
+    except OSError:
+        terminal_width = 60
     column_width = terminal_width if terminal_width < 60 else 60
 
     log_format = \

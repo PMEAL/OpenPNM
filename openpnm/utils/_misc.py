@@ -675,8 +675,12 @@ def nbr_to_str(nbr, t_precision=12):
 def prettify_logger_message(msg):
     r"""Prettifies logger messages by breaking them up into multi lines"""
     from textwrap import wrap
+    try:
+        terminal_width = os.get_terminal_size().columns
+    except OSError:
+        terminal_width = 60
     logger_prefix_length = 13
-    column_width = os.get_terminal_size().columns - logger_prefix_length
+    column_width = terminal_width - logger_prefix_length
     indent = "\n" + " " * logger_prefix_length
     temp = wrap(msg, width=column_width)
     return indent.join(temp)
