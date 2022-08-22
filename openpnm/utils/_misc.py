@@ -1,3 +1,5 @@
+from asyncio.log import logger
+import os
 import sys
 import math
 import time
@@ -668,3 +670,17 @@ def nbr_to_str(nbr, t_precision=12):
             * (round(nbr, t_precision) != int(nbr)))
     nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
     return nbr_str
+
+
+def prettify_logger_message(msg):
+    r"""Prettifies logger messages by breaking them up into multi lines"""
+    from textwrap import wrap
+    try:
+        terminal_width = os.get_terminal_size().columns
+    except OSError:
+        terminal_width = 60
+    logger_prefix_length = 13
+    column_width = terminal_width - logger_prefix_length
+    indent = "\n" + " " * logger_prefix_length
+    temp = wrap(msg, width=column_width)
+    return indent.join(temp)
