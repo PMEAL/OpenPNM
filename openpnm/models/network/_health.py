@@ -5,6 +5,7 @@ Health Checks
 """
 import logging
 import numpy as np
+import pandas as pd
 logger = logging.getLogger(__name__)
 
 __all__ = [
@@ -102,12 +103,7 @@ def duplicate_throats(network):
     r"""
     Find repeat occurrences of throat connections
     """
-    conns = network.conns
-    iconns = conns[:, 0] + 1j*conns[:, 1]
-    hits, inds = np.unique(iconns, return_inverse=True)
-    values = np.ones(network.Nt, dtype=bool)
-    values[inds] = False
-    return values
+    return pd.DataFrame(network.conns).duplicated().to_numpy()
 
 
 def count_coincident_pores(network, thresh=1e-6):

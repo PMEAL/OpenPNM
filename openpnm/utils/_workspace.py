@@ -43,12 +43,10 @@ class WorkspaceSettings(SettingsAttr):
 
     @property
     def loglevel(self):
-        logger = logging.getLogger()
         return logger.level
 
     @loglevel.setter
     def loglevel(self, value):
-        logger = logging.getLogger()
         logger.setLevel(value)
 
 

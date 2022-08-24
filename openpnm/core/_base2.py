@@ -1,5 +1,6 @@
 import numpy as np
 import inspect
+import logging
 import uuid
 from copy import deepcopy
 from openpnm.core import (
@@ -16,10 +17,12 @@ from openpnm.utils import (
     Docorator,
     get_printable_props,
     get_printable_labels,
+    prettify_logger_message
 )
 
 
 docstr = Docorator()
+logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
@@ -506,8 +509,11 @@ class ModelMixin2:
         for item in propnames:
             try:
                 self.run_model(item)
-            except KeyError:
-                pass
+            except KeyError as e:
+                msg = (f"{item} was not run since the following property"
+                       f" is missing: {e}")
+                logger.error(prettify_logger_message(msg))
+                self.models[item]['regen_mode'] = 'deferred'
 
     def run_model(self, propname, domain=None):
         if domain is None:

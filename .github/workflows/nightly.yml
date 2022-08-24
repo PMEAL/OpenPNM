@@ -1,9 +1,11 @@
-name: Tests
+name: Nightly Builds
 
-on: [push]
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
-  build:
+  nightly:
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -49,16 +51,4 @@ jobs:
 
       - name: Running tests
         run:
-          pytest .
-            --cov=.
-            --cov-report=xml
-            --color=yes
-
-      - name: Upload coverage to Codecov
-        if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
+          pytest . --color=yes

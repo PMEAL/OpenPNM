@@ -1,5 +1,5 @@
 chemicals
-docrep>=0.3
+docrep
 flatdict
 h5py
 jsonschema
