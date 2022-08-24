@@ -77,6 +77,7 @@ from . import throat_surface_area
 from . import throat_volume
 from . import throat_capillary_shape_factor
 from . import throat_centroid
+from . import throat_endpoints
 from . import throat_vector
 from . import hydraulic_size_factors
 from . import diffusive_size_factors

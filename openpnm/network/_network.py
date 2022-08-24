@@ -97,11 +97,13 @@ class Network(Domain):
         self._im = {}
 
         if coords is not None:
-            self['pore.coords'] = np.array(coords)
+            coords = np.array(coords)
+            self['pore.coords'] = coords
             self['pore.all'] = np.ones(coords.shape[0], dtype=bool)
 
         if conns is not None:
-            self['throat.conns'] = np.array(conns)
+            conns = np.array(conns)
+            self['throat.conns'] = conns
             self['throat.all'] = np.ones(conns.shape[0], dtype=bool)
 
         self.add_model(propname='pore.coordination_number',
