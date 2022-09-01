@@ -12,6 +12,29 @@ def spheres_and_cylinders(
     throat_diameter='throat.diameter',
     throat_centroid='throat.centroid',
 ):
+    r"""
+    Computes the endpoints of throats when pores are spherical.
+
+    The endpoints lie inside the sphere, defined by the lens formed between
+    the intersection of the sphere and cylinder.
+
+    Parameters
+    ----------
+    network : OpenPNM Network
+        The network object
+    pore_diameter : str
+        The dictionary key pointing to the pore diameter values
+    throat_diameter : str
+        The dictionary key pointing to the throat diameter values
+    throat_centroids : str
+        The dictionary key pointing to the throat centroid values
+
+    Returns
+    -------
+    endpoints : ndarray
+        An array containing the Nt-2-3 coordinates of the end points of each
+        throat.
+    """
     xyz = network.coords
     cn = network.conns
     L = network['throat.spacing']
