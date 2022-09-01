@@ -411,10 +411,10 @@ if __name__ == '__main__':
     water.regenerate_models()
 
     ip = InvasionPercolation(network=pn, phase=water)
-    ip.set_inlets(pn.pores('left'))
+    ip.set_inlet_BC(pn.pores('left'))
     ip.run()
-    ip.set_outlets(pn.pores('right'))
-    ip.apply_trapping()
+    ip.set_outlet_BC(pn.pores('right'))
+    # ip.apply_trapping()
 
     # %%
     if 0:
@@ -430,12 +430,12 @@ if __name__ == '__main__':
     # %%
     if 1:
         drn = op.algorithms.Drainage(network=pn, phase=water)
-        drn.set_inlets(pn.pores('left'))
+        drn.set_inlet_BC(pn.pores('left'))
         pressures = np.unique(ip['pore.invasion_pressure'])
         # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
         drn.run(pressures=pressures)
-        drn.set_outlets(pn.pores('right'))
-        drn.apply_trapping()
+        drn.set_outlet_BC(pn.pores('right'))
+        # drn.apply_trapping()
 
         fig, ax = plt.subplots(1, 1)
         ax.step(*ip.pc_curve(), 'b', where='post')

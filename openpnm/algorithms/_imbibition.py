@@ -210,12 +210,12 @@ if __name__ == '__main__':
         n = 0
         p = imb['pore.invasion_pressure'] >= pressures[n]
         t = imb['throat.invasion_pressure'] >= pressures[n]
-        ax = op.topotools.plot_coordinates(pn, pores=p, s=100,
-                                           color_by=imb['pore.invasion_pressure'])
-        ax = op.topotools.plot_coordinates(pn, pores=imb['pore.trapped'],
-                                           marker='s', s=100, c='w', ax=ax)
-        ax = op.topotools.plot_connections(pn, throats=t, linewidth=2,
-                                           color_by=imb['throat.invasion_pressure'],
-                                           ax=ax)
-        ax = op.topotools.plot_connections(pn, throats=imb['throat.trapped'],
-                                           linewidth=2, c='w', ax=ax)
+        ax = op.visualization.plot_coordinates(pn, pores=p, s=100,
+                                               color_by=imb['pore.invasion_pressure'])
+        ax = op.visualization.plot_coordinates(pn, pores=imb['pore.trapped'],
+                                               marker='s', s=100, c='w', ax=ax)
+        ax = op.visualization.plot_connections(pn, throats=t, linewidth=2,
+                                               color_by=imb['throat.invasion_pressure'],
+                                               ax=ax)
+        ax = op.visualization.plot_connections(pn, throats=imb['throat.trapped'],
+                                               linewidth=2, c='w', ax=ax)

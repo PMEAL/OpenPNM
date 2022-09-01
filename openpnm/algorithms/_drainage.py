@@ -53,6 +53,9 @@ class Drainage(Algorithm):
         self.reset()
 
     def reset(self):
+        r"""
+        Resets the algorithm's main results so that it can be re-run
+        """
         self['pore.invaded'] = False
         self['throat.invaded'] = False
         # self['pore.residual'] = False
@@ -78,12 +81,78 @@ class Drainage(Algorithm):
             self['throat.invasion_sequence'][throats] = 0
 
     def set_inlet_BC(self, pores, mode='add'):
+        r"""
+        Specify the pores from which invading fluid will enter the domain
+
+        Parameters
+        ----------
+        pores : ndarray
+            List of pore indices
+        mode : str
+            How the boundary conditions should be applied. Options are:
+
+            ============ =====================================================
+            mode         meaning
+            ============ =====================================================
+            'add'        (default) Adds the supplied boundary conditions to
+                         the given locations. Raises an exception if values
+                         of any type already exist in the given locations.
+            'overwrite'  Adds supplied boundary conditions to the given
+                         locations, including overwriting conditions of the
+                         given type or any other type that may be present in
+                         the given locations.
+            'remove'     Removes boundary conditions of the specified type
+                         from the specified locations. If ``bctype`` is not
+                         specified then *all* types are removed. If no
+                         locations are given then values are remvoed from
+                         *all* locations.
+            ============ =====================================================
+        """
         self.set_BC(pores=pores, bcvalues=True, bctype='inlet', mode=mode)
 
-    def set_outlet_BC(self, pores, mode='add', force=False):
+    def set_outlet_BC(self, pores, mode='add'):
+        r"""
+        Specify the pores from which defending fluid exits the network.
+
+        This is optional and only required if trapping is to be considered.
+
+        Parameters
+        ----------
+        pores : ndarray
+            The list of outlet pores
+        mode : str
+            How the boundary conditions should be applied. Options are:
+
+            ============ =====================================================
+            mode         meaning
+            ============ =====================================================
+            'add'        (default) Adds the supplied boundary conditions to
+                         the given locations. Raises an exception if values
+                         of any type already exist in the given locations.
+            'overwrite'  Adds supplied boundary conditions to the given
+                         locations, including overwriting conditions of the
+                         given type or any other type that may be present in
+                         the given locations.
+            'remove'     Removes boundary conditions of the specified type
+                         from the specified locations. If ``bctype`` is not
+                         specified then *all* types are removed. If no
+                         locations are given then values are remvoed from
+                         *all* locations.
+            ============ =====================================================
+        """
         self.set_BC(pores=pores, bcvalues=True, bctype='outlet', mode=mode)
 
     def run(self, pressures=25):
+        r"""
+        Runs the simulation for the pressure points
+
+        Parameters
+        ----------
+        pressures : int or ndarray
+            The number of pressue steps to apply, or an array of specific
+            points
+
+        """
         if isinstance(pressures, int):
             phase = self.project[self.settings.phase]
             hi = 1.25*phase[self.settings.throat_entry_pressure].max()
