@@ -5,7 +5,6 @@ Pore-scale models related to topology of the network.
 
 """
 from numpy.linalg import norm
-from scipy.sparse import csgraph
 import numpy as np
 
 __all__ = [  # Keep this alphabetical for easier inspection of what's imported
@@ -14,7 +13,6 @@ __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'distance_to_nearest_neighbor',
     'distance_to_nearest_pore',
     'pore_to_pore_distance',
-    'reduce_coordination',
 ]
 
 
