@@ -29,7 +29,7 @@ def sphere(network, pore_diameter='pore.diameter'):
         Numpy ndarray containing pore volume values
 
     """
-    return _pi/6*network[pore_diameter]**3
+    return 4/3*_pi*(network[pore_diameter]/2)**3
 
 
 @docstr.dedent

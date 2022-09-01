@@ -12,6 +12,7 @@ __all__ = [
     'blank',
     'clip',
     'constant',
+    'difference',
     'fraction',
     'invert',
     'normalize',
@@ -41,6 +42,24 @@ def invert(target, prop):
 
     """
     return 1.0/target[prop]
+
+
+def difference(target, props):
+    r"""
+    Subtracts elements 1:N in `props` from element 0
+
+    Parameters
+    ----------
+    target : OpenPNM dict
+        The object to which the model is associated
+    props : list
+        A list of dict keys containing the values to operate on.  If the first
+        element is A, and the next are B and C, then the results is A - B - C.
+    """
+    A = target[props[0]]
+    for B in props[1:]:
+        A = A - target[B]
+    return A
 
 
 def fraction(target, numerator, denominator):
