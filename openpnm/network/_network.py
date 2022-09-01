@@ -379,7 +379,7 @@ class Network(Domain):
 
         return temp
 
-    def find_connected_pores(self, throats=[], flatten=False, mode='union'):
+    def find_connected_pores(self, throats=[], flatten=False, mode='or'):
         r"""
         Return a list of pores connected to the given list of throats
 
@@ -475,7 +475,7 @@ class Network(Domain):
         Ts = topotools.find_connecting_bonds(sites=sites, g=self)
         return Ts
 
-    def find_neighbor_pores(self, pores, mode='union', flatten=True,
+    def find_neighbor_pores(self, pores, mode='or', flatten=True,
                             include_input=False, asmask=False):
         r"""
         Returns a list of pores that are direct neighbors to the given pore(s)
@@ -546,7 +546,7 @@ class Network(Domain):
         >>> Ps = pn.find_neighbor_pores(pores=[0, 1])
         >>> print(Ps)
         [ 2  5  6 25 26]
-        >>> Ps = pn.find_neighbor_pores(pores=[0, 1], mode='union',
+        >>> Ps = pn.find_neighbor_pores(pores=[0, 1], mode='or',
         ...                             include_input=True)
         >>> print(Ps)
         [ 0  1  2  5  6 25 26]
@@ -578,7 +578,7 @@ class Network(Domain):
         else:
             raise Exception('Cannot create mask on an unflattened output')
 
-    def find_neighbor_throats(self, pores, mode='union', flatten=True,
+    def find_neighbor_throats(self, pores, mode='or', flatten=True,
                               asmask=False):
         r"""
         Returns a list of throats neighboring the given pore(s)
@@ -598,8 +598,8 @@ class Network(Domain):
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'or'         All neighbors of the input throats. Also accepts 'any'
-                         and 'union'.
+            'or'         (default) All neighbors of the input throats. Also
+                         accepts 'any' and 'union'.
             'xor'        Only neighbors of one and only one input throats. This
                          is useful for counting the pores that are not shared
                          by any of the input pores. Also accepts
@@ -693,8 +693,8 @@ class Network(Domain):
             ===========  =====================================================
             mode         meaning
             ===========  =====================================================
-            'or'         All neighbors of the input pores. Also accepts 'any'
-                         and 'union'.
+            'or'         (default) All neighbors of the input pores. Also
+                         accepts 'any' and 'union'.
             'xor'        Only neighbors of one and only one input pore. This
                          is useful for counting the pores that are not shared
                          by any of the input pores. Also accepts
