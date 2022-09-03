@@ -56,7 +56,7 @@ Clone the repo somewhere in your disk using::
 
 Install ``openpnm`` dependencies::
 
-   $ conda install --file requirements/conda_requirements.txt -c conda-forge --override-channels
+   $ conda install --file requirements/conda.txt -c conda-forge --override-channels
 
 Install ``openpnm`` in "editable" mode::
 
