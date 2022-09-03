@@ -27,7 +27,7 @@ input#search-input {
     border-radius: 10px;
 }
 
-a.current {
+nav#bd-docs-nav a.current {
     background-color: lightgoldenrodyellow;
     border-radius: 8px;
 }
