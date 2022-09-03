@@ -11,8 +11,8 @@ import time
 import logging
 import heapq as hq
 import numpy as np
-from scipy.sparse import coo_matrix, dok_matrix
-from openpnm.algorithms import MixedInvasionPercolation
+from scipy.sparse import dok_matrix
+# from openpnm.algorithms import MixedInvasionPercolation
 from transforms3d._gohlketransforms import angle_between_vectors
 from openpnm.utils import Docorator
 docstr = Docorator()
@@ -37,7 +37,8 @@ class MixedIPCoopSettings:
     cooperative_pore_filling = ""
 
 
-class MixedInvasionPercolationCoop(MixedInvasionPercolation):
+# class MixedInvasionPercolationCoop(MixedInvasionPercolation):
+class MixedInvasionPercolationCoop():
     r"""
     An implemetation of invasion percolation which can invade bonds, sites or a
     mixture of both. Inlets can be treated as individual injection points that
