@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install \
             -r requirements.txt \
-            -r tests.txt
+            -r requirements/tests.txt
 
       - name: Running tests
         run:
