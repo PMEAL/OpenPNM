@@ -121,15 +121,15 @@ def gas_mixture_fesg(
 ):
     r"""
     Estimates the diffusion coefficient of both species in a binary gas
-    mixture using the Fuller et al correlation [1]
+    mixture using the Fuller et al correlation [1]_, [2]_, [3]_.
 
     Parameters
     ----------
     %(models.phase.parameters)s
-    molecular_weight : string
+    molecular_weight : str
         Dictionary key containing the molecular weight of each species. The
         default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
+    molar_diffusion_volume : str
         Dictionary key containing the molar diffusion volume of each species.
         This is used by the Fuller correlation. The default is
         'pore.molar_diffusion_volume'
@@ -138,17 +138,18 @@ def gas_mixture_fesg(
 
     Returns
     -------
-    Dij : dict containing ND-arrys
+    Dij : dict[ndarray]
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
 
     References
     ----------
-    [1] Fuller, E. N., and J. C. Giddings: J. Gas Chromatogr., 3: 222 (1965).
-    [2] Fuller, E. N., P. D. Schettler, and J. C. Giddings: Ind. Eng. Chem.,
-        58(5): 18 (1966).
-    [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,
-        73: 3679 (1969).
+    .. [1] Fuller, E. N., and J. C. Giddings: J. Gas Chromatogr., 3: 222 (1965).
+    .. [2] Fuller, E. N., P. D. Schettler, and J. C. Giddings: Ind. Eng. Chem.,
+       58(5): 18 (1966).
+    .. [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,
+       73: 3679 (1969).
+
     """
     T = phase[T]
     P = phase[P]
@@ -178,7 +179,7 @@ def gas_mixture_fw(
     Estimates the diffusion coeffient of each species in a gas mixture
 
     Uses the Fuller equation to estimate binary diffusivity between pairs,
-    then uses the correction of Fairbanks and Wilke [1] to account for the
+    then uses the correction of Fairbanks and Wilke [1]_ to account for the
     composition of the gas mixture.
 
     Parameters
@@ -196,15 +197,16 @@ def gas_mixture_fw(
 
     Returns
     -------
-    Dij : dict containing ND-arrys
+    Dij : dict[ndarray]
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
 
-    Reference
-    ---------
-    [1] Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
-    Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
-    `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+    References
+    ----------
+    .. [1] Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
+       Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
+       `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+
     """
     raise Exception('This function is not ready yet')
     comps = list(phase.components.values())

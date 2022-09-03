@@ -42,7 +42,7 @@ def bond_percolation(conns, occupied_bonds):
     Notes
     -----
     The ``connected_components`` function of ``scipy.sparse.csgraph`` will give
-     a cluster number to ALL bonds whether they are occupied or not, so this
+    a cluster number to ALL bonds whether they are occupied or not, so this
     function essentially adjusts the cluster numbers to represent a
     percolation process.
 
