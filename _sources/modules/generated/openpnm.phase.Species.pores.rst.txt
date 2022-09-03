@@ -1,0 +1,8 @@
+:orphan:
+
+pores
+===========================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Species.pores

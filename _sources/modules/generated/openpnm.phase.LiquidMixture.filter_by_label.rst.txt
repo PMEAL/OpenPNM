@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+===========================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: LiquidMixture.filter_by_label

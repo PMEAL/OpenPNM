@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params
-===========================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. automethod:: Docorator.keep_params

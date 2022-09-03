@@ -1,8 +1,0 @@
-:orphan:
-
-keep_types
-========================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_size
-
-.. automethod:: Docorator.keep_types

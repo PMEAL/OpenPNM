@@ -1,0 +1,8 @@
+:orphan:
+
+__call__
+==================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: ModelWrapper.__call__

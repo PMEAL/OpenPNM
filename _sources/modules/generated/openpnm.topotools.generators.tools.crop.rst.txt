@@ -1,6 +1,0 @@
-crop
-====
-
-.. currentmodule:: openpnm.topotools.generators.tools
-
-.. autofunction:: crop

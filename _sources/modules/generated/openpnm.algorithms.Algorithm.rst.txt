@@ -1,0 +1,43 @@
+Algorithm
+============================
+
+.. currentmodule:: openpnm.algorithms
+
+.. autoclass:: Algorithm
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Algorithm.clear
+            Algorithm.clear_BCs
+            Algorithm.copy
+            Algorithm.filter_by_label
+            Algorithm.fromkeys
+            Algorithm.get
+            Algorithm.get_conduit_data
+            Algorithm.interpolate_data
+            Algorithm.items
+            Algorithm.keys
+            Algorithm.labels
+            Algorithm.num_pores
+            Algorithm.num_throats
+            Algorithm.pop
+            Algorithm.popitem
+            Algorithm.pores
+            Algorithm.props
+            Algorithm.set_BC
+            Algorithm.set_label
+            Algorithm.setdefault
+            Algorithm.throats
+            Algorithm.to_indices
+            Algorithm.to_mask
+            Algorithm.update
+            Algorithm.values
+   
+   

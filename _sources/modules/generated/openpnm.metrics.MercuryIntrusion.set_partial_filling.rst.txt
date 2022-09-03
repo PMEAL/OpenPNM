@@ -1,8 +1,0 @@
-:orphan:
-
-set_partial_filling
-====================================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.set_partial_filling

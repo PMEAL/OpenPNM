@@ -1,0 +1,6 @@
+gas\_mixture\_ce
+================
+
+.. currentmodule:: openpnm.models.phase.diffusivity
+
+.. autofunction:: gas_mixture_ce

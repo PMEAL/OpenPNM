@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-================================================================
-
-.. currentmodule:: openpnm.models.misc.statistical_distributions
-
-.. automethod:: Docorator.__call__

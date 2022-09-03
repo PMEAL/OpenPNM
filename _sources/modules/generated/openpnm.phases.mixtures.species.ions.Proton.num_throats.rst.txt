@@ -1,8 +1,0 @@
-:orphan:
-
-num_throats
-=======================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.ions
-
-.. automethod:: Proton.num_throats

@@ -1,6 +1,0 @@
-join
-====
-
-.. currentmodule:: openpnm.topotools.generators.tools
-
-.. autofunction:: join

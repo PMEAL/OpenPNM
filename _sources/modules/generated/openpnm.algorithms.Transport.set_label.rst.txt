@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+======================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: Transport.set_label

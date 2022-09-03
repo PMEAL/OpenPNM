@@ -1,0 +1,6 @@
+mix\_and\_match
+===============
+
+.. currentmodule:: openpnm.models.phase.misc
+
+.. autofunction:: mix_and_match

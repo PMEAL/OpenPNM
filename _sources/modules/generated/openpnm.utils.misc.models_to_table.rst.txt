@@ -1,6 +1,0 @@
-models\_to\_table
-=================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: models_to_table

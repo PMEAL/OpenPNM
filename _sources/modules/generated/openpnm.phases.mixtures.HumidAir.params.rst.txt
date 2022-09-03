@@ -1,8 +1,0 @@
-:orphan:
-
-params
-=======================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: HumidAir.params

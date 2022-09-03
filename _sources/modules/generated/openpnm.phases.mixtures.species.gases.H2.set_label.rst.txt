@@ -1,8 +1,0 @@
-:orphan:
-
-set_label
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: H2.set_label

@@ -1,0 +1,6 @@
+liquid\_mixture\_wsd
+====================
+
+.. currentmodule:: openpnm.models.phase.surface_tension
+
+.. autofunction:: liquid_mixture_wsd

@@ -1,8 +1,0 @@
-:orphan:
-
-interleave_data
-==============================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: DryAir.interleave_data

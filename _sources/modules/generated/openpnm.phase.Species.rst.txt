@@ -1,0 +1,45 @@
+Species
+=====================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: Species
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Species.add_model
+            Species.add_model_collection
+            Species.clear
+            Species.copy
+            Species.filter_by_label
+            Species.fromkeys
+            Species.get
+            Species.get_conduit_data
+            Species.interpolate_data
+            Species.items
+            Species.keys
+            Species.labels
+            Species.num_pores
+            Species.num_throats
+            Species.pop
+            Species.popitem
+            Species.pores
+            Species.props
+            Species.regenerate_models
+            Species.run_model
+            Species.set_label
+            Species.setdefault
+            Species.throats
+            Species.to_indices
+            Species.to_mask
+            Species.update
+            Species.values
+   
+   

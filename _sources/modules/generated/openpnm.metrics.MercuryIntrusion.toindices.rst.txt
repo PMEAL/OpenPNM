@@ -1,8 +1,0 @@
-:orphan:
-
-toindices
-==========================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.toindices

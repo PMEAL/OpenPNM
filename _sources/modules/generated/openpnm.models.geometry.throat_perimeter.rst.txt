@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_perimeter
+throat\_perimeter
 =================
 
 .. automodule:: openpnm.models.geometry.throat_perimeter
@@ -27,15 +27,6 @@ Throat\_perimeter
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

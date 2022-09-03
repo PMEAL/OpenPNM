@@ -1,8 +1,0 @@
-:orphan:
-
-get_sectionsf
-======================================================================
-
-.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
-
-.. automethod:: Docorator.get_sectionsf

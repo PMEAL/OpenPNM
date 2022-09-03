@@ -1,0 +1,8 @@
+:orphan:
+
+props
+=============================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Network.props

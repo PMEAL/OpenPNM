@@ -1,0 +1,51 @@
+StandardGasMixture
+================================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: StandardGasMixture
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            StandardGasMixture.add_comp
+            StandardGasMixture.add_model
+            StandardGasMixture.add_model_collection
+            StandardGasMixture.check_mixture_health
+            StandardGasMixture.clear
+            StandardGasMixture.copy
+            StandardGasMixture.filter_by_label
+            StandardGasMixture.fromkeys
+            StandardGasMixture.get
+            StandardGasMixture.get_comp_vals
+            StandardGasMixture.get_conduit_data
+            StandardGasMixture.get_mix_vals
+            StandardGasMixture.interpolate_data
+            StandardGasMixture.items
+            StandardGasMixture.keys
+            StandardGasMixture.labels
+            StandardGasMixture.num_pores
+            StandardGasMixture.num_throats
+            StandardGasMixture.pop
+            StandardGasMixture.popitem
+            StandardGasMixture.pores
+            StandardGasMixture.props
+            StandardGasMixture.regenerate_models
+            StandardGasMixture.remove_comp
+            StandardGasMixture.run_model
+            StandardGasMixture.set_label
+            StandardGasMixture.setdefault
+            StandardGasMixture.throats
+            StandardGasMixture.to_indices
+            StandardGasMixture.to_mask
+            StandardGasMixture.update
+            StandardGasMixture.values
+            StandardGasMixture.y
+   
+   

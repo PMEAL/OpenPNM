@@ -1,8 +1,0 @@
-:orphan:
-
-to_mask
-===============================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: GenericTransportMetrics.to_mask

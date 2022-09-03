@@ -1,0 +1,6 @@
+from\_component
+===============
+
+.. currentmodule:: openpnm.models.phase.mixtures
+
+.. autofunction:: from_component

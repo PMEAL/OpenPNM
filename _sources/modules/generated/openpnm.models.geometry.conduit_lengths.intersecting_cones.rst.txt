@@ -1,0 +1,6 @@
+intersecting\_cones
+===================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. autofunction:: intersecting_cones

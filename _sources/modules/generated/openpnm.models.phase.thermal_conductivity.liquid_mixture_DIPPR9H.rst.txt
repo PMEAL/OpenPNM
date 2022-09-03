@@ -1,0 +1,6 @@
+liquid\_mixture\_DIPPR9H
+========================
+
+.. currentmodule:: openpnm.models.phase.thermal_conductivity
+
+.. autofunction:: liquid_mixture_DIPPR9H

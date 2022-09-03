@@ -1,0 +1,56 @@
+Demo
+====================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: Demo
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Demo.add_boundary_pores
+            Demo.add_model
+            Demo.add_model_collection
+            Demo.clear
+            Demo.copy
+            Demo.create_adjacency_matrix
+            Demo.create_incidence_matrix
+            Demo.filter_by_label
+            Demo.find_connected_pores
+            Demo.find_connecting_throat
+            Demo.find_nearby_pores
+            Demo.find_neighbor_pores
+            Demo.find_neighbor_throats
+            Demo.fromkeys
+            Demo.get
+            Demo.get_adjacency_matrix
+            Demo.get_conduit_data
+            Demo.get_incidence_matrix
+            Demo.interpolate_data
+            Demo.items
+            Demo.keys
+            Demo.labels
+            Demo.num_neighbors
+            Demo.num_pores
+            Demo.num_throats
+            Demo.pop
+            Demo.popitem
+            Demo.pores
+            Demo.props
+            Demo.regenerate_models
+            Demo.run_model
+            Demo.set_label
+            Demo.setdefault
+            Demo.throats
+            Demo.to_indices
+            Demo.to_mask
+            Demo.update
+            Demo.values
+   
+   

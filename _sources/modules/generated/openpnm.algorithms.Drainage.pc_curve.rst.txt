@@ -1,0 +1,8 @@
+:orphan:
+
+pc_curve
+====================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: Drainage.pc_curve

@@ -1,0 +1,6 @@
+project\_to\_dict
+=================
+
+.. currentmodule:: openpnm.io
+
+.. autofunction:: project_to_dict

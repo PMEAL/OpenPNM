@@ -1,0 +1,30 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+critical\_props
+===============
+
+.. automodule:: openpnm.models.phase.critical_props
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

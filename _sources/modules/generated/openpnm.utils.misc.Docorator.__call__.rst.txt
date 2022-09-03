@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-=====================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: Docorator.__call__

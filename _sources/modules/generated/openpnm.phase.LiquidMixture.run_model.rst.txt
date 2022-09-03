@@ -1,0 +1,8 @@
+:orphan:
+
+run_model
+=====================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: LiquidMixture.run_model

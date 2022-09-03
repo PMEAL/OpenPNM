@@ -1,0 +1,6 @@
+find\_interface\_throats
+========================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: find_interface_throats

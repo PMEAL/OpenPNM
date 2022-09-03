@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Algorithms
+algorithms
 ==========
 
 .. automodule:: openpnm.algorithms
@@ -27,15 +27,12 @@ Algorithms
 
    
       AdvectionDiffusion
+      Algorithm
+      Drainage
       FickianDiffusion
       FourierConduction
-      GenericAlgorithm
-      GenericTransport
-      GenericTransportSettings
       InvasionPercolation
       IonicConduction
-      MixedInvasionPercolation
-      MixedInvasionPercolationCoop
       OhmicConduction
       OrdinaryPercolation
       ReactiveTransport
@@ -44,6 +41,7 @@ Algorithms
       TransientFickianDiffusion
       TransientIonicConduction
       TransientReactiveTransport
+      Transport
    
    
 

@@ -1,8 +1,0 @@
-:orphan:
-
-resize
-============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.resize

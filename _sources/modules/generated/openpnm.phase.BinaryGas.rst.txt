@@ -1,0 +1,51 @@
+BinaryGas
+=======================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: BinaryGas
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            BinaryGas.add_comp
+            BinaryGas.add_model
+            BinaryGas.add_model_collection
+            BinaryGas.check_mixture_health
+            BinaryGas.clear
+            BinaryGas.copy
+            BinaryGas.filter_by_label
+            BinaryGas.fromkeys
+            BinaryGas.get
+            BinaryGas.get_comp_vals
+            BinaryGas.get_conduit_data
+            BinaryGas.get_mix_vals
+            BinaryGas.interpolate_data
+            BinaryGas.items
+            BinaryGas.keys
+            BinaryGas.labels
+            BinaryGas.num_pores
+            BinaryGas.num_throats
+            BinaryGas.pop
+            BinaryGas.popitem
+            BinaryGas.pores
+            BinaryGas.props
+            BinaryGas.regenerate_models
+            BinaryGas.remove_comp
+            BinaryGas.run_model
+            BinaryGas.set_label
+            BinaryGas.setdefault
+            BinaryGas.throats
+            BinaryGas.to_indices
+            BinaryGas.to_mask
+            BinaryGas.update
+            BinaryGas.values
+            BinaryGas.y
+   
+   

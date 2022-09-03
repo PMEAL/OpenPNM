@@ -1,8 +1,0 @@
-:orphan:
-
-round
-==================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.round

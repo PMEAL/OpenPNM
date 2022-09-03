@@ -1,8 +1,0 @@
-:orphan:
-
-get_conduit_data
-=========================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: O2.get_conduit_data

@@ -1,0 +1,51 @@
+GasMixture
+========================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: GasMixture
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            GasMixture.add_comp
+            GasMixture.add_model
+            GasMixture.add_model_collection
+            GasMixture.check_mixture_health
+            GasMixture.clear
+            GasMixture.copy
+            GasMixture.filter_by_label
+            GasMixture.fromkeys
+            GasMixture.get
+            GasMixture.get_comp_vals
+            GasMixture.get_conduit_data
+            GasMixture.get_mix_vals
+            GasMixture.interpolate_data
+            GasMixture.items
+            GasMixture.keys
+            GasMixture.labels
+            GasMixture.num_pores
+            GasMixture.num_throats
+            GasMixture.pop
+            GasMixture.popitem
+            GasMixture.pores
+            GasMixture.props
+            GasMixture.regenerate_models
+            GasMixture.remove_comp
+            GasMixture.run_model
+            GasMixture.set_label
+            GasMixture.setdefault
+            GasMixture.throats
+            GasMixture.to_indices
+            GasMixture.to_mask
+            GasMixture.update
+            GasMixture.values
+            GasMixture.y
+   
+   

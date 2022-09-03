@@ -15,57 +15,37 @@ AdvectionDiffusion
          :toctree:
          
             AdvectionDiffusion.clear
+            AdvectionDiffusion.clear_BCs
+            AdvectionDiffusion.clear_rate_BCs
+            AdvectionDiffusion.clear_value_BCs
             AdvectionDiffusion.copy
+            AdvectionDiffusion.filter_by_label
             AdvectionDiffusion.fromkeys
             AdvectionDiffusion.get
             AdvectionDiffusion.get_conduit_data
-            AdvectionDiffusion.interleave_data
             AdvectionDiffusion.interpolate_data
             AdvectionDiffusion.items
             AdvectionDiffusion.keys
-            AdvectionDiffusion.map_pores
-            AdvectionDiffusion.map_throats
+            AdvectionDiffusion.labels
+            AdvectionDiffusion.num_pores
+            AdvectionDiffusion.num_throats
             AdvectionDiffusion.pop
             AdvectionDiffusion.popitem
+            AdvectionDiffusion.pores
             AdvectionDiffusion.props
             AdvectionDiffusion.rate
-            AdvectionDiffusion.remove_BC
-            AdvectionDiffusion.remove_source
-            AdvectionDiffusion.reset
-            AdvectionDiffusion.results
             AdvectionDiffusion.run
+            AdvectionDiffusion.set_BC
+            AdvectionDiffusion.set_label
             AdvectionDiffusion.set_outflow_BC
             AdvectionDiffusion.set_rate_BC
             AdvectionDiffusion.set_source
             AdvectionDiffusion.set_value_BC
-            AdvectionDiffusion.set_variable_props
             AdvectionDiffusion.setdefault
-            AdvectionDiffusion.show_hist
+            AdvectionDiffusion.throats
             AdvectionDiffusion.to_indices
             AdvectionDiffusion.to_mask
-            AdvectionDiffusion.toindices
-            AdvectionDiffusion.tomask
             AdvectionDiffusion.update
             AdvectionDiffusion.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            AdvectionDiffusion.A
-            AdvectionDiffusion.Np
-            AdvectionDiffusion.Nt
-            AdvectionDiffusion.Ps
-            AdvectionDiffusion.Ts
-            AdvectionDiffusion.b
-            AdvectionDiffusion.name
-            AdvectionDiffusion.network
-            AdvectionDiffusion.project
-            AdvectionDiffusion.settings
-            AdvectionDiffusion.x
    
    

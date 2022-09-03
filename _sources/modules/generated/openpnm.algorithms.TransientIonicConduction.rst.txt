@@ -15,56 +15,36 @@ TransientIonicConduction
          :toctree:
          
             TransientIonicConduction.clear
+            TransientIonicConduction.clear_BCs
+            TransientIonicConduction.clear_rate_BCs
+            TransientIonicConduction.clear_value_BCs
             TransientIonicConduction.copy
+            TransientIonicConduction.filter_by_label
             TransientIonicConduction.fromkeys
             TransientIonicConduction.get
             TransientIonicConduction.get_conduit_data
-            TransientIonicConduction.interleave_data
             TransientIonicConduction.interpolate_data
             TransientIonicConduction.items
             TransientIonicConduction.keys
-            TransientIonicConduction.map_pores
-            TransientIonicConduction.map_throats
+            TransientIonicConduction.labels
+            TransientIonicConduction.num_pores
+            TransientIonicConduction.num_throats
             TransientIonicConduction.pop
             TransientIonicConduction.popitem
+            TransientIonicConduction.pores
             TransientIonicConduction.props
             TransientIonicConduction.rate
-            TransientIonicConduction.remove_BC
-            TransientIonicConduction.remove_source
-            TransientIonicConduction.reset
-            TransientIonicConduction.results
             TransientIonicConduction.run
+            TransientIonicConduction.set_BC
+            TransientIonicConduction.set_label
             TransientIonicConduction.set_rate_BC
             TransientIonicConduction.set_source
             TransientIonicConduction.set_value_BC
-            TransientIonicConduction.set_variable_props
             TransientIonicConduction.setdefault
-            TransientIonicConduction.show_hist
+            TransientIonicConduction.throats
             TransientIonicConduction.to_indices
             TransientIonicConduction.to_mask
-            TransientIonicConduction.toindices
-            TransientIonicConduction.tomask
             TransientIonicConduction.update
             TransientIonicConduction.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            TransientIonicConduction.A
-            TransientIonicConduction.Np
-            TransientIonicConduction.Nt
-            TransientIonicConduction.Ps
-            TransientIonicConduction.Ts
-            TransientIonicConduction.b
-            TransientIonicConduction.name
-            TransientIonicConduction.network
-            TransientIonicConduction.project
-            TransientIonicConduction.settings
-            TransientIonicConduction.x
    
    

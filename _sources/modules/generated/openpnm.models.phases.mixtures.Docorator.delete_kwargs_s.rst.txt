@@ -1,8 +1,0 @@
-:orphan:
-
-delete_kwargs_s
-========================================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: Docorator.delete_kwargs_s

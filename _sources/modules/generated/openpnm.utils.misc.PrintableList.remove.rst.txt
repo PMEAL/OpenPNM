@@ -1,8 +1,0 @@
-:orphan:
-
-remove
-=======================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: PrintableList.remove

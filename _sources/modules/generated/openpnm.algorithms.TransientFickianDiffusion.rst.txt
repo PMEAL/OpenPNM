@@ -15,56 +15,36 @@ TransientFickianDiffusion
          :toctree:
          
             TransientFickianDiffusion.clear
+            TransientFickianDiffusion.clear_BCs
+            TransientFickianDiffusion.clear_rate_BCs
+            TransientFickianDiffusion.clear_value_BCs
             TransientFickianDiffusion.copy
+            TransientFickianDiffusion.filter_by_label
             TransientFickianDiffusion.fromkeys
             TransientFickianDiffusion.get
             TransientFickianDiffusion.get_conduit_data
-            TransientFickianDiffusion.interleave_data
             TransientFickianDiffusion.interpolate_data
             TransientFickianDiffusion.items
             TransientFickianDiffusion.keys
-            TransientFickianDiffusion.map_pores
-            TransientFickianDiffusion.map_throats
+            TransientFickianDiffusion.labels
+            TransientFickianDiffusion.num_pores
+            TransientFickianDiffusion.num_throats
             TransientFickianDiffusion.pop
             TransientFickianDiffusion.popitem
+            TransientFickianDiffusion.pores
             TransientFickianDiffusion.props
             TransientFickianDiffusion.rate
-            TransientFickianDiffusion.remove_BC
-            TransientFickianDiffusion.remove_source
-            TransientFickianDiffusion.reset
-            TransientFickianDiffusion.results
             TransientFickianDiffusion.run
+            TransientFickianDiffusion.set_BC
+            TransientFickianDiffusion.set_label
             TransientFickianDiffusion.set_rate_BC
             TransientFickianDiffusion.set_source
             TransientFickianDiffusion.set_value_BC
-            TransientFickianDiffusion.set_variable_props
             TransientFickianDiffusion.setdefault
-            TransientFickianDiffusion.show_hist
+            TransientFickianDiffusion.throats
             TransientFickianDiffusion.to_indices
             TransientFickianDiffusion.to_mask
-            TransientFickianDiffusion.toindices
-            TransientFickianDiffusion.tomask
             TransientFickianDiffusion.update
             TransientFickianDiffusion.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            TransientFickianDiffusion.A
-            TransientFickianDiffusion.Np
-            TransientFickianDiffusion.Nt
-            TransientFickianDiffusion.Ps
-            TransientFickianDiffusion.Ts
-            TransientFickianDiffusion.b
-            TransientFickianDiffusion.name
-            TransientFickianDiffusion.network
-            TransientFickianDiffusion.project
-            TransientFickianDiffusion.settings
-            TransientFickianDiffusion.x
    
    

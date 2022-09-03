@@ -1,0 +1,6 @@
+print\_hdf5
+===========
+
+.. currentmodule:: openpnm.io
+
+.. autofunction:: print_hdf5

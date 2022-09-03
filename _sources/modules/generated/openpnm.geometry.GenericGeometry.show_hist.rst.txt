@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-==========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: GenericGeometry.show_hist

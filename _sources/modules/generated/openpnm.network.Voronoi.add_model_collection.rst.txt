@@ -1,0 +1,8 @@
+:orphan:
+
+add_model_collection
+============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Voronoi.add_model_collection

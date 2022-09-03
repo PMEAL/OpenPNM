@@ -1,0 +1,6 @@
+liquid\_pure\_lk
+================
+
+.. currentmodule:: openpnm.models.phase.vapor_pressure
+
+.. autofunction:: liquid_pure_lk

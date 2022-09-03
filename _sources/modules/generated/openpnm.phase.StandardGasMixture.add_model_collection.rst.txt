@@ -1,0 +1,8 @@
+:orphan:
+
+add_model_collection
+=====================================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: StandardGasMixture.add_model_collection

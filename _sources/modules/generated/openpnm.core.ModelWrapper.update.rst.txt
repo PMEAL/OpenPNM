@@ -1,0 +1,8 @@
+:orphan:
+
+update
+================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: ModelWrapper.update

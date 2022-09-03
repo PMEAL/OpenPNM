@@ -14,9 +14,8 @@ Gabriel
       .. autosummary::
          :toctree:
          
-            Gabriel.add_boundary_pores
             Gabriel.add_model
-            Gabriel.check_network_health
+            Gabriel.add_model_collection
             Gabriel.clear
             Gabriel.copy
             Gabriel.create_adjacency_matrix
@@ -27,14 +26,11 @@ Gabriel
             Gabriel.find_nearby_pores
             Gabriel.find_neighbor_pores
             Gabriel.find_neighbor_throats
-            Gabriel.find_pore_hulls
-            Gabriel.find_throat_facets
             Gabriel.fromkeys
             Gabriel.get
             Gabriel.get_adjacency_matrix
             Gabriel.get_conduit_data
             Gabriel.get_incidence_matrix
-            Gabriel.interleave_data
             Gabriel.interpolate_data
             Gabriel.items
             Gabriel.keys
@@ -42,44 +38,18 @@ Gabriel
             Gabriel.num_neighbors
             Gabriel.num_pores
             Gabriel.num_throats
-            Gabriel.params
             Gabriel.pop
             Gabriel.popitem
             Gabriel.pores
             Gabriel.props
             Gabriel.regenerate_models
-            Gabriel.remove_model
+            Gabriel.run_model
             Gabriel.set_label
             Gabriel.setdefault
-            Gabriel.show_hist
             Gabriel.throats
             Gabriel.to_indices
             Gabriel.to_mask
             Gabriel.update
             Gabriel.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            Gabriel.Np
-            Gabriel.Nt
-            Gabriel.Ps
-            Gabriel.Ts
-            Gabriel.am
-            Gabriel.conns
-            Gabriel.coords
-            Gabriel.im
-            Gabriel.models
-            Gabriel.name
-            Gabriel.network
-            Gabriel.project
-            Gabriel.settings
-            Gabriel.tri
-            Gabriel.vor
    
    

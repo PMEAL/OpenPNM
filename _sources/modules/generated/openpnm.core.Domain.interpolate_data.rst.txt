@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+====================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Domain.interpolate_data

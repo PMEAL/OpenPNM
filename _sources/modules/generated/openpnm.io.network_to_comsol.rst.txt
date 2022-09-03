@@ -1,0 +1,6 @@
+network\_to\_comsol
+===================
+
+.. currentmodule:: openpnm.io
+
+.. autofunction:: network_to_comsol

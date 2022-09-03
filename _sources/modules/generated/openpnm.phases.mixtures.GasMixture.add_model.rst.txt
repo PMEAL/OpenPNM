@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-============================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GasMixture.add_model

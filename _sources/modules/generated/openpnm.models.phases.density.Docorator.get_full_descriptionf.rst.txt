@@ -1,8 +1,0 @@
-:orphan:
-
-get_full_descriptionf
-=============================================================
-
-.. currentmodule:: openpnm.models.phases.density
-
-.. automethod:: Docorator.get_full_descriptionf

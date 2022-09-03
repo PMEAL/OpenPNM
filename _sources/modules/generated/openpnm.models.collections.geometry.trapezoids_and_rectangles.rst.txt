@@ -1,0 +1,6 @@
+trapezoids\_and\_rectangles
+===========================
+
+.. currentmodule:: openpnm.models.collections.geometry
+
+.. autodata:: trapezoids_and_rectangles

@@ -15,53 +15,39 @@ OrdinaryPercolation
          :toctree:
          
             OrdinaryPercolation.clear
+            OrdinaryPercolation.clear_BCs
             OrdinaryPercolation.copy
+            OrdinaryPercolation.filter_by_label
             OrdinaryPercolation.fromkeys
             OrdinaryPercolation.get
             OrdinaryPercolation.get_conduit_data
             OrdinaryPercolation.get_intrusion_data
             OrdinaryPercolation.get_percolation_threshold
-            OrdinaryPercolation.interleave_data
             OrdinaryPercolation.interpolate_data
             OrdinaryPercolation.is_percolating
             OrdinaryPercolation.items
             OrdinaryPercolation.keys
-            OrdinaryPercolation.map_pores
-            OrdinaryPercolation.map_throats
+            OrdinaryPercolation.labels
+            OrdinaryPercolation.num_pores
+            OrdinaryPercolation.num_throats
             OrdinaryPercolation.plot_intrusion_curve
             OrdinaryPercolation.pop
             OrdinaryPercolation.popitem
+            OrdinaryPercolation.pores
             OrdinaryPercolation.props
             OrdinaryPercolation.reset
             OrdinaryPercolation.results
             OrdinaryPercolation.run
+            OrdinaryPercolation.set_BC
             OrdinaryPercolation.set_inlets
+            OrdinaryPercolation.set_label
             OrdinaryPercolation.set_outlets
             OrdinaryPercolation.set_residual
             OrdinaryPercolation.setdefault
-            OrdinaryPercolation.show_hist
+            OrdinaryPercolation.throats
             OrdinaryPercolation.to_indices
             OrdinaryPercolation.to_mask
-            OrdinaryPercolation.toindices
-            OrdinaryPercolation.tomask
             OrdinaryPercolation.update
             OrdinaryPercolation.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            OrdinaryPercolation.Np
-            OrdinaryPercolation.Nt
-            OrdinaryPercolation.Ps
-            OrdinaryPercolation.Ts
-            OrdinaryPercolation.name
-            OrdinaryPercolation.network
-            OrdinaryPercolation.project
-            OrdinaryPercolation.settings
    
    

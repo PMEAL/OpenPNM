@@ -1,6 +1,0 @@
-start\_all
-==========
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: start_all

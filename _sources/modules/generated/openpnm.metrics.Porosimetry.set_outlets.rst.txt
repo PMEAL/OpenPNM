@@ -1,8 +1,0 @@
-:orphan:
-
-set_outlets
-=======================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: Porosimetry.set_outlets

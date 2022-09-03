@@ -1,8 +1,0 @@
-:orphan:
-
-apply_flow
-==========================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: MixedInvasionPercolationCoop.apply_flow

@@ -1,0 +1,8 @@
+:orphan:
+
+clear_rate_BCs
+============================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientReactiveTransport.clear_rate_BCs

@@ -1,0 +1,6 @@
+project\_to\_xdmf
+=================
+
+.. currentmodule:: openpnm.io
+
+.. autofunction:: project_to_xdmf

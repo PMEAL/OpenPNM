@@ -1,8 +1,0 @@
-:orphan:
-
-save_project
-==============================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: Pickle.save_project

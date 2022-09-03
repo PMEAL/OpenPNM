@@ -1,8 +1,0 @@
-:orphan:
-
-get_extended_summary
-==================================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_volume
-
-.. automethod:: Docorator.get_extended_summary

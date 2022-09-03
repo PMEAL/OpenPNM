@@ -1,0 +1,6 @@
+hybrid\_trapezoids\_and\_rectangles
+===================================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+.. autofunction:: hybrid_trapezoids_and_rectangles

@@ -1,6 +1,0 @@
-end\_all
-========
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: end_all

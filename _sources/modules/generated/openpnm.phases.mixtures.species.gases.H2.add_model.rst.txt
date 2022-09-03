@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: H2.add_model

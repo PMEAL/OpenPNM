@@ -1,0 +1,6 @@
+cubes\_and\_cuboids
+===================
+
+.. currentmodule:: openpnm.models.collections.geometry
+
+.. autodata:: cubes_and_cuboids

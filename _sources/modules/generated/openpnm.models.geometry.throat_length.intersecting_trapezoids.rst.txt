@@ -1,0 +1,6 @@
+intersecting\_trapezoids
+========================
+
+.. currentmodule:: openpnm.models.geometry.throat_length
+
+.. autofunction:: intersecting_trapezoids

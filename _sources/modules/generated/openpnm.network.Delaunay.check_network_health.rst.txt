@@ -1,8 +1,0 @@
-:orphan:
-
-check_network_health
-=============================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Delaunay.check_network_health

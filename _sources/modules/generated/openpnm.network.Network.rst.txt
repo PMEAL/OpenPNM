@@ -1,0 +1,55 @@
+Network
+=======================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: Network
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Network.add_model
+            Network.add_model_collection
+            Network.clear
+            Network.copy
+            Network.create_adjacency_matrix
+            Network.create_incidence_matrix
+            Network.filter_by_label
+            Network.find_connected_pores
+            Network.find_connecting_throat
+            Network.find_nearby_pores
+            Network.find_neighbor_pores
+            Network.find_neighbor_throats
+            Network.fromkeys
+            Network.get
+            Network.get_adjacency_matrix
+            Network.get_conduit_data
+            Network.get_incidence_matrix
+            Network.interpolate_data
+            Network.items
+            Network.keys
+            Network.labels
+            Network.num_neighbors
+            Network.num_pores
+            Network.num_throats
+            Network.pop
+            Network.popitem
+            Network.pores
+            Network.props
+            Network.regenerate_models
+            Network.run_model
+            Network.set_label
+            Network.setdefault
+            Network.throats
+            Network.to_indices
+            Network.to_mask
+            Network.update
+            Network.values
+   
+   

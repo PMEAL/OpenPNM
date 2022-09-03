@@ -1,0 +1,49 @@
+Drainage
+===========================
+
+.. currentmodule:: openpnm.algorithms
+
+.. autoclass:: Drainage
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Drainage.apply_trapping
+            Drainage.clear
+            Drainage.clear_BCs
+            Drainage.copy
+            Drainage.filter_by_label
+            Drainage.fromkeys
+            Drainage.get
+            Drainage.get_conduit_data
+            Drainage.interpolate_data
+            Drainage.items
+            Drainage.keys
+            Drainage.labels
+            Drainage.num_pores
+            Drainage.num_throats
+            Drainage.pc_curve
+            Drainage.pop
+            Drainage.popitem
+            Drainage.pores
+            Drainage.props
+            Drainage.reset
+            Drainage.run
+            Drainage.set_BC
+            Drainage.set_inlet_BC
+            Drainage.set_label
+            Drainage.set_outlet_BC
+            Drainage.setdefault
+            Drainage.throats
+            Drainage.to_indices
+            Drainage.to_mask
+            Drainage.update
+            Drainage.values
+   
+   

@@ -1,0 +1,1045 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.physics.source_terms._funcs &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../../_static/togglebutton.js"></script>
+    <script src="../../../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <h1>Source code for openpnm.models.physics.source_terms._funcs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">_sp</span>
+<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;charge_conservation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;standard_kinetics&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;power_law&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;natural_exponential&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logarithm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;natural_logarithm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;general_symbolic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;butler_volmer_conc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;butler_volmer_voltage&quot;</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="charge_conservation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.charge_conservation.html#openpnm.models.physics.source_terms.charge_conservation">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">charge_conservation</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">p_alg</span><span class="p">,</span> <span class="n">e_alg</span><span class="p">,</span> <span class="n">assumption</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Applies the source term on the charge conservation equation when solving</span>
+<span class="sd">    for ions transport.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    p_alg : Algorithm</span>
+<span class="sd">        The algorithm used to enforce charge conservation.</span>
+<span class="sd">    e_alg : list</span>
+<span class="sd">        The list of algorithms used to solve for transport of different</span>
+<span class="sd">        ionic species of the mixture phase.</span>
+<span class="sd">    assumption : str</span>
+<span class="sd">        The assumption adopted to enforce charge conservation. Options are:</span>
+
+<span class="sd">        ================= ====================================================</span>
+<span class="sd">        Options           Description</span>
+<span class="sd">        ================= ====================================================</span>
+<span class="sd">        poisson           ?</span>
+<span class="sd">        electroneutrality ?</span>
+<span class="sd">        laplace           ?</span>
+<span class="sd">        ================= ====================================================</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rate_info : dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">        ======= ==============================================================</span>
+<span class="sd">        Item    Description</span>
+<span class="sd">        ======= ==============================================================</span>
+<span class="sd">        rate    The value of the source term function for the given list</span>
+<span class="sd">                of algortihms under the provided assumption.</span>
+<span class="sd">        S1      A placeholder (zeros array)</span>
+<span class="sd">        S2      The value of the source term function for the given list of</span>
+<span class="sd">                algortihms under the provided assumption (same as &#39;rate&#39;).</span>
+<span class="sd">        ======= ==============================================================</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">assumption</span> <span class="o">=</span> <span class="n">assumption</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="kn">import</span> <span class="nn">scipy.sparse.csgraph</span> <span class="k">as</span> <span class="nn">_spgr</span>
+
+    <span class="n">F</span> <span class="o">=</span> <span class="mf">96485.3321233100184</span>
+    <span class="n">rhs</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">p_alg</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">p_alg</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+    <span class="k">if</span> <span class="n">assumption</span> <span class="o">==</span> <span class="s1">&#39;poisson&#39;</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_alg</span><span class="p">:</span>
+            <span class="n">rhs</span> <span class="o">+=</span> <span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">F</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.valence.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]])</span>
+    <span class="k">elif</span> <span class="n">assumption</span> <span class="o">==</span> <span class="s1">&#39;poisson_2d&#39;</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.cross_sectional_area&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_alg</span><span class="p">:</span>
+            <span class="n">rhs</span> <span class="o">+=</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="n">F</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.valence.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]])</span>
+    <span class="k">elif</span> <span class="n">assumption</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;electroneutrality&#39;</span><span class="p">,</span> <span class="s1">&#39;electroneutrality_2d&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_alg</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span>
+            <span class="n">am</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">)</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">_spgr</span><span class="o">.</span><span class="n">laplacian</span><span class="p">(</span><span class="n">am</span><span class="p">)</span>
+            <span class="n">rhs</span> <span class="o">+=</span> <span class="o">-</span> <span class="n">F</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.valence.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">assumption</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;laplace&#39;</span><span class="p">,</span> <span class="s1">&#39;laplace_2d&#39;</span><span class="p">]:</span>
+        <span class="k">pass</span>  <span class="c1"># rhs should remain 0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown keyword for charge_conservation, pick from:&#39;</span>
+                        <span class="o">+</span> <span class="s1">&#39; poisson, poisson_2d, laplace, laplace2d,&#39;</span>
+                        <span class="o">+</span> <span class="s1">&#39; electroneutrality or electroneutrality_2d&#39;</span><span class="p">)</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">p_alg</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">rhs</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">rhs</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="standard_kinetics"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.standard_kinetics.html#openpnm.models.physics.source_terms.standard_kinetics">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">standard_kinetics</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">prefactor</span><span class="p">,</span> <span class="n">exponent</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of ``X``:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r = A X^b</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        %(dict_blurb)s quantity of interest</span>
+<span class="sd">    prefactor : str</span>
+<span class="sd">        %(dict_blurb)s the prefactor to be used in the source term model</span>
+<span class="sd">    exponent : str</span>
+<span class="sd">        %(dict_blurb)s the exponent to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rate_info : dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">        ======= ==============================================================</span>
+<span class="sd">        Item    Description</span>
+<span class="sd">        ======= ==============================================================</span>
+<span class="sd">        rate    The value of the source term function at the given X.</span>
+<span class="sd">        S1      The slope of the source term function at the given X.</span>
+<span class="sd">        S2      The intercept of the source term function at the given X.</span>
+<span class="sd">        ======= ==============================================================</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">prefactor</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">exponent</span><span class="p">]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="linear"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.linear.html#openpnm.models.physics.source_terms.linear">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">linear</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">A1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of ``X``:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r = A_{1} X + A_{2}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key on the phase object containing the the quantity</span>
+<span class="sd">        of interest</span>
+<span class="sd">    A1 -&gt; A2 : str</span>
+<span class="sd">        The dictionary keys on the phase object containing the coefficients</span>
+<span class="sd">        values to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">            &#39;rate&#39;</span>
+<span class="sd">                The value of the source term function at the given X.</span>
+<span class="sd">            &#39;S1&#39;</span>
+<span class="sd">                The slope of the source term function at the given X.</span>
+<span class="sd">            &#39;S2&#39;</span>
+<span class="sd">                The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span> <span class="o">+</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="power_law"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.power_law.html#openpnm.models.physics.source_terms.power_law">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">power_law</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">A1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A3</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of *X*:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r = A_{1} x^{A_{2}} + A_{3}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key on the phase object containing the the quantity</span>
+<span class="sd">        of interest</span>
+<span class="sd">    A1 -&gt; A3 : str</span>
+<span class="sd">        The dictionary keys on the phase object containing the coefficients</span>
+<span class="sd">        values to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">            &#39;rate&#39;</span>
+<span class="sd">                The value of the source term function at the given X.</span>
+<span class="sd">            &#39;S1&#39;</span>
+<span class="sd">                The slope of the source term function at the given X.</span>
+<span class="sd">            &#39;S2&#39;</span>
+<span class="sd">                The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A3</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">B</span> <span class="o">+</span> <span class="n">C</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="p">(</span><span class="n">B</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">B</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="n">C</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="exponential"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.exponential.html#openpnm.models.physics.source_terms.exponential">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">exponential</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">A1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A3</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A4</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A5</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A6</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of `X`:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r =  A_{1} A_{2}^{( A_{3} x^{ A_{4} } + A_{5})} + A_{6}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key on the phase object containing the the quantity</span>
+<span class="sd">        of interest</span>
+<span class="sd">    A1 -&gt; A6 : str</span>
+<span class="sd">        The dictionary keys on the phase object containing the coefficients</span>
+<span class="sd">        values to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">            &#39;rate&#39;</span>
+<span class="sd">                The value of the source term function at the given X.</span>
+<span class="sd">            &#39;S1&#39;</span>
+<span class="sd">                The slope of the source term function at the given X.</span>
+<span class="sd">            &#39;S2&#39;</span>
+<span class="sd">                The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A3</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A4</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A5</span><span class="p">]</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A6</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">B</span> <span class="o">**</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="p">(</span><span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">B</span> <span class="o">**</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">)</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">B</span> <span class="o">**</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">C</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="natural_exponential"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.natural_exponential.html#openpnm.models.physics.source_terms.natural_exponential">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">natural_exponential</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">A1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A3</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A4</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A5</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of `X`:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r = A_{1} exp( A_{2}  x^{ A_{3} } + A_{4} )+ A_{5}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key on the phase object containing the the quantity</span>
+<span class="sd">        of interest</span>
+<span class="sd">    A1 -&gt; A5 : str</span>
+<span class="sd">        The dictionary keys on the phase object containing the coefficients</span>
+<span class="sd">        values to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">            &#39;rate&#39;</span>
+<span class="sd">                The value of the source term function at the given X.</span>
+<span class="sd">            &#39;S1&#39;</span>
+<span class="sd">                The slope of the source term function at the given X.</span>
+<span class="sd">            &#39;S2&#39;</span>
+<span class="sd">                The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A3</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A4</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A5</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">B</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">B</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">C</span><span class="p">)</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pore.S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;pore.S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;pore.rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="logarithm"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.logarithm.html#openpnm.models.physics.source_terms.logarithm">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">logarithm</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">A1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">A3</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A4</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A5</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A6</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of `X`:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r =  A_{1} Log_{ A_{2} }( A_{3} x^{ A_{4} }+ A_{5})+ A_{6}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key on the phase object containing the the quantity</span>
+<span class="sd">        of interest</span>
+<span class="sd">    A1 -&gt; A6 : str</span>
+<span class="sd">        The dictionary keys on the phase object containing the coefficients</span>
+<span class="sd">        values to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">            &#39;rate&#39;</span>
+<span class="sd">                The value of the source term function at the given X.</span>
+<span class="sd">            &#39;S1&#39;</span>
+<span class="sd">                The slope of the source term function at the given X.</span>
+<span class="sd">            &#39;S2&#39;</span>
+<span class="sd">                The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A3</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A4</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A5</span><span class="p">]</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A6</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">)</span><span class="o">/</span><span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="p">)</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="p">(</span><span class="n">D</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">))</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">)</span> <span class="o">/</span> <span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span> <span class="o">-</span> <span class="n">A</span> <span class="o">*</span> <span class="n">C</span> <span class="o">*</span> <span class="n">D</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">/</span> \
+        <span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">D</span> <span class="o">+</span> <span class="n">E</span><span class="p">))</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="natural_logarithm"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.natural_logarithm.html#openpnm.models.physics.source_terms.natural_logarithm">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">natural_logarithm</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">A1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A3</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">A4</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">A5</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, as well as slope and intercept of the following</span>
+<span class="sd">    function at the given value of `X`:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            r =   A_{1} Ln( A_{2} x^{ A_{3} }+ A_{4})+ A_{5}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key on the phase object containing the the quantity</span>
+<span class="sd">        of interest</span>
+<span class="sd">    A1 -&gt; A5 : str</span>
+<span class="sd">        The dictionary keys on the phase object containing the coefficients</span>
+<span class="sd">        values to be used in the source term model</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following three items:</span>
+
+<span class="sd">            &#39;rate&#39;</span>
+<span class="sd">                The value of the source term function at the given X.</span>
+<span class="sd">            &#39;S1&#39;</span>
+<span class="sd">                The slope of the source term function at the given X.</span>
+<span class="sd">            &#39;S2&#39;</span>
+<span class="sd">                The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The slope and intercept provide a linearized source term equation about the</span>
+<span class="sd">    current value of X as follow:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A1</span><span class="p">]</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A2</span><span class="p">]</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A3</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A4</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">A5</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="o">*</span><span class="n">X</span><span class="o">**</span><span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">X</span><span class="o">**</span><span class="p">(</span><span class="n">C</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">X</span> <span class="o">**</span> <span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">B</span><span class="o">*</span><span class="n">X</span><span class="o">**</span><span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span> <span class="o">-</span> <span class="n">A</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="n">C</span><span class="o">*</span><span class="n">X</span><span class="o">**</span><span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">B</span><span class="o">*</span><span class="n">X</span><span class="o">**</span><span class="n">C</span> <span class="o">+</span> <span class="n">D</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pore.S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;pore.S2&#39;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s1">&#39;pore.rate&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<span class="k">def</span> <span class="nf">_build_func</span><span class="p">(</span><span class="n">eq</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a symbolic equation and return the lambdified version plus the</span>
+<span class="sd">    linearization of form S1 * x + S2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">lambdify</span>
+    <span class="n">eq_prime</span> <span class="o">=</span> <span class="n">eq</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">eq_prime</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">eq</span> <span class="o">-</span> <span class="n">eq_prime</span><span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+    <span class="n">EQ</span> <span class="o">=</span> <span class="n">lambdify</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">expr</span><span class="o">=</span><span class="n">eq</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">lambdify</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">expr</span><span class="o">=</span><span class="n">s1</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">lambdify</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">expr</span><span class="o">=</span><span class="n">s2</span><span class="p">,</span> <span class="n">modules</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">EQ</span><span class="p">,</span> <span class="n">S1</span><span class="p">,</span> <span class="n">S2</span>
+
+
+<div class="viewcode-block" id="general_symbolic"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.general_symbolic.html#openpnm.models.physics.source_terms.general_symbolic">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">general_symbolic</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">eqn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A general function to interpret a sympy equation and evaluate the linear</span>
+<span class="sd">    components of the source term.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    eqn : str</span>
+<span class="sd">        The str representation of the equation to use.  This will be</span>
+<span class="sd">        passed to sympy&#39;s ``sympify`` function to make a *live* sympy object.</span>
+<span class="sd">    x : str</span>
+<span class="sd">        The dictionary key of the independent variable</span>
+<span class="sd">    kwargs</span>
+<span class="sd">        All additional keyword arguments are converted to sympy variables</span>
+<span class="sd">        using the ``symbols`` function.  Note that IF the arguments are</span>
+<span class="sd">        strs, it is assumed they are dictionary keys pointing to arrays</span>
+<span class="sd">        on the ``phase`` object.  If they are numerical values they are</span>
+<span class="sd">        used &#39;as is&#39;.  Numpy arrays are not accepted.  These must be stored</span>
+<span class="sd">        in the ``phase`` dictionary and referenced by key.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import openpnm as op</span>
+<span class="sd">    &gt;&gt;&gt; from openpnm.models.physics import source_terms as st</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import sympy</span>
+<span class="sd">    &gt;&gt;&gt; pn = op.network.Cubic(shape=[5, 5, 5], spacing=0.0001)</span>
+<span class="sd">    &gt;&gt;&gt; water = op.phase.Water(network=pn)</span>
+<span class="sd">    &gt;&gt;&gt; water[&#39;pore.a&#39;] = 1</span>
+<span class="sd">    &gt;&gt;&gt; water[&#39;pore.b&#39;] = 2</span>
+<span class="sd">    &gt;&gt;&gt; water[&#39;pore.c&#39;] = 3</span>
+<span class="sd">    &gt;&gt;&gt; water[&#39;pore.x&#39;] = np.random.random(water.Np)</span>
+<span class="sd">    &gt;&gt;&gt; y = &#39;a*x**b + c&#39;</span>
+<span class="sd">    &gt;&gt;&gt; arg_map = {&#39;a&#39;:&#39;pore.a&#39;, &#39;b&#39;:&#39;pore.b&#39;, &#39;c&#39;:&#39;pore.c&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; water.add_model(propname=&#39;pore.general&#39;,</span>
+<span class="sd">    ...                 model=st.general_symbolic,</span>
+<span class="sd">    ...                 eqn=y, x=&#39;pore.x&#39;, **arg_map)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">sympify</span>
+    <span class="n">eqn</span> <span class="o">=</span> <span class="n">sympify</span><span class="p">(</span><span class="n">eqn</span><span class="p">)</span>
+    <span class="c1"># Get the data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">phase</span><span class="p">[</span><span class="n">x</span><span class="p">]}</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">_build_func</span><span class="p">(</span><span class="n">eqn</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">r_val</span> <span class="o">=</span> <span class="n">r</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">s1_val</span> <span class="o">=</span> <span class="n">s1</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">s2_val</span> <span class="o">=</span> <span class="n">s2</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">s1_val</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">s2_val</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">r_val</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="butler_volmer_conc"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.butler_volmer_conc.html#openpnm.models.physics.source_terms.butler_volmer_conc">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">butler_volmer_conc</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">i0_ref</span><span class="p">,</span> <span class="n">c_ref</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;pore.temperature&quot;</span><span class="p">,</span>
+    <span class="n">reaction_area</span><span class="o">=</span><span class="s2">&quot;pore.reaction_area&quot;</span><span class="p">,</span>
+    <span class="n">solid_voltage</span><span class="o">=</span><span class="s2">&quot;pore.solid_voltage&quot;</span><span class="p">,</span>
+    <span class="n">electrolyte_voltage</span><span class="o">=</span><span class="s2">&quot;pore.electrolyte_voltage&quot;</span><span class="p">,</span>
+    <span class="n">open_circuit_voltage</span><span class="o">=</span><span class="s2">&quot;pore.open_circuit_voltage&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, slope and intercept of the Butler-Volmer kinetic</span>
+<span class="sd">    model based on **concentration** to be used in mass transfer</span>
+<span class="sd">    algorithms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key of the quantity of interest (i.e. main variable</span>
+<span class="sd">        to be solved; in this case, concentration).</span>
+<span class="sd">    n : float</span>
+<span class="sd">        Number of electrons transferred in the redox reaction.</span>
+<span class="sd">    i0_ref : float</span>
+<span class="sd">        Exchange current density for some conveniently selected value of</span>
+<span class="sd">        c_ref [A/m^2].</span>
+<span class="sd">    c_ref : float</span>
+<span class="sd">        Reference concentration [mol/m^3].</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Symmetry factor. The value of beta represents the</span>
+<span class="sd">        fraction of the applied potential that promotes the</span>
+<span class="sd">        cathodic reaction. Frequently, beta is assummed to be</span>
+<span class="sd">        0.5, although the theoretical justification for this</span>
+<span class="sd">        is not completely rigorous. This kinetic parameter must be determined</span>
+<span class="sd">        to agree with experimental data.</span>
+<span class="sd">    gamma : float</span>
+<span class="sd">        The exponent of the concentration term</span>
+<span class="sd">    solid_voltage : str</span>
+<span class="sd">        The dictionary key of solid phase voltages [V].</span>
+<span class="sd">    electrolyte_voltage : str</span>
+<span class="sd">        The dictionary key of electrolyte phase voltages [V].</span>
+<span class="sd">    open_circuit_voltage : str</span>
+<span class="sd">        The dictionary key of equilibrium potential values [V].</span>
+<span class="sd">    reaction_area : str</span>
+<span class="sd">        The dictionary key of reaction area values [m^2].</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key of temperature values [K].</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary containing the following key/value pairs:</span>
+
+<span class="sd">        - rate : The value of the source term function at the given X.</span>
+<span class="sd">        - S1 : The slope of the source term function at the given X.</span>
+<span class="sd">        - S2 : The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The difference between butler_volmer_conc and butler_volmer_voltage is</span>
+<span class="sd">    that the former is linearized with respect to the electrolyte</span>
+<span class="sd">    concentration whereas the latter is linearized with respect to the</span>
+<span class="sd">    electrolyte voltage.</span>
+
+<span class="sd">    Consequently, while the S1 and S2 produced by these model shouldn&#39;t be</span>
+<span class="sd">    identical, they should both produce the same **rate** with the only</span>
+<span class="sd">    difference that the rate generated by butler_volmer_conc has the units</span>
+<span class="sd">    [mol/s] whereas that generated by butler_volmer_voltage has the units</span>
+<span class="sd">    [C/s]. Therefore, the two rates will differ by n * F, where n is the</span>
+<span class="sd">    number of electrons transferred and F is the Faraday&#39;s constant. The</span>
+<span class="sd">    Butler-Volmer equation used in this function is based on Eq. 8.24</span>
+<span class="sd">    of the Electrochemical Systems reference book cited here.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        r_{mass} = \frac{ i A }{ n F }=</span>
+<span class="sd">        i_{0ref} A_{rxn} (\frac{ 1 }{ n F })(\frac{ X }{ c_{ref} }) ^ {\gamma}</span>
+<span class="sd">        \Big(</span>
+<span class="sd">            \exp(  \frac{(1-\beta) n F}{RT} \eta_s )</span>
+<span class="sd">          - \exp( -\frac{\beta n F}{RT} \eta_s )</span>
+<span class="sd">        \Big)</span>
+
+<span class="sd">    where:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \eta_s = \phi_{met} - \phi_{soln} - U_{eq}</span>
+
+<span class="sd">    where :math:`{\phi_{met}}` is the electrostatic potential of the electrode,</span>
+<span class="sd">    :math:`{\phi_{soln}}` is the electrostatic potential of the electrolyte</span>
+<span class="sd">    solution, and :math:`{U_{eq}}` is the equilibrium potential, which is</span>
+<span class="sd">    the potential at which the net rate of reaction is zero. Here, we</span>
+<span class="sd">    assume U_{eq} is equal to the open-circuit voltage and is constant.</span>
+<span class="sd">    Alternatively, the dependency of the  U_{eq}  to the consentration</span>
+<span class="sd">    of species can be defined as a function and assigned to the</span>
+<span class="sd">    phase[&#39;pore.open_circuit_voltage&#39;] (e.g. Eq.8.20 of</span>
+<span class="sd">    the reference book (Electrochemical Systems).</span>
+
+<span class="sd">    The slope and intercept provide a linearized source term equation</span>
+<span class="sd">    about the current value of X as follow:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    Reference: John Newman, Karen E. Thomas-Alyea, Electrochemical Systems,</span>
+<span class="sd">    John Wiley &amp; Sons, third edition, 2004.</span>
+<span class="sd">    For more details read Chapter8:Electrode kinetics (e.g. Eqs: 8.6,8.10,8.24).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Fetch model variables</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">phi_met</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">solid_voltage</span><span class="p">]</span>
+    <span class="n">phi_soln</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">electrolyte_voltage</span><span class="p">]</span>
+    <span class="n">U_eq</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">open_circuit_voltage</span><span class="p">]</span>
+    <span class="n">A_rxn</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">reaction_area</span><span class="p">]</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">_sp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;Faraday constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">_sp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">R</span>
+    <span class="c1"># Linearize with respect to X (electrolyte concentration)</span>
+    <span class="n">eta_s</span> <span class="o">=</span> <span class="n">phi_met</span> <span class="o">-</span> <span class="n">phi_soln</span> <span class="o">-</span> <span class="n">U_eq</span>
+    <span class="n">cte</span> <span class="o">=</span> <span class="n">i0_ref</span> <span class="o">*</span> <span class="n">A_rxn</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">F</span><span class="p">)</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">F</span> <span class="o">/</span> <span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">F</span> <span class="o">/</span> <span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">fV</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">m1</span> <span class="o">*</span> <span class="n">eta_s</span><span class="p">)</span> <span class="o">-</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">m2</span> <span class="o">*</span> <span class="n">eta_s</span><span class="p">)</span>
+    <span class="n">fC</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">/</span> <span class="n">c_ref</span><span class="p">)</span><span class="o">**</span><span class="n">gamma</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">cte</span> <span class="o">*</span> <span class="n">fC</span> <span class="o">*</span> <span class="n">fV</span>
+    <span class="n">drdC</span> <span class="o">=</span> <span class="n">cte</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">/</span> <span class="n">c_ref</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">c_ref</span><span class="p">)</span> <span class="o">*</span> <span class="n">fV</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">drdC</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="n">drdC</span> <span class="o">*</span> <span class="n">X</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;S1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;S2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+
+
+<div class="viewcode-block" id="butler_volmer_voltage"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.butler_volmer_voltage.html#openpnm.models.physics.source_terms.butler_volmer_voltage">[docs]</a><span class="k">def</span> <span class="nf">butler_volmer_voltage</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">i0_ref</span><span class="p">,</span> <span class="n">c_ref</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;pore.temperature&quot;</span><span class="p">,</span>
+    <span class="n">reaction_area</span><span class="o">=</span><span class="s2">&quot;pore.reaction_area&quot;</span><span class="p">,</span>
+    <span class="n">solid_voltage</span><span class="o">=</span><span class="s2">&quot;pore.solid_voltage&quot;</span><span class="p">,</span>
+    <span class="n">open_circuit_voltage</span><span class="o">=</span><span class="s2">&quot;pore.open_circuit_voltage&quot;</span><span class="p">,</span>
+    <span class="n">electrolyte_concentration</span><span class="o">=</span><span class="s2">&quot;pore.electrolyte_concentration&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the rate, slope and intercept of the Butler-Volmer kinetic model</span>
+<span class="sd">    based on **voltage** to be used in electron conduction algorithms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : OpenPNM Phase</span>
+<span class="sd">        The Phase object where the result will be applied.</span>
+<span class="sd">    X : str</span>
+<span class="sd">        The dictionary key of the quantity of interest (i.e. main variable</span>
+<span class="sd">        to be solved; in this case, electrolyte voltage).</span>
+<span class="sd">    n : float</span>
+<span class="sd">        Number of electrons transferred in the redox reaction.</span>
+<span class="sd">    i0_ref : float</span>
+<span class="sd">        Exchange current density for some conveniently selected value of</span>
+<span class="sd">        c_ref [A/m^2].</span>
+<span class="sd">    c_ref : float</span>
+<span class="sd">        Reference concentration [mol/m^3].</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Symmetry factor. The value of beta represents the</span>
+<span class="sd">        fraction of the applied potential that promotes the</span>
+<span class="sd">        cathodic reaction. Frequently, beta is assummed to be</span>
+<span class="sd">        0.5, although the theoretical justification for this</span>
+<span class="sd">        is not completely rigorous. This kinetic parameter must be determined</span>
+<span class="sd">        to agree with experimental data.</span>
+<span class="sd">    gamma : float</span>
+<span class="sd">        The exponent of the concentration term</span>
+<span class="sd">    electrolyte_concentration : str</span>
+<span class="sd">        The dictionary key of the electrolyte concentrations [mol/m^3].</span>
+<span class="sd">    solid_voltage : str</span>
+<span class="sd">        The dictionary key of solid phase voltages [V].</span>
+<span class="sd">    electrolyte_voltage : str</span>
+<span class="sd">        The dictionary key of electrolyte phase voltages [V].</span>
+<span class="sd">    open_circuit_voltage : str</span>
+<span class="sd">        The dictionary key of equilibrium potential values [V].</span>
+<span class="sd">    reaction_area : str</span>
+<span class="sd">        The dictionary key of reaction area values [m^2].</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key of temperature values [K].</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rate_info : dict</span>
+<span class="sd">        Dictionary containing the following key/value pairs:</span>
+
+<span class="sd">        - rate : The value of the source term function at the given X.</span>
+<span class="sd">        - S1 : The slope of the source term function at the given X.</span>
+<span class="sd">        - S2 : The intercept of the source term function at the given X.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The difference between butler_volmer_conc and butler_volmer_voltage is</span>
+<span class="sd">    that the former is linearized with respect to the electrolyte</span>
+<span class="sd">    concentration whereas the latter is linearized with respect to the</span>
+<span class="sd">    electrolyte voltage.</span>
+
+<span class="sd">    Consequently, while the S1 and S2 produced by these model shouldn&#39;t be</span>
+<span class="sd">    identical, they should both produce the same **rate** with the only</span>
+<span class="sd">    difference that the rate generated by butler_volmer_conc has the units</span>
+<span class="sd">    [mol/s] whereas that generated by butler_volmer_voltage has the units</span>
+<span class="sd">    [C/s]. Therefore, the two rates will differ by n * F, where n is the</span>
+<span class="sd">    number of electrons transferred and F is the Faraday&#39;s constant. The</span>
+<span class="sd">    Butler-Volmer equation used in this function is based on Eq. 8.24</span>
+<span class="sd">    of the Electrochemical Systems reference book cited here.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        r_{charge}=i A = i_{0ref} A_{rxn} (\frac{ c }{ c_{ref} }) ^ {\gamma}</span>
+<span class="sd">        \Big(</span>
+<span class="sd">            \exp(  \frac{(1-\beta) n F}{RT} \eta_s )</span>
+<span class="sd">          - \exp( -\frac{\beta n F}{RT} \eta_s )</span>
+<span class="sd">        \Big)</span>
+
+<span class="sd">    where:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \eta_s = \phi_{met} - \phi_{soln} - U_{eq}</span>
+
+<span class="sd">    where :math:`{\phi_{met}}` is the electrostatic potential of the electrode,</span>
+<span class="sd">    :math:`{\phi_{soln}}` is the electrostatic potential of the electrolyte</span>
+<span class="sd">    solution, and :math:`{U_{eq}}` is the equilibrium potential, which is</span>
+<span class="sd">    the potential at which the net rate of reaction is zero. Here, we</span>
+<span class="sd">    assume U_{eq} is equal to the open-circuit voltage and is constant.</span>
+<span class="sd">    Alternatively, the dependency of the  U_{eq}  to the consentration</span>
+<span class="sd">    of species can be defined as a function and assigned to the</span>
+<span class="sd">    phase[&#39;pore.open_circuit_voltage&#39;] (e.g. Eq.8.20 of</span>
+<span class="sd">    the reference book (Electrochemical Systems).</span>
+
+<span class="sd">    The slope and intercept provide a linearized source term equation</span>
+<span class="sd">    about the current value of X as follow:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        rate = S_{1} X + S_{2}</span>
+
+<span class="sd">    Reference: John Newman, Karen E. Thomas-Alyea, Electrochemical Systems,</span>
+<span class="sd">    John Wiley &amp; Sons, third edition, 2004.</span>
+<span class="sd">    For more details read Chapter8:Electrode kinetics (e.g. Eqs: 8.6,8.10,8.24).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Fetch model variables</span>
+    <span class="n">A_rxn</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">reaction_area</span><span class="p">]</span>
+    <span class="n">phi_met</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">solid_voltage</span><span class="p">]</span>
+    <span class="n">U_eq</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">open_circuit_voltage</span><span class="p">]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">electrolyte_concentration</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">_sp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;Faraday constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">_sp</span><span class="o">.</span><span class="n">constants</span><span class="o">.</span><span class="n">R</span>
+
+    <span class="c1"># Linearize with respect to X (electrolyte voltage)</span>
+    <span class="n">eta_s</span> <span class="o">=</span> <span class="n">phi_met</span> <span class="o">-</span> <span class="n">X</span> <span class="o">-</span> <span class="n">U_eq</span>
+    <span class="n">cte</span> <span class="o">=</span> <span class="n">i0_ref</span> <span class="o">*</span> <span class="n">A_rxn</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">F</span> <span class="o">/</span> <span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">n</span> <span class="o">*</span> <span class="n">F</span> <span class="o">/</span> <span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">fV</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">m1</span> <span class="o">*</span> <span class="n">eta_s</span><span class="p">)</span> <span class="o">-</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">m2</span> <span class="o">*</span> <span class="n">eta_s</span><span class="p">)</span>
+    <span class="n">dfVdV</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">m1</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">m1</span> <span class="o">*</span> <span class="n">eta_s</span><span class="p">)</span> <span class="o">+</span> <span class="n">m2</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">m2</span> <span class="o">*</span> <span class="n">eta_s</span><span class="p">))</span>
+    <span class="n">fC</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">c_ref</span><span class="p">)</span><span class="o">**</span><span class="n">gamma</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">cte</span> <span class="o">*</span> <span class="n">fC</span> <span class="o">*</span> <span class="n">fV</span>
+    <span class="n">drdV</span> <span class="o">=</span> <span class="n">cte</span> <span class="o">*</span> <span class="n">fC</span> <span class="o">*</span> <span class="n">dfVdV</span>
+    <span class="n">S1</span> <span class="o">=</span> <span class="n">drdV</span>
+    <span class="n">S2</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="n">drdV</span> <span class="o">*</span> <span class="n">X</span>
+
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;S1&quot;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s2">&quot;S2&quot;</span><span class="p">:</span> <span class="n">S2</span><span class="p">,</span> <span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">values</span></div>
+</pre></div>
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

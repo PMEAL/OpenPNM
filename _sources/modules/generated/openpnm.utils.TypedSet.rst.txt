@@ -33,13 +33,3 @@ TypedSet
             TypedSet.update
    
    
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            TypedSet.types
-   
-   

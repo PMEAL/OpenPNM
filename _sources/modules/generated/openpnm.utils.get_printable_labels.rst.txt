@@ -1,0 +1,6 @@
+get\_printable\_labels
+======================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: get_printable_labels

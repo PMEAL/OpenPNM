@@ -1,8 +1,0 @@
-:orphan:
-
-get_sectionsf
-===================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_surface_area
-
-.. automethod:: Docorator.get_sectionsf

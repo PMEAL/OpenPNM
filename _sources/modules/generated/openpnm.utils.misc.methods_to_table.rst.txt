@@ -1,6 +1,0 @@
-methods\_to\_table
-==================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: methods_to_table

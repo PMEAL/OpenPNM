@@ -1,8 +1,0 @@
-:orphan:
-
-import_data
-===========================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: Dict.import_data

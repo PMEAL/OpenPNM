@@ -1,0 +1,8 @@
+:orphan:
+
+regenerate_models
+===========================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: StandardGas.regenerate_models

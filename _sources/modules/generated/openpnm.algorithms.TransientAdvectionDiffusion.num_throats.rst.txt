@@ -1,0 +1,8 @@
+:orphan:
+
+num_throats
+==========================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientAdvectionDiffusion.num_throats

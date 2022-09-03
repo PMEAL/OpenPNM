@@ -1,8 +1,0 @@
-:orphan:
-
-save_object_to_file
-=====================================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: Pickle.save_object_to_file

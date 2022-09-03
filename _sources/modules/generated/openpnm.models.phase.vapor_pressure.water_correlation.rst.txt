@@ -1,0 +1,6 @@
+water\_correlation
+==================
+
+.. currentmodule:: openpnm.models.phase.vapor_pressure
+
+.. autofunction:: water_correlation

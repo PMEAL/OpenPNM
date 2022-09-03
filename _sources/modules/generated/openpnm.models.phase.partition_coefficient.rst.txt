@@ -1,0 +1,37 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+partition\_coefficient
+======================
+
+.. automodule:: openpnm.models.phase.partition_coefficient
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      gaseous_species_in_water
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

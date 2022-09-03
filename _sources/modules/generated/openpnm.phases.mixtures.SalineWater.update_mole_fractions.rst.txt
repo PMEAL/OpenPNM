@@ -1,8 +1,0 @@
-:orphan:
-
-update_mole_fractions
-=========================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: SalineWater.update_mole_fractions

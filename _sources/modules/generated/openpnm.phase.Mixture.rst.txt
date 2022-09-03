@@ -1,0 +1,50 @@
+Mixture
+=====================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: Mixture
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Mixture.add_comp
+            Mixture.add_model
+            Mixture.add_model_collection
+            Mixture.check_mixture_health
+            Mixture.clear
+            Mixture.copy
+            Mixture.filter_by_label
+            Mixture.fromkeys
+            Mixture.get
+            Mixture.get_comp_vals
+            Mixture.get_conduit_data
+            Mixture.get_mix_vals
+            Mixture.interpolate_data
+            Mixture.items
+            Mixture.keys
+            Mixture.labels
+            Mixture.num_pores
+            Mixture.num_throats
+            Mixture.pop
+            Mixture.popitem
+            Mixture.pores
+            Mixture.props
+            Mixture.regenerate_models
+            Mixture.remove_comp
+            Mixture.run_model
+            Mixture.set_label
+            Mixture.setdefault
+            Mixture.throats
+            Mixture.to_indices
+            Mixture.to_mask
+            Mixture.update
+            Mixture.values
+   
+   

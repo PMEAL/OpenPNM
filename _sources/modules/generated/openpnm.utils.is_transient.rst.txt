@@ -1,0 +1,6 @@
+is\_transient
+=============
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: is_transient

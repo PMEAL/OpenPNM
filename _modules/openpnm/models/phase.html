@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.phase &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <h1>Source code for openpnm.models.phase</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Phase</span>
+<span class="sd">-----</span>
+
+<span class="sd">This submodule contains models for calculating thermophysical properties of</span>
+<span class="sd">liquids, gases, and solids.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="c1"># The following bits are to initialize some boilerplate docstrings for docrep</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span> <span class="k">as</span> <span class="n">_doc</span>
+<span class="n">_docstr</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">()</span>
+<span class="n">_docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.phase.T&#39;</span><span class="p">]</span> <span class="o">=</span> \
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;temperature : str</span>
+<span class="sd">            Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">            temperature values is stored&quot;&quot;&quot;</span>
+<span class="n">_docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.phase.P&#39;</span><span class="p">]</span> <span class="o">=</span> \
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;pressure : str</span>
+<span class="sd">            Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">            pressure values is stored&quot;&quot;&quot;</span>
+<span class="n">_docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.phase.SI_note&#39;</span><span class="p">]</span> <span class="o">=</span> \
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Since numpy arrays don&#39;t natively support units, OpenPNM cannot enforce</span>
+<span class="sd">    units on values and arrays, however the use of SI is assumed.&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">matplotlib.docstring</span> <span class="kn">import</span> <span class="n">Substitution</span> <span class="k">as</span> <span class="n">_sub</span>
+<span class="n">_phasedocs</span> <span class="o">=</span> <span class="n">_sub</span><span class="p">(</span>
+    <span class="n">T</span><span class="o">=</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;T : dict key (str) or scalar</span>
+<span class="sd">            Name of the dictionary key on ``phase`` containing the array of</span>
+<span class="sd">            temperature values. If a scalar is passed it get used directly.&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">P</span><span class="o">=</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;P : dict key (str) of scalar</span>
+<span class="sd">            Name of the dictionary key on ``phase`` containing the array of</span>
+<span class="sd">            temperature values. If a scalar is passed it get used directly.&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">critical_props</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">density</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">diffusivity</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">heat_capacity</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">misc</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">mixtures</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">partition_coefficient</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">surface_tension</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">thermal_conductivity</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">vapor_pressure</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">viscosity</span>
+
+
+<span class="c1"># %%</span>
+<span class="kn">import</span> <span class="nn">inspect</span> <span class="k">as</span> <span class="nn">_inspect</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+
+
+<span class="n">default_argmap</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;P&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MW&#39;</span><span class="p">:</span> <span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Tc&#39;</span><span class="p">:</span> <span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Pc&#39;</span><span class="p">:</span> <span class="s1">&#39;param.critical_pressure&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Zc&#39;</span><span class="p">:</span> <span class="s1">&#39;param.critical_compressibilty_factor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Vc&#39;</span><span class="p">:</span> <span class="s1">&#39;param.critical_volume&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Tm&#39;</span><span class="p">:</span> <span class="s1">&#39;param.melting_temperature&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Tb&#39;</span><span class="p">:</span> <span class="s1">&#39;param.boiling_temperature&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;omega&#39;</span><span class="p">:</span> <span class="s1">&#39;param.acentric_factor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;dipole_moment&#39;</span><span class="p">:</span> <span class="s1">&#39;param.dipole_moment&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;dipole&#39;</span><span class="p">:</span> <span class="s1">&#39;param.dipole_moment&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;mu&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.surface_tension&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;rhom&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.molar_density&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;rho&#39;</span><span class="p">:</span> <span class="s1">&#39;pore.density&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="chemicals_wrapper"><a class="viewcode-back" href="../../../modules/generated/openpnm.models.phase.chemicals_wrapper.html#openpnm.models.phase.chemicals_wrapper">[docs]</a><span class="k">def</span> <span class="nf">chemicals_wrapper</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper function for calling models in the ``chemicals`` package</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : dict</span>
+<span class="sd">        The OpenPNM Species object for which this model should calculate</span>
+<span class="sd">        values. This object should ideally have all the necessary chemical</span>
+<span class="sd">        properties in its ``params`` attribute, although this is optional as</span>
+<span class="sd">        discussed below in relation to ``kwargs``.</span>
+<span class="sd">    f : function</span>
+<span class="sd">        The handle of the function to apply, such as</span>
+<span class="sd">        ``chemicals.viscosity.Letsou_Stiel``.</span>
+<span class="sd">    kwargs</span>
+<span class="sd">        By default this function will use</span>
+<span class="sd">        ``openpnm.models.phase.default_argmap`` to determine which names on</span>
+<span class="sd">        ``phase`` correspond to each argument required by ``f``. For</span>
+<span class="sd">        instance, ``default_argmap[&#39;Tc&#39;] = &#39;param.critical_temperature&#39;``</span>
+<span class="sd">        so any functions that need ``Tc`` will receive</span>
+<span class="sd">        ``phase[&#39;param.critical_temperature&#39;]``. Some models only require</span>
+<span class="sd">        the normal thermodynamic parameters, like ``T``, ``Tc``, and ``Pc``,</span>
+<span class="sd">        so in many cases no additional arguments are needed beyond whats in the</span>
+<span class="sd">        default argument map. However, other models require values that are</span>
+<span class="sd">        themselves calcualted by another model, like ``Cvm``, or perhaps a</span>
+<span class="sd">        list of constants like ``a0``, ``a1``, etc. It is necessary to provide</span>
+<span class="sd">        these as keyword arguments, and they will be included in</span>
+<span class="sd">        ``default_argmap`` as new entries or overwriting existing ones.</span>
+<span class="sd">        So ``mu=&#39;pore.blah&#39;`` will pass ``phase[&#39;pore.blah&#39;]`` to the</span>
+<span class="sd">        ``mu`` argument of ``f``. Any arguments ending with an ``s`` are</span>
+<span class="sd">        assumed to refer to the individual properties of pure components in a</span>
+<span class="sd">        mixture. So ``mus`` means fetch the viscosity of each component as a</span>
+<span class="sd">        list, like ``[1.3e-5, 1.9e-5]``. This function will trim the trailing</span>
+<span class="sd">        ``s`` off any argument name before checking the ``default_argmap`` so</span>
+<span class="sd">        that the normal pure component values can be looked up.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This wrapper works with both pure and mixture phases, but the mixture</span>
+<span class="sd">    models are very slow due to the way ``chemicals`` vectorizes code. For pure</span>
+<span class="sd">    species it allows the computation of values at many different conditions</span>
+<span class="sd">    in a vectorized way. The means that the conditions in each pore, such as</span>
+<span class="sd">    temperature, pressure, etc can be passed and iterpreted as a list of</span>
+<span class="sd">    conditions. For mixture models, however, the vectorization is done over</span>
+<span class="sd">    the compositions, at a *fixed* condition. This means that we must do a</span>
+<span class="sd">    pure-python for-loop (ie. slow) for each individual pore. As such, we</span>
+<span class="sd">    have re-implemented several of the most useful mixing models offered by</span>
+<span class="sd">    ``chemicals`` in ``OpenPNM``, and include unit tests to ensure both</span>
+<span class="sd">    implementations agree.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">chemicals</span> <span class="k">as</span> <span class="nn">_chemicals</span>
+    <span class="c1"># Update default argmap with any user supplied values</span>
+    <span class="n">argmap</span> <span class="o">=</span> <span class="n">default_argmap</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">argmap</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">_get_items_from_target</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">argmap</span><span class="p">)</span>
+    <span class="c1"># f = getattr(_chemicals.numba_vectorized, f.__name__)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Numba version failed for </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, reverting to pure python&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="s1">&#39;xs&#39;</span><span class="p">,</span> <span class="s1">&#39;yz&#39;</span><span class="p">,</span> <span class="s1">&#39;zs&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+        <span class="c1"># Call function in for-loop for each pore since they are not vectorized</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pore</span> <span class="ow">in</span> <span class="n">phase</span><span class="o">.</span><span class="n">Ps</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">a</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">pore</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]))]</span>
+                    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                        <span class="n">a</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">a</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="n">pore</span><span class="p">]</span>
+            <span class="n">vals</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get the numba vectorized version of f, or else numpy arrays don&#39;t work</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_chemicals</span><span class="o">.</span><span class="n">numba_vectorized</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_chemicals</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vals</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_items_from_target</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">argmap</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">chemicals</span> <span class="k">as</span> <span class="nn">_chemicals</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">arginfo</span> <span class="o">=</span> <span class="n">_inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_chemicals</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">arginfo</span> <span class="o">=</span> <span class="n">_inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+    <span class="c1"># Scan args and pull values from phase</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arginfo</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+        <span class="c1"># Treat mole fraction specially, since it can be xs, ys, or zs</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xs&#39;</span><span class="p">,</span> <span class="s1">&#39;ys&#39;</span><span class="p">,</span> <span class="s1">&#39;zs&#39;</span><span class="p">]:</span>
+            <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">phase</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># If eg. pore.Zc was added to dict directly, no argmap needed</span>
+            <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;pore.&#39;</span><span class="o">+</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># If a parameter is in params but not in default_argmap</span>
+            <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">):</span>  <span class="c1"># Deal specifically with props that end in s</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">argmap</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">argmap</span><span class="p">[</span><span class="n">item</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">elif</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">argmap</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">argmap</span><span class="p">[</span><span class="n">item</span><span class="p">])</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">argmap</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># Get basic mixture properties like T&amp;P</span>
+                <span class="n">args</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">argmap</span><span class="p">[</span><span class="n">item</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">args</span>
+</pre></div>
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

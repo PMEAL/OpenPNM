@@ -1,8 +1,0 @@
-:orphan:
-
-find_full_domain
-======================================
-
-.. currentmodule:: openpnm.utils
-
-.. automethod:: Project.find_full_domain

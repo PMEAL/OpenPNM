@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Ad\_dif\_conductance
+ad\_dif\_conductance
 ====================
 
 .. automodule:: openpnm.models.physics.ad_dif_conductance

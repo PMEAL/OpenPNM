@@ -1,0 +1,6 @@
+pyramids\_and\_cuboids
+======================
+
+.. currentmodule:: openpnm.models.collections.geometry
+
+.. autodata:: pyramids_and_cuboids

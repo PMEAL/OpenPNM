@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params
-=================================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Docorator.keep_params

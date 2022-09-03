@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Diffusive\_conductance
+diffusive\_conductance
 ======================
 
 .. automodule:: openpnm.models.physics.diffusive_conductance

@@ -1,8 +1,0 @@
-:orphan:
-
-params
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.liquids
-
-.. automethod:: H2O.params

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Pore\_seed
+pore\_seed
 ==========
 
 .. automodule:: openpnm.models.geometry.pore_seed
@@ -26,15 +26,6 @@ Pore\_seed
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

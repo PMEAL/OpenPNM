@@ -17,7 +17,3 @@ ScipyRK45
             ScipyRK45.solve
    
    
-
-   
-   
-   

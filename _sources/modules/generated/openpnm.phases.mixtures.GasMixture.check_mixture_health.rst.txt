@@ -1,8 +1,0 @@
-:orphan:
-
-check_mixture_health
-=======================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GasMixture.check_mixture_health

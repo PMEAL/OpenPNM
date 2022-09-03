@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Pore\_volume
+pore\_volume
 ============
 
 .. automodule:: openpnm.models.geometry.pore_volume
@@ -29,15 +29,6 @@ Pore\_volume
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-========================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: NestedDict.setdefault

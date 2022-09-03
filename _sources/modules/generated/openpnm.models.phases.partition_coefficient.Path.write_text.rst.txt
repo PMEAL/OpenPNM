@@ -1,8 +1,0 @@
-:orphan:
-
-write_text
-===========================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Path.write_text

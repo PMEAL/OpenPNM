@@ -1,16 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.network._bravais &#8212; OpenPNM 2.8.2 documentation</title>
-    
-  <link href="../../../_static/css/theme.css" rel="stylesheet">
-  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+    <title>openpnm.network._bravais &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -18,58 +23,68 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
-    
-  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
+  
 
-<a class="navbar-brand" href="https://www.openpnm.org">
-  <img src="../../../_static/openpnm_logo.png" class="logo" alt="logo">
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
 </a>
-
-
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -79,14 +94,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../user_guide/installation.html">
+ <a class="reference internal nav-link" href="../../../installation.html">
   Installation
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../user_guide/index.html">
-  User Guide
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
  </a>
 </li>
 
@@ -97,8 +112,14 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../examples/examples.html">
+ <a class="reference internal nav-link" href="../../../examples/index.html">
   Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index2.html">
+  Examples2
  </a>
 </li>
 
@@ -119,24 +140,22 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
-            <span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
-            <span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label>
-          </a>
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
@@ -147,12 +166,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -160,37 +180,42 @@
     
   </div>
 </nav>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-          </div>
-          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <h1>Source code for openpnm.network._bravais</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span>
-<span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">GenericNetwork</span><span class="p">,</span> <span class="n">Cubic</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">Workspace</span>
+<span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Workspace</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm._skgraph.generators</span> <span class="kn">import</span> <span class="n">cubic</span><span class="p">,</span> <span class="n">fcc</span><span class="p">,</span> <span class="n">bcc</span>
 
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Bravais&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Bravais"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Bravais.html#openpnm.network.Bravais">[docs]</a><span class="k">class</span> <span class="nc">Bravais</span><span class="p">(</span><span class="n">GenericNetwork</span><span class="p">):</span>
+<div class="viewcode-block" id="Bravais"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Bravais.html#openpnm.network.Bravais">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">Bravais</span><span class="p">(</span><span class="n">Network</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Crystal lattice types including fcc, bcc, sc, and hcp</span>
 
@@ -215,19 +240,16 @@
 <span class="sd">        directions. The default is 1.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        The type of lattice to create. Options are:</span>
+<span class="sd">            ===========  =====================================================</span>
+<span class="sd">            mode         meaning</span>
+<span class="sd">            ===========  =====================================================</span>
+<span class="sd">            &#39;sc&#39;         Simple cubic (Same as ``Cubic``)</span>
+<span class="sd">            &#39;bcc&#39;        body-centered cubic lattice</span>
+<span class="sd">            &#39;fcc&#39;        Face-centered cubic lattice</span>
+<span class="sd">            &#39;hcp&#39;        Hexagonal close packed (Not Implemented Yet)</span>
+<span class="sd">            ===========  =====================================================</span>
 
-<span class="sd">            &#39;sc&#39;</span>
-<span class="sd">                Simple cubic (Same as ``Cubic``)</span>
-<span class="sd">            &#39;bcc&#39;</span>
-<span class="sd">                Body-centered cubic lattice</span>
-<span class="sd">            &#39;fcc&#39;</span>
-<span class="sd">                Face-centered cubic lattice</span>
-<span class="sd">            &#39;hcp&#39;</span>
-<span class="sd">                Hexagonal close packed (Note Implemented Yet)</span>
-
-<span class="sd">    name : str</span>
-<span class="sd">        An optional name for the object to help identify it. If not given,</span>
-<span class="sd">        one will be generated.</span>
+<span class="sd">    %(Network.parameters)s</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -242,51 +264,11 @@
 
 <span class="sd">    Limitations:</span>
 
-<span class="sd">    * Bravais lattice can also have a skew to them, but this is not</span>
-<span class="sd">      implemented yet.</span>
+<span class="sd">    * In principle Bravais lattice can also have a skew to them, but this is</span>
+<span class="sd">      not implemented yet.</span>
 <span class="sd">    * Support for 2D networks has not been added yet.</span>
 <span class="sd">    * Hexagonal Close Packed (hcp) has not been implemented yet, but is on</span>
 <span class="sd">      the todo list.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    .. plot::</span>
-
-<span class="sd">       import openpnm as op</span>
-<span class="sd">       import matplotlib.pyplot as plt</span>
-
-<span class="sd">       sc = op.network.Bravais(shape=[3, 3, 3], mode=&#39;sc&#39;)</span>
-<span class="sd">       bcc = op.network.Bravais(shape=[3, 3, 3], mode=&#39;bcc&#39;)</span>
-<span class="sd">       fcc = op.network.Bravais(shape=[3, 3, 3], mode=&#39;fcc&#39;)</span>
-
-<span class="sd">       # Since these three networks all have the same domain size, it is clear</span>
-<span class="sd">       # that both &#39;bcc&#39; and &#39;fcc&#39; have more pores per unit volume. This is</span>
-<span class="sd">       # particularly helpful for modeling higher porosity materials.</span>
-<span class="sd">       print(sc.Np, bcc.Np, fcc.Np)</span>
-
-<span class="sd">       # They all have the same number corner sites, which corresponds to the</span>
-<span class="sd">       # [3, 3, 3] shape that was specified</span>
-<span class="sd">       print(sc.num_pores(&#39;corner*&#39;),</span>
-<span class="sd">             bcc.num_pores(&#39;corner*&#39;),</span>
-<span class="sd">             fcc.num_pores(&#39;corner*&#39;))</span>
-
-<span class="sd">       # Shift &#39;bcc&#39; and &#39;fcc&#39; networks by 3 and 6 units, respectively, so</span>
-<span class="sd">       # we can visualize them side by side in a single figure</span>
-<span class="sd">       bcc[&#39;pore.coords&#39;][:, 0] += 3</span>
-<span class="sd">       fcc[&#39;pore.coords&#39;][:, 0] += 6</span>
-
-<span class="sd">       # Visualization of these three networks can be done quickly using the</span>
-<span class="sd">       # functions in topotools. Firstly, merge them all into a single network</span>
-<span class="sd">       # for convenience</span>
-<span class="sd">       op.topotools.merge_networks(sc, [bcc, fcc])</span>
-
-<span class="sd">       fig, ax = plt.subplots(figsize=(6, 6))</span>
-<span class="sd">       op.topotools.plot_connections(sc, ax=ax)</span>
-
-<span class="sd">       plt.show()</span>
-
-<span class="sd">    For larger networks and more control over presentation use `Paraview</span>
-<span class="sd">    &lt;http://www.paraview.org&gt;`_.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -297,72 +279,33 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Bravais lattice networks must have at least 2 &#39;</span>
                             <span class="s1">&#39;pores in all directions&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;bcc&#39;</span><span class="p">:</span>
-            <span class="c1"># Make a basic cubic for the coner pores</span>
-            <span class="n">net1</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-            <span class="n">net1</span><span class="p">[</span><span class="s1">&#39;pore.net1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="c1"># Create a smaller cubic for the body pores, and shift it</span>
-            <span class="n">net2</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">net2</span><span class="p">[</span><span class="s1">&#39;pore.net2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">net2</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.5</span>
-            <span class="c1"># Stitch them together</span>
-            <span class="n">topotools</span><span class="o">.</span><span class="n">stitch</span><span class="p">(</span><span class="n">net1</span><span class="p">,</span> <span class="n">net2</span><span class="p">,</span> <span class="n">net1</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">net2</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">len_max</span><span class="o">=</span><span class="mf">0.99</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net1</span><span class="p">)</span>
-            <span class="n">ws</span><span class="o">.</span><span class="n">close_project</span><span class="p">(</span><span class="n">net1</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
-
+            <span class="n">net</span> <span class="o">=</span> <span class="n">bcc</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span>
+                      <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
             <span class="c1"># Deal with labels</span>
-            <span class="n">Ps1</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.net2&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.corner_sites&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">Ps1</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.body_sites&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps1</span>
-            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;body_sites&#39;</span><span class="p">),</span>
+            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">),</span>
                                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;exclusive_or&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_body&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_body&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;corner_sites&#39;</span><span class="p">),</span>
+            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;corner&#39;</span><span class="p">),</span>
                                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_corner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_corner&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;body_sites&#39;</span><span class="p">),</span>
+            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">),</span>
                                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.body_to_body&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.body_to_body&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;fcc&#39;</span><span class="p">:</span>
-            <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
-            <span class="c1"># Create base cubic network of corner sites</span>
-            <span class="n">net1</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-            <span class="c1"># Create 3 networks to become face sites</span>
-            <span class="n">net2</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span> <span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-            <span class="n">net3</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span> <span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-            <span class="n">net4</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span> <span class="o">-</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-            <span class="n">net2</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-            <span class="n">net3</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-            <span class="n">net4</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-            <span class="c1"># Remove throats from net2 (trim doesn&#39;t work when removing ALL)</span>
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="n">net2</span><span class="p">,</span> <span class="n">net3</span><span class="p">,</span> <span class="n">net4</span><span class="p">]:</span>
-                <span class="n">n</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
-                <span class="n">n</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;throat.all&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
-                <span class="n">n</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)})</span>
-            <span class="c1"># Join networks 2, 3 and 4 into one with all face sites</span>
-            <span class="n">topotools</span><span class="o">.</span><span class="n">stitch</span><span class="p">(</span><span class="n">net2</span><span class="p">,</span> <span class="n">net3</span><span class="p">,</span> <span class="n">net2</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">net3</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span>
-                             <span class="n">len_max</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
-            <span class="n">topotools</span><span class="o">.</span><span class="n">stitch</span><span class="p">(</span><span class="n">net2</span><span class="p">,</span> <span class="n">net4</span><span class="p">,</span> <span class="n">net2</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">net4</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span>
-                             <span class="n">len_max</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
-            <span class="c1"># Join face sites network with the corner sites network</span>
-            <span class="n">topotools</span><span class="o">.</span><span class="n">stitch</span><span class="p">(</span><span class="n">net1</span><span class="p">,</span> <span class="n">net2</span><span class="p">,</span> <span class="n">net1</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">net2</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;radius&#39;</span><span class="p">,</span>
-                             <span class="n">len_max</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net1</span><span class="p">)</span>
-            <span class="n">ws</span><span class="o">.</span><span class="n">close_project</span><span class="p">(</span><span class="n">net1</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">fcc</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span>
+                      <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
             <span class="c1"># Deal with labels</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">)</span>
-            <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.face_sites&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.corner_sites&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">Ps</span>
-            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;corner_sites&#39;</span><span class="p">),</span>
+            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;corner&#39;</span><span class="p">),</span>
                                             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_corner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_corner&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;face_sites&#39;</span><span class="p">))</span>
+            <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;face&#39;</span><span class="p">))</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_face&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_face&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -370,10 +313,9 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;hcp is not implemented yet&#39;</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;sc&#39;</span><span class="p">:</span>
-            <span class="n">net</span> <span class="o">=</span> <span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">net</span> <span class="o">=</span> <span class="n">cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
-            <span class="n">ws</span><span class="o">.</span><span class="n">close_project</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;labels&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.corner_sites&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.corner_to_corner&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -421,32 +363,35 @@
                                          <span class="n">apply_label</span><span class="o">=</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;_boundary&#39;</span><span class="p">)</span></div></div>
 </pre></div>
 
-              </div>
+              </article>
               
-              
-          </main>
-          
 
+              
+          </div>
+          
       </div>
     </div>
+
   
-  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2021, PMEAL.<br>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>

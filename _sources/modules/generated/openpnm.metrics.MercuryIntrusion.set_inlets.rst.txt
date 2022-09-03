@@ -1,8 +1,0 @@
-:orphan:
-
-set_inlets
-===========================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.set_inlets

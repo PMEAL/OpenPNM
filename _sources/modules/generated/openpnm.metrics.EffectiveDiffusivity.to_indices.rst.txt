@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-===============================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: EffectiveDiffusivity.to_indices

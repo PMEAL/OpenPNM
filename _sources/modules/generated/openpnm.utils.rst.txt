@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Utils
+utils
 =====
 
 .. automodule:: openpnm.utils
@@ -20,19 +20,22 @@ Utils
    .. autosummary::
       :toctree:
    
-      catch_module_not_found
+      check_data_health
+      check_network_health
+      dict_to_struct
       flat_list
+      get_mixture_model_args
+      get_printable_labels
+      get_printable_props
       ignore_warnings
       is_symmetric
+      is_transient
       is_valid_propname
       methods_to_table
       models_to_table
       prettify_logger_message
-      remove_prop_deep
       sanitize_dict
-      tic
-      toc
-      unique_list
+      struct_to_dict
    
    
 
@@ -52,7 +55,7 @@ Utils
       PrintableList
       Project
       SettingsAttr
-      SubDict
+      SimpleList
       TypedList
       TypedMixin
       TypedSet
@@ -65,13 +68,5 @@ Utils
    
 
    
-   
-   .. rubric:: Modules
-
-   .. autosummary::
-      :toctree:
-      :recursive:
-   
-      openpnm.utils.misc
    
    

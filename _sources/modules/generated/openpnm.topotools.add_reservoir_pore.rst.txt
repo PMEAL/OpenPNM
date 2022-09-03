@@ -1,0 +1,6 @@
+add\_reservoir\_pore
+====================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: add_reservoir_pore

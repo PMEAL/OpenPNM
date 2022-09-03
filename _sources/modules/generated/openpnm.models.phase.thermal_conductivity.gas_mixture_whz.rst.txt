@@ -1,0 +1,6 @@
+gas\_mixture\_whz
+=================
+
+.. currentmodule:: openpnm.models.phase.thermal_conductivity
+
+.. autofunction:: gas_mixture_whz

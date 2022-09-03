@@ -1,8 +1,0 @@
-:orphan:
-
-toindices
-==================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: LegacyMixin.toindices

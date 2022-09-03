@@ -1,8 +1,0 @@
-:orphan:
-
-update_mole_fractions
-========================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GasMixture.update_mole_fractions

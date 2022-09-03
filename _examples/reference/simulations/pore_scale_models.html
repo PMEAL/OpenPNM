@@ -1,0 +1,646 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Pore Scale Models &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Basic Transport" href="reactive_transport.html" />
+    <link rel="prev" title="Basic Transport" href="percolation.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../../examples/reference.html">
+   Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../uncategorized/creating_a_custom_phase.html">
+     Creating a Custom Phase
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../uncategorized/deep_dive_into_the_settings_attribute.html">
+     Overview of the Settings Attribute
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../uncategorized/size_factors_and_transport_conductance.html">
+     Size Factors and Transport Conductance
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../uncategorized/understanding_basic_transport_settings.html">
+     Understanding Basic Transport Settings
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../uncategorized/understanding_reactive_transport_settings.html">
+     Understanding Reactive Transport Settings
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../uncategorized/understanding_transient_transport_settings.html">
+     Understanding Transient Transport Settings
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../../examples/simulations.html">
+   Simulations
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="available_matrix_solvers.html">
+     Available Matrix Solvers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="basic_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="overview_of_shape_factors.html">
+     Overview of Shape Factors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="percolation.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Pore Scale Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="reactive_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="the_problem_with_domain_length_and_area.html">
+     Problem with Domain Area and Length
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="transient_transport.html">
+     Basic Transport
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#using-existing-pore-scale-models">
+   Using Existing Pore-Scale Models
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#changing-dependent-properties">
+   Changing dependent properties
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#updating-parameter-on-an-existing-model">
+   Updating parameter on an existing model
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#replacing-an-existing-model-with-another">
+   Replacing an existing model with another
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-custom-models">
+   Creating Custom Models
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="pore-scale-models">
+<h1>Pore Scale Models<a class="headerlink" href="#pore-scale-models" title="Permalink to this heading">#</a></h1>
+<p>Pore scale models are one of the more important facets of OpenPNM, but they can be a bit confusing at first, since they work ‘behind-the-scenes’.<br />
+They offer 3 main advantages, in order:</p>
+<ol class="arabic simple">
+<li><p>They allow automatic regeneration of all dependent properties when something ‘upstream’ is changed.</p></li>
+<li><p>A large library of pre-written models is included and they can be mixed together and their parameters edited to get a desired overall result.</p></li>
+<li><p>The pore-scale model machinery was designed to allow easy use of custom written code for cases where a prewritten model is not available.</p></li>
+</ol>
+<p>The best way to explain their importance is via illustration.</p>
+<p>Consider a fluid flow simulation, where the hydraulic conductance is defined as:</p>
+<div class="math notranslate nohighlight">
+\[ g_H = \frac{\pi R^4}{8 \mu L} \]</div>
+<p>The viscosity can be predicted using a correlation:</p>
+<div class="math notranslate nohighlight">
+\[ \mu = ? \]</div>
+<p>Now say you want to re-run the simulation at different temperature.  This would require recalculating <span class="math notranslate nohighlight">\(\mu\)</span>, followed by updating the hydraulic conductance.</p>
+<p>Using pore-scale models in OpenPNM allows for simple and reliable updating of these properties, for instance within a for-loop where temperature is being varied.</p>
+<section id="using-existing-pore-scale-models">
+<h2>Using Existing Pore-Scale Models<a class="headerlink" href="#using-existing-pore-scale-models" title="Permalink to this heading">#</a></h2>
+<p>OpenPNM includes a library of pre-written models, so let’s start by using an existing model:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we need to define the gas phase diffusivity.  We can fetch the <code class="docutils literal notranslate"><span class="pre">fuller</span></code> model from the <code class="docutils literal notranslate"><span class="pre">models</span></code> library to do this, and attach it to an empty phase object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">water_correlation</span>
+<span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have used the <code class="docutils literal notranslate"><span class="pre">water_correlation</span></code> model, which is a polynomial fit specfically to the properties of water as a function temperature (and salinity if relevant).</p>
+<p>Next we need to define the hydraulic conductance, which is also available in the model libary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">hydraulic_conductance</span><span class="o">.</span><span class="n">generic_hydraulic</span>
+<span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lastly we can run the StokesFlow algorithm to get the flow rate across the domain for a given set of pressure boundary conditions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stokes_01 : Newton iterations:   0%|          | 0/100 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                      
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.46458816e-13]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="changing-dependent-properties">
+<h2>Changing dependent properties<a class="headerlink" href="#changing-dependent-properties" title="Permalink to this heading">#</a></h2>
+<p>Now consider that you want to find the diffusion rate at higher temperature.  This requires recalculating the diffusion coefficient on <code class="docutils literal notranslate"><span class="pre">air</span></code>, then updating the diffusive conductivity on <code class="docutils literal notranslate"><span class="pre">phys</span></code>, and finally re-running the simulation.  Using pore-scale models this can be done as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Viscosity before changing temperaure:&#39;</span><span class="p">,</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">353.0</span>
+<span class="n">water</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Viscosity after:&#39;</span><span class="p">,</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Viscosity before changing temperaure: 0.000893190947459112
+Viscosity after: 0.0003550956981619051
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that the viscosity decreased with temperature as expected.  We can also propagate this change to the diffusive conductance:</p>
+<p>And lastly we can recalculate the flow rate:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stokes_01 : Newton iterations:   0%|          | 0/100 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                      
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[3.68395589e-13]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="updating-parameter-on-an-existing-model">
+<h2>Updating parameter on an existing model<a class="headerlink" href="#updating-parameter-on-an-existing-model" title="Permalink to this heading">#</a></h2>
+<p>It’s also easy to change parameters of a model since they are all stored on the object (<code class="docutils literal notranslate"><span class="pre">water</span></code> in this case), meaning you don’t have to reassign a new model get new parameters (although that would work).  The models and their parameters are stored under the <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute of each object.  This is a dictionary with each model stored under the key match the <code class="docutils literal notranslate"><span class="pre">propname</span></code> to which is was assigned.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Diffusivity before changing parameter:&#39;</span><span class="p">,</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">air</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="s1">&#39;vA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">15.9</span>
+<span class="n">air</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Diffusivity after:&#39;</span><span class="p">,</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">Input In [7],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Diffusivity before changing parameter:&#39;</span><span class="p">,</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">air</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="s1">&#39;vA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">15.9</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">air</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+
+<span class="ne">NameError</span>: name &#39;air&#39; is not defined
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="replacing-an-existing-model-with-another">
+<h2>Replacing an existing model with another<a class="headerlink" href="#replacing-an-existing-model-with-another" title="Permalink to this heading">#</a></h2>
+<p>Let’s say for some reason that the Fuller model is not suitable.  It’s easy to go ‘shopping’ in the models library to retrieve a new model and replace the existing one.  In the cell below we grab the Chapman-Enskog model and simply assign it to the same <code class="docutils literal notranslate"><span class="pre">propname</span></code> that the Fuller model was previously.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">liquid_pure_ls</span>
+<span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Diffusivity after:&#39;</span><span class="p">,</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="o">~</span>\<span class="n">AppData</span>\<span class="n">Local</span>\<span class="n">Temp</span><span class="o">/</span><span class="n">ipykernel_5216</span><span class="o">/</span><span class="mf">3435646099.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">liquid_pure_ls</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Diffusivity after:&#39;</span><span class="p">,</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nn">c:\users\jeff\dropbox\flash sync\code\git\openpnm\openpnm\core\_base2.py</span> in <span class="ni">add_model</span><span class="nt">(self, propname, model, domain, regen_mode, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">479</span>         <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">480</span>         <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">!=</span> <span class="s1">&#39;deferred&#39;</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">481</span>             <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">482</span> 
+<span class="g g-Whitespace">    </span><span class="mi">483</span>     <span class="k">def</span> <span class="nf">add_model_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+
+<span class="nn">c:\users\jeff\dropbox\flash sync\code\git\openpnm\openpnm\core\_base2.py</span> in <span class="ni">run_model</span><span class="nt">(self, propname, domain)</span>
+<span class="g g-Whitespace">    </span><span class="mi">514</span>             <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>  <span class="c1"># Get domain from propname if present</span>
+<span class="g g-Whitespace">    </span><span class="mi">515</span>                 <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">516</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">517</span>             <span class="k">else</span><span class="p">:</span>  <span class="c1"># No domain means run model for ALL domains</span>
+<span class="g g-Whitespace">    </span><span class="mi">518</span>                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+<span class="nn">c:\users\jeff\dropbox\flash sync\code\git\openpnm\openpnm\core\_base2.py</span> in <span class="ni">run_model</span><span class="nt">(self, propname, domain)</span>
+<span class="g g-Whitespace">    </span><span class="mi">533</span>             <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">534</span>                 <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">535</span>                 <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">536</span>                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
+<span class="g g-Whitespace">    </span><span class="mi">537</span>                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+<span class="nn">c:\users\jeff\dropbox\flash sync\code\git\openpnm\openpnm\models\phase\viscosity\_funcs.py</span> in <span class="ni">liquid_pure_ls</span><span class="nt">(phase, T, MW, Tc, Pc, omega)</span>
+<span class="g g-Whitespace">    </span><span class="mi">268</span>     <span class="c1"># Letsou_Stiel</span>
+<span class="g g-Whitespace">    </span><span class="mi">269</span>     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<span class="ne">--&gt; </span><span class="mi">270</span>     <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">271</span>     <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">272</span>     <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pc</span><span class="p">]</span>
+
+<span class="nn">c:\users\jeff\dropbox\flash sync\code\git\openpnm\openpnm\phase\_phase.py</span> in <span class="ni">__getitem__</span><span class="nt">(self, key)</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>         <span class="c1"># Get params directly if appropriate</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span>         <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;param&#39;</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">75</span>             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span> 
+<span class="g g-Whitespace">     </span><span class="mi">77</span>         <span class="c1"># Next get the data arrays, this is the case if @ notation was used</span>
+
+<span class="ne">KeyError</span>: &#39;molecular_weight&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we don’t need to explicitly call <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> since this occurs automatically when a model is added.  We do however, have to regenerate <code class="docutils literal notranslate"><span class="pre">phys</span></code> object so it calculates the diffusive conductance with the new diffusivity:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.03738023e-10]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="creating-custom-models">
+<h2>Creating Custom Models<a class="headerlink" href="#creating-custom-models" title="Permalink to this heading">#</a></h2>
+<p>Lastly, let’s illustrate the ease with which a custom pore-scale model can be defined and used.  Let’s create a very basic (and incorrect) model:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">new_diffusivity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> 
+                    <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> 
+                    <span class="n">pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">temperature</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pressure</span><span class="p">]</span>
+    <span class="n">DAB</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="n">P</span><span class="o">*</span><span class="n">B</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DAB</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>There are a few key points to note in the above code.</p>
+<ol class="arabic simple">
+<li><p>Every model must accept a <code class="docutils literal notranslate"><span class="pre">target</span></code> argument since the <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> mechanism assumes it is present.  The <code class="docutils literal notranslate"><span class="pre">target</span></code> is the object to which the model will be attached.  It allows for the looking up of necessary properties that should already be defined, like temperature and pressure.  Even if you don’t use <code class="docutils literal notranslate"><span class="pre">target</span></code> within the function it is still required by the pore-scale model mechanism.  If it’s presence annoys you, you can put a <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> at the end of the argument list to accept all arguments that you don’t explicitly need.</p></li>
+<li><p>The input parameters should not be arrays (like an Np-long list of temperature values).  Instead you should pass the dictionary key of the values on the <code class="docutils literal notranslate"><span class="pre">target</span></code>.  This allows the model to lookup the latest values for each property when <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> is called.  This also enables openpnm to store the model parameters as short strings rather than large arrays.</p></li>
+<li><p>The function should return either a scalar value or an array of Np or Nt length.  In the above case it returns a DAB value for each pore, depending on its local temperature and pressure in the pore.  However, if the <code class="docutils literal notranslate"><span class="pre">temperature</span></code> were set to <code class="docutils literal notranslate"><span class="pre">'throat.temperature'</span></code> and <code class="docutils literal notranslate"><span class="pre">pressure</span></code> to <code class="docutils literal notranslate"><span class="pre">'throat.pressure'</span></code>, then the above function would return a DAB value for each throat and it could be used to calculate <code class="docutils literal notranslate"><span class="pre">'throat.diffusivity'</span></code>.</p></li>
+<li><p>This function can be placed at the top of the script in which it is used, or it can be placed in a separate file and imported into the script with <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">my_models</span> <span class="pre">import</span> <span class="pre">new_diffusivity</span></code>.</p></li>
+</ol>
+<p>Let’s add this model to our <code class="docutils literal notranslate"><span class="pre">air</span></code> phase and inspect the new values:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">,</span>
+              <span class="n">model</span><span class="o">=</span><span class="n">new_diffusivity</span><span class="p">,</span>
+              <span class="n">A</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">21</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.06722719e-05 2.06722719e-05 2.06722719e-05 2.06722719e-05
+ 2.06722719e-05 2.06722719e-05 2.06722719e-05 2.06722719e-05
+ 2.06722719e-05 2.06722719e-05 2.06722719e-05 2.06722719e-05
+ 2.06722719e-05 2.06722719e-05 2.06722719e-05 2.06722719e-05
+ 2.06722719e-05 2.06722719e-05 2.06722719e-05 2.06722719e-05
+ 2.06722719e-05 2.06722719e-05 2.06722719e-05 2.06722719e-05
+ 2.06722719e-05]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

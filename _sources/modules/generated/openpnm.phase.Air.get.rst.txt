@@ -1,0 +1,8 @@
+:orphan:
+
+get
+=====================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Air.get

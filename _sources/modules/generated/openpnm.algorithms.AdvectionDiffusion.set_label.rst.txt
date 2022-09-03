@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+===============================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: AdvectionDiffusion.set_label

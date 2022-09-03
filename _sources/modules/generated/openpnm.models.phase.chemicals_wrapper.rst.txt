@@ -1,0 +1,6 @@
+chemicals\_wrapper
+==================
+
+.. currentmodule:: openpnm.models.phase
+
+.. autofunction:: chemicals_wrapper

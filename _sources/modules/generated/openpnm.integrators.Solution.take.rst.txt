@@ -1,8 +1,0 @@
-:orphan:
-
-take
-=================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: Solution.take

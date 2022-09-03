@@ -1,0 +1,45 @@
+Mercury
+=====================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: Mercury
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Mercury.add_model
+            Mercury.add_model_collection
+            Mercury.clear
+            Mercury.copy
+            Mercury.filter_by_label
+            Mercury.fromkeys
+            Mercury.get
+            Mercury.get_conduit_data
+            Mercury.interpolate_data
+            Mercury.items
+            Mercury.keys
+            Mercury.labels
+            Mercury.num_pores
+            Mercury.num_throats
+            Mercury.pop
+            Mercury.popitem
+            Mercury.pores
+            Mercury.props
+            Mercury.regenerate_models
+            Mercury.run_model
+            Mercury.set_label
+            Mercury.setdefault
+            Mercury.throats
+            Mercury.to_indices
+            Mercury.to_mask
+            Mercury.update
+            Mercury.values
+   
+   

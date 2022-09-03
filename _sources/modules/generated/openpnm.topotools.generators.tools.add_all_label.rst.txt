@@ -1,6 +1,0 @@
-add\_all\_label
-===============
-
-.. currentmodule:: openpnm.topotools.generators.tools
-
-.. autofunction:: add_all_label

@@ -1,8 +1,0 @@
-:orphan:
-
-keep_types
-============================================================
-
-.. currentmodule:: openpnm.models.geometry.conduit_lengths
-
-.. automethod:: Docorator.keep_types

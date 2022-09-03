@@ -1,0 +1,8 @@
+:orphan:
+
+props
+===========================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Species.props

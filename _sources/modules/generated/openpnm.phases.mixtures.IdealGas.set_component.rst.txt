@@ -1,8 +1,0 @@
-:orphan:
-
-set_component
-==============================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: IdealGas.set_component

@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-===================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Standard.to_indices

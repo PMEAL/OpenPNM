@@ -1,0 +1,8 @@
+:orphan:
+
+popitem
+===================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: Drainage.popitem

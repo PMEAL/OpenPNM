@@ -1,0 +1,8 @@
+:orphan:
+
+interpolate_data
+======================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Mixture.interpolate_data

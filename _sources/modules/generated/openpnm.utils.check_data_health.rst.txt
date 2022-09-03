@@ -1,0 +1,6 @@
+check\_data\_health
+===================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: check_data_health

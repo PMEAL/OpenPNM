@@ -1,0 +1,40 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+heat\_capacity
+==============
+
+.. automodule:: openpnm.models.phase.heat_capacity
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      gas_mixture_yweighted
+      gas_pure_TRC
+      liquid_mixture_xweighted
+      liquid_pure_rp
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

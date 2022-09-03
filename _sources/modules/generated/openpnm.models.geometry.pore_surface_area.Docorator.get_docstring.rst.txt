@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-=================================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_surface_area
-
-.. automethod:: Docorator.get_docstring

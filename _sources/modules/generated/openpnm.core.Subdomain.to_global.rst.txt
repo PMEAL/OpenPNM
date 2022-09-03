@@ -1,8 +1,0 @@
-:orphan:
-
-to_global
-================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Subdomain.to_global

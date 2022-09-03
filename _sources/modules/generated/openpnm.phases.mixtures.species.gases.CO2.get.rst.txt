@@ -1,8 +1,0 @@
-:orphan:
-
-get
-=============================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: CO2.get

@@ -1,8 +1,0 @@
-:orphan:
-
-remove_model
-========================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.liquids
-
-.. automethod:: H2O.remove_model

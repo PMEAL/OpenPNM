@@ -1,8 +1,0 @@
-:orphan:
-
-append
-=======================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: PrintableList.append

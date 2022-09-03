@@ -1,0 +1,55 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+phase
+=====
+
+.. automodule:: openpnm.models.phase
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      chemicals_wrapper
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      openpnm.models.phase.critical_props
+      openpnm.models.phase.density
+      openpnm.models.phase.diffusivity
+      openpnm.models.phase.heat_capacity
+      openpnm.models.phase.misc
+      openpnm.models.phase.mixtures
+      openpnm.models.phase.partition_coefficient
+      openpnm.models.phase.surface_tension
+      openpnm.models.phase.thermal_conductivity
+      openpnm.models.phase.vapor_pressure
+      openpnm.models.phase.viscosity
+   
+   

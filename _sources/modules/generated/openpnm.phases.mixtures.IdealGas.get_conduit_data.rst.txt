@@ -1,8 +1,0 @@
-:orphan:
-
-get_conduit_data
-=================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: IdealGas.get_conduit_data

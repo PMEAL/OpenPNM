@@ -1,8 +1,0 @@
-:orphan:
-
-copy
-===============================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: SubDict.copy

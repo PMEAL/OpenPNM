@@ -14,9 +14,8 @@ CubicTemplate
       .. autosummary::
          :toctree:
          
-            CubicTemplate.add_boundary_pores
             CubicTemplate.add_model
-            CubicTemplate.check_network_health
+            CubicTemplate.add_model_collection
             CubicTemplate.clear
             CubicTemplate.copy
             CubicTemplate.create_adjacency_matrix
@@ -32,7 +31,6 @@ CubicTemplate
             CubicTemplate.get_adjacency_matrix
             CubicTemplate.get_conduit_data
             CubicTemplate.get_incidence_matrix
-            CubicTemplate.interleave_data
             CubicTemplate.interpolate_data
             CubicTemplate.items
             CubicTemplate.keys
@@ -40,42 +38,18 @@ CubicTemplate
             CubicTemplate.num_neighbors
             CubicTemplate.num_pores
             CubicTemplate.num_throats
-            CubicTemplate.params
             CubicTemplate.pop
             CubicTemplate.popitem
             CubicTemplate.pores
             CubicTemplate.props
             CubicTemplate.regenerate_models
-            CubicTemplate.remove_model
+            CubicTemplate.run_model
             CubicTemplate.set_label
             CubicTemplate.setdefault
-            CubicTemplate.show_hist
             CubicTemplate.throats
             CubicTemplate.to_indices
             CubicTemplate.to_mask
             CubicTemplate.update
             CubicTemplate.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            CubicTemplate.Np
-            CubicTemplate.Nt
-            CubicTemplate.Ps
-            CubicTemplate.Ts
-            CubicTemplate.am
-            CubicTemplate.conns
-            CubicTemplate.coords
-            CubicTemplate.im
-            CubicTemplate.models
-            CubicTemplate.name
-            CubicTemplate.network
-            CubicTemplate.project
-            CubicTemplate.settings
    
    

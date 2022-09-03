@@ -1,8 +1,0 @@
-:orphan:
-
-props
-==============================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Standard.props

@@ -1,0 +1,8 @@
+:orphan:
+
+num_throats
+=================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Mixture.num_throats

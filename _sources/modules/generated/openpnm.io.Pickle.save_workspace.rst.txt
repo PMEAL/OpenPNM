@@ -1,8 +1,0 @@
-:orphan:
-
-save_workspace
-================================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: Pickle.save_workspace

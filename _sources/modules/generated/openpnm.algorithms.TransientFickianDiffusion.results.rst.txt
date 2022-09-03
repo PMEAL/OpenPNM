@@ -1,8 +1,0 @@
-:orphan:
-
-results
-====================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientFickianDiffusion.results

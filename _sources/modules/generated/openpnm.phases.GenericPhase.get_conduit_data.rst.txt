@@ -1,8 +1,0 @@
-:orphan:
-
-get_conduit_data
-============================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: GenericPhase.get_conduit_data

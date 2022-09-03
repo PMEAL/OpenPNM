@@ -1,0 +1,6 @@
+mercury
+=======
+
+.. currentmodule:: openpnm.models.collections.phase
+
+.. autodata:: mercury

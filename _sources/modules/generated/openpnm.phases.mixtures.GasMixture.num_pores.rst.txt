@@ -1,8 +1,0 @@
-:orphan:
-
-num_pores
-============================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GasMixture.num_pores

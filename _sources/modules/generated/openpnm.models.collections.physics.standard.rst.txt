@@ -1,0 +1,6 @@
+standard
+========
+
+.. currentmodule:: openpnm.models.collections.physics
+
+.. autodata:: standard

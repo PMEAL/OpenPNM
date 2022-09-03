@@ -1,0 +1,8 @@
+:orphan:
+
+num_neighbors
+=====================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Network.num_neighbors

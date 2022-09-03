@@ -1,0 +1,30 @@
+ModelWrapper
+=========================
+
+.. currentmodule:: openpnm.core
+
+.. autoclass:: ModelWrapper
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            ModelWrapper.__call__
+            ModelWrapper.clear
+            ModelWrapper.copy
+            ModelWrapper.fromkeys
+            ModelWrapper.get
+            ModelWrapper.items
+            ModelWrapper.keys
+            ModelWrapper.pop
+            ModelWrapper.popitem
+            ModelWrapper.setdefault
+            ModelWrapper.update
+            ModelWrapper.values
+   
+   

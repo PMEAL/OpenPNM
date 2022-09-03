@@ -15,57 +15,37 @@ TransientAdvectionDiffusion
          :toctree:
          
             TransientAdvectionDiffusion.clear
+            TransientAdvectionDiffusion.clear_BCs
+            TransientAdvectionDiffusion.clear_rate_BCs
+            TransientAdvectionDiffusion.clear_value_BCs
             TransientAdvectionDiffusion.copy
+            TransientAdvectionDiffusion.filter_by_label
             TransientAdvectionDiffusion.fromkeys
             TransientAdvectionDiffusion.get
             TransientAdvectionDiffusion.get_conduit_data
-            TransientAdvectionDiffusion.interleave_data
             TransientAdvectionDiffusion.interpolate_data
             TransientAdvectionDiffusion.items
             TransientAdvectionDiffusion.keys
-            TransientAdvectionDiffusion.map_pores
-            TransientAdvectionDiffusion.map_throats
+            TransientAdvectionDiffusion.labels
+            TransientAdvectionDiffusion.num_pores
+            TransientAdvectionDiffusion.num_throats
             TransientAdvectionDiffusion.pop
             TransientAdvectionDiffusion.popitem
+            TransientAdvectionDiffusion.pores
             TransientAdvectionDiffusion.props
             TransientAdvectionDiffusion.rate
-            TransientAdvectionDiffusion.remove_BC
-            TransientAdvectionDiffusion.remove_source
-            TransientAdvectionDiffusion.reset
-            TransientAdvectionDiffusion.results
             TransientAdvectionDiffusion.run
+            TransientAdvectionDiffusion.set_BC
+            TransientAdvectionDiffusion.set_label
             TransientAdvectionDiffusion.set_outflow_BC
             TransientAdvectionDiffusion.set_rate_BC
             TransientAdvectionDiffusion.set_source
             TransientAdvectionDiffusion.set_value_BC
-            TransientAdvectionDiffusion.set_variable_props
             TransientAdvectionDiffusion.setdefault
-            TransientAdvectionDiffusion.show_hist
+            TransientAdvectionDiffusion.throats
             TransientAdvectionDiffusion.to_indices
             TransientAdvectionDiffusion.to_mask
-            TransientAdvectionDiffusion.toindices
-            TransientAdvectionDiffusion.tomask
             TransientAdvectionDiffusion.update
             TransientAdvectionDiffusion.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            TransientAdvectionDiffusion.A
-            TransientAdvectionDiffusion.Np
-            TransientAdvectionDiffusion.Nt
-            TransientAdvectionDiffusion.Ps
-            TransientAdvectionDiffusion.Ts
-            TransientAdvectionDiffusion.b
-            TransientAdvectionDiffusion.name
-            TransientAdvectionDiffusion.network
-            TransientAdvectionDiffusion.project
-            TransientAdvectionDiffusion.settings
-            TransientAdvectionDiffusion.x
    
    

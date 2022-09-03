@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GenericMixture.show_hist

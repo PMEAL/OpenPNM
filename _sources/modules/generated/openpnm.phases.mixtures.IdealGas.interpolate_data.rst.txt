@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate_data
-=================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: IdealGas.interpolate_data

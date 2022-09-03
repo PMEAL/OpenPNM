@@ -1,0 +1,6 @@
+gas\_mixture\_hz
+================
+
+.. currentmodule:: openpnm.models.phase.viscosity
+
+.. autofunction:: gas_mixture_hz

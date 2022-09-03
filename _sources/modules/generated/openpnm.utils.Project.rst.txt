@@ -14,49 +14,7 @@ Project
       .. autosummary::
          :toctree:
          
-            Project.algorithms
             Project.append
-            Project.check_data_health
-            Project.check_geometry_health
-            Project.check_network_health
-            Project.check_physics_health
-            Project.clear
             Project.copy
-            Project.count
-            Project.export_data
-            Project.extend
-            Project.find_full_domain
-            Project.find_geometry
-            Project.find_phase
-            Project.find_physics
-            Project.geometries
-            Project.index
-            Project.insert
-            Project.inspect_locations
-            Project.load_object
-            Project.phases
-            Project.physics
-            Project.pop
-            Project.purge_object
-            Project.remove
-            Project.reverse
-            Project.save_object
-            Project.save_project
-            Project.show_model_dependencies
-            Project.sort
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            Project.grid
-            Project.name
-            Project.names
-            Project.network
-            Project.workspace
    
    

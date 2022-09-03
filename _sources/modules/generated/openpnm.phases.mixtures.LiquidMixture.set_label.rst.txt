@@ -1,8 +1,0 @@
-:orphan:
-
-set_label
-===============================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: LiquidMixture.set_label

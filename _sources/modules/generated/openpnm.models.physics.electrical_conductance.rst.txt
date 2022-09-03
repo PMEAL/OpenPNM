@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Electrical\_conductance
+electrical\_conductance
 =======================
 
 .. automodule:: openpnm.models.physics.electrical_conductance

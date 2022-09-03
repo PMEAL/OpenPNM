@@ -1,8 +1,0 @@
-:orphan:
-
-argmax
-============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.argmax

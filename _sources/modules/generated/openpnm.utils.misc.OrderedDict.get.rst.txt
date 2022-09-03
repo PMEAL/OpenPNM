@@ -1,8 +1,0 @@
-:orphan:
-
-get
-==================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: OrderedDict.get

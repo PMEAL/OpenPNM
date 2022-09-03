@@ -1,8 +1,0 @@
-:orphan:
-
-filter_by_label
-========================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: O2.filter_by_label

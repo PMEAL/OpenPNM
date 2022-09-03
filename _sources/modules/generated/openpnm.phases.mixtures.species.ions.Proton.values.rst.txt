@@ -1,8 +1,0 @@
-:orphan:
-
-values
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.ions
-
-.. automethod:: Proton.values

@@ -1,8 +1,0 @@
-:orphan:
-
-props
-============================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Subdomain.props

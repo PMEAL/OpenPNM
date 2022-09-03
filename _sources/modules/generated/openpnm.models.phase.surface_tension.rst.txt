@@ -1,0 +1,39 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+surface\_tension
+================
+
+.. automodule:: openpnm.models.phase.surface_tension
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      liquid_mixture_wsd
+      liquid_pure_bb
+      water_correlation
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

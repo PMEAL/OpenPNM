@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Core
+core
 ====
 
 .. automodule:: openpnm.core
@@ -26,13 +26,13 @@ Core
       :toctree:
 
    
-      Base
+      Base2
+      Domain
       LabelMixin
-      LegacyMixin
+      ModelMixin2
+      ModelWrapper
       ModelsDict
-      ModelsMixin
-      ParamMixin
-      Subdomain
+      ParserMixin
    
    
 

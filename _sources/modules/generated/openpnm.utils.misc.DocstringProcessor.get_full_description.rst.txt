@@ -1,8 +1,0 @@
-:orphan:
-
-get_full_description
-==========================================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: DocstringProcessor.get_full_description

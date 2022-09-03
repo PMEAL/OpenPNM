@@ -16,7 +16,7 @@ DelaunayVoronoiDual
          
             DelaunayVoronoiDual.add_boundary_pores
             DelaunayVoronoiDual.add_model
-            DelaunayVoronoiDual.check_network_health
+            DelaunayVoronoiDual.add_model_collection
             DelaunayVoronoiDual.clear
             DelaunayVoronoiDual.copy
             DelaunayVoronoiDual.create_adjacency_matrix
@@ -34,7 +34,6 @@ DelaunayVoronoiDual
             DelaunayVoronoiDual.get_adjacency_matrix
             DelaunayVoronoiDual.get_conduit_data
             DelaunayVoronoiDual.get_incidence_matrix
-            DelaunayVoronoiDual.interleave_data
             DelaunayVoronoiDual.interpolate_data
             DelaunayVoronoiDual.items
             DelaunayVoronoiDual.keys
@@ -42,44 +41,18 @@ DelaunayVoronoiDual
             DelaunayVoronoiDual.num_neighbors
             DelaunayVoronoiDual.num_pores
             DelaunayVoronoiDual.num_throats
-            DelaunayVoronoiDual.params
             DelaunayVoronoiDual.pop
             DelaunayVoronoiDual.popitem
             DelaunayVoronoiDual.pores
             DelaunayVoronoiDual.props
             DelaunayVoronoiDual.regenerate_models
-            DelaunayVoronoiDual.remove_model
+            DelaunayVoronoiDual.run_model
             DelaunayVoronoiDual.set_label
             DelaunayVoronoiDual.setdefault
-            DelaunayVoronoiDual.show_hist
             DelaunayVoronoiDual.throats
             DelaunayVoronoiDual.to_indices
             DelaunayVoronoiDual.to_mask
             DelaunayVoronoiDual.update
             DelaunayVoronoiDual.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            DelaunayVoronoiDual.Np
-            DelaunayVoronoiDual.Nt
-            DelaunayVoronoiDual.Ps
-            DelaunayVoronoiDual.Ts
-            DelaunayVoronoiDual.am
-            DelaunayVoronoiDual.conns
-            DelaunayVoronoiDual.coords
-            DelaunayVoronoiDual.im
-            DelaunayVoronoiDual.models
-            DelaunayVoronoiDual.name
-            DelaunayVoronoiDual.network
-            DelaunayVoronoiDual.project
-            DelaunayVoronoiDual.settings
-            DelaunayVoronoiDual.tri
-            DelaunayVoronoiDual.vor
    
    

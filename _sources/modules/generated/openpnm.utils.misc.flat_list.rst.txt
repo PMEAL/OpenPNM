@@ -1,6 +1,0 @@
-flat\_list
-==========
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: flat_list

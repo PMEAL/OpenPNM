@@ -1,0 +1,8 @@
+:orphan:
+
+pores
+==========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: ReactiveTransport.pores

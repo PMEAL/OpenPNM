@@ -1,0 +1,8 @@
+:orphan:
+
+find_neighbor_throats
+=============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Network.find_neighbor_throats

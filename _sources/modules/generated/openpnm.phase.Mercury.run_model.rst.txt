@@ -1,0 +1,8 @@
+:orphan:
+
+run_model
+===============================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Mercury.run_model

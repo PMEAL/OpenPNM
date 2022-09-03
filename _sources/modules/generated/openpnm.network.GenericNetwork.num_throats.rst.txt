@@ -1,8 +1,0 @@
-:orphan:
-
-num_throats
-==========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: GenericNetwork.num_throats

@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-====================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: CO2.to_indices

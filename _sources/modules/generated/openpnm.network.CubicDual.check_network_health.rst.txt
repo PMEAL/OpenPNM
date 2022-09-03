@@ -1,8 +1,0 @@
-:orphan:
-
-check_network_health
-==============================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: CubicDual.check_network_health

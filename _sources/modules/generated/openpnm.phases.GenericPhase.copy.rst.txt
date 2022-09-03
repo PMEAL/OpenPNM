@@ -1,8 +1,0 @@
-:orphan:
-
-copy
-================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: GenericPhase.copy

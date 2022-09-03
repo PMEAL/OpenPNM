@@ -1,8 +1,0 @@
-:orphan:
-
-index
-======================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: PrintableList.index

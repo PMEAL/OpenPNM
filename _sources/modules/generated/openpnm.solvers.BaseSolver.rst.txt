@@ -17,7 +17,3 @@ BaseSolver
             BaseSolver.solve
    
    
-
-   
-   
-   

@@ -1,0 +1,6 @@
+spheres\_and\_cylinders
+=======================
+
+.. currentmodule:: openpnm.models.collections.geometry
+
+.. autodata:: spheres_and_cylinders

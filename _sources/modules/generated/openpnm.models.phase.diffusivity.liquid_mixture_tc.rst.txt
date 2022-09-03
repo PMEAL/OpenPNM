@@ -1,0 +1,6 @@
+liquid\_mixture\_tc
+===================
+
+.. currentmodule:: openpnm.models.phase.diffusivity
+
+.. autofunction:: liquid_mixture_tc

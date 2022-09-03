@@ -1,8 +1,0 @@
-:orphan:
-
-keep_params_s
-======================================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: Docorator.keep_params_s

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Geometry
+geometry
 ========
 
 .. automodule:: openpnm.models.geometry
@@ -44,6 +44,7 @@ Geometry
       openpnm.models.geometry.throat_capillary_shape_factor
       openpnm.models.geometry.throat_centroid
       openpnm.models.geometry.throat_cross_sectional_area
+      openpnm.models.geometry.throat_endpoints
       openpnm.models.geometry.throat_length
       openpnm.models.geometry.throat_perimeter
       openpnm.models.geometry.throat_seed

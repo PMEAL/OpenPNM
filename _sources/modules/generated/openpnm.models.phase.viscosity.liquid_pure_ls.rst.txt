@@ -1,0 +1,6 @@
+liquid\_pure\_ls
+================
+
+.. currentmodule:: openpnm.models.phase.viscosity
+
+.. autofunction:: liquid_pure_ls

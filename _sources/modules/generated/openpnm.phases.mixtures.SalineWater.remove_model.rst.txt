@@ -1,8 +1,0 @@
-:orphan:
-
-remove_model
-================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: SalineWater.remove_model

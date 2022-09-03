@@ -1,8 +1,0 @@
-:orphan:
-
-get_summaryf
-=========================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: Docorator.get_summaryf

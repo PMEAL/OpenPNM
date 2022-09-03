@@ -1,8 +1,0 @@
-:orphan:
-
-map_throats
-================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: ReactiveTransport.map_throats

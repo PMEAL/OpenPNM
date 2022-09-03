@@ -1,0 +1,6 @@
+get\_mixture\_model\_args
+=========================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: get_mixture_model_args

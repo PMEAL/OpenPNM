@@ -1,8 +1,0 @@
-:orphan:
-
-update
-=====================================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: GenericPhysics.update

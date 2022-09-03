@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-===========================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_perimeter
-
-.. automethod:: Docorator.__call__

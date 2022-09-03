@@ -1,8 +1,0 @@
-:orphan:
-
-delete_kwargs
-===================================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: DocstringProcessor.delete_kwargs

@@ -1,0 +1,45 @@
+Domain
+===================
+
+.. currentmodule:: openpnm.core
+
+.. autoclass:: Domain
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Domain.add_model
+            Domain.add_model_collection
+            Domain.clear
+            Domain.copy
+            Domain.filter_by_label
+            Domain.fromkeys
+            Domain.get
+            Domain.get_conduit_data
+            Domain.interpolate_data
+            Domain.items
+            Domain.keys
+            Domain.labels
+            Domain.num_pores
+            Domain.num_throats
+            Domain.pop
+            Domain.popitem
+            Domain.pores
+            Domain.props
+            Domain.regenerate_models
+            Domain.run_model
+            Domain.set_label
+            Domain.setdefault
+            Domain.throats
+            Domain.to_indices
+            Domain.to_mask
+            Domain.update
+            Domain.values
+   
+   

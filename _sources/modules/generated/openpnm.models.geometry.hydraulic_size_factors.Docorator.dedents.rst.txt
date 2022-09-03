@@ -1,8 +1,0 @@
-:orphan:
-
-dedents
-================================================================
-
-.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
-
-.. automethod:: Docorator.dedents

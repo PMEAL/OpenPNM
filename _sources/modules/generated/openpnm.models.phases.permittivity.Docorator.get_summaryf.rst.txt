@@ -1,8 +1,0 @@
-:orphan:
-
-get_summaryf
-=========================================================
-
-.. currentmodule:: openpnm.models.phases.permittivity
-
-.. automethod:: Docorator.get_summaryf

@@ -1,6 +1,0 @@
-isoutside
-=========
-
-.. currentmodule:: openpnm.topotools.generators.tools
-
-.. autofunction:: isoutside

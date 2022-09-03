@@ -1,8 +1,0 @@
-:orphan:
-
-regenerate_models
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: HumidAir.regenerate_models

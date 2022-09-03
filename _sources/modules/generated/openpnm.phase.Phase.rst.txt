@@ -1,0 +1,45 @@
+Phase
+===================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: Phase
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Phase.add_model
+            Phase.add_model_collection
+            Phase.clear
+            Phase.copy
+            Phase.filter_by_label
+            Phase.fromkeys
+            Phase.get
+            Phase.get_conduit_data
+            Phase.interpolate_data
+            Phase.items
+            Phase.keys
+            Phase.labels
+            Phase.num_pores
+            Phase.num_throats
+            Phase.pop
+            Phase.popitem
+            Phase.pores
+            Phase.props
+            Phase.regenerate_models
+            Phase.run_model
+            Phase.set_label
+            Phase.setdefault
+            Phase.throats
+            Phase.to_indices
+            Phase.to_mask
+            Phase.update
+            Phase.values
+   
+   

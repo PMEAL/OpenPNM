@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_vector
+throat\_vector
 ==============
 
 .. automodule:: openpnm.models.geometry.throat_vector
@@ -25,15 +25,6 @@ Throat\_vector
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

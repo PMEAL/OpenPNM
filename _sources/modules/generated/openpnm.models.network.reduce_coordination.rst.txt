@@ -1,6 +1,0 @@
-reduce\_coordination
-====================
-
-.. currentmodule:: openpnm.models.network
-
-.. autofunction:: reduce_coordination

@@ -1,0 +1,8 @@
+:orphan:
+
+add_comp
+=================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: GasMixture.add_comp

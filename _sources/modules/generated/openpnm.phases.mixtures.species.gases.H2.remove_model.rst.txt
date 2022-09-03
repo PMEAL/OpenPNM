@@ -1,8 +1,0 @@
-:orphan:
-
-remove_model
-=====================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: H2.remove_model

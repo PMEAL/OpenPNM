@@ -1,0 +1,6 @@
+liquid\_pure\_bb
+================
+
+.. currentmodule:: openpnm.models.phase.surface_tension
+
+.. autofunction:: liquid_pure_bb

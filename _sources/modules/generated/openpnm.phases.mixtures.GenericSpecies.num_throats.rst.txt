@@ -1,8 +1,0 @@
-:orphan:
-
-num_throats
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GenericSpecies.num_throats

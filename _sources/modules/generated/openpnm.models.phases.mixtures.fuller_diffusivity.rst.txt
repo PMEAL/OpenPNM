@@ -1,6 +1,0 @@
-fuller\_diffusivity
-===================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. autofunction:: fuller_diffusivity

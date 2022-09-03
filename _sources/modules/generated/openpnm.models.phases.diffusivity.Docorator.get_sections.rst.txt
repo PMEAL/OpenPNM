@@ -1,8 +1,0 @@
-:orphan:
-
-get_sections
-========================================================
-
-.. currentmodule:: openpnm.models.phases.diffusivity
-
-.. automethod:: Docorator.get_sections

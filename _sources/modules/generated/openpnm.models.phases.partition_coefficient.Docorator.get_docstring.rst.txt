@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-===================================================================
-
-.. currentmodule:: openpnm.models.phases.partition_coefficient
-
-.. automethod:: Docorator.get_docstring

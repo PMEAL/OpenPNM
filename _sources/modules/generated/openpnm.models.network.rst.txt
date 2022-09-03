@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Network
+network
 =======
 
 .. automodule:: openpnm.models.network
@@ -34,7 +34,6 @@ Network
       isolated_pores
       looped_throats
       pore_to_pore_distance
-      reduce_coordination
       reversed_throats
    
    

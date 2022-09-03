@@ -1,8 +1,0 @@
-:orphan:
-
-is_percolating
-===============================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.is_percolating

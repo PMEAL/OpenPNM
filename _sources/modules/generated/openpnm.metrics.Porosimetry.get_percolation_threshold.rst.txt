@@ -1,8 +1,0 @@
-:orphan:
-
-get_percolation_threshold
-=====================================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: Porosimetry.get_percolation_threshold

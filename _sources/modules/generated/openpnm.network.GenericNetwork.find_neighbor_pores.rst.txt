@@ -1,8 +1,0 @@
-:orphan:
-
-find_neighbor_pores
-==================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: GenericNetwork.find_neighbor_pores

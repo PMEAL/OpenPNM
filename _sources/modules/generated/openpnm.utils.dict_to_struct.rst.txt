@@ -1,0 +1,6 @@
+dict\_to\_struct
+================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: dict_to_struct

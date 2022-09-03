@@ -1,8 +1,0 @@
-:orphan:
-
-clear
-=======================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Base.clear

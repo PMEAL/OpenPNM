@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_cross\_sectional\_area
+throat\_cross\_sectional\_area
 ==============================
 
 .. automodule:: openpnm.models.geometry.throat_cross_sectional_area
@@ -27,15 +27,6 @@ Throat\_cross\_sectional\_area
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

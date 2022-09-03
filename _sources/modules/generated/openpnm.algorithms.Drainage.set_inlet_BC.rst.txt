@@ -1,0 +1,8 @@
+:orphan:
+
+set_inlet_BC
+========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: Drainage.set_inlet_BC

@@ -1,0 +1,6 @@
+network\_from\_jsongraph
+========================
+
+.. currentmodule:: openpnm.io
+
+.. autofunction:: network_from_jsongraph

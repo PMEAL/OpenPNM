@@ -1,0 +1,40 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+mixtures
+========
+
+.. automodule:: openpnm.models.phase.mixtures
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      from_component
+      mixing_rule
+      mole_summation
+      salinity
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

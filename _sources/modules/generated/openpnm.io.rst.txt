@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Io
+io
 ==
 
 .. automodule:: openpnm.io
@@ -15,38 +15,38 @@ Io
 
    
    
-   
-
-   
-   
-   .. rubric:: Classes
+   .. rubric:: Functions
 
    .. autosummary::
-      :nosignatures:
       :toctree:
+   
+      network_from_csv
+      network_from_jsongraph
+      network_from_marock
+      network_from_networkx
+      network_from_pergeos
+      network_from_porespy
+      network_from_statoil
+      network_to_comsol
+      network_to_csv
+      network_to_jsongraph
+      network_to_networkx
+      network_to_pandas
+      network_to_pergeos
+      network_to_salome
+      network_to_stl
+      print_hdf5
+      project_to_csv
+      project_to_dict
+      project_to_hdf5
+      project_to_pandas
+      project_to_paraview
+      project_to_vtk
+      project_to_xdmf
+   
+   
 
    
-      COMSOL
-      CSV
-      Dict
-      GenericIO
-      HDF5
-      JSONGraphFormat
-      MARock
-      MAT
-      NetworkX
-      PNM
-      Pandas
-      ParaView
-      PerGeos
-      Pickle
-      PoreSpy
-      STL
-      Salome
-      Statoil
-      VTK
-      XDMF
-      iMorph
    
    
 

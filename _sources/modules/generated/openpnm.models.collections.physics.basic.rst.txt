@@ -1,0 +1,6 @@
+basic
+=====
+
+.. currentmodule:: openpnm.models.collections.physics
+
+.. autodata:: basic

@@ -1,8 +1,0 @@
-:orphan:
-
-clear
-==========================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: EffectiveDiffusivity.clear

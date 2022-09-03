@@ -1,0 +1,6 @@
+liquid\_pure\_gismr
+===================
+
+.. currentmodule:: openpnm.models.phase.thermal_conductivity
+
+.. autofunction:: liquid_pure_gismr

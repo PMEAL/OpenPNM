@@ -1,0 +1,6 @@
+intersecting\_trapezoids
+========================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. autofunction:: intersecting_trapezoids

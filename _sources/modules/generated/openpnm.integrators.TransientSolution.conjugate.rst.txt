@@ -1,8 +1,0 @@
-:orphan:
-
-conjugate
-===============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.conjugate

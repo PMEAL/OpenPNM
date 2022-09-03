@@ -1,8 +1,0 @@
-:orphan:
-
-astype
-============================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.astype

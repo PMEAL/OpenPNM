@@ -1,0 +1,6 @@
+hybrid\_trapezoids\_and\_rectangles
+===================================
+
+.. currentmodule:: openpnm.models.geometry.throat_length
+
+.. autofunction:: hybrid_trapezoids_and_rectangles

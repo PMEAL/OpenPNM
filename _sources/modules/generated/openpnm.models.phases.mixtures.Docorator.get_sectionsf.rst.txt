@@ -1,8 +1,0 @@
-:orphan:
-
-get_sectionsf
-======================================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: Docorator.get_sectionsf

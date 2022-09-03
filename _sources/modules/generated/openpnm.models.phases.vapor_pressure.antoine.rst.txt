@@ -1,6 +1,0 @@
-antoine
-=======
-
-.. currentmodule:: openpnm.models.phases.vapor_pressure
-
-.. autofunction:: antoine

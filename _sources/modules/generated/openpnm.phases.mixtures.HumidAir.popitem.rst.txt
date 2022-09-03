@@ -1,8 +1,0 @@
-:orphan:
-
-popitem
-========================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: HumidAir.popitem

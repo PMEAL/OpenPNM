@@ -1,0 +1,8 @@
+:orphan:
+
+update
+============================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Mercury.update

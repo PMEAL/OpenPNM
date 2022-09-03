@@ -1,0 +1,6 @@
+water\_correlation
+==================
+
+.. currentmodule:: openpnm.models.phase.thermal_conductivity
+
+.. autofunction:: water_correlation

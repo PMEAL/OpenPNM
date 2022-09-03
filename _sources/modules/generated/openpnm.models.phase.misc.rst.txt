@@ -1,0 +1,38 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+misc
+====
+
+.. automodule:: openpnm.models.phase.misc
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      mix_and_match
+      mole_to_mass_fraction
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

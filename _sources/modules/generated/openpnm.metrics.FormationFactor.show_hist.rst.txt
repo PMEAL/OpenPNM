@@ -1,8 +1,0 @@
-:orphan:
-
-show_hist
-=========================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: FormationFactor.show_hist

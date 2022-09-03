@@ -41,17 +41,3 @@ Docorator
             Docorator.with_indents
    
    
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            Docorator.param_like_sections
-            Docorator.params
-            Docorator.patterns
-            Docorator.python2_classes
-            Docorator.text_sections
-   
-   

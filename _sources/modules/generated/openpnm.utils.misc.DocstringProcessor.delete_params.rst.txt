@@ -1,8 +1,0 @@
-:orphan:
-
-delete_params
-===================================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: DocstringProcessor.delete_params

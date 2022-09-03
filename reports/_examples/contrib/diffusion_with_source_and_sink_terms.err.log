@@ -1,0 +1,42 @@
+Traceback (most recent call last):
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 1204, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 663, in async_execute
+    await self.async_execute_cell(
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 862, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+gas = op.phase.Air(network=pn)
+phys_models = op.models.collections.physics.basic
+gas.add_model_collection(phys_models, domain='all')
+gas.regenerate_models() 
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Input [0;32mIn [3][0m, in [0;36m<cell line: 1>[0;34m()[0m
+[0;32m----> 1[0m gas [38;5;241m=[39m [43mop[49m[38;5;241;43m.[39;49m[43mphase[49m[38;5;241;43m.[39;49m[43mAir[49m[43m([49m[43mnetwork[49m[38;5;241;43m=[39;49m[43mpn[49m[43m)[49m
+[1;32m      2[0m phys_models [38;5;241m=[39m op[38;5;241m.[39mmodels[38;5;241m.[39mcollections[38;5;241m.[39mphysics[38;5;241m.[39mbasic
+[1;32m      3[0m gas[38;5;241m.[39madd_model_collection(phys_models, domain[38;5;241m=[39m[38;5;124m'[39m[38;5;124mall[39m[38;5;124m'[39m)
+
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/phase/_air.py:29[0m, in [0;36mAir.__init__[0;34m(self, **kwargs)[0m
+[1;32m     27[0m [38;5;28;01mdef[39;00m [38;5;21m__init__[39m([38;5;28mself[39m, [38;5;241m*[39m[38;5;241m*[39mkwargs):
+[1;32m     28[0m     [38;5;28msuper[39m()[38;5;241m.[39m[38;5;21m__init__[39m([38;5;241m*[39m[38;5;241m*[39mkwargs)
+[0;32m---> 29[0m     [38;5;28;01mfrom[39;00m [38;5;21;01mthermo[39;00m [38;5;28;01mimport[39;00m Mixture
+[1;32m     30[0m     a [38;5;241m=[39m Mixture(IDs[38;5;241m=[39m[[38;5;124m'[39m[38;5;124mo2[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mn2[39m[38;5;124m'[39m], zs[38;5;241m=[39m[[38;5;241m0.21[39m, [38;5;241m0.79[39m])
+[1;32m     31[0m     temp [38;5;241m=[39m _fetch_chemical_props(a)
+
+[0;31mModuleNotFoundError[0m: No module named 'thermo'
+ModuleNotFoundError: No module named 'thermo'
+

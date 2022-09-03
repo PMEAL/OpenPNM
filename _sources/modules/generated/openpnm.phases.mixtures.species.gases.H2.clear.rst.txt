@@ -1,8 +1,0 @@
-:orphan:
-
-clear
-==============================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: H2.clear

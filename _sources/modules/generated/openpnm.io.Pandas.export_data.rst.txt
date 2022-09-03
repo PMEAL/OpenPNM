@@ -1,8 +1,0 @@
-:orphan:
-
-export_data
-=============================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: Pandas.export_data

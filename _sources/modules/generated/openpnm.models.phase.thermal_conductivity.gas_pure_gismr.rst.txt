@@ -1,0 +1,6 @@
+gas\_pure\_gismr
+================
+
+.. currentmodule:: openpnm.models.phase.thermal_conductivity
+
+.. autofunction:: gas_pure_gismr

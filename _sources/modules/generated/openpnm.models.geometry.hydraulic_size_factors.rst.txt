@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Hydraulic\_size\_factors
+hydraulic\_size\_factors
 ========================
 
 .. automodule:: openpnm.models.geometry.hydraulic_size_factors
@@ -23,6 +23,9 @@ Hydraulic\_size\_factors
       circles_and_rectangles
       cones_and_cylinders
       cubes_and_cuboids
+      hybrid_cones_and_cylinders
+      hybrid_pyramids_and_cuboids
+      hybrid_trapezoids_and_rectangles
       intersecting_cones
       intersecting_pyramids
       intersecting_trapezoids
@@ -35,15 +38,6 @@ Hydraulic\_size\_factors
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

@@ -1,0 +1,8 @@
+:orphan:
+
+setdefault
+==============================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Domain.setdefault

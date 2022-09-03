@@ -1,0 +1,6 @@
+circles\_and\_rectangles
+========================
+
+.. currentmodule:: openpnm.models.collections.geometry
+
+.. autodata:: circles_and_rectangles

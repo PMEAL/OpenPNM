@@ -1,8 +1,0 @@
-:orphan:
-
-count
-======================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: PrintableList.count

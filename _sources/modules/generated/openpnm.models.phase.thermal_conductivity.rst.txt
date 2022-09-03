@@ -1,0 +1,41 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+thermal\_conductivity
+=====================
+
+.. automodule:: openpnm.models.phase.thermal_conductivity
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      gas_mixture_whz
+      gas_pure_gismr
+      liquid_mixture_DIPPR9H
+      liquid_pure_gismr
+      water_correlation
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

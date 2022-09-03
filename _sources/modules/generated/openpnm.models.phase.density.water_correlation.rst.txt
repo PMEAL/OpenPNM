@@ -1,0 +1,6 @@
+water\_correlation
+==================
+
+.. currentmodule:: openpnm.models.phase.density
+
+.. autofunction:: water_correlation

@@ -15,56 +15,36 @@ TransientReactiveTransport
          :toctree:
          
             TransientReactiveTransport.clear
+            TransientReactiveTransport.clear_BCs
+            TransientReactiveTransport.clear_rate_BCs
+            TransientReactiveTransport.clear_value_BCs
             TransientReactiveTransport.copy
+            TransientReactiveTransport.filter_by_label
             TransientReactiveTransport.fromkeys
             TransientReactiveTransport.get
             TransientReactiveTransport.get_conduit_data
-            TransientReactiveTransport.interleave_data
             TransientReactiveTransport.interpolate_data
             TransientReactiveTransport.items
             TransientReactiveTransport.keys
-            TransientReactiveTransport.map_pores
-            TransientReactiveTransport.map_throats
+            TransientReactiveTransport.labels
+            TransientReactiveTransport.num_pores
+            TransientReactiveTransport.num_throats
             TransientReactiveTransport.pop
             TransientReactiveTransport.popitem
+            TransientReactiveTransport.pores
             TransientReactiveTransport.props
             TransientReactiveTransport.rate
-            TransientReactiveTransport.remove_BC
-            TransientReactiveTransport.remove_source
-            TransientReactiveTransport.reset
-            TransientReactiveTransport.results
             TransientReactiveTransport.run
+            TransientReactiveTransport.set_BC
+            TransientReactiveTransport.set_label
             TransientReactiveTransport.set_rate_BC
             TransientReactiveTransport.set_source
             TransientReactiveTransport.set_value_BC
-            TransientReactiveTransport.set_variable_props
             TransientReactiveTransport.setdefault
-            TransientReactiveTransport.show_hist
+            TransientReactiveTransport.throats
             TransientReactiveTransport.to_indices
             TransientReactiveTransport.to_mask
-            TransientReactiveTransport.toindices
-            TransientReactiveTransport.tomask
             TransientReactiveTransport.update
             TransientReactiveTransport.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            TransientReactiveTransport.A
-            TransientReactiveTransport.Np
-            TransientReactiveTransport.Nt
-            TransientReactiveTransport.Ps
-            TransientReactiveTransport.Ts
-            TransientReactiveTransport.b
-            TransientReactiveTransport.name
-            TransientReactiveTransport.network
-            TransientReactiveTransport.project
-            TransientReactiveTransport.settings
-            TransientReactiveTransport.x
    
    

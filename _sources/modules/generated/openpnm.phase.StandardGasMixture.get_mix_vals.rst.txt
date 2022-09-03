@@ -1,0 +1,8 @@
+:orphan:
+
+get_mix_vals
+=============================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: StandardGasMixture.get_mix_vals

@@ -1,0 +1,6 @@
+liquid\_pure\_rp
+================
+
+.. currentmodule:: openpnm.models.phase.heat_capacity
+
+.. autofunction:: liquid_pure_rp

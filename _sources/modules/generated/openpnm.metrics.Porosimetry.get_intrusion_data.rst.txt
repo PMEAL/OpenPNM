@@ -1,8 +1,0 @@
-:orphan:
-
-get_intrusion_data
-==============================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: Porosimetry.get_intrusion_data

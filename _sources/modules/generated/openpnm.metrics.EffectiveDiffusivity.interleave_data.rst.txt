@@ -1,8 +1,0 @@
-:orphan:
-
-interleave_data
-====================================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: EffectiveDiffusivity.interleave_data

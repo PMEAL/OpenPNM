@@ -1,0 +1,6 @@
+gas\_mixture\_yweighted
+=======================
+
+.. currentmodule:: openpnm.models.phase.heat_capacity
+
+.. autofunction:: gas_mixture_yweighted

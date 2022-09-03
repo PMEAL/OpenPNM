@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-===============================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: LiquidMixture.add_model

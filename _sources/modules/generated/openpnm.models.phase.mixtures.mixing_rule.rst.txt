@@ -1,0 +1,6 @@
+mixing\_rule
+============
+
+.. currentmodule:: openpnm.models.phase.mixtures
+
+.. autofunction:: mixing_rule

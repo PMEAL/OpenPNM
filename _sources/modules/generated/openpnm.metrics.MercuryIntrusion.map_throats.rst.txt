@@ -1,8 +1,0 @@
-:orphan:
-
-map_throats
-============================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.map_throats

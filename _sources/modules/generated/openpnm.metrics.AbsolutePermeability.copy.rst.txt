@@ -1,8 +1,0 @@
-:orphan:
-
-copy
-=========================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: AbsolutePermeability.copy

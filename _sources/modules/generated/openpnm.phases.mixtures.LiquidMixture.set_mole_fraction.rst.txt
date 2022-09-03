@@ -1,8 +1,0 @@
-:orphan:
-
-set_mole_fraction
-=======================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: LiquidMixture.set_mole_fraction

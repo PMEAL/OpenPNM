@@ -1,8 +1,0 @@
-:orphan:
-
-tomask
-=======================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.tomask

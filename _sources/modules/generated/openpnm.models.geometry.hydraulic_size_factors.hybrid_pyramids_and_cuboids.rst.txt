@@ -1,0 +1,6 @@
+hybrid\_pyramids\_and\_cuboids
+==============================
+
+.. currentmodule:: openpnm.models.geometry.hydraulic_size_factors
+
+.. autofunction:: hybrid_pyramids_and_cuboids

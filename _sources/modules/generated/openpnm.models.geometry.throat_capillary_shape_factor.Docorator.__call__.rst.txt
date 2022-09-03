@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-========================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. automethod:: Docorator.__call__

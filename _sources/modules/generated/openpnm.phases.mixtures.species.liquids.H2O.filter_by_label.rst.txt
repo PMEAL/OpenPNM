@@ -1,8 +1,0 @@
-:orphan:
-
-filter_by_label
-===========================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.liquids
-
-.. automethod:: H2O.filter_by_label

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_length
+throat\_length
 ==============
 
 .. automodule:: openpnm.models.geometry.throat_length
@@ -23,6 +23,12 @@ Throat\_length
       circles_and_rectangles
       cones_and_cylinders
       cubes_and_cuboids
+      hybrid_cones_and_cylinders
+      hybrid_pyramids_and_cuboids
+      hybrid_trapezoids_and_rectangles
+      intersecting_cones
+      intersecting_pyramids
+      intersecting_trapezoids
       pyramids_and_cuboids
       spheres_and_cylinders
       squares_and_rectangles
@@ -31,15 +37,6 @@ Throat\_length
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

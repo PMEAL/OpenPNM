@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.phase.diffusivity._funcs &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../../_static/togglebutton.js"></script>
+    <script src="../../../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <h1>Source code for openpnm.models.phase.diffusivity._funcs</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;liquid_mixture_tc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gas_mixture_ce&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gas_mixture_fesg&quot;</span><span class="p">,</span>
+    <span class="c1"># &quot;gas_mixture_wilke_fuller&quot;,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="liquid_mixture_tc"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.liquid_mixture_tc.html#openpnm.models.phase.diffusivity.liquid_mixture_tc">[docs]</a><span class="k">def</span> <span class="nf">liquid_mixture_tc</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">mu</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+    <span class="n">Vms_at_Tb</span><span class="o">=</span><span class="s1">&#39;param.molar_volume_Tb.*&#39;</span><span class="p">,</span>
+    <span class="n">sigmas_at_Tb</span><span class="o">=</span><span class="s1">&#39;param.surface_tension_Tb.*&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses Tyn-Calus model to estimate diffusion coefficient in a dilute liquid</span>
+<span class="sd">    solution of A in B from first principles at conditions of interest</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    Vms_at_Tb : str or list of scalars</span>
+<span class="sd">        Molar volumes of each component at its boiling temperature (m3/mol).</span>
+<span class="sd">        Can either be a string to a parameter on each component of a list</span>
+<span class="sd">        of scalar values which are used directly</span>
+<span class="sd">    sigmas_at_Tb : float</span>
+<span class="sd">        Surface tension of component A at boiling temperature (N/m)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.phase.diffusivity.returns)s</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">mu</span><span class="p">]</span>
+    <span class="n">sigma_A</span><span class="p">,</span> <span class="n">sigma_B</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">sigmas_at_Tb</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">VA</span><span class="p">,</span> <span class="n">VB</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">Vms_at_Tb</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="mf">8.93e-8</span><span class="o">*</span><span class="p">(</span><span class="n">VB</span><span class="o">*</span><span class="mf">1e6</span><span class="p">)</span><span class="o">**</span><span class="mf">0.267</span><span class="o">/</span><span class="p">(</span><span class="n">VA</span><span class="o">*</span><span class="mf">1e6</span><span class="p">)</span><span class="o">**</span><span class="mf">0.433</span><span class="o">*</span><span class="n">T</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma_B</span><span class="o">/</span><span class="n">sigma_A</span><span class="p">)</span><span class="o">**</span><span class="mf">0.15</span><span class="o">/</span><span class="p">(</span><span class="n">mu</span><span class="o">*</span><span class="mf">1e3</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">A</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="mf">1e-4</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="gas_mixture_ce"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.gas_mixture_ce.html#openpnm.models.phase.diffusivity.gas_mixture_ce">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_ce</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">P</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+    <span class="n">Tcs</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature.*&#39;</span><span class="p">,</span>
+    <span class="n">Pcs</span><span class="o">=</span><span class="s1">&#39;param.critical_pressure.*&#39;</span><span class="p">,</span>
+    <span class="n">omegas</span><span class="o">=</span><span class="s1">&#39;param.acentric_factor.*&#39;</span><span class="p">,</span>
+    <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
+    <span class="n">epsilons</span><span class="o">=</span><span class="s1">&#39;param.LJ_energy.*&#39;</span><span class="p">,</span>
+    <span class="n">sigmas</span><span class="o">=</span><span class="s1">&#39;param.LJ_diameter.*&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate gas phase diffusion coefficient using Chapman-Enskog equation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    MA, MB : scalar</span>
+<span class="sd">        The molecular mass of species A and B in units of kg/mol</span>
+<span class="sd">    sigma_AB : scalar</span>
+<span class="sd">        The collision diameter in units of Angstroms</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    %(models.phase.diffusivity.returns)s</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Fetch values from components</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">P</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This function only works on binary mixtures&#39;</span><span class="p">)</span>
+    <span class="n">MWAB</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">MA</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">MB</span><span class="p">)</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">omegas</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tcs</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pcs</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mf">1.380649e-23</span>  <span class="c1"># Boltzmann constant</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">eA</span><span class="p">,</span> <span class="n">eB</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">epsilons</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># Use correlation of Tee, Gotoh, &amp; Stewart</span>
+        <span class="n">eA</span><span class="p">,</span> <span class="n">eB</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.7915</span> <span class="o">+</span> <span class="mf">0.1693</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="n">Tc</span><span class="o">*</span><span class="n">k</span>
+    <span class="n">eAB</span> <span class="o">=</span> <span class="p">(</span><span class="n">eA</span><span class="o">*</span><span class="n">eB</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="c1"># Compute collision integral using Neufeld&#39;s correlation (RPP Eq.(11-3.6))</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.06036</span><span class="p">,</span> <span class="mf">0.15610</span><span class="p">,</span> <span class="mf">0.19300</span><span class="p">,</span> <span class="mf">0.47635</span><span class="p">,</span> <span class="mf">1.03587</span><span class="p">,</span>
+                              <span class="mf">1.52996</span><span class="p">,</span> <span class="mf">1.76474</span><span class="p">,</span> <span class="mf">3.89411</span><span class="p">)</span>
+    <span class="n">Tstar</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">eAB</span>
+    <span class="n">Omega</span> <span class="o">=</span> <span class="n">Omega</span> <span class="o">=</span> <span class="n">A</span><span class="o">/</span><span class="p">(</span><span class="n">Tstar</span><span class="o">**</span><span class="n">B</span><span class="p">)</span> <span class="o">+</span> <span class="n">C</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">D</span><span class="o">*</span><span class="n">Tstar</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">F</span><span class="o">*</span><span class="n">Tstar</span><span class="p">)</span> \
+        <span class="o">+</span> <span class="n">G</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">H</span><span class="o">*</span><span class="n">Tstar</span><span class="p">)</span>
+    <span class="c1"># Now apply RPP Eq.(11-3.2)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sA</span><span class="p">,</span> <span class="n">sB</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">sigmas</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># Use correlation of Tee, Gotoh, &amp; Stewart</span>
+        <span class="n">sA</span><span class="p">,</span> <span class="n">sB</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.3551</span> <span class="o">-</span> <span class="mf">0.08847</span><span class="o">*</span><span class="n">omega</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">Pc</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">sAB</span> <span class="o">=</span> <span class="p">(</span><span class="n">sA</span> <span class="o">+</span> <span class="n">sB</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">DAB</span> <span class="o">=</span> <span class="mf">0.00266</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mf">1.5</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">P</span><span class="o">/</span><span class="mi">101325</span> <span class="o">*</span> <span class="n">MWAB</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">sAB</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">Omega</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-4</span>
+    <span class="k">return</span> <span class="n">DAB</span></div>
+
+
+<div class="viewcode-block" id="gas_mixture_fesg"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.gas_mixture_fesg.html#openpnm.models.phase.diffusivity.gas_mixture_fesg">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_fesg</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">P</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+    <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
+    <span class="n">Vdms</span><span class="o">=</span><span class="s1">&#39;param.molar_diffusion_volume.*&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates the diffusion coefficient of both species in a binary gas</span>
+<span class="sd">    mixture using the Fuller et al correlation [1]_, [2]_, [3]_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(models.phase.parameters)s</span>
+<span class="sd">    molecular_weight : str</span>
+<span class="sd">        Dictionary key containing the molecular weight of each species. The</span>
+<span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
+<span class="sd">    molar_diffusion_volume : str</span>
+<span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
+<span class="sd">        This is used by the Fuller correlation. The default is</span>
+<span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dij : dict[ndarray]</span>
+<span class="sd">        The dict contains one array for each component, containing the</span>
+<span class="sd">        diffusion coefficient of that component at each location.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Fuller, E. N., and J. C. Giddings: J. Gas Chromatogr., 3: 222 (1965).</span>
+<span class="sd">    .. [2] Fuller, E. N., P. D. Schettler, and J. C. Giddings: Ind. Eng. Chem.,</span>
+<span class="sd">       58(5): 18 (1966).</span>
+<span class="sd">    .. [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,</span>
+<span class="sd">       73: 3679 (1969).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">P</span><span class="p">]</span>
+    <span class="c1"># The following is to accomodate proper mixtures AND normal Phase objects</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MWs</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">MA</span><span class="p">,</span> <span class="n">MB</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MWs</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">vA</span><span class="p">,</span> <span class="n">vB</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Vdms</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">vA</span><span class="p">,</span> <span class="n">vB</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Vdms</span><span class="p">]</span>
+    <span class="n">MAB</span> <span class="o">=</span> <span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">MA</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">MB</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">P</span><span class="o">/</span><span class="mi">101325</span>
+    <span class="n">DAB</span> <span class="o">=</span> <span class="mf">0.00143</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mf">1.75</span><span class="o">/</span><span class="p">(</span><span class="n">P</span><span class="o">*</span><span class="p">(</span><span class="n">MAB</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">vA</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">vB</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-4</span>
+    <span class="k">return</span> <span class="n">DAB</span></div>
+
+
+<span class="k">def</span> <span class="nf">gas_mixture_fw</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">P</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
+    <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
+    <span class="n">Vdms</span><span class="o">=</span><span class="s1">&#39;pore.molar_diffusion_volume.*&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimates the diffusion coeffient of each species in a gas mixture</span>
+
+<span class="sd">    Uses the Fuller equation to estimate binary diffusivity between pairs,</span>
+<span class="sd">    then uses the correction of Fairbanks and Wilke [1]_ to account for the</span>
+<span class="sd">    composition of the gas mixture.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    molecular_weight : str</span>
+<span class="sd">        Dictionary key containing the molecular weight of each species.  The</span>
+<span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
+<span class="sd">    molar_diffusion_volume : str</span>
+<span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
+<span class="sd">        This is used by the Fuller correlation.  The default is</span>
+<span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
+<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(models.phase.P)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dij : dict[ndarray]</span>
+<span class="sd">        The dict contains one array for each component, containing the</span>
+<span class="sd">        diffusion coefficient of that component at each location.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent</span>
+<span class="sd">       Gas Mixtures. Industrial &amp; Engineering Chemistry, 42(3), p471–475 (1950).</span>
+<span class="sd">       `DOI: 10.1021/ie50483a022 &lt;http://doi.org/10.1021/ie50483a022&gt;`_</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This function is not ready yet&#39;</span><span class="p">)</span>
+    <span class="n">comps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">comps</span><span class="p">)):</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">comps</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">B</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">D</span> <span class="o">=</span> <span class="n">gas_mixture_fesg</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+                                     <span class="n">molecular_weight</span><span class="o">=</span><span class="n">MW_pair</span><span class="p">,</span>
+                                     <span class="n">molar_diffusion_volume</span><span class="o">=</span><span class="n">Vdm_pair</span><span class="p">,</span>
+                                     <span class="n">temperature</span><span class="o">=</span><span class="n">T</span><span class="p">,</span>
+                                     <span class="n">pressure</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+                <span class="n">yB</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">B</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">denom</span> <span class="o">+=</span> <span class="n">yB</span><span class="o">/</span><span class="n">D</span>
+        <span class="n">yA</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">yA</span><span class="p">)</span><span class="o">/</span><span class="n">denom</span>
+    <span class="k">return</span> <span class="n">values</span>
+</pre></div>
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.phase._mixture &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <h1>Source code for openpnm.phase._mixture</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">openpnm.phase</span> <span class="kn">import</span> <span class="n">Phase</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase.mixtures</span> <span class="kn">import</span> <span class="n">mole_summation</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">standard_liquid_mixture</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">standard_gas_mixture</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">HealthDict</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">Workspace</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">get_printable_props</span><span class="p">,</span> <span class="n">get_printable_labels</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Mixture&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BinaryGas&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;GasMixture&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;LiquidMixture&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;StandardGasMixture&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;StandardLiquidMixture&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">MixtureSettings</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<div class="viewcode-block" id="Mixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.html#openpnm.phase.Mixture">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Mixture&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">Mixture</span><span class="p">(</span><span class="n">Phase</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates Phase object that represents a multicomponent mixture</span>
+<span class="sd">    consisting of a given list of individual phase objects as components.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(Phase.parameters)s</span>
+<span class="sd">    components : list</span>
+<span class="sd">        A list of all components that constitute this mixture</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="p">[],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mixture_?&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">MixtureSettings</span><span class="p">())</span>
+
+        <span class="c1"># Add any supplied phases to the list components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># Provisional support for hashtag notation</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">delim</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span>
+            <span class="k">if</span> <span class="n">delim</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">comps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+                <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">delim</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">]:</span>  <span class="c1"># Wildcard, get all comps as dict</span>
+                    <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">vals</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="k">return</span> <span class="n">vals</span>
+        <span class="c1"># Below is the original support using the &quot;.*&quot; notation</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># If key ends in component name, fetch it directly</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">elif</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">]:</span>  <span class="c1"># Fetch values for ALL components</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">while</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>  <span class="c1"># If ended with .* also remove .</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vals</span>
+
+    <span class="c1"># def __setitem__(self, key, value):</span>
+    <span class="c1">#     if key == &#39;pore.mole_fraction&#39;:</span>
+    <span class="c1">#         raise Exception(&quot;Cannot write a mole fraction without a .&lt;compname&gt;&quot;)</span>
+    <span class="c1">#     element, propname = key.split(&#39;.&#39;, 1)</span>
+    <span class="c1">#     if propname.split(&#39;.&#39;)[-1] in self.components.keys():</span>
+    <span class="c1">#         obj = self.components[key.split(&#39;.&#39;)[-1]]</span>
+    <span class="c1">#         key = &#39;.&#39;.join(key.split(&#39;.&#39;)[:-1])</span>
+    <span class="c1">#         obj[key] = value</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         super().__setitem__(key, value)</span>
+
+<div class="viewcode-block" id="Mixture.get_comp_vals"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.get_comp_vals.html#openpnm.phase.Mixture.get_comp_vals">[docs]</a>    <span class="k">def</span> <span class="nf">get_comp_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary of the requested values from each component in the</span>
+<span class="sd">        mixture</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            The property to fetch, such as ``&#39;pore.viscosity&#39;``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vals : dict</span>
+<span class="sd">            A dictionary with each component name as the key and the requested</span>
+<span class="sd">            property as the value.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">propname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">propname</span>
+        <span class="k">if</span> <span class="n">propname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">vals</span><span class="p">[</span><span class="n">comp</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">vals</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1"> not found on at least one component&#39;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Mixture.get_mix_vals"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.get_mix_vals.html#openpnm.phase.Mixture.get_mix_vals">[docs]</a>    <span class="k">def</span> <span class="nf">get_mix_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the mole fraction weighted value of a given property for the mixture</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            The property to fetch, such as ``&#39;pore.viscosity&#39;``.</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            The type of weighting to use. Options are:</span>
+
+<span class="sd">            ============== ====================================================</span>
+<span class="sd">            mode</span>
+<span class="sd">            ============== ====================================================</span>
+<span class="sd">            &#39;linear&#39;       (default) Basic mole fraction weighting of the form:</span>
+<span class="sd">                           :math:`z = \Sigma (x_i \cdot \z_i)`</span>
+<span class="sd">            &#39;logarithmic&#39;  Uses the natural logarithm of the property as:</span>
+<span class="sd">                           :math:`ln(z) = \Sigma (x_i \cdot ln(\z_i))`</span>
+<span class="sd">            &#39;power         Applies an exponent to the property as:</span>
+<span class="sd">                           :math:`\z^{power} = \Sigma (x_i \cdot \z_i^{power})`</span>
+<span class="sd">            ============== ====================================================</span>
+
+<span class="sd">        power : scalar</span>
+<span class="sd">            If ``mode=&#39;power&#39;`` this indicates the value of the exponent,</span>
+<span class="sd">            otherwise this is ignored.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        vals : ndarray</span>
+<span class="sd">            An ndarray with the requested values obtained using the specified</span>
+<span class="sd">            weigthing.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Xs</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">propname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">Xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">ys</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Xs</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;logarithmic&#39;</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">Xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ys</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Xs</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;power&#39;</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">Xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">ys</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">**</span><span class="n">power</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Xs</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">power</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">z</span></div>
+
+    <span class="c1"># def __str__(self):</span>
+    <span class="c1">#     hr = &#39;―&#39; * 78</span>
+    <span class="c1">#     lines = &#39;\n&#39; + &#39;Component Phases&#39;</span>
+    <span class="c1">#     for item in self.components.values():</span>
+    <span class="c1">#         lines += &#39;\n&#39; + &quot;═&quot;*78 + &#39;\n&#39; + item.__repr__() + &#39;\n&#39; + hr + &#39;\n&#39;</span>
+    <span class="c1">#         lines += get_printable_props(item, suffix=item.name)</span>
+    <span class="c1">#         lines += &#39;\n&#39; + hr + &#39;\n&#39;</span>
+    <span class="c1">#         lines += get_printable_labels(item, suffix=item.name)</span>
+    <span class="c1">#     temp = super().__str__().split(hr)</span>
+    <span class="c1">#     temp.insert(-1, lines + &#39;\n&#39;)</span>
+    <span class="c1">#     lines = hr.join(temp)</span>
+    <span class="c1">#     return lines</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">hr</span> <span class="o">=</span> <span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">78</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;Component Phases&#39;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">lines</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;═&quot;</span><span class="o">*</span><span class="mi">78</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">hr</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">lines</span> <span class="o">+=</span> <span class="n">get_printable_props</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">hr</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="n">lines</span> <span class="o">+=</span> <span class="n">get_printable_labels</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">hr</span><span class="p">)</span>
+        <span class="n">temp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">lines</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">hr</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_comps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">comps</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">comps</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">comps</span>
+
+    <span class="k">def</span> <span class="nf">_set_comps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">components</span><span class="p">]</span>
+        <span class="c1"># Add mole_fraction array to dict, filled with nans</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">components</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_comps</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_comps</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Mixture.add_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.add_comp.html#openpnm.phase.Mixture.add_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">mole_fraction</span></div>
+
+<div class="viewcode-block" id="Mixture.remove_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.remove_comp.html#openpnm.phase.Mixture.remove_comp">[docs]</a>    <span class="k">def</span> <span class="nf">remove_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">):</span>
+            <span class="n">component</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">component</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Mixture.check_mixture_health"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.check_mixture_health.html#openpnm.phase.Mixture.check_mixture_health">[docs]</a>    <span class="k">def</span> <span class="nf">check_mixture_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the &quot;health&quot; of the mixture</span>
+
+<span class="sd">        Calculates the mole fraction of all species in each pore and returns</span>
+<span class="sd">        an list of where values are too low or too high</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        health : dict</span>
+<span class="sd">            A HealthDict object containing lists of locations where the mole</span>
+<span class="sd">            fractions are not unity. One value indicates locations that are</span>
+<span class="sd">            too high, and another where they are too low.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">HealthDict</span><span class="p">()</span>
+        <span class="n">h</span><span class="p">[</span><span class="s1">&#39;mole_fraction_too_low&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">h</span><span class="p">[</span><span class="s1">&#39;mole_fraction_too_high&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">conc</span> <span class="o">=</span> <span class="n">mole_summation</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">conc</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">conc</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lo</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">[</span><span class="s1">&#39;mole_fraction_too_low&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lo</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">[</span><span class="s1">&#39;mole_fraction_too_high&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hi</span>
+        <span class="k">return</span> <span class="n">h</span></div></div>
+
+
+<div class="viewcode-block" id="LiquidMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.LiquidMixture.html#openpnm.phase.LiquidMixture">[docs]</a><span class="k">class</span> <span class="nc">LiquidMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
+
+<div class="viewcode-block" id="LiquidMixture.x"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.LiquidMixture.x.html#openpnm.phase.LiquidMixture.x">[docs]</a>    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method for getting and setting mole fractions of a component</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        compname : str, optional</span>
+<span class="sd">            The name of the component, i.e. ``obj.name``.  If ``x`` is not</span>
+<span class="sd">            provided this will *return* the mole fraction of the requested</span>
+<span class="sd">            component.  If ``x`` is provided this will *set* the mole fraction</span>
+<span class="sd">            of the specified component to ``x``.</span>
+<span class="sd">        x : scalar or ndarray, optional</span>
+<span class="sd">            The mole fraction of the given species in the mixture. If not</span>
+<span class="sd">            provided this method works as a *getter* and will return the</span>
+<span class="sd">            mole fraction of the requested component.  If ``compname`` is not</span>
+<span class="sd">            provided then the mole fractions of all components will be returned</span>
+<span class="sd">            as a dictionary with the components names as keys.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method is equivalent to</span>
+<span class="sd">        ``mixture[&#39;pore.mole_fraction.&lt;compname&gt;&#39;] = x``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">):</span>
+            <span class="n">compname</span> <span class="o">=</span> <span class="n">compname</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">compname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">compname</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">compname</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span></div></div>
+
+
+<div class="viewcode-block" id="GasMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.GasMixture.html#openpnm.phase.GasMixture">[docs]</a><span class="k">class</span> <span class="nc">GasMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
+
+<div class="viewcode-block" id="GasMixture.y"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.GasMixture.y.html#openpnm.phase.GasMixture.y">[docs]</a>    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method for getting and setting mole fractions of a component</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        compname : str, optional</span>
+<span class="sd">            The name of the component i.e. ``obj.name``.  If ``y`` is not</span>
+<span class="sd">            provided this will *return* the mole fraction of the requested</span>
+<span class="sd">            component.  If ``y`` is provided this will *set* the mole fraction</span>
+<span class="sd">            of the specified component to ``y``.</span>
+<span class="sd">        y : scalar or ndarray, optional</span>
+<span class="sd">            The mole fraction of the given species in the mixture. If not</span>
+<span class="sd">            provided this method works as a *getter* and will return the</span>
+<span class="sd">            mole fraction of the requested component. If ``compname`` is also</span>
+<span class="sd">            not provided then the mole fractions of all components will be</span>
+<span class="sd">            returned as a dictionary with the components names as keys.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method is equivalent to</span>
+<span class="sd">        ``mixture[&#39;pore.mole_fraction.&lt;compname&gt;&#39;] = y``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">):</span>
+            <span class="n">compname</span> <span class="o">=</span> <span class="n">compname</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">compname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">compname</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">compname</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span></div></div>
+
+
+<div class="viewcode-block" id="BinaryGas"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.BinaryGas.html#openpnm.phase.BinaryGas">[docs]</a><span class="k">class</span> <span class="nc">BinaryGas</span><span class="p">(</span><span class="n">GasMixture</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BinaryGas.add_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.BinaryGas.add_comp.html#openpnm.phase.BinaryGas.add_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Binary mixtures cannot have more than 2 components&quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;, remove one first&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_comp</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="n">mole_fraction</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="StandardLiquidMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.StandardLiquidMixture.html#openpnm.phase.StandardLiquidMixture">[docs]</a><span class="k">class</span> <span class="nc">StandardLiquidMixture</span><span class="p">(</span><span class="n">LiquidMixture</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">standard_liquid_mixture</span><span class="p">)</span></div>
+        <span class="c1"># Running models doesn&#39;t make sense as compositions are not set yet</span>
+        <span class="c1"># self.regenerate_models()</span>
+
+
+<div class="viewcode-block" id="StandardGasMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.StandardGasMixture.html#openpnm.phase.StandardGasMixture">[docs]</a><span class="k">class</span> <span class="nc">StandardGasMixture</span><span class="p">(</span><span class="n">GasMixture</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">standard_gas_mixture</span><span class="p">)</span></div>
+        <span class="c1"># Running models doesn&#39;t make sense as compositions are not set yet</span>
+        <span class="c1"># self.regenerate_models()</span>
+</pre></div>
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

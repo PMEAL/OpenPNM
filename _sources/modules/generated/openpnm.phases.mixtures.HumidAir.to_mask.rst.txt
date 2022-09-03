@@ -1,8 +1,0 @@
-:orphan:
-
-to_mask
-========================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: HumidAir.to_mask

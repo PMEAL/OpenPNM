@@ -1,0 +1,8 @@
+:orphan:
+
+remove_comp
+===============================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: StandardLiquidMixture.remove_comp

@@ -1,8 +1,0 @@
-:orphan:
-
-num_pores
-============================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: ConesAndCylinders.num_pores

@@ -1,6 +1,0 @@
-label\_surface\_nodes
-=====================
-
-.. currentmodule:: openpnm.topotools.generators.tools
-
-.. autofunction:: label_surface_nodes

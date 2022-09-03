@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-======================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.liquids
-
-.. automethod:: H2O.to_indices

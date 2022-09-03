@@ -1,0 +1,6 @@
+check\_network\_health
+======================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: check_network_health

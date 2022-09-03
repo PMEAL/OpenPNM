@@ -1,0 +1,6 @@
+mass\_to\_molar
+===============
+
+.. currentmodule:: openpnm.models.phase.density
+
+.. autofunction:: mass_to_molar

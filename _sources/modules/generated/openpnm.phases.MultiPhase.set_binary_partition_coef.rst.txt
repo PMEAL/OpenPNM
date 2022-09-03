@@ -1,8 +1,0 @@
-:orphan:
-
-set_binary_partition_coef
-===================================================
-
-.. currentmodule:: openpnm.phases
-
-.. automethod:: MultiPhase.set_binary_partition_coef

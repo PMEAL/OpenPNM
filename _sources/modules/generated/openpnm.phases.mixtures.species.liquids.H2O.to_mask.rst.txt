@@ -1,8 +1,0 @@
-:orphan:
-
-to_mask
-===================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.liquids
-
-.. automethod:: H2O.to_mask

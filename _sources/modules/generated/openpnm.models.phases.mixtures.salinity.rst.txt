@@ -1,6 +1,0 @@
-salinity
-========
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. autofunction:: salinity

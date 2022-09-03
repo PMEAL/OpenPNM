@@ -1,6 +1,0 @@
-voronoi\_delaunay\_dual
-=======================
-
-.. currentmodule:: openpnm.topotools.generators
-
-.. autofunction:: voronoi_delaunay_dual

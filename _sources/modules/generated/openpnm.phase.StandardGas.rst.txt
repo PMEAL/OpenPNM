@@ -1,0 +1,45 @@
+StandardGas
+=========================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: StandardGas
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            StandardGas.add_model
+            StandardGas.add_model_collection
+            StandardGas.clear
+            StandardGas.copy
+            StandardGas.filter_by_label
+            StandardGas.fromkeys
+            StandardGas.get
+            StandardGas.get_conduit_data
+            StandardGas.interpolate_data
+            StandardGas.items
+            StandardGas.keys
+            StandardGas.labels
+            StandardGas.num_pores
+            StandardGas.num_throats
+            StandardGas.pop
+            StandardGas.popitem
+            StandardGas.pores
+            StandardGas.props
+            StandardGas.regenerate_models
+            StandardGas.run_model
+            StandardGas.set_label
+            StandardGas.setdefault
+            StandardGas.throats
+            StandardGas.to_indices
+            StandardGas.to_mask
+            StandardGas.update
+            StandardGas.values
+   
+   

@@ -1,8 +1,0 @@
-:orphan:
-
-fromkeys
-==================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: CO2.fromkeys

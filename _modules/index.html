@@ -1,16 +1,21 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview: module code &#8212; OpenPNM 2.8.2 documentation</title>
-    
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+    <title>Overview: module code &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -18,58 +23,68 @@
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
-    
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
+  
 
-<a class="navbar-brand" href="https://www.openpnm.org">
-  <img src="../_static/openpnm_logo.png" class="logo" alt="logo">
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    <img src="../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
 </a>
-
-
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -79,14 +94,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../user_guide/installation.html">
+ <a class="reference internal nav-link" href="../installation.html">
   Installation
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../user_guide/index.html">
-  User Guide
+ <a class="reference internal nav-link" href="../basic_usage.html">
+  Basic Usage
  </a>
 </li>
 
@@ -97,8 +112,14 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../examples/examples.html">
+ <a class="reference internal nav-link" href="../examples/index.html">
   Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../examples/index2.html">
+  Examples2
  </a>
 </li>
 
@@ -119,24 +140,22 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://openpnm.substack.com/" rel="noopener" target="_blank" title="Substack">
-            <span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter">
-            <span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label>
-          </a>
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
@@ -147,12 +166,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -160,39 +180,35 @@
     
   </div>
 </nav>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-          </div>
-          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <h1>All modules for which code is available</h1>
-<ul><li><a href="auto_all.html">auto_all</a></li>
-<li><a href="collections.html">collections</a></li>
-<li><a href="docrep.html">docrep</a></li>
-<li><a href="matplotlib/docstring.html">matplotlib.docstring</a></li>
-<li><a href="numpy/core/_internal.html">numpy.core._internal</a></li>
+<ul><li><a href="docrep.html">docrep</a></li>
 <li><a href="openpnm/algorithms/_advection_diffusion.html">openpnm.algorithms._advection_diffusion</a></li>
+<li><a href="openpnm/algorithms/_algorithm.html">openpnm.algorithms._algorithm</a></li>
+<li><a href="openpnm/algorithms/_drainage.html">openpnm.algorithms._drainage</a></li>
 <li><a href="openpnm/algorithms/_fickian_diffusion.html">openpnm.algorithms._fickian_diffusion</a></li>
 <li><a href="openpnm/algorithms/_fourier_conduction.html">openpnm.algorithms._fourier_conduction</a></li>
-<li><a href="openpnm/algorithms/_generic_algorithm.html">openpnm.algorithms._generic_algorithm</a></li>
-<li><a href="openpnm/algorithms/_generic_transport.html">openpnm.algorithms._generic_transport</a></li>
 <li><a href="openpnm/algorithms/_invasion_percolation.html">openpnm.algorithms._invasion_percolation</a></li>
 <li><a href="openpnm/algorithms/_ionic_conduction.html">openpnm.algorithms._ionic_conduction</a></li>
-<li><a href="openpnm/algorithms/_mixed_ip.html">openpnm.algorithms._mixed_ip</a></li>
-<li><a href="openpnm/algorithms/_mixed_ip_coop.html">openpnm.algorithms._mixed_ip_coop</a></li>
 <li><a href="openpnm/algorithms/_ohmic_conduction.html">openpnm.algorithms._ohmic_conduction</a></li>
 <li><a href="openpnm/algorithms/_ordinary_percolation.html">openpnm.algorithms._ordinary_percolation</a></li>
 <li><a href="openpnm/algorithms/_reactive_transport.html">openpnm.algorithms._reactive_transport</a></li>
@@ -201,179 +217,134 @@
 <li><a href="openpnm/algorithms/_transient_fickian_diffusion.html">openpnm.algorithms._transient_fickian_diffusion</a></li>
 <li><a href="openpnm/algorithms/_transient_ionic_conduction.html">openpnm.algorithms._transient_ionic_conduction</a></li>
 <li><a href="openpnm/algorithms/_transient_reactive_transport.html">openpnm.algorithms._transient_reactive_transport</a></li>
-<li><a href="openpnm/core/_base.html">openpnm.core._base</a></li>
+<li><a href="openpnm/algorithms/_transport.html">openpnm.algorithms._transport</a></li>
+<li><a href="openpnm/core/_base2.html">openpnm.core._base2</a></li>
 <li><a href="openpnm/core/_mixins.html">openpnm.core._mixins</a></li>
 <li><a href="openpnm/core/_models.html">openpnm.core._models</a></li>
-<li><a href="openpnm/core/_subdomain.html">openpnm.core._subdomain</a></li>
-<li><a href="openpnm/geometry/_circles.html">openpnm.geometry._circles</a></li>
-<li><a href="openpnm/geometry/_cones.html">openpnm.geometry._cones</a></li>
-<li><a href="openpnm/geometry/_cubes.html">openpnm.geometry._cubes</a></li>
-<li><a href="openpnm/geometry/_generic.html">openpnm.geometry._generic</a></li>
-<li><a href="openpnm/geometry/_imported.html">openpnm.geometry._imported</a></li>
-<li><a href="openpnm/geometry/_pyramids.html">openpnm.geometry._pyramids</a></li>
-<li><a href="openpnm/geometry/_spheres.html">openpnm.geometry._spheres</a></li>
-<li><a href="openpnm/geometry/_squares.html">openpnm.geometry._squares</a></li>
-<li><a href="openpnm/geometry/_trapezoids.html">openpnm.geometry._trapezoids</a></li>
 <li><a href="openpnm/integrators/_base.html">openpnm.integrators._base</a></li>
 <li><a href="openpnm/integrators/_scipy.html">openpnm.integrators._scipy</a></li>
 <li><a href="openpnm/io/_comsol.html">openpnm.io._comsol</a></li>
 <li><a href="openpnm/io/_csv.html">openpnm.io._csv</a></li>
 <li><a href="openpnm/io/_dict.html">openpnm.io._dict</a></li>
-<li><a href="openpnm/io/_generic.html">openpnm.io._generic</a></li>
 <li><a href="openpnm/io/_hdf5.html">openpnm.io._hdf5</a></li>
-<li><a href="openpnm/io/_imorph.html">openpnm.io._imorph</a></li>
 <li><a href="openpnm/io/_jsongraph.html">openpnm.io._jsongraph</a></li>
 <li><a href="openpnm/io/_marock.html">openpnm.io._marock</a></li>
-<li><a href="openpnm/io/_mat.html">openpnm.io._mat</a></li>
 <li><a href="openpnm/io/_networkx.html">openpnm.io._networkx</a></li>
 <li><a href="openpnm/io/_pandas.html">openpnm.io._pandas</a></li>
 <li><a href="openpnm/io/_paraview.html">openpnm.io._paraview</a></li>
 <li><a href="openpnm/io/_pergeos.html">openpnm.io._pergeos</a></li>
-<li><a href="openpnm/io/_pickle.html">openpnm.io._pickle</a></li>
-<li><a href="openpnm/io/_pnm.html">openpnm.io._pnm</a></li>
 <li><a href="openpnm/io/_porespy.html">openpnm.io._porespy</a></li>
 <li><a href="openpnm/io/_salome.html">openpnm.io._salome</a></li>
 <li><a href="openpnm/io/_statoil.html">openpnm.io._statoil</a></li>
 <li><a href="openpnm/io/_stl.html">openpnm.io._stl</a></li>
 <li><a href="openpnm/io/_vtk.html">openpnm.io._vtk</a></li>
 <li><a href="openpnm/io/_xdmf.html">openpnm.io._xdmf</a></li>
-<li><a href="openpnm/metrics/_absolute_permeability.html">openpnm.metrics._absolute_permeability</a></li>
-<li><a href="openpnm/metrics/_effective_diffusivity.html">openpnm.metrics._effective_diffusivity</a></li>
-<li><a href="openpnm/metrics/_formation_factor.html">openpnm.metrics._formation_factor</a></li>
-<li><a href="openpnm/metrics/_generic_metric.html">openpnm.metrics._generic_metric</a></li>
-<li><a href="openpnm/metrics/_generic_transport_metrics.html">openpnm.metrics._generic_transport_metrics</a></li>
-<li><a href="openpnm/metrics/_mercury_intrusion.html">openpnm.metrics._mercury_intrusion</a></li>
-<li><a href="openpnm/metrics/_pnflow.html">openpnm.metrics._pnflow</a></li>
-<li><a href="openpnm/metrics/_porosimetry.html">openpnm.metrics._porosimetry</a></li>
-<li><a href="openpnm/models/geometry/conduit_lengths.html">openpnm.models.geometry.conduit_lengths</a></li>
-<li><a href="openpnm/models/geometry/diffusive_size_factors.html">openpnm.models.geometry.diffusive_size_factors</a></li>
-<li><a href="openpnm/models/geometry/hydraulic_size_factors.html">openpnm.models.geometry.hydraulic_size_factors</a></li>
-<li><a href="openpnm/models/geometry/pore_cross_sectional_area.html">openpnm.models.geometry.pore_cross_sectional_area</a></li>
-<li><a href="openpnm/models/geometry/pore_seed.html">openpnm.models.geometry.pore_seed</a></li>
-<li><a href="openpnm/models/geometry/pore_size.html">openpnm.models.geometry.pore_size</a></li>
-<li><a href="openpnm/models/geometry/pore_surface_area.html">openpnm.models.geometry.pore_surface_area</a></li>
-<li><a href="openpnm/models/geometry/pore_volume.html">openpnm.models.geometry.pore_volume</a></li>
-<li><a href="openpnm/models/geometry/throat_capillary_shape_factor.html">openpnm.models.geometry.throat_capillary_shape_factor</a></li>
-<li><a href="openpnm/models/geometry/throat_centroid.html">openpnm.models.geometry.throat_centroid</a></li>
-<li><a href="openpnm/models/geometry/throat_cross_sectional_area.html">openpnm.models.geometry.throat_cross_sectional_area</a></li>
-<li><a href="openpnm/models/geometry/throat_length.html">openpnm.models.geometry.throat_length</a></li>
-<li><a href="openpnm/models/geometry/throat_perimeter.html">openpnm.models.geometry.throat_perimeter</a></li>
-<li><a href="openpnm/models/geometry/throat_seed.html">openpnm.models.geometry.throat_seed</a></li>
-<li><a href="openpnm/models/geometry/throat_size.html">openpnm.models.geometry.throat_size</a></li>
-<li><a href="openpnm/models/geometry/throat_surface_area.html">openpnm.models.geometry.throat_surface_area</a></li>
-<li><a href="openpnm/models/geometry/throat_vector.html">openpnm.models.geometry.throat_vector</a></li>
-<li><a href="openpnm/models/geometry/throat_volume.html">openpnm.models.geometry.throat_volume</a></li>
-<li><a href="openpnm/models/misc/basic_math.html">openpnm.models.misc.basic_math</a></li>
-<li><a href="openpnm/models/misc/neighbor_lookups.html">openpnm.models.misc.neighbor_lookups</a></li>
-<li><a href="openpnm/models/misc/simple_equations.html">openpnm.models.misc.simple_equations</a></li>
-<li><a href="openpnm/models/misc/statistical_distributions.html">openpnm.models.misc.statistical_distributions</a></li>
+<li><a href="openpnm/models/geometry/conduit_lengths/_funcs.html">openpnm.models.geometry.conduit_lengths._funcs</a></li>
+<li><a href="openpnm/models/geometry/diffusive_size_factors/_funcs.html">openpnm.models.geometry.diffusive_size_factors._funcs</a></li>
+<li><a href="openpnm/models/geometry/hydraulic_size_factors/_funcs.html">openpnm.models.geometry.hydraulic_size_factors._funcs</a></li>
+<li><a href="openpnm/models/geometry/pore_cross_sectional_area/_funcs.html">openpnm.models.geometry.pore_cross_sectional_area._funcs</a></li>
+<li><a href="openpnm/models/geometry/pore_seed/_funcs.html">openpnm.models.geometry.pore_seed._funcs</a></li>
+<li><a href="openpnm/models/geometry/pore_size/_funcs.html">openpnm.models.geometry.pore_size._funcs</a></li>
+<li><a href="openpnm/models/geometry/pore_surface_area/_funcs.html">openpnm.models.geometry.pore_surface_area._funcs</a></li>
+<li><a href="openpnm/models/geometry/pore_volume/_funcs.html">openpnm.models.geometry.pore_volume._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_capillary_shape_factor/_funcs.html">openpnm.models.geometry.throat_capillary_shape_factor._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_centroid/_funcs.html">openpnm.models.geometry.throat_centroid._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_cross_sectional_area/_funcs.html">openpnm.models.geometry.throat_cross_sectional_area._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_endpoints/_funcs.html">openpnm.models.geometry.throat_endpoints._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_length/_funcs.html">openpnm.models.geometry.throat_length._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_perimeter/_funcs.html">openpnm.models.geometry.throat_perimeter._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_seed/_funcs.html">openpnm.models.geometry.throat_seed._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_size/_funcs.html">openpnm.models.geometry.throat_size._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_surface_area/_funcs.html">openpnm.models.geometry.throat_surface_area._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_vector/_funcs.html">openpnm.models.geometry.throat_vector._funcs</a></li>
+<li><a href="openpnm/models/geometry/throat_volume/_funcs.html">openpnm.models.geometry.throat_volume._funcs</a></li>
+<li><a href="openpnm/models/misc/_basic_math.html">openpnm.models.misc._basic_math</a></li>
+<li><a href="openpnm/models/misc/_neighbor_lookups.html">openpnm.models.misc._neighbor_lookups</a></li>
+<li><a href="openpnm/models/misc/_simple_equations.html">openpnm.models.misc._simple_equations</a></li>
+<li><a href="openpnm/models/misc/_statistical_distributions.html">openpnm.models.misc._statistical_distributions</a></li>
 <li><a href="openpnm/models/network/_health.html">openpnm.models.network._health</a></li>
 <li><a href="openpnm/models/network/_topology.html">openpnm.models.network._topology</a></li>
-<li><a href="openpnm/models/phases/density.html">openpnm.models.phases.density</a></li>
-<li><a href="openpnm/models/phases/diffusivity.html">openpnm.models.phases.diffusivity</a></li>
-<li><a href="openpnm/models/phases/electrical_conductivity.html">openpnm.models.phases.electrical_conductivity</a></li>
-<li><a href="openpnm/models/phases/misc.html">openpnm.models.phases.misc</a></li>
-<li><a href="openpnm/models/phases/mixtures.html">openpnm.models.phases.mixtures</a></li>
-<li><a href="openpnm/models/phases/molar_density.html">openpnm.models.phases.molar_density</a></li>
-<li><a href="openpnm/models/phases/partition_coefficient.html">openpnm.models.phases.partition_coefficient</a></li>
-<li><a href="openpnm/models/phases/permittivity.html">openpnm.models.phases.permittivity</a></li>
-<li><a href="openpnm/models/phases/surface_tension.html">openpnm.models.phases.surface_tension</a></li>
-<li><a href="openpnm/models/phases/thermal_conductivity.html">openpnm.models.phases.thermal_conductivity</a></li>
-<li><a href="openpnm/models/phases/vapor_pressure.html">openpnm.models.phases.vapor_pressure</a></li>
-<li><a href="openpnm/models/phases/viscosity.html">openpnm.models.phases.viscosity</a></li>
-<li><a href="openpnm/models/physics/ad_dif_conductance.html">openpnm.models.physics.ad_dif_conductance</a></li>
-<li><a href="openpnm/models/physics/ad_dif_mig_conductance.html">openpnm.models.physics.ad_dif_mig_conductance</a></li>
-<li><a href="openpnm/models/physics/capillary_pressure.html">openpnm.models.physics.capillary_pressure</a></li>
-<li><a href="openpnm/models/physics/diffusive_conductance.html">openpnm.models.physics.diffusive_conductance</a></li>
-<li><a href="openpnm/models/physics/electrical_conductance.html">openpnm.models.physics.electrical_conductance</a></li>
-<li><a href="openpnm/models/physics/hydraulic_conductance.html">openpnm.models.physics.hydraulic_conductance</a></li>
-<li><a href="openpnm/models/physics/ionic_conductance.html">openpnm.models.physics.ionic_conductance</a></li>
-<li><a href="openpnm/models/physics/meniscus.html">openpnm.models.physics.meniscus</a></li>
-<li><a href="openpnm/models/physics/multiphase.html">openpnm.models.physics.multiphase</a></li>
-<li><a href="openpnm/models/physics/source_terms.html">openpnm.models.physics.source_terms</a></li>
-<li><a href="openpnm/models/physics/thermal_conductance.html">openpnm.models.physics.thermal_conductance</a></li>
+<li><a href="openpnm/models/phase.html">openpnm.models.phase</a></li>
+<ul><li><a href="openpnm/models/phase/density/_funcs.html">openpnm.models.phase.density._funcs</a></li>
+<li><a href="openpnm/models/phase/diffusivity/_funcs.html">openpnm.models.phase.diffusivity._funcs</a></li>
+<li><a href="openpnm/models/phase/heat_capacity/_funcs.html">openpnm.models.phase.heat_capacity._funcs</a></li>
+<li><a href="openpnm/models/phase/misc/_funcs.html">openpnm.models.phase.misc._funcs</a></li>
+<li><a href="openpnm/models/phase/mixtures/_funcs.html">openpnm.models.phase.mixtures._funcs</a></li>
+<li><a href="openpnm/models/phase/partition_coefficient/_funcs.html">openpnm.models.phase.partition_coefficient._funcs</a></li>
+<li><a href="openpnm/models/phase/surface_tension/_funcs.html">openpnm.models.phase.surface_tension._funcs</a></li>
+<li><a href="openpnm/models/phase/thermal_conductivity/_funcs.html">openpnm.models.phase.thermal_conductivity._funcs</a></li>
+<li><a href="openpnm/models/phase/vapor_pressure/_funcs.html">openpnm.models.phase.vapor_pressure._funcs</a></li>
+<li><a href="openpnm/models/phase/viscosity/_funcs.html">openpnm.models.phase.viscosity._funcs</a></li>
+</ul><li><a href="openpnm/models/physics/ad_dif_conductance/_funcs.html">openpnm.models.physics.ad_dif_conductance._funcs</a></li>
+<li><a href="openpnm/models/physics/ad_dif_mig_conductance/_funcs.html">openpnm.models.physics.ad_dif_mig_conductance._funcs</a></li>
+<li><a href="openpnm/models/physics/capillary_pressure/_funcs.html">openpnm.models.physics.capillary_pressure._funcs</a></li>
+<li><a href="openpnm/models/physics/diffusive_conductance/_funcs.html">openpnm.models.physics.diffusive_conductance._funcs</a></li>
+<li><a href="openpnm/models/physics/electrical_conductance/_funcs.html">openpnm.models.physics.electrical_conductance._funcs</a></li>
+<li><a href="openpnm/models/physics/hydraulic_conductance/_funcs.html">openpnm.models.physics.hydraulic_conductance._funcs</a></li>
+<li><a href="openpnm/models/physics/ionic_conductance/_funcs.html">openpnm.models.physics.ionic_conductance._funcs</a></li>
+<li><a href="openpnm/models/physics/meniscus/_funcs.html">openpnm.models.physics.meniscus._funcs</a></li>
+<li><a href="openpnm/models/physics/multiphase/_funcs.html">openpnm.models.physics.multiphase._funcs</a></li>
+<li><a href="openpnm/models/physics/source_terms/_funcs.html">openpnm.models.physics.source_terms._funcs</a></li>
+<li><a href="openpnm/models/physics/thermal_conductance/_funcs.html">openpnm.models.physics.thermal_conductance._funcs</a></li>
 <li><a href="openpnm/network/_bravais.html">openpnm.network._bravais</a></li>
 <li><a href="openpnm/network/_cubic.html">openpnm.network._cubic</a></li>
-<li><a href="openpnm/network/_cubic_dual.html">openpnm.network._cubic_dual</a></li>
 <li><a href="openpnm/network/_cubic_template.html">openpnm.network._cubic_template</a></li>
 <li><a href="openpnm/network/_delaunay.html">openpnm.network._delaunay</a></li>
 <li><a href="openpnm/network/_delaunay_voronoi_dual.html">openpnm.network._delaunay_voronoi_dual</a></li>
+<li><a href="openpnm/network/_demo.html">openpnm.network._demo</a></li>
 <li><a href="openpnm/network/_gabriel.html">openpnm.network._gabriel</a></li>
-<li><a href="openpnm/network/_generic.html">openpnm.network._generic</a></li>
+<li><a href="openpnm/network/_imported.html">openpnm.network._imported</a></li>
+<li><a href="openpnm/network/_network.html">openpnm.network._network</a></li>
 <li><a href="openpnm/network/_voronoi.html">openpnm.network._voronoi</a></li>
-<li><a href="openpnm/phases/_air.html">openpnm.phases._air</a></li>
-<li><a href="openpnm/phases/_generic.html">openpnm.phases._generic</a></li>
-<li><a href="openpnm/phases/_mercury.html">openpnm.phases._mercury</a></li>
-<li><a href="openpnm/phases/_multiphase.html">openpnm.phases._multiphase</a></li>
-<li><a href="openpnm/phases/_water.html">openpnm.phases._water</a></li>
-<li><a href="openpnm/phases/mixtures/_dry_air.html">openpnm.phases.mixtures._dry_air</a></li>
-<li><a href="openpnm/phases/mixtures/_generic_mixture.html">openpnm.phases.mixtures._generic_mixture</a></li>
-<li><a href="openpnm/phases/mixtures/_generic_species.html">openpnm.phases.mixtures._generic_species</a></li>
-<li><a href="openpnm/phases/mixtures/_humid_air.html">openpnm.phases.mixtures._humid_air</a></li>
-<li><a href="openpnm/phases/mixtures/_ideal_gas.html">openpnm.phases.mixtures._ideal_gas</a></li>
-<li><a href="openpnm/phases/mixtures/_saline_water.html">openpnm.phases.mixtures._saline_water</a></li>
-<li><a href="openpnm/phases/mixtures/_species_by_name.html">openpnm.phases.mixtures._species_by_name</a></li>
-<li><a href="openpnm/phases/mixtures/species/gases/_co2.html">openpnm.phases.mixtures.species.gases._co2</a></li>
-<li><a href="openpnm/phases/mixtures/species/gases/_h2.html">openpnm.phases.mixtures.species.gases._h2</a></li>
-<li><a href="openpnm/phases/mixtures/species/gases/_n2.html">openpnm.phases.mixtures.species.gases._n2</a></li>
-<li><a href="openpnm/phases/mixtures/species/gases/_o2.html">openpnm.phases.mixtures.species.gases._o2</a></li>
-<li><a href="openpnm/phases/mixtures/species/ions/_cl.html">openpnm.phases.mixtures.species.ions._cl</a></li>
-<li><a href="openpnm/phases/mixtures/species/ions/_na.html">openpnm.phases.mixtures.species.ions._na</a></li>
-<li><a href="openpnm/phases/mixtures/species/ions/_proton.html">openpnm.phases.mixtures.species.ions._proton</a></li>
-<li><a href="openpnm/phases/mixtures/species/liquids/_h2o.html">openpnm.phases.mixtures.species.liquids._h2o</a></li>
-<li><a href="openpnm/physics/_basic.html">openpnm.physics._basic</a></li>
-<li><a href="openpnm/physics/_generic.html">openpnm.physics._generic</a></li>
-<li><a href="openpnm/physics/_standard.html">openpnm.physics._standard</a></li>
+<li><a href="openpnm/phase/_air.html">openpnm.phase._air</a></li>
+<li><a href="openpnm/phase/_mercury.html">openpnm.phase._mercury</a></li>
+<li><a href="openpnm/phase/_mixture.html">openpnm.phase._mixture</a></li>
+<li><a href="openpnm/phase/_phase.html">openpnm.phase._phase</a></li>
+<li><a href="openpnm/phase/_species.html">openpnm.phase._species</a></li>
+<li><a href="openpnm/phase/_water.html">openpnm.phase._water</a></li>
 <li><a href="openpnm/solvers/_base.html">openpnm.solvers._base</a></li>
 <li><a href="openpnm/solvers/_pardiso.html">openpnm.solvers._pardiso</a></li>
 <li><a href="openpnm/solvers/_petsc.html">openpnm.solvers._petsc</a></li>
 <li><a href="openpnm/solvers/_scipy.html">openpnm.solvers._scipy</a></li>
 <li><a href="openpnm/topotools/_graphtools.html">openpnm.topotools._graphtools</a></li>
 <li><a href="openpnm/topotools/_perctools.html">openpnm.topotools._perctools</a></li>
-<li><a href="openpnm/topotools/_plottools.html">openpnm.topotools._plottools</a></li>
 <li><a href="openpnm/topotools/_topotools.html">openpnm.topotools._topotools</a></li>
-<li><a href="openpnm/topotools/generators/_bcc.html">openpnm.topotools.generators._bcc</a></li>
-<li><a href="openpnm/topotools/generators/_cubic.html">openpnm.topotools.generators._cubic</a></li>
-<li><a href="openpnm/topotools/generators/_delaunay.html">openpnm.topotools.generators._delaunay</a></li>
-<li><a href="openpnm/topotools/generators/_fcc.html">openpnm.topotools.generators._fcc</a></li>
-<li><a href="openpnm/topotools/generators/_gabriel.html">openpnm.topotools.generators._gabriel</a></li>
-<li><a href="openpnm/topotools/generators/_template.html">openpnm.topotools.generators._template</a></li>
-<li><a href="openpnm/topotools/generators/_voronoi.html">openpnm.topotools.generators._voronoi</a></li>
-<li><a href="openpnm/topotools/generators/_voronoi_delaunay_dual.html">openpnm.topotools.generators._voronoi_delaunay_dual</a></li>
-<li><a href="openpnm/topotools/generators/tools.html">openpnm.topotools.generators.tools</a></li>
+<li><a href="openpnm/utils/_health.html">openpnm.utils._health</a></li>
+<li><a href="openpnm/utils/_misc.html">openpnm.utils._misc</a></li>
 <li><a href="openpnm/utils/_project.html">openpnm.utils._project</a></li>
 <li><a href="openpnm/utils/_settings.html">openpnm.utils._settings</a></li>
 <li><a href="openpnm/utils/_workspace.html">openpnm.utils._workspace</a></li>
-<li><a href="openpnm/utils/misc.html">openpnm.utils.misc</a></li>
-<li><a href="pathlib.html">pathlib</a></li>
 </ul>
 
-              </div>
+              </article>
               
-              
-          </main>
-          
 
+              
+          </div>
+          
       </div>
     </div>
+
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2021, PMEAL.<br>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.1.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>

@@ -1,6 +1,0 @@
-tic
-===
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: tic

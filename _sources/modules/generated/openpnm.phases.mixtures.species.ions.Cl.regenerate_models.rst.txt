@@ -1,8 +1,0 @@
-:orphan:
-
-regenerate_models
-=========================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.ions
-
-.. automethod:: Cl.regenerate_models

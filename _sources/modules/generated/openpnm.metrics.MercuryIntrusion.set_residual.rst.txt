@@ -1,8 +1,0 @@
-:orphan:
-
-set_residual
-=============================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.set_residual

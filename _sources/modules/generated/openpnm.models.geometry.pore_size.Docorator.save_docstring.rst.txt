@@ -1,8 +1,0 @@
-:orphan:
-
-save_docstring
-==========================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_size
-
-.. automethod:: Docorator.save_docstring

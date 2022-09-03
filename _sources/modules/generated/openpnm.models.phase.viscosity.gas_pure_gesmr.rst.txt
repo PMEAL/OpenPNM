@@ -1,0 +1,6 @@
+gas\_pure\_gesmr
+================
+
+.. currentmodule:: openpnm.models.phase.viscosity
+
+.. autofunction:: gas_pure_gesmr

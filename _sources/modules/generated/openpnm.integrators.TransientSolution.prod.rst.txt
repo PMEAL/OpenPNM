@@ -1,8 +1,0 @@
-:orphan:
-
-prod
-==========================================
-
-.. currentmodule:: openpnm.integrators
-
-.. automethod:: TransientSolution.prod

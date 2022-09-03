@@ -1,8 +1,0 @@
-:orphan:
-
-to_indices
-================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: LiquidMixture.to_indices

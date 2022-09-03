@@ -1,6 +1,0 @@
-water
-=====
-
-.. currentmodule:: openpnm.models.phases.surface_tension
-
-.. autofunction:: water

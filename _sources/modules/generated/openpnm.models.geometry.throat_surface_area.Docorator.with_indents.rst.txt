@@ -1,8 +1,0 @@
-:orphan:
-
-with_indents
-==================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_surface_area
-
-.. automethod:: Docorator.with_indents

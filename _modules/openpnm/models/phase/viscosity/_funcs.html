@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openpnm.models.phase.viscosity._funcs &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../../_static/togglebutton.js"></script>
+    <script src="../../../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../../../index.html">
+  
+  
+  
+  
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <h1>Source code for openpnm.models.phase.viscosity._funcs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase.mixtures</span> <span class="kn">import</span> <span class="n">mixing_rule</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;water_correlation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gas_pure_st&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gas_pure_gesmr&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gas_pure_cls&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;gas_mixture_hz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;liquid_pure_ls&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;liquid_mixture_xweighted&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="water_correlation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.water_correlation.html#openpnm.models.phase.viscosity.water_correlation">[docs]</a><span class="k">def</span> <span class="nf">water_correlation</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates viscosity of pure water or seawater at atmospheric pressure</span>
+<span class="sd">    using Eq. (22) given by Sharqawy et. al [1]. Values at temperature higher</span>
+<span class="sd">    than the normal boiling temperature are calculated at the saturation</span>
+<span class="sd">    pressure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : Phase</span>
+<span class="sd">        The object for which these values are being calculated.</span>
+<span class="sd">    temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values. Temperature must</span>
+<span class="sd">        be in Kelvin for this emperical equation to work.</span>
+<span class="sd">    salinity : str</span>
+<span class="sd">        The dictionary key containing the salinity values. Salinity must be</span>
+<span class="sd">        expressed in g of salt per kg of solution (ppt).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mu : ndarray</span>
+<span class="sd">        Array containing viscosity of water or seawater in [kg/m.s] or [Pa.s]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">     T must be in K, and S in g of salt per kg of phase, or ppt (parts per</span>
+<span class="sd">        thousand)</span>
+<span class="sd">    VALIDITY: 273 &lt; T &lt; 453 K; 0 &lt; S &lt; 150 g/kg;</span>
+<span class="sd">    ACCURACY: 1.5 %</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and</span>
+<span class="sd">        Water Treatment, 2010.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">salinity</span> <span class="ow">in</span> <span class="n">phase</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">salinity</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">TC</span> <span class="o">=</span> <span class="n">T</span><span class="o">-</span><span class="mf">273.15</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">/</span><span class="mi">1000</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="mf">1.5700386464E-01</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="mf">6.4992620050E+01</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.1296496657E+01</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="mf">4.2844324477E-05</span>
+    <span class="n">mu_w</span> <span class="o">=</span> <span class="n">a4</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">a1</span><span class="o">*</span><span class="p">(</span><span class="n">TC</span><span class="o">+</span><span class="n">a2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">a3</span><span class="p">)</span>
+    <span class="n">a5</span> <span class="o">=</span> <span class="mf">1.5409136040E+00</span>
+    <span class="n">a6</span> <span class="o">=</span> <span class="mf">1.9981117208E-02</span>
+    <span class="n">a7</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.5203865864E-05</span>
+    <span class="n">a8</span> <span class="o">=</span> <span class="mf">7.9739318223E+00</span>
+    <span class="n">a9</span> <span class="o">=</span> <span class="o">-</span><span class="mf">7.5614568881E-02</span>
+    <span class="n">a10</span> <span class="o">=</span> <span class="mf">4.7237011074E-04</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">a5</span> <span class="o">+</span> <span class="n">a6</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">a7</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">a8</span> <span class="o">+</span> <span class="n">a9</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> <span class="n">a10</span><span class="o">*</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">mu_sw</span> <span class="o">=</span> <span class="n">mu_w</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="n">S</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="n">S</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">mu_sw</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<span class="k">def</span> <span class="nf">air_correlation</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">n_V</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;This function does not work yet&quot;</span><span class="p">)</span>
+    <span class="c1"># Get props from object</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">n_V</span><span class="p">]</span>
+    <span class="c1"># Declare given constants</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="mf">28.9586</span>  <span class="c1"># g/mol</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="mf">132.6312</span>  <span class="c1"># K</span>
+    <span class="n">rho_c</span> <span class="o">=</span> <span class="mf">10447.7</span>  <span class="c1"># mol/m3</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.36</span>  <span class="c1"># nm</span>
+    <span class="n">e_k</span> <span class="o">=</span> <span class="mf">103.3</span>  <span class="c1"># K</span>
+    <span class="c1"># Compute a few definitions</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">rho</span><span class="o">/</span><span class="n">rho_c</span>
+    <span class="n">T_star</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">e_k</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">Tc</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+    <span class="c1"># Declare the summation variables</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">N_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">([</span><span class="mf">10.72</span><span class="p">,</span> <span class="mf">1.122</span><span class="p">,</span> <span class="mf">0.002019</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.878</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.02916</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">t_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">d_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">b_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">([</span><span class="mf">0.431</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4623</span><span class="p">,</span> <span class="mf">0.08406</span><span class="p">,</span> <span class="mf">0.005341</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00331</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">gamma_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="c1"># Start crunching numbers</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">b_i</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">T_star</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="n">ind</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">mu_o</span> <span class="o">=</span> <span class="mf">0.9266958</span><span class="o">*</span><span class="p">(</span><span class="n">MW</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="o">/</span><span class="p">((</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">omega</span><span class="p">)</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">N_i</span> <span class="o">*</span> <span class="p">(</span><span class="n">tau</span><span class="o">**</span><span class="n">t_i</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta</span><span class="o">**</span><span class="n">d_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">gamma_i</span><span class="o">*</span><span class="p">(</span><span class="n">delta</span><span class="o">**</span><span class="n">gamma_i</span><span class="p">))</span>
+    <span class="n">mu_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">mu_o</span> <span class="o">+</span> <span class="n">mu_t</span>
+    <span class="k">return</span> <span class="n">mu</span>
+
+
+<div class="viewcode-block" id="gas_pure_st"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_st.html#openpnm.models.phase.viscosity.gas_pure_st">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_st</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
+    <span class="n">Pc</span><span class="o">=</span><span class="s1">&#39;param.critical_pressure&#39;</span><span class="p">,</span>
+    <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1">#  stiel-thodos</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pc</span><span class="p">]</span><span class="o">/</span><span class="mi">101325</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">zeta</span> <span class="o">=</span> <span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">MW</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">)))</span>
+    <span class="n">mu_hi</span> <span class="o">=</span> <span class="p">(</span><span class="mf">17.78e-5</span><span class="o">*</span><span class="p">(</span><span class="mf">4.58</span><span class="o">*</span><span class="n">Tr</span> <span class="o">-</span> <span class="mf">1.67</span><span class="p">)</span><span class="o">**</span><span class="mf">0.625</span><span class="p">)</span><span class="o">/</span><span class="n">zeta</span>
+    <span class="n">mu_lo</span> <span class="o">=</span> <span class="p">(</span><span class="mf">34e-5</span><span class="o">*</span><span class="n">Tr</span><span class="o">**</span><span class="mf">0.94</span><span class="p">)</span><span class="o">/</span><span class="n">zeta</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">Tr</span> <span class="o">&gt;</span> <span class="mf">1.5</span>
+    <span class="n">mu</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu_hi</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">mu</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu_lo</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="mi">1000</span></div>
+
+
+<div class="viewcode-block" id="gas_pure_gesmr"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_gesmr.html#openpnm.models.phase.viscosity.gas_pure_gesmr">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_gesmr</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
+    <span class="n">Pc</span><span class="o">=</span><span class="s1">&#39;param.critical_pressure&#39;</span><span class="p">,</span>
+    <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Gharagheizi method from chemicals</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pc</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-5</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="p">(</span><span class="mf">0.091</span> <span class="o">-</span> <span class="mf">0.477</span><span class="o">/</span><span class="n">MW</span><span class="p">)</span><span class="o">*</span><span class="n">T</span> <span class="o">+</span> \
+        <span class="n">MW</span><span class="o">*</span><span class="p">((</span><span class="mf">1e-5</span><span class="p">)</span><span class="o">*</span><span class="n">Pc</span> <span class="o">-</span> <span class="mf">8.0</span><span class="o">*</span><span class="p">(</span><span class="n">MW</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="mf">10.7639</span><span class="o">/</span><span class="n">Tc</span> <span class="o">-</span> <span class="mf">4.1929</span><span class="o">/</span><span class="n">T</span><span class="p">)</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span><span class="o">*</span><span class="mf">1e-7</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mu</span></div>
+
+
+<div class="viewcode-block" id="gas_pure_cls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_cls.html#openpnm.models.phase.viscosity.gas_pure_cls">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_cls</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
+    <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
+    <span class="n">Vc</span><span class="o">=</span><span class="s1">&#39;param.critical_volume&#39;</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses Chung et al. [1] model to estimate viscosity for gases at low</span>
+<span class="sd">    pressure (much less than the critical pressure) at conditions of interest.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : Phase</span>
+<span class="sd">        The object for which these values are being calculated.  This</span>
+<span class="sd">        controls the length of the calculated array, and also provides</span>
+<span class="sd">        access to other necessary thermofluid properties.</span>
+<span class="sd">    temperatre: str</span>
+<span class="sd">        The dictionary key containing the temperature values (K)</span>
+<span class="sd">    critical_temperature : str</span>
+<span class="sd">        The dictionary key containing the temperature values (K)</span>
+<span class="sd">    molecular_weight: str</span>
+<span class="sd">        The dictionary key containing the molecular weight values (kg/mol)</span>
+<span class="sd">    critical_volume : str</span>
+<span class="sd">        The dictionary key containing the critical volume values (m3/kmol)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    value : ndarray</span>
+<span class="sd">        Array containing viscosity values based on Chung model in [Pa.s].</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas</span>
+<span class="sd">        Theories and Multiparameter Correlation for Prediction of Dilute Gas</span>
+<span class="sd">        Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
+    <span class="n">Vc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Vc</span><span class="p">]</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
+    <span class="n">Tstar</span> <span class="o">=</span> <span class="mf">1.2593</span><span class="o">*</span><span class="n">Tr</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="mf">1.161415</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="mf">0.14874</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="mf">0.52487</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="mf">0.77320</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="mf">2.16178</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="mf">2.43787</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="n">Tstar</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">B</span><span class="p">))</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">D</span><span class="o">*</span><span class="n">Tstar</span><span class="p">))</span> <span class="o">+</span> <span class="n">E</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">F</span><span class="o">*</span><span class="n">Tstar</span><span class="p">))</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.809</span><span class="o">*</span><span class="p">(</span><span class="n">Vc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="mf">26.69E-9</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">MW</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">omega</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="gas_mixture_hz"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_mixture_hz.html#openpnm.models.phase.viscosity.gas_mixture_hz">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_hz</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">mus</span><span class="o">=</span><span class="s1">&#39;pore.viscosity.*&#39;</span><span class="p">,</span>
+    <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the viscosity of a gas mixture using a custom written version</span>
+<span class="sd">    of ``chemicals.viscosity.Herning_Zipperer``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : dict</span>
+<span class="sd">        The openpnm object to which this model applies</span>
+<span class="sd">    molecular_weight : str</span>
+<span class="sd">        The location of the molecular weights of each species. The default is</span>
+<span class="sd">        ``&#39;param.molecular_weight&#39;``</span>
+<span class="sd">    viscosity : str</span>
+<span class="sd">        The locaiton of the viscosities for each individual species.  The</span>
+<span class="sd">        default is ``&#39;pore.viscosity&#39;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mu : ndarray</span>
+<span class="sd">        An ndarray of Np length containing the viscosity of the mixture in</span>
+<span class="sd">        each pore</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MWs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span>
+    <span class="n">mus</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">mus</span><span class="p">)</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">xs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">num</span> <span class="o">+=</span> <span class="n">xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">mus</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">MWs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">denom</span> <span class="o">+=</span> <span class="n">xs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">MWs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">**</span><span class="mf">0.5</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">num</span><span class="o">/</span><span class="n">denom</span>
+    <span class="k">return</span> <span class="n">mu</span></div>
+
+
+<div class="viewcode-block" id="liquid_pure_ls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.liquid_pure_ls.html#openpnm.models.phase.viscosity.liquid_pure_ls">[docs]</a><span class="k">def</span> <span class="nf">liquid_pure_ls</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
+    <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
+    <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
+    <span class="n">Pc</span><span class="o">=</span><span class="s1">&#39;param.critical_pressure&#39;</span><span class="p">,</span>
+    <span class="n">omega</span><span class="o">=</span><span class="s1">&#39;param.acentric_factor&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Letsou_Stiel</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
+    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
+    <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pc</span><span class="p">]</span>
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">omega</span><span class="p">]</span>
+    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
+    <span class="n">zeta</span> <span class="o">=</span> <span class="mf">2173.424</span> <span class="o">*</span> <span class="p">(</span><span class="n">Tc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">))</span><span class="o">/</span><span class="p">((</span><span class="n">MW</span><span class="o">**</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">Pc</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">)))</span>
+    <span class="n">zeta0</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.5174</span> <span class="o">-</span> <span class="mf">2.135</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">0.75</span><span class="o">*</span><span class="p">(</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="mf">1e-5</span>
+    <span class="n">zeta1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.2552</span> <span class="o">-</span> <span class="mf">7.674</span><span class="o">*</span><span class="n">Tr</span> <span class="o">+</span> <span class="mf">3.4</span><span class="o">*</span><span class="p">(</span><span class="n">Tr</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="mf">1e-5</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="n">zeta0</span> <span class="o">+</span> <span class="n">omega</span><span class="o">*</span><span class="n">zeta1</span><span class="p">)</span><span class="o">/</span><span class="n">zeta</span>
+    <span class="k">return</span> <span class="n">mu</span></div>
+
+
+<div class="viewcode-block" id="liquid_mixture_xweighted"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.liquid_mixture_xweighted.html#openpnm.models.phase.viscosity.liquid_mixture_xweighted">[docs]</a><span class="k">def</span> <span class="nf">liquid_mixture_xweighted</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.viscosity.*&#39;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;logarithmic&#39;</span><span class="p">,</span>
+    <span class="n">power</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">return</span> <span class="n">mixing_rule</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="n">power</span><span class="p">)</span></div>
+
+
+<span class="n">liquid_mixture_xweighted</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">mixing_rule</span><span class="o">.</span><span class="vm">__doc__</span>
+</pre></div>
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

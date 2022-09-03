@@ -15,56 +15,36 @@ IonicConduction
          :toctree:
          
             IonicConduction.clear
+            IonicConduction.clear_BCs
+            IonicConduction.clear_rate_BCs
+            IonicConduction.clear_value_BCs
             IonicConduction.copy
+            IonicConduction.filter_by_label
             IonicConduction.fromkeys
             IonicConduction.get
             IonicConduction.get_conduit_data
-            IonicConduction.interleave_data
             IonicConduction.interpolate_data
             IonicConduction.items
             IonicConduction.keys
-            IonicConduction.map_pores
-            IonicConduction.map_throats
+            IonicConduction.labels
+            IonicConduction.num_pores
+            IonicConduction.num_throats
             IonicConduction.pop
             IonicConduction.popitem
+            IonicConduction.pores
             IonicConduction.props
             IonicConduction.rate
-            IonicConduction.remove_BC
-            IonicConduction.remove_source
-            IonicConduction.reset
-            IonicConduction.results
             IonicConduction.run
+            IonicConduction.set_BC
+            IonicConduction.set_label
             IonicConduction.set_rate_BC
             IonicConduction.set_source
             IonicConduction.set_value_BC
-            IonicConduction.set_variable_props
             IonicConduction.setdefault
-            IonicConduction.show_hist
+            IonicConduction.throats
             IonicConduction.to_indices
             IonicConduction.to_mask
-            IonicConduction.toindices
-            IonicConduction.tomask
             IonicConduction.update
             IonicConduction.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            IonicConduction.A
-            IonicConduction.Np
-            IonicConduction.Nt
-            IonicConduction.Ps
-            IonicConduction.Ts
-            IonicConduction.b
-            IonicConduction.name
-            IonicConduction.network
-            IonicConduction.project
-            IonicConduction.settings
-            IonicConduction.x
    
    

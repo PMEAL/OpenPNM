@@ -1,0 +1,6 @@
+get\_printable\_props
+=====================
+
+.. currentmodule:: openpnm.utils
+
+.. autofunction:: get_printable_props

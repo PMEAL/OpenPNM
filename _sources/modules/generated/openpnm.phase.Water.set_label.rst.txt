@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+=============================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Water.set_label

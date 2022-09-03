@@ -1,0 +1,6 @@
+hybrid\_cones\_and\_cylinders
+=============================
+
+.. currentmodule:: openpnm.models.geometry.diffusive_size_factors
+
+.. autofunction:: hybrid_cones_and_cylinders

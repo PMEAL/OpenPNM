@@ -1,0 +1,506 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Fickian Diffusion with Variable Diffusivity &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples/index2.html">
+  Examples2
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-network">
+   Creating network
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#add-geometry-models">
+   Add geometry models
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-phase">
+   Create phase
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#adding-the-diffusivity-model">
+   Adding the diffusivity model
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#add-physics-models">
+   Add physics models
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#performing-fickian-diffusion">
+   Performing Fickian diffusion
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualizing">
+   Visualizing
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="fickian-diffusion-with-variable-diffusivity">
+<h1>Fickian Diffusion with Variable Diffusivity<a class="headerlink" href="#fickian-diffusion-with-variable-diffusivity" title="Permalink to this heading">#</a></h1>
+<p>In this example, we will implement a Fickian diffusion algorithm on a <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> network assumming a variable diffusivity, such that diffusivity is significantly higher at high concentrations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="creating-network">
+<h2>Creating network<a class="headerlink" href="#creating-network" title="Permalink to this heading">#</a></h2>
+<p>We start by creating a 2D <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> network. Note that the same procedure can be applied on extracted networks and 3D networks. Here for simplicity and visualization we chose a 2D cubic network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-geometry-models">
+<h2>Add geometry models<a class="headerlink" href="#add-geometry-models" title="Permalink to this heading">#</a></h2>
+<p>Next we add the <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> collection of geometry models directly to the network obejct. This collection of geometry models assumes spherical pores and cylindrical throats.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geo_models</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">geo_models</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span> 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-phase">
+<h2>Create phase<a class="headerlink" href="#create-phase" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> has prebuilt phase objects already available. Here we initialize a <code class="docutils literal notranslate"><span class="pre">water</span></code> phase object.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="nn">Input In [4],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/phase/_water.py:27,</span> in <span class="ni">Water.__init__</span><span class="nt">(self, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">25</span> <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span>     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">27</span>     <span class="kn">from</span> <span class="nn">thermo</span> <span class="kn">import</span> <span class="n">Chemical</span>
+<span class="g g-Whitespace">     </span><span class="mi">28</span>     <span class="n">a</span> <span class="o">=</span> <span class="n">Chemical</span><span class="p">(</span><span class="s1">&#39;h2o&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">29</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">_fetch_chemical_props</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;thermo&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="adding-the-diffusivity-model">
+<h2>Adding the diffusivity model<a class="headerlink" href="#adding-the-diffusivity-model" title="Permalink to this heading">#</a></h2>
+<p>We assume that the diffusivity of the phase water is not constant and is a function of the concentration of the species. Therefore, we define a model to calculate the <code class="docutils literal notranslate"><span class="pre">pore.diffusivity</span></code> at each concentration.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">variable_diffusivity</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">c_ref</span><span class="p">,</span> <span class="n">pore_concentration</span><span class="o">=</span><span class="s2">&quot;pore.concentration&quot;</span><span class="p">):</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pore_concentration</span><span class="p">]</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="mf">1e-9</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">/</span> <span class="n">c_ref</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">val</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">variable_diffusivity</span><span class="p">,</span> <span class="n">c_ref</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                <span class="n">regen_mode</span><span class="o">=</span><span class="s2">&quot;deferred&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-physics-models">
+<h2>Add physics models<a class="headerlink" href="#add-physics-models" title="Permalink to this heading">#</a></h2>
+<p>Now we add a collection of physics models to the phase object. Here we use the <code class="docutils literal notranslate"><span class="pre">basic</span></code> collection of physics models which includes the <code class="docutils literal notranslate"><span class="pre">diffusive_conductance</span></code> model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys_models</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span>
+<span class="n">water</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">phys_models</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="performing-fickian-diffusion">
+<h2>Performing Fickian diffusion<a class="headerlink" href="#performing-fickian-diffusion" title="Permalink to this heading">#</a></h2>
+<p>We then add the the FickianDiffusion algorithm to our simulation and define “Dirichlet” boundary conditions assigned to the  pores that are on the top and the bottom face of the network. Note that values=10.0 for the first boundary condition means that the pore concentration of each pore (that is on the <code class="docutils literal notranslate"><span class="pre">top</span></code> boundary face) is equal to 10.0.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                       
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.concentration&#39;: SteadyStateSolution([ 0.        ,  1.65972926,  3.45102646,  3.91110871,
+                       4.43160003,  5.36588697,  6.46096742,  7.23130353,
+                       7.78108983,  8.4091749 ,  8.8780231 ,  8.99799955,
+                       9.40902575,  9.8497381 , 10.        ,  0.        ,
+                       1.1648436 ,  2.85833703,  3.92491531,  4.46519584,
+                       5.18491404,  6.4068187 ,  7.34164378,  7.91098266,
+                       8.41091216,  8.80296126,  9.0653316 ,  9.42199572,
+                       9.76566457, 10.        ,  0.        ,  1.30191627,
+                       2.45059378,  3.45084066,  4.54787404,  5.46712279,
+                       6.48643606,  7.23346106,  7.87536287,  8.52605712,
+                       8.8097766 ,  9.02221969,  9.39670356,  9.73987593,
+                      10.        ,  0.        ,  1.42660162,  2.51819884,
+                       3.38104815,  4.60847886,  5.55540972,  6.49505482,
+                       7.22045304,  7.78606232,  8.43286956,  8.85033772,
+                       9.02398875,  9.37513961,  9.69984582, 10.        ,
+                       0.        ,  1.62305649,  2.62756904,  3.433359  ,
+                       4.67937115,  5.66202078,  6.42546174,  7.14495906,
+                       7.67418246,  8.12871395,  8.65854198,  9.08288081,
+                       9.41331354,  9.73729212, 10.        ,  0.        ,
+                       2.01331634,  2.89993772,  3.77737648,  4.83179512,
+                       5.72617822,  6.31073083,  6.82637322,  7.47478092,
+                       7.98928513,  8.52991617,  8.99368942,  9.41126435,
+                       9.79691836, 10.        ,  0.        ,  1.32255345,
+                       3.0074992 ,  4.11887125,  4.97128884,  5.80256566,
+                       6.29011982,  6.73638724,  7.40922715,  8.04125433,
+                       8.44909306,  8.75340174,  9.33799181,  9.82556919,
+                      10.        ,  0.        ,  0.91557397,  2.96255476,
+                       4.50221297,  5.13584874,  5.75621868,  6.31685202,
+                       6.65199394,  7.20334575,  7.88132738,  8.41551579,
+                       8.85160415,  9.41392688,  9.79752225, 10.        ,
+                       0.        ,  1.1521283 ,  3.00576661,  4.65855775,
+                       5.26067432,  5.7078691 ,  6.24790376,  6.72467166,
+                       7.1499331 ,  7.72491571,  8.33383895,  8.83193496,
+                       9.35824507,  9.76898093, 10.        ,  0.        ,
+                       1.24970243,  2.59680672,  4.4061627 ,  5.46899517,
+                       5.83887331,  6.25950002,  6.68896188,  7.14954623,
+                       7.57575991,  7.99603185,  8.75921219,  9.42046124,
+                       9.70485222, 10.        ,  0.        ,  1.54265152,
+                       3.24618695,  4.23235387,  5.26203499,  5.90366377,
+                       6.22561689,  6.57600856,  7.08017507,  7.53486816,
+                       7.98303651,  8.78561724,  9.37498986,  9.80538157,
+                      10.        ,  0.        ,  1.23628895,  3.09220724,
+                       4.50702632,  5.27877178,  5.82711266,  6.17099748,
+                       6.59309399,  7.03546877,  7.39757712,  8.22697506,
+                       8.96942316,  9.36709653,  9.79935686, 10.        ,
+                       0.        ,  1.19671538,  2.46707446,  4.18535056,
+                       5.42088846,  5.74768995,  6.12303637,  6.54206092,
+                       7.11668549,  7.62277013,  8.39732766,  8.98602617,
+                       9.33097683,  9.74895087, 10.        ,  0.        ,
+                       1.56031922,  2.26543682,  3.37147593,  4.92771033,
+                       5.77360949,  6.07850959,  6.65280314,  7.21471148,
+                       7.72491827,  8.51757506,  9.04478297,  9.27671871,
+                       9.66033013, 10.        ,  0.        ,  1.76821704,
+                       2.24438793,  3.48262689,  4.57761001,  5.325654  ,
+                       6.05853731,  6.72530909,  7.30084165,  7.9300994 ,
+                       8.66492275,  9.03638374,  9.22724822,  9.65491266,
+                      10.        ])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualizing">
+<h2>Visualizing<a class="headerlink" href="#visualizing" title="Permalink to this heading">#</a></h2>
+<p>We can visualize the average concentration distribution along the x direction (from the left boundary face towards the right boundary face)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">=</span><span class="n">fd</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">c_xz_avg</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">get_shape</span><span class="p">(</span><span class="n">net</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">c_xz_avg</span><span class="p">,</span> <span class="s2">&quot;ko-&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9069497a71bb26f6c37bbf7e06b56ff9fc011e967de4ee1e533313525c662f51.svg" src="../../_images/9069497a71bb26f6c37bbf7e06b56ff9fc011e967de4ee1e533313525c662f51.svg" /></div>
+</div>
+<p>The concentration of species throughout the network is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c2d</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">get_shape</span><span class="p">(</span><span class="n">net</span><span class="p">))</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">c2d</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.colorbar.Colorbar at 0x16887517130&gt;
+</pre></div>
+</div>
+<img alt="../../_images/bc298e85a9303d7911024fa0cee4bbd84ed174c89e4442f65be442bdc00d2ce9.svg" src="../../_images/bc298e85a9303d7911024fa0cee4bbd84ed174c89e4442f65be442bdc00d2ce9.svg" /></div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

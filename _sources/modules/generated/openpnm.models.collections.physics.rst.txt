@@ -1,0 +1,39 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+physics
+=======
+
+.. automodule:: openpnm.models.collections.physics
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      openpnm.models.collections.physics.basic
+      openpnm.models.collections.physics.standard
+   
+   

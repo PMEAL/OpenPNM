@@ -1,8 +1,0 @@
-:orphan:
-
-dedent
-============================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: DocstringProcessor.dedent

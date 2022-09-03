@@ -1,0 +1,8 @@
+:orphan:
+
+num_pores
+======================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: StandardLiquid.num_pores

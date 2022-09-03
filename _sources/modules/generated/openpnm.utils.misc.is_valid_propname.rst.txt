@@ -1,6 +1,0 @@
-is\_valid\_propname
-===================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. autofunction:: is_valid_propname

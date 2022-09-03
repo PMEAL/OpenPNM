@@ -1,8 +1,0 @@
-:orphan:
-
-dedent
-=====================================================
-
-.. currentmodule:: openpnm.models.phases.vapor_pressure
-
-.. automethod:: Docorator.dedent

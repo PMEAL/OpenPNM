@@ -1,8 +1,0 @@
-:orphan:
-
-save_docstring
-==============================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. automethod:: Docorator.save_docstring

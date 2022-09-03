@@ -1,8 +1,0 @@
-:orphan:
-
-dedent
-======================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_length
-
-.. automethod:: Docorator.dedent

@@ -1,0 +1,6 @@
+hybrid\_pyramids\_and\_cuboids
+==============================
+
+.. currentmodule:: openpnm.models.geometry.throat_length
+
+.. autofunction:: hybrid_pyramids_and_cuboids

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Misc
+misc
 ====
 
 .. automodule:: openpnm.models.misc
@@ -23,6 +23,7 @@ Misc
       blank
       clip
       constant
+      difference
       fraction
       from_neighbor_pores
       from_neighbor_throats
@@ -51,16 +52,5 @@ Misc
    
 
    
-   
-   .. rubric:: Modules
-
-   .. autosummary::
-      :toctree:
-      :recursive:
-   
-      openpnm.models.misc.basic_math
-      openpnm.models.misc.neighbor_lookups
-      openpnm.models.misc.simple_equations
-      openpnm.models.misc.statistical_distributions
    
    

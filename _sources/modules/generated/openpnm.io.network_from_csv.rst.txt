@@ -1,0 +1,6 @@
+network\_from\_csv
+==================
+
+.. currentmodule:: openpnm.io
+
+.. autofunction:: network_from_csv

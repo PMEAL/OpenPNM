@@ -1,8 +1,0 @@
-:orphan:
-
-interleave_data
-========================================================
-
-.. currentmodule:: openpnm.phases.mixtures.species.gases
-
-.. automethod:: H2.interleave_data

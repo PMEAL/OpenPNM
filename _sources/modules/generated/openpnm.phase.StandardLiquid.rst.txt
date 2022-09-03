@@ -1,0 +1,45 @@
+StandardLiquid
+============================
+
+.. currentmodule:: openpnm.phase
+
+.. autoclass:: StandardLiquid
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            StandardLiquid.add_model
+            StandardLiquid.add_model_collection
+            StandardLiquid.clear
+            StandardLiquid.copy
+            StandardLiquid.filter_by_label
+            StandardLiquid.fromkeys
+            StandardLiquid.get
+            StandardLiquid.get_conduit_data
+            StandardLiquid.interpolate_data
+            StandardLiquid.items
+            StandardLiquid.keys
+            StandardLiquid.labels
+            StandardLiquid.num_pores
+            StandardLiquid.num_throats
+            StandardLiquid.pop
+            StandardLiquid.popitem
+            StandardLiquid.pores
+            StandardLiquid.props
+            StandardLiquid.regenerate_models
+            StandardLiquid.run_model
+            StandardLiquid.set_label
+            StandardLiquid.setdefault
+            StandardLiquid.throats
+            StandardLiquid.to_indices
+            StandardLiquid.to_mask
+            StandardLiquid.update
+            StandardLiquid.values
+   
+   

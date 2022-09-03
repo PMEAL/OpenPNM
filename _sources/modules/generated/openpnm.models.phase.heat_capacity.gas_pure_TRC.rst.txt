@@ -1,0 +1,6 @@
+gas\_pure\_TRC
+==============
+
+.. currentmodule:: openpnm.models.phase.heat_capacity
+
+.. autofunction:: gas_pure_TRC

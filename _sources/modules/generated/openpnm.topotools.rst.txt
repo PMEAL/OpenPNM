@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Topotools
+topotools
 =========
 
 .. automodule:: openpnm.topotools
@@ -21,6 +21,7 @@ Topotools
       :toctree:
    
       add_boundary_pores
+      add_reservoir_pore
       bond_percolation
       clone_pores
       connect_pores
@@ -30,18 +31,15 @@ Topotools
       extend
       filter_pores_by_z
       find_clusters
-      find_complement
       find_connected_sites
       find_connecting_bonds
+      find_interface_throats
       find_neighbor_bonds
       find_neighbor_sites
       find_path
       find_pore_to_pore_distance
       find_surface_pores
-      from_cylindrical
-      from_spherical
       generate_base_points
-      generate_voxel_image
       get_domain_area
       get_domain_length
       get_shape
@@ -58,12 +56,7 @@ Topotools
       label_faces
       merge_networks
       merge_pores
-      plot_connections
-      plot_coordinates
-      plot_network_jupyter
-      plot_networkx
-      plot_tutorial
-      plot_vpython
+      reduce_coordination
       reflect_base_points
       remove_isolated_clusters
       rotate_coords
@@ -71,14 +64,10 @@ Topotools
       site_percolation
       stitch
       stitch_pores
-      subdivide
       template_cylinder_annulus
       template_sphere_shell
-      to_cylindrical
-      to_spherical
       tri_to_am
       trim
-      trim_occluded_throats
       vor_to_am
    
    
@@ -92,13 +81,5 @@ Topotools
    
 
    
-   
-   .. rubric:: Modules
-
-   .. autosummary::
-      :toctree:
-      :recursive:
-   
-      openpnm.topotools.generators
    
    

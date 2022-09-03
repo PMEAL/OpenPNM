@@ -1,8 +1,0 @@
-:orphan:
-
-get_extended_summaryf
-===========================================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: DocstringProcessor.get_extended_summaryf

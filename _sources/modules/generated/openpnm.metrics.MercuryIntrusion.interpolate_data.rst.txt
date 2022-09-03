@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate_data
-=================================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.interpolate_data

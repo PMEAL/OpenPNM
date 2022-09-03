@@ -1,0 +1,8 @@
+:orphan:
+
+clear
+===========================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: Mixture.clear

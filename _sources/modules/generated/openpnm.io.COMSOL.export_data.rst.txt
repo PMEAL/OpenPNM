@@ -1,8 +1,0 @@
-:orphan:
-
-export_data
-=============================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: COMSOL.export_data

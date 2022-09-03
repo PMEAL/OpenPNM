@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+===========================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: Drainage.filter_by_label

@@ -1,8 +1,0 @@
-:orphan:
-
-props
-===========================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: SpeciesByName.props

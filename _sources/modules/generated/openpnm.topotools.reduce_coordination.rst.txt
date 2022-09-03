@@ -1,0 +1,6 @@
+reduce\_coordination
+====================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: reduce_coordination

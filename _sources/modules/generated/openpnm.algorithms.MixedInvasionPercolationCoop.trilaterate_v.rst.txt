@@ -1,8 +1,0 @@
-:orphan:
-
-trilaterate_v
-=============================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: MixedInvasionPercolationCoop.trilaterate_v

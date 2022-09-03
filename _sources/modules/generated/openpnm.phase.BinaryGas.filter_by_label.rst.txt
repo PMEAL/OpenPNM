@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+=======================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: BinaryGas.filter_by_label

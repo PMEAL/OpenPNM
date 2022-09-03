@@ -1,0 +1,8 @@
+:orphan:
+
+clear_BCs
+================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: InvasionPercolation.clear_BCs

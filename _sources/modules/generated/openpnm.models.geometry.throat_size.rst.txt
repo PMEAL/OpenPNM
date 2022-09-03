@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_size
+throat\_size
 ============
 
 .. automodule:: openpnm.models.geometry.throat_size
@@ -30,15 +30,6 @@ Throat\_size
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

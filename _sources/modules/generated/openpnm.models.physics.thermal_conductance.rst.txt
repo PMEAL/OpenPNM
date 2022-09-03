@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Thermal\_conductance
+thermal\_conductance
 ====================
 
 .. automodule:: openpnm.models.physics.thermal_conductance

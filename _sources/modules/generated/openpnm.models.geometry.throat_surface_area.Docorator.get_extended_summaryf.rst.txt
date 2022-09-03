@@ -1,8 +1,0 @@
-:orphan:
-
-get_extended_summaryf
-===========================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_surface_area
-
-.. automethod:: Docorator.get_extended_summaryf

@@ -1,0 +1,6 @@
+liquid\_mixture\_xweighted
+==========================
+
+.. currentmodule:: openpnm.models.phase.viscosity
+
+.. autofunction:: liquid_mixture_xweighted

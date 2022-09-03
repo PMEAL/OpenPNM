@@ -1,0 +1,6 @@
+water\_correlation
+==================
+
+.. currentmodule:: openpnm.models.phase.surface_tension
+
+.. autofunction:: water_correlation

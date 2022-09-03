@@ -1,8 +1,0 @@
-:orphan:
-
-load_workspace
-================================
-
-.. currentmodule:: openpnm.io
-
-.. automethod:: Pickle.load_workspace

@@ -1,8 +1,0 @@
-:orphan:
-
-get_sections
-====================================================
-
-.. currentmodule:: openpnm.models.phases.density
-
-.. automethod:: Docorator.get_sections

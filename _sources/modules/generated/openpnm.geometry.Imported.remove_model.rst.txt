@@ -1,8 +1,0 @@
-:orphan:
-
-remove_model
-======================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: Imported.remove_model

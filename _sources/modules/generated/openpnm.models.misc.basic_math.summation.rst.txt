@@ -1,6 +1,0 @@
-summation
-=========
-
-.. currentmodule:: openpnm.models.misc.basic_math
-
-.. autofunction:: summation

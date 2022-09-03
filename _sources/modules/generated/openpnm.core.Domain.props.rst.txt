@@ -1,0 +1,8 @@
+:orphan:
+
+props
+=========================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: Domain.props

@@ -1,6 +1,0 @@
-plot\_coordinates
-=================
-
-.. currentmodule:: openpnm.topotools
-
-.. autofunction:: plot_coordinates

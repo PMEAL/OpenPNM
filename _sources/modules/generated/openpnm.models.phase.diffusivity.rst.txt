@@ -1,0 +1,39 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+diffusivity
+===========
+
+.. automodule:: openpnm.models.phase.diffusivity
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      gas_mixture_ce
+      gas_mixture_fesg
+      liquid_mixture_tc
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

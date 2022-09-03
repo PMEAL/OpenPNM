@@ -1,0 +1,6 @@
+squares\_and\_rectangles
+========================
+
+.. currentmodule:: openpnm.models.collections.geometry
+
+.. autodata:: squares_and_rectangles

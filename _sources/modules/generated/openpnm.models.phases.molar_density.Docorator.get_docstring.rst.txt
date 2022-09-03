@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-===========================================================
-
-.. currentmodule:: openpnm.models.phases.molar_density
-
-.. automethod:: Docorator.get_docstring

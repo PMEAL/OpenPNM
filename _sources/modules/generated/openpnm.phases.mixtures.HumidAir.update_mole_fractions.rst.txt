@@ -1,8 +1,0 @@
-:orphan:
-
-update_mole_fractions
-======================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: HumidAir.update_mole_fractions

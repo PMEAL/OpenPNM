@@ -1,8 +1,0 @@
-:orphan:
-
-values
-=============================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: MixDict.values

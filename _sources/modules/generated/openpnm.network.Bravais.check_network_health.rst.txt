@@ -1,8 +1,0 @@
-:orphan:
-
-check_network_health
-============================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Bravais.check_network_health

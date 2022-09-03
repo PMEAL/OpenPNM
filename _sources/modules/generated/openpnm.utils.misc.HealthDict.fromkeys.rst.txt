@@ -1,8 +1,0 @@
-:orphan:
-
-fromkeys
-======================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: HealthDict.fromkeys

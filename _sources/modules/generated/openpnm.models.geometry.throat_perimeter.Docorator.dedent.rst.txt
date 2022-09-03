@@ -1,8 +1,0 @@
-:orphan:
-
-dedent
-=========================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_perimeter
-
-.. automethod:: Docorator.dedent

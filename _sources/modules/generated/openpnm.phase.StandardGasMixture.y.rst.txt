@@ -1,0 +1,8 @@
+:orphan:
+
+y
+==================================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: StandardGasMixture.y

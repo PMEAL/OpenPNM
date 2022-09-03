@@ -15,56 +15,36 @@ StokesFlow
          :toctree:
          
             StokesFlow.clear
+            StokesFlow.clear_BCs
+            StokesFlow.clear_rate_BCs
+            StokesFlow.clear_value_BCs
             StokesFlow.copy
+            StokesFlow.filter_by_label
             StokesFlow.fromkeys
             StokesFlow.get
             StokesFlow.get_conduit_data
-            StokesFlow.interleave_data
             StokesFlow.interpolate_data
             StokesFlow.items
             StokesFlow.keys
-            StokesFlow.map_pores
-            StokesFlow.map_throats
+            StokesFlow.labels
+            StokesFlow.num_pores
+            StokesFlow.num_throats
             StokesFlow.pop
             StokesFlow.popitem
+            StokesFlow.pores
             StokesFlow.props
             StokesFlow.rate
-            StokesFlow.remove_BC
-            StokesFlow.remove_source
-            StokesFlow.reset
-            StokesFlow.results
             StokesFlow.run
+            StokesFlow.set_BC
+            StokesFlow.set_label
             StokesFlow.set_rate_BC
             StokesFlow.set_source
             StokesFlow.set_value_BC
-            StokesFlow.set_variable_props
             StokesFlow.setdefault
-            StokesFlow.show_hist
+            StokesFlow.throats
             StokesFlow.to_indices
             StokesFlow.to_mask
-            StokesFlow.toindices
-            StokesFlow.tomask
             StokesFlow.update
             StokesFlow.values
-   
-   
-
-   
-   
-   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
-      .. autosummary::
-         :toctree:
-         
-            StokesFlow.A
-            StokesFlow.Np
-            StokesFlow.Nt
-            StokesFlow.Ps
-            StokesFlow.Ts
-            StokesFlow.b
-            StokesFlow.name
-            StokesFlow.network
-            StokesFlow.project
-            StokesFlow.settings
-            StokesFlow.x
    
    

@@ -1,8 +1,0 @@
-:orphan:
-
-reset
-=================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: Porosimetry.reset

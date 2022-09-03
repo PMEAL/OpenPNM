@@ -1,8 +1,0 @@
-:orphan:
-
-update_concentrations
-========================================================
-
-.. currentmodule:: openpnm.phases.mixtures
-
-.. automethod:: GasMixture.update_concentrations

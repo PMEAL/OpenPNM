@@ -1,0 +1,1889 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "fce43591",
+   "metadata": {},
+   "source": [
+    "# Using Basic Phases\n",
+    "\n",
+    "All simulations in OpenPNM eventually require knowing the physical and thermodynamic properties of the fluids and phases.  OpenPNM provides a framework for computing these values in the ``phase`` submodule, along with a *basic* set of functions for predicting the properties pure phases and mixtures. Since we can't possibly support an exhaustive physical property library, our policy is to provide a set of reasonable default functions for use as first approximations.  There are a number of other packages that can be used when more exacting values are required, such as ``chemicals`` and ``cantera``, which can be used within the framework of OpenPNM.\n",
+    "\n",
+    "In the first part of this notebook, we will cover: \n",
+    "\n",
+    "| Part 1: The basic ``Phase`` class |\n",
+    "| :- |\n",
+    "| Assigning constant values for fixed properties |\n",
+    "| Generating values using built-in pore-scale models |\n",
+    "| Exploring the dependency handler |\n",
+    "| Creating custom pore-scale models |\n",
+    "| Specific classes for common fluids like ``Air`` and ``Water`` |\n",
+    "\n",
+    "In the second part we will cover topics relating to mixtures, including:\n",
+    "\n",
+    "| Part 2: Using ``Species`` and ``Mixture`` classes }\n",
+    "| :- |\n",
+    "| Creating individual ``Species`` objects from the CAS number |\n",
+    "| Combining components into a ``Mixture`` |\n",
+    "| Utilizing the built-in classes for first-approximations of pure gas and liquid properties, and for mixture properties |\n",
+    "| Leveraging external packages for making better estimates of pure component and mixture properties |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5699516f",
+   "metadata": {},
+   "source": [
+    "## Part 1: The ``Phase`` class\n",
+    "\n",
+    "If your simulation is simple, then a basic ``Phase`` object may be sufficient.  It has no predefined models from computing anything, so you have to either assign known values directly (e.g ``water['pore.viscosity'] = 0.001``) or define models that will compute the values you need.  The models can be taken from the ``openpnm.models.phase`` library, or you can write your own. We will cover all three options below."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "d0583d45",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import openpnm as op\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d8429ae3",
+   "metadata": {},
+   "source": [
+    "All simulations start by defining/creating a network.  The ``Demo`` class creates a simple cubic network with an assortment of useful properties included:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "41da6fd0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pn = op.network.Demo(shape=[2, 2, 1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "41924bb8",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "phase_01 : <openpnm.phase.Phase at 0x232488bd130>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.pressure                                                       4 / 4\n",
+      "  2  pore.temperature                                                    4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "phase1 = op.phase.Phase(network=pn)\n",
+    "print(phase1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d00c1a42",
+   "metadata": {},
+   "source": [
+    "Note that all ``phase`` objects need to be associated with a network, which is how ``phase1`` knows how many pore (and throat) values to compute...in this case 9 (and 12). "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "356d4148",
+   "metadata": {},
+   "source": [
+    "### Direct assignment of a constant value"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ad4bdbeb",
+   "metadata": {},
+   "source": [
+    "The basic ``Phase`` class creates a more or less empty object with only standard temperature and pressure assigned to each pore. In order to use this object for simulations it needs some additional information. For instance, to compute the permeability of ``pn`` we will need the viscosity.  So, let's assign a known value directly for liquid water:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "8f98fb81",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "phase1['pore.viscosity'] = 0.001  # Pa.s"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dac6d7d4",
+   "metadata": {},
+   "source": [
+    "> 💡 **ProTip!** \n",
+    "> \n",
+    "> When assigning a scalar value to a dictionary key it gets assigned to every pore (or throat).  The result of the above assignment can be seen below:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "50b97f81",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([0.001, 0.001, 0.001, 0.001])"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "phase1['pore.viscosity']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "836b20da",
+   "metadata": {},
+   "source": [
+    "### Using a built-in model\n",
+    "\n",
+    "Perhaps you would like to run simulation in the presence of a temperature gradient, and viscosity is a strong function of temperature.  Instead of assigning a constant viscosity, in this case it is better to assign a pore-scale model that OpenPNM will run to compute the viscosity in each pore.  \n",
+    "\n",
+    "The ``models`` library in OpenPNM contains some general models which can be used, such as polynomials or linear lines. A 4th order polynomial can be fit to experimental data of viscosity vs temperature yielding the following coefficients:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "0a61bc2a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "a4 = 5.8543E-11\n",
+    "a3 = -7.6756E-08\n",
+    "a2 = 3.7831E-05\n",
+    "a1 = -8.3156E-03\n",
+    "a0 = 6.8898E-01"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "32fb85d8",
+   "metadata": {},
+   "source": [
+    "These can be used in the the ``op.models.misc.polynomial`` model as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "8c13fabf",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Before: [0.001 0.001 0.001 0.001]\n",
+      "After: [0.00091476 0.00091476 0.00091476 0.00091476]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('Before:', phase1['pore.viscosity'])\n",
+    "f = op.models.misc.polynomial\n",
+    "phase1.add_model(propname='pore.viscosity', \n",
+    "                 model=f,\n",
+    "                 a = (a0, a1, a2, a3, a4),\n",
+    "                 prop='pore.temperature')\n",
+    "print('After:', phase1['pore.viscosity'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "80b40010",
+   "metadata": {},
+   "source": [
+    "> 💡 **ProTip!** \n",
+    "> \n",
+    "> When assigning a pore-scale model using the ``add_model`` function, it is automatically run, so it either overwrites any values present in ``phase1['pore.viscosity']`` or creates a new array in that location.  To prevent this behavior, for instance if a model needs other information to be computed before it's run, add ``regen_mode='deferred'`` to the argument list of the ``add_model`` method."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "85e775ce",
+   "metadata": {},
+   "source": [
+    "The most important benefit of using a pore-scale model is that it can re-compute each model if one of its dependent properties has changed. To illustrate the point, let's set the temperature to a random number between 300 and 350 K, the rerun the model at the new temperatures:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "57f24409",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Before: [0.00091476 0.00091476 0.00091476 0.00091476]\n",
+      "After: [0.00062288 0.00043031 0.00043805 0.00066168]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('Before:', phase1['pore.viscosity'])\n",
+    "phase1['pore.temperature'] = 300.0 + np.random.rand(pn.Np)*50\n",
+    "phase1.regenerate_models()\n",
+    "print('After:', phase1['pore.viscosity'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1d74915a",
+   "metadata": {},
+   "source": [
+    "### Using a water-specific model\n",
+    "\n",
+    "Because water is so common, OpenPNM has some available functions for its properties. For instance, there is no need to look-up experimental data and fit an n-th order polynomial, as this is already provided:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "97a5b4ec",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Before: [0.00062288 0.00043031 0.00043805 0.00066168]\n",
+      "After: [0.00059036 0.00039567 0.00040532 0.00063039]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('Before:', phase1['pore.viscosity'])\n",
+    "f = op.models.phase.viscosity.water_correlation\n",
+    "phase1.add_model(propname='pore.viscosity',\n",
+    "                 model=f)\n",
+    "print('After:', phase1['pore.viscosity'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3ad5c1d0",
+   "metadata": {},
+   "source": [
+    "> 💡 **ProTip!** \n",
+    "> \n",
+    "> Assigning a new model to ``propname='pore.viscostiy'`` will overwrite the existing model, which in this case was the custom model we defined above\n",
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bc67cc5a",
+   "metadata": {},
+   "source": [
+    "> 💡 **ProTip!** \n",
+    "> \n",
+    "> OpenPNM also has specific models for **air** and **mercury**, which are also common. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d79fca2e",
+   "metadata": {},
+   "source": [
+    "### Writing your own custom model\n",
+    "\n",
+    "This subject is explained in detail in another tutorial, but the basic outline is as follows. Creating a custom model, containing any functionality needed, is as simple as defining a new python function:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "a30c7773",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.00062288 0.00043031 0.00043805 0.00066168]\n"
+     ]
+    }
+   ],
+   "source": [
+    "def custom_mu(phase, temperature='pore.temperature'):\n",
+    "    T = phase[temperature]\n",
+    "    a4 = 5.8543E-11\n",
+    "    a3 = -7.6756E-08\n",
+    "    a2 = 3.7831E-05\n",
+    "    a1 = -8.3156E-03\n",
+    "    a0 = 6.8898E-01\n",
+    "    mu = a0 + a1*T + a2*T**2 + a3*T**3 + a4*T**4\n",
+    "    return mu\n",
+    "\n",
+    "phase1.add_model(propname='pore.viscosity',\n",
+    "                 model=custom_mu)\n",
+    "print(phase1['pore.viscosity'])\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "55bcd941",
+   "metadata": {},
+   "source": [
+    "The values here are the same as above since this function is just a reimplementation of the n-th order polynomial fit"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e69c514a",
+   "metadata": {},
+   "source": [
+    "### Specific Classes for Common Fluids\n",
+    "\n",
+    "Air, water, and mercury are used commonly enough that OpenPNM not only has pore-scale models for their propertie (i.e. ``op.models.viscosity.water_correlation``), but we have also created pre-defined classes with all the appropriate models already attached:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "d7232b92",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "phase_02 : <openpnm.phase.Water at 0x232488d29a0>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.contact_angle                                                  4 / 4\n",
+      "  2  pore.density                                                        4 / 4\n",
+      "  3  pore.molar_density                                                  4 / 4\n",
+      "  4  pore.pressure                                                       4 / 4\n",
+      "  5  pore.surface_tension                                                4 / 4\n",
+      "  6  pore.temperature                                                    4 / 4\n",
+      "  7  pore.thermal_conductivity                                           4 / 4\n",
+      "  8  pore.vapor_pressure                                                 4 / 4\n",
+      "  9  pore.viscosity                                                      4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "water = op.phase.Water(network=pn)\n",
+    "print(water)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c3578f9a",
+   "metadata": {},
+   "source": [
+    "As can be seen in the above print-out, a variety of things have been computed, most of which are coming from a *water-specific* pore-scale model.  These can be viewed with:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "f9f8f4df",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "#   Property Name                       Parameter                 Value\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "1   pore.contact_angle@all              model:                    constant\n",
+      "                                        value:                    110.0\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "2   pore.density@all                    model:                    water_correlation\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        salinity:                 pore.salinity\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "3   pore.molar_density@all              model:                    mass_to_molar\n",
+      "                                        MW:                       param.molecular_weight\n",
+      "                                        rho:                      pore.density\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "4   pore.surface_tension@all            model:                    water_correlation\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        salinity:                 pore.salinity\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "5   pore.thermal_conductivity@all       model:                    water_correlation\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        salinity:                 pore.salinity\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "6   pore.vapor_pressure@all             model:                    liquid_pure_antoine\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        Tc:                       param.critical_temperature\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "7   pore.viscosity@all                  model:                    water_correlation\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        salinity:                 pore.salinity\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(water.models)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0d35c821",
+   "metadata": {},
+   "source": [
+    "As can be seen, many of these models include ``T='pore.temperature'`` as a parameter, which means that these models will fetch the current value of ``water['pore.temperature']`` when running, thereby using the most current value of temperature."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b0cd9e12",
+   "metadata": {},
+   "source": [
+    "> 💡 **ProTip!** \n",
+    "> \n",
+    "> Close inspection of the above printout reveals that `'pore.molar_density'` takes `'pore.density'` as an argument.  OpenPNM uses a graph-based depedency handler to ensure that `'pore.density'` is computed before `'pore.molar_denstiy'`.  This happens automatically when ``regenerate_model`` is called.  In some cases an error will occur if these dependencies form cycles which cannot be resolved.  This can be fixed by changing the name of one of the \"upstream\" models, for instance."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2e3a27f2",
+   "metadata": {},
+   "source": [
+    "## Part 2: Using Species and Mixtures\n",
+    "\n",
+    "In some cases a user may wish to compute the thermophysical properties of unusual species, or even mixtures of species. There are packages who's entire purpose is computing these values, so OpenPNM does not attempt to reproduce this functionality. However, it is needed often enough that OpenPNM has some base level support for making 'first-approximation' estimates of species properties, and also has a defined API for dealing with mixtures of individual species. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "652cf887",
+   "metadata": {},
+   "source": [
+    "> ⚠ **Caution** \n",
+    "> \n",
+    "> In most cases you probably do not need to use the ``Mixture`` class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the ``Mixture`` feature is the right choice."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "42739852",
+   "metadata": {},
+   "source": [
+    "### Pure Species\n",
+    "\n",
+    "The API involves starting with several ``Species`` objects.  Let's make air, consisting of oxygen and nitrogen."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "06659362",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "phase_03 : <openpnm.phase.Species at 0x2324d428c20>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.pressure                                                       4 / 4\n",
+      "  2  pore.temperature                                                    4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "o2 = op.phase.Species(network=pn, species='oxygen')\n",
+    "print(o2)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "87d3047a",
+   "metadata": {},
+   "source": [
+    "> 💡 **ProTip!** \n",
+    "> \n",
+    "> The ``species`` argument is looked up using the ``thermo`` package which contains numerous synonyms for each species. This is argument is actually passed to ``thermo.Chemical``, which does the database look-up to fetch all the needed chemical properties."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "27b12098",
+   "metadata": {},
+   "source": [
+    "As can be seen above the ``Species`` class does not compute any properties of the given species, *BUT* it does contain a host of thermodynamic properties in the ``params`` attribute:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "271081b5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "Parameters                          Value\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "CAS                                 7782-44-7\n",
+      "common_name                         oxygen\n",
+      "charge                              0\n",
+      "formula                             O2\n",
+      "boiling_temperature                 90.188\n",
+      "melting_temperature                 54.36\n",
+      "triple_point_temperature            54.33\n",
+      "triple_point_pressure               148.9796864589355\n",
+      "dipole_moment                       0.0\n",
+      "LJ_diameter                         3.29728\n",
+      "LJ_energy                           1.6520845934e-21\n",
+      "surface_tension_Tb                  0.013145633010272155\n",
+      "molar_volume_Tb                     2.802254619756072e-05\n",
+      "molecular_weight                    31.9988\n",
+      "critical_temperature                154.58\n",
+      "critical_pressure                   5042945.25\n",
+      "critical_volume                     7.34e-05\n",
+      "critical_compressibilty_factor      0.2880002236716698\n",
+      "acentric_factor                     0.021\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(o2.params)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dc90c5bc",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "> 💡 **Pro Tip**\n",
+    "> \n",
+    "> You can access the values of these parameters either from the ``params`` attribute or using the dictionary lookup of the main object which will dispatch the query to the ``params`` attribute. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "abb267b0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'7782-44-7'"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "o2.params['CAS']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "f4fa075f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'7782-44-7'"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "o2['param.CAS']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7e005e68",
+   "metadata": {},
+   "source": [
+    "> Writing also works."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "0d372fb3",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'bar'"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "o2['param.foo'] = 'bar'\n",
+    "o2.params['foo']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c5be01d2",
+   "metadata": {},
+   "source": [
+    "----"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0409947c",
+   "metadata": {},
+   "source": [
+    "These parameters are used in the various property estimation methods.  For instance, to compute the viscosity of oxygen, OpenPNM provides a function that implements the model of Steil and Thodos (``openpnm.models.phase.viscosity.gas_pure_ls``):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "4eb23ca6",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[2.01023694e-05 2.01023694e-05 2.01023694e-05 2.01023694e-05]\n"
+     ]
+    }
+   ],
+   "source": [
+    "f = op.models.phase.viscosity.gas_pure_st\n",
+    "o2.add_model(propname='pore.viscosity',\n",
+    "            model=f)\n",
+    "print(o2['pore.viscosity'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "04be66b5",
+   "metadata": {},
+   "source": [
+    "This function requires several pieces of thermodynamics information, such as the critical temperature and critical pressure. You can see all the arguments below"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "4c994288",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "#   Property Name                       Parameter                 Value\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "1   pore.viscosity@all                  model:                    gas_pure_st\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        Tc:                       param.critical_temperature\n",
+      "                                        Pc:                       param.critical_pressure\n",
+      "                                        MW:                       param.molecular_weight\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(o2.models)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "282088bd",
+   "metadata": {},
+   "source": [
+    "The above shows that the temperature of the phase is fetched as ``'pore.temperature'``, while all the rest are retrieved from the ``params`` attribute.  To further illustrate this behavior, we could write the critical temperature ``A['pore.critical_temperature']`` and also overwrite the default argument:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "9f9e8ac3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "o2.models['pore.viscosity@all']['Tc'] = 'pore.critical_temperature'\n",
+    "o2['pore.critical_temperature'] = o2['param.critical_temperature']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "1409b0ef",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "#   Property Name                       Parameter                 Value\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "1   pore.viscosity@all                  model:                    gas_pure_st\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        Tc:                       pore.critical_temperature\n",
+      "                                        Pc:                       param.critical_pressure\n",
+      "                                        MW:                       param.molecular_weight\n",
+      "                                        regeneration mode:        normal\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(o2.models)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "00f54050",
+   "metadata": {},
+   "source": [
+    "Now when we regenerate the model it will fetch the critical temperature values for each pore but will work as expected:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "ddc5d20b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[2.01023694e-05 2.01023694e-05 2.01023694e-05 2.01023694e-05]\n"
+     ]
+    }
+   ],
+   "source": [
+    "o2.regenerate_models()\n",
+    "print(o2['pore.viscosity'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e59097ee",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "> 💡 **Pro Tip**\n",
+    "> \n",
+    "> The ability to fetch items from the ``params`` attribute via the standard dictionary look-up was added specifically to support the above behavior.  Within the function the following line is called: \n",
+    ">\n",
+    "> ``Tcrit = phase[Tc]``\n",
+    ">\n",
+    "> So if ``Tc='pore.critical_temperature'`` is supplied as the argument, then OpenPNM will look for values in the main dictionary (i.e. ``phase['pore.critical_temperature']``.  If however, ``Tc='param.critical_temperature'`` is specified, then OpenPNM will look in the ``params`` attribute, becuase ``phase['param.critical_temperature']`` is equivalent to ``phase.params['critical_temperature']``. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "71d64da2",
+   "metadata": {},
+   "source": [
+    "### Gas and Liquid Species\n",
+    "\n",
+    "OpenPNM has a suite of functions for computing the properties of pure phases, but these functions differ for gases and liquids.  For this reason we offer two classes for gas and liquid with the appropriate models already defined.  These are referred to as ``StandardLiquid`` and ``StandardGas`` to indicate that the models being used are the standard selection which provide a first-approximatation:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "5f02a314",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "o2 = op.phase.StandardGas(network=pn, species='o2')\n",
+    "h2o = op.phase.StandardLiquid(network=pn, species='h2o')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9512a56b",
+   "metadata": {},
+   "source": [
+    "These objects are populated with their respective thermodynamic properties, as illustrated above, but the more interesting feature is that an assortment of pore-scale models are also added, which compute the properties:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "bce39721",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "phase_04 : <openpnm.phase.StandardGas at 0x2324d48b630>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.density                                                        4 / 4\n",
+      "  2  pore.heat_capacity                                                  4 / 4\n",
+      "  3  pore.heat_capacity_gas                                              4 / 4\n",
+      "  4  pore.pressure                                                       4 / 4\n",
+      "  5  pore.temperature                                                    4 / 4\n",
+      "  6  pore.thermal_conductivity                                           4 / 4\n",
+      "  7  pore.viscosity                                                      4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(o2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "21e4fad1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "phase_05 : <openpnm.phase.StandardLiquid at 0x2324d48e630>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.density                                                        4 / 4\n",
+      "  2  pore.heat_capacity                                                  4 / 4\n",
+      "  3  pore.heat_capacity_gas                                              4 / 4\n",
+      "  4  pore.pressure                                                       4 / 4\n",
+      "  5  pore.temperature                                                    4 / 4\n",
+      "  6  pore.thermal_conductivity                                           4 / 4\n",
+      "  7  pore.vapor_pressure                                                 4 / 4\n",
+      "  8  pore.viscosity                                                      4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(h2o)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8ff9ba82",
+   "metadata": {},
+   "source": [
+    "The functions that are used to compute the properties are taken from the ``chemicals`` package.  OpenPNM reimplemented a minimal selection of these using direct ``numpy`` vectorization.  You can see which models are chosen by printing the ``models`` attribute, and you can read the docstring of each function for more information."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "3b3376ff",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "#   Property Name                       Parameter                 Value\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "1   pore.density@all                    model:                    liquid_pure_COSTALD\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        Tc:                       param.critical_temperature\n",
+      "                                        Vc:                       param.critical_volume\n",
+      "                                        omega:                    param.acentric_factor\n",
+      "                                        MW:                       param.molecular_weight\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "2   pore.heat_capacity_gas@all          model:                    gas_pure_TRC\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        a:                        []\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "3   pore.heat_capacity@all              model:                    liquid_pure_rp\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        Tc:                       param.critical_temperature\n",
+      "                                        omega:                    param.acentric_factor\n",
+      "                                        Cpg:                      pore.heat_capacity_gas\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "4   pore.thermal_conductivity@all       model:                    liquid_pure_gismr\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        MW:                       param.molecular_weight\n",
+      "                                        Tb:                       param.boiling_temperature\n",
+      "                                        Pc:                       param.critical_pressure\n",
+      "                                        omega:                    param.acentric_factor\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "5   pore.viscosity@all                  model:                    liquid_pure_ls\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        MW:                       param.molecular_weight\n",
+      "                                        Tc:                       param.critical_temperature\n",
+      "                                        Pc:                       param.critical_pressure\n",
+      "                                        omega:                    param.acentric_factor\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "6   pore.vapor_pressure@all             model:                    liquid_pure_antoine\n",
+      "                                        T:                        pore.temperature\n",
+      "                                        Tc:                       param.critical_temperature\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(h2o.models)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "38b2d615",
+   "metadata": {},
+   "source": [
+    "### Gas and Liquid Mixtures\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b8ff1765",
+   "metadata": {},
+   "source": [
+    "To create a ``Mixture`` we must first specify the individual ``Species`` object.  Below we use the ``StandardGas`` class, which is the basic ``Species`` class, but with an assortment of models alreayd attached for computing the component properties:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "9faf6146",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "o2 = op.phase.StandardGas(network=pn, species='o2', name='oxygen')\n",
+    "n2 = op.phase.StandardGas(network=pn, species='n2', name='nitrogen')\n",
+    "air = op.phase.StandardGasMixture(network=pn, components=[o2, n2])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5ec5daf1",
+   "metadata": {},
+   "source": [
+    "Before using this mixture we must first specify the compositions:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "555e09fa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "air.y(o2, 0.21)\n",
+    "air.y(n2, 0.79)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "083bfb4c",
+   "metadata": {},
+   "source": [
+    "Now that the compositios are known we can run the models:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "5e4f682d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "mixture_01 : <openpnm.phase.StandardGasMixture at 0x232488d6bd0>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.density                                                        4 / 4\n",
+      "  2  pore.diffusivity                                                    4 / 4\n",
+      "  3  pore.heat_capacity                                                  4 / 4\n",
+      "  4  pore.mole_fraction.nitrogen                                         4 / 4\n",
+      "  5  pore.mole_fraction.oxygen                                           4 / 4\n",
+      "  6  pore.pressure                                                       4 / 4\n",
+      "  7  pore.temperature                                                    4 / 4\n",
+      "  8  pore.thermal_conductivity                                           4 / 4\n",
+      "  9  pore.viscosity                                                      4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "air.regenerate_models()\n",
+    "print(air)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ea7590ff",
+   "metadata": {},
+   "source": [
+    "The above properties are for the ``Mixture``, which is a blend of the properties of the individual ``Species``. As demonstrated above where ``Species`` properties were all functions of temperature, the ``Mixture`` class considers the *composition* of each species in the mixture as well.  If we change the composition of the components, and rerun the models, the mixture properties will change:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "id": "85a2ed10",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Before: [1.78543425e-05 1.78543425e-05 1.78543425e-05 1.78543425e-05]\n",
+      "After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('Before:', air['pore.viscosity'])\n",
+    "air.y(o2, 0.8)\n",
+    "air.y(n2, 0.2)\n",
+    "air.regenerate_models()\n",
+    "print('After:', air['pore.viscosity'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1944472c",
+   "metadata": {},
+   "source": [
+    "----\n",
+    "> 💡 **ProTip!** \n",
+    ">\n",
+    "> The mole fractions of *both* species can be retrieved using the `dict` lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "id": "9cfb0801",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'oxygen': array([0.8, 0.8, 0.8, 0.8]), 'nitrogen': array([0.2, 0.2, 0.2, 0.2])}\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(air['pore.mole_fraction'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "317c92b2",
+   "metadata": {},
+   "source": [
+    "> This also means you can index into the returned dictionary using the names:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "id": "fa02fd83",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.8 0.8 0.8 0.8]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(air['pore.mole_fraction'][o2.name])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a799d459",
+   "metadata": {},
+   "source": [
+    "> Alternatively the returned dictionary can be used to get a list of components that are currently part of the mixture:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "abc8bffe",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['oxygen', 'nitrogen'])"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air['pore.mole_fraction'].keys()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "de741d9c",
+   "metadata": {},
+   "source": [
+    "> The individual species can be retrieved using the ``components`` attribute which returns a dictionary with component names as the keys and handles to the actual objects as values:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "e102fe27",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': oxygen : <openpnm.phase.StandardGas at 0x2324d4982c0>,\n",
+       " 'nitrogen': nitrogen : <openpnm.phase.StandardGas at 0x2324d48e360>}"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air.components"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e08b19d9",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6bc1e20c",
+   "metadata": {},
+   "source": [
+    "### Getting and Setting Compositions\n",
+    "\n",
+    "The ``x`` method on ``LiquidMixture``, and ``y`` on ``GasMixture`` can also be used to retrieve the mole fraction of one or both components:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "ff18e855",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': array([0.8, 0.8, 0.8, 0.8]),\n",
+       " 'nitrogen': array([0.2, 0.2, 0.2, 0.2])}"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air.y()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "fa400400",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([0.8, 0.8, 0.8, 0.8])"
+      ]
+     },
+     "execution_count": 36,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air.y(o2.name)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7d97a169",
+   "metadata": {},
+   "source": [
+    "### Exploring the Features of the Mixture Objects"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c40f1857",
+   "metadata": {},
+   "source": [
+    "#### Adding and Removing Species\n",
+    "\n",
+    "You can remove a species:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "8d1dcc11",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'nitrogen': nitrogen : <openpnm.phase.StandardGas at 0x2324d48e360>}"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air.remove_comp(o2.name)\n",
+    "air.components"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c257cab8",
+   "metadata": {},
+   "source": [
+    "----\n",
+    "> 💡 **ProTip!** \n",
+    ">\n",
+    "> A species is considered a component of a mixture *if and only if* ``'pore.mole_fraction.<species.name>'`` appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined. For instance:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "781001d6",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{}"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "del air['pore.mole_fraction.' + n2.name]\n",
+    "air.components"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e3684b4a",
+   "metadata": {},
+   "source": [
+    "> They can be readded in the same way:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "id": "413dace1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': oxygen : <openpnm.phase.StandardGas at 0x2324d4982c0>}"
+      ]
+     },
+     "execution_count": 39,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air['pore.mole_fraction.' + o2.name] = 0.21\n",
+    "air.components"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4ddefabc",
+   "metadata": {},
+   "source": [
+    "> But there is a specific method for this:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "99f85168",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': oxygen : <openpnm.phase.StandardGas at 0x2324d4982c0>,\n",
+       " 'nitrogen': nitrogen : <openpnm.phase.StandardGas at 0x2324d48e360>}"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air.add_comp(n2, mole_fraction=0.79)\n",
+    "air.components"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7ea1f55d",
+   "metadata": {},
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9e52b677",
+   "metadata": {},
+   "source": [
+    "#### ``info``\n",
+    "The ``info`` attribute reports all the existing properties on the mixture (similar to ``print``) but also of each of the components:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "id": "9e7473ec",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "mixture_01 : <openpnm.phase.StandardGasMixture at 0x232488d6bd0>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.density                                                        4 / 4\n",
+      "  2  pore.diffusivity                                                    4 / 4\n",
+      "  3  pore.heat_capacity                                                  4 / 4\n",
+      "  4  pore.mole_fraction.nitrogen                                         4 / 4\n",
+      "  5  pore.mole_fraction.oxygen                                           4 / 4\n",
+      "  6  pore.pressure                                                       4 / 4\n",
+      "  7  pore.temperature                                                    4 / 4\n",
+      "  8  pore.thermal_conductivity                                           4 / 4\n",
+      "  9  pore.viscosity                                                      4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all                                                                4\n",
+      "  2  throat.all                                                              4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "Component Phases\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "oxygen : <openpnm.phase.StandardGas at 0x2324d4982c0>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.density.oxygen                                                 4 / 4\n",
+      "  2  pore.heat_capacity.oxygen                                           4 / 4\n",
+      "  3  pore.heat_capacity_gas.oxygen                                       4 / 4\n",
+      "  4  pore.pressure.oxygen                                                4 / 4\n",
+      "  5  pore.temperature.oxygen                                             4 / 4\n",
+      "  6  pore.thermal_conductivity.oxygen                                    4 / 4\n",
+      "  7  pore.viscosity.oxygen                                               4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all.oxygen                                                         4\n",
+      "  2  throat.all.oxygen                                                       4\n",
+      "══════════════════════════════════════════════════════════════════════════════\n",
+      "nitrogen : <openpnm.phase.StandardGas at 0x2324d48e360>\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Properties                                                   Valid Values\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.density.nitrogen                                               4 / 4\n",
+      "  2  pore.heat_capacity.nitrogen                                         4 / 4\n",
+      "  3  pore.heat_capacity_gas.nitrogen                                     4 / 4\n",
+      "  4  pore.pressure.nitrogen                                              4 / 4\n",
+      "  5  pore.temperature.nitrogen                                           4 / 4\n",
+      "  6  pore.thermal_conductivity.nitrogen                                  4 / 4\n",
+      "  7  pore.viscosity.nitrogen                                             4 / 4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  #  Labels                                                 Assigned Locations\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "  1  pore.all.nitrogen                                                       4\n",
+      "  2  throat.all.nitrogen                                                     4\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "air.info"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dea5ed85",
+   "metadata": {},
+   "source": [
+    "#### Get component mole fractions\n",
+    "\n",
+    "You'll notice that the mixture object has arrays called ``'pore.mole_fraction.<compname>'`` for each component. The dictionary look-up in OpenPNM will return a subdictionary if the given key is just ``'pore.mole_fraction'``."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "id": "5636fdfa",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': array([0.21, 0.21, 0.21, 0.21]),\n",
+       " 'nitrogen': array([0.79, 0.79, 0.79, 0.79])}"
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air['pore.mole_fraction']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "00de50e2",
+   "metadata": {},
+   "source": [
+    "#### ``components``\n",
+    "This attribute returns a dictionary with each of the components accessible by their name:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "id": "692448e5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "dict_keys(['oxygen', 'nitrogen'])\n"
+     ]
+    }
+   ],
+   "source": [
+    "d = air.components\n",
+    "print(d.keys())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "524b72f2",
+   "metadata": {},
+   "source": [
+    "#### ``get_comp_vals``\n",
+    "Since the mixture is made from several components, it is often desired get the values of a specific property from each component.  This method provides a convenient way to do this:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "id": "e1a60168",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'oxygen': array([2.09391006e-05, 2.09391006e-05, 2.09391006e-05, 2.09391006e-05]), 'nitrogen': array([1.69779528e-05, 1.69779528e-05, 1.69779528e-05, 1.69779528e-05])}\n"
+     ]
+    }
+   ],
+   "source": [
+    "mus = air.get_comp_vals('pore.viscosity')\n",
+    "print(mus)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7bfab499",
+   "metadata": {},
+   "source": [
+    "It is also possible to retrieve the properteis of a component by asking the mixture and appending the component name, as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "id": "87dfb7ab",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([2.09391006e-05, 2.09391006e-05, 2.09391006e-05, 2.09391006e-05])"
+      ]
+     },
+     "execution_count": 45,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air['pore.viscosity.' + o2.name]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "964bf9f9",
+   "metadata": {},
+   "source": [
+    "In reality there is no array on ``air`` with the name ``'pore.viscosity.phase_01'``, but failure to find this array is what actually triggers the look-up of the array from ``o2``. This is a convenient feature that is added using some 'syntactic sugar' behind the scenes in Python.  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a666f7e3",
+   "metadata": {},
+   "source": [
+    "#### ``check_mixture_health``\n",
+    "\n",
+    "You can also check the health of the mixture, such as whether all the mole fractions add to 1.0 each each pore:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "id": "a5bd5ca5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "Key                                 Value\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "mole_fraction_too_low               []\n",
+      "mole_fraction_too_high              []\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(air.check_mixture_health())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "id": "b809ec4c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "Key                                 Value\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "mole_fraction_too_low               (4,)\n",
+      "mole_fraction_too_high              []\n",
+      "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "air.y(o2.name, 0.1)\n",
+    "print(air.check_mixture_health())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5e93c379",
+   "metadata": {},
+   "source": [
+    "#### Retrieving Species Properties\n",
+    "\n",
+    "Lastly, the properties of the individual species can be retrieved from the mixture as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "id": "b0a699ad",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': array([2.09391006e-05, 2.09391006e-05, 2.09391006e-05, 2.09391006e-05]),\n",
+       " 'nitrogen': array([1.69779528e-05, 1.69779528e-05, 1.69779528e-05, 1.69779528e-05])}"
+      ]
+     },
+     "execution_count": 48,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air.get_comp_vals('pore.viscosity')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8fedb1a4",
+   "metadata": {},
+   "source": [
+    "#### Using the wildcard (``*``) syntax\n",
+    "\n",
+    "One more feature that has been added is the ability to fetch requested property arrays from *all* the components by replacing the component name with the universal *wildcard* symbmol: ``*`` as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "id": "b5a49a14",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'oxygen': array([2.09391006e-05, 2.09391006e-05, 2.09391006e-05, 2.09391006e-05]),\n",
+       " 'nitrogen': array([1.69779528e-05, 1.69779528e-05, 1.69779528e-05, 1.69779528e-05])}"
+      ]
+     },
+     "execution_count": 49,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "air['pore.viscosity.*']"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f48d9a8b",
+   "metadata": {},
+   "source": [
+    "Note that this returns exactly the same dictionary as the ``get_comp_vals`` method (in fact this function gets called behind the scenes), but this feature is offered for more than just convenience.  The main reason for supporting this feature is so that pore-scale models can be instructed to fetch the needed arrays for computing the mixture properties.  This is demonstrated in the following simple example of a custom mixture model:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "id": "3a51e8fe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def mole_fraction_weighting(phase, propname):\n",
+    "    xs = phase['pore.mole_fraction']\n",
+    "    ys = phase[propname]  # This is the key step\n",
+    "    z = 0.0\n",
+    "    for i in xs.keys():\n",
+    "        z += xs[i]*ys[i]\n",
+    "    return z"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "id": "5971bfe3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[1.55064928e-05 1.55064928e-05 1.55064928e-05 1.55064928e-05]\n"
+     ]
+    }
+   ],
+   "source": [
+    "vals = mole_fraction_weighting(phase=air, propname='pore.viscosity.*')\n",
+    "print(vals)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bede68a9",
+   "metadata": {},
+   "source": [
+    "The use of the ``'.*'`` as the suffix of the ``propname`` argument is crucial here.  As can be seen in the definition of ``mole_fraction_weighting``, the call to ``phase[propname]`` passes ``'pore.viscsoity.*'`` directly to the dictionary lookup of values from ``phase``, and this in turn triggers the retrieval of the ``'pore.viscosity'`` values from each component. \n",
+    "\n",
+    "If we were to pass ``'pore.viscosity'`` then the function would throw an error since the call to ``phase['pore.viscosity']`` would return a single numpy array of viscosity values of the mixture (or not find any values at all)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c2b5f23e",
+   "metadata": {},
+   "source": [
+    "----\n",
+    "> 💡 **ProTip!** \n",
+    ">\n",
+    "> In summary, ``air['pore.viscosity']`` will fetch the viscosity of the mixture, while ``air['pore.viscosity.oxygen']`` will retrieve the values of viscosity from ``o2``, and ``air['pore.viscosity.*']`` will fetch the viscosity from all the components and return them in a dictionary with each component name as the key."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

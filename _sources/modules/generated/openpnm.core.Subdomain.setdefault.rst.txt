@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-=================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: Subdomain.setdefault

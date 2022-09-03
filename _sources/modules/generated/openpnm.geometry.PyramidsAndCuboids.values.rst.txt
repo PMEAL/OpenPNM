@@ -1,8 +1,0 @@
-:orphan:
-
-values
-==========================================
-
-.. currentmodule:: openpnm.geometry
-
-.. automethod:: PyramidsAndCuboids.values

@@ -1,0 +1,6 @@
+water\_correlation
+==================
+
+.. currentmodule:: openpnm.models.phase.viscosity
+
+.. autofunction:: water_correlation

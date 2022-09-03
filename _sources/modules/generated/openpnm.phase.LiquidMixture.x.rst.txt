@@ -1,0 +1,8 @@
+:orphan:
+
+x
+=============================
+
+.. currentmodule:: openpnm.phase
+
+.. automethod:: LiquidMixture.x

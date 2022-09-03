@@ -1,8 +1,0 @@
-:orphan:
-
-get_summaryf
-========================================================
-
-.. currentmodule:: openpnm.models.geometry.pore_seed
-
-.. automethod:: Docorator.get_summaryf

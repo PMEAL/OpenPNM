@@ -1,8 +1,0 @@
-:orphan:
-
-params
-==============================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Voronoi.params

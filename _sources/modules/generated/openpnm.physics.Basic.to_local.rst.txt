@@ -1,8 +1,0 @@
-:orphan:
-
-to_local
-==============================
-
-.. currentmodule:: openpnm.physics
-
-.. automethod:: Basic.to_local

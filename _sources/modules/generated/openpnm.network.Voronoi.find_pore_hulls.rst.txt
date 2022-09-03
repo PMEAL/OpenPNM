@@ -1,8 +1,0 @@
-:orphan:
-
-find_pore_hulls
-=======================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Voronoi.find_pore_hulls

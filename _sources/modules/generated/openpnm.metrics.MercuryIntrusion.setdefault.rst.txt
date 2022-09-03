@@ -1,8 +1,0 @@
-:orphan:
-
-setdefault
-===========================================
-
-.. currentmodule:: openpnm.metrics
-
-.. automethod:: MercuryIntrusion.setdefault

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Pore\_cross\_sectional\_area
+pore\_cross\_sectional\_area
 ============================
 
 .. automodule:: openpnm.models.geometry.pore_cross_sectional_area
@@ -29,15 +29,6 @@ Pore\_cross\_sectional\_area
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-      :nosignatures:
-      :toctree:
-
-   
-      Docorator
    
    
 

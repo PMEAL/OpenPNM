@@ -1,8 +1,0 @@
-:orphan:
-
-__call__
-=================================================
-
-.. currentmodule:: openpnm.models.phases.mixtures
-
-.. automethod:: Docorator.__call__

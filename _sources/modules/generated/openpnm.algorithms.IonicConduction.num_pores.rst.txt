@@ -1,0 +1,8 @@
+:orphan:
+
+num_pores
+============================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: IonicConduction.num_pores

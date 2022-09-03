@@ -1,0 +1,8 @@
+:orphan:
+
+run_model
+=================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: Voronoi.run_model

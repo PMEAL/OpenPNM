@@ -1,0 +1,6 @@
+intersecting\_pyramids
+======================
+
+.. currentmodule:: openpnm.models.geometry.conduit_lengths
+
+.. autofunction:: intersecting_pyramids

@@ -1,8 +1,0 @@
-:orphan:
-
-tomask
-=========================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: OhmicConduction.tomask

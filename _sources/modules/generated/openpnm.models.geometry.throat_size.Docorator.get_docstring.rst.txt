@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-===========================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_size
-
-.. automethod:: Docorator.get_docstring

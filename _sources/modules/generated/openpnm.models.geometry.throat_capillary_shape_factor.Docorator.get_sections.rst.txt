@@ -1,8 +1,0 @@
-:orphan:
-
-get_sections
-============================================================================
-
-.. currentmodule:: openpnm.models.geometry.throat_capillary_shape_factor
-
-.. automethod:: Docorator.get_sections

@@ -1,8 +1,0 @@
-:orphan:
-
-get_docstring
-==========================================
-
-.. currentmodule:: openpnm.utils.misc
-
-.. automethod:: Docorator.get_docstring
