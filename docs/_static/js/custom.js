@@ -21,6 +21,11 @@ window.onload = function () {
     //     $(" nav.bd-links ").children().hide()
     // }
 
+    var is_examples_page = $( ".active a:contains(Examples2)" )
+    if (is_examples_page.length == 1) {
+        $(".bd-sidenav").attr('style', 'font-family: "Noto Sans" !important')
+    }
+
     // var selected = $("a.current")
     // selected.html("&#8594; " + selected.text())
 
