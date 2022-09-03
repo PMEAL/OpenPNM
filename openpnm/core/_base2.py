@@ -45,6 +45,7 @@ class BaseSettings:
         A universally unique identifier for the object to keep things straight
 
     """
+    default_domain = 'domain_1'
 
 
 @docstr.get_sections(base='Base', sections=['Parameters'])
@@ -130,7 +131,7 @@ class Base2(dict):
 
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
-            raise Exception('All keys must start with either pore, or throat')
+            raise Exception('All keys must start with either pore or throat')
         # Convert value to ndarray
         if not isinstance(value, np.ndarray):
             value = np.array(value, ndmin=1)
@@ -187,17 +188,17 @@ class Base2(dict):
             return vals[locs]
 
         # This allows for lookup of all data that 'ends with' a certain
-        # string, like pn[]*diameter'] will return a dict with pore and throat
+        # string, like pn[*diameter'] will return a dict with pore and throat
         # as the dict keys
-        if key.startswith('*'):
-            d = {}
-            key = key[1:]  # Remove astrisk
-            if key.startswith('.'):  # Remove leading dot if *. was given
-                key = key[1:]
-            for k, v in self.items():
-                if k.endswith(key):
-                    d[k[:-len(key)-1]] = super().__getitem__(k)
-            return d
+        # if key.startswith('*'):
+        #     d = {}
+        #     key = key[1:]  # Remove astrisk
+        #     if key.startswith('.'):  # Remove leading dot if *. was given
+        #         key = key[1:]
+        #     for k, v in self.items():
+        #         if k.endswith(key):
+        #             d[k[:-len(key)-1]] = super().__getitem__(k)
+        #     return d
 
         try:
             return super().__getitem__(key)
@@ -206,7 +207,6 @@ class Base2(dict):
             if key.split('.', 1)[-1] in [self.name, 'all']:
                 element, prop = key.split('.', 1)
                 vals = np.ones(self._count(element), dtype=bool)
-                self[element+'.all'] = vals
                 return vals
             else:
                 vals = {}  # Gather any arrays into a dict
@@ -291,10 +291,6 @@ class Base2(dict):
             return
         name = self.project._generate_name(name)
         self._name = name
-        if self.Np is not None:
-            self['pore.'+name] = np.ones([self.Np, ], dtype=bool)
-        if self.Nt is not None:
-            self['throat.'+name] = np.ones([self.Nt, ], dtype=bool)
 
     def _get_name(self):
         try:
@@ -333,9 +329,12 @@ class Base2(dict):
         return self._params
 
     def _count(self, element):
-        for k, v in self.items():
-            if k.startswith(element):
-                return v.shape[0]
+        network = self.network
+        if element == 'pore':
+            N = network['pore.coords'].shape[0]
+        elif element == 'throat':
+            N = network['throat.conns'].shape[0]
+        return N
 
     # TODO: Delete this once codes stops asking for it
     @property
@@ -463,11 +462,16 @@ class ModelMixin2:
         super().__init__(*args, **kwargs)
         self.models = ModelsDict()
 
-    def add_model(self, propname, model, domain='all', regen_mode='normal',
+    def add_model(self, propname, model, domain=None, regen_mode='normal',
                   **kwargs):
         if '@' in propname:
             propname, domain = propname.split('@')
         else:
+            if domain is None:
+                domain = self.settings['default_domain']
+            element, prop = propname.split('.', 1)
+            if element + '.' + domain not in self.keys() and (prop != 'all'):
+                self[element + '.' + domain] = True
             domain = domain.split('.', 1)[-1]
 
         # Add model and regen_mode to kwargs dictionary
@@ -483,7 +487,7 @@ class ModelMixin2:
         if regen_mode != 'deferred':
             self.run_model(propname+'@'+domain)
 
-    def add_model_collection(self, models, regen_mode='deferred', domain='all'):
+    def add_model_collection(self, models, regen_mode='deferred', domain=None):
         models = deepcopy(models)
         for k, v in models.items():
             if 'domain' not in v.keys():
@@ -512,7 +516,7 @@ class ModelMixin2:
             except KeyError as e:
                 msg = (f"{item} was not run since the following property"
                        f" is missing: {e}")
-                logger.error(prettify_logger_message(msg))
+                logger.warning(prettify_logger_message(msg))
                 self.models[item]['regen_mode'] = 'deferred'
 
     def run_model(self, propname, domain=None):
@@ -550,7 +554,7 @@ class ModelMixin2:
                 else:  # Index into full domain result for use below
                     vals = vals[self[f'{element}.{domain}']]
             else:  # Model that accepts domain arg
-                vals = mod_dict['model'](**kwargs)
+                vals = mod_dict['model'](self, **kwargs)
             # Finally add model results to self
             if isinstance(vals, np.ndarray):  # If model returns single array
                 if propname not in self.keys():

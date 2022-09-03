@@ -58,15 +58,15 @@ class Cubic(Network):
     """
 
     def __init__(self, shape, spacing=[1, 1, 1], connectivity=6, **kwargs):
-        super().__init__(**kwargs)
         net = skgr.generators.cubic(shape=shape, spacing=spacing,
                                     connectivity=connectivity,
                                     node_prefix='pore', edge_prefix='throat')
         self.update(net)
+        super().__init__(**kwargs)
         self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)
-        self = skgr.generators.tools.label_faces_cubic(self)
+        self.update(skgr.generators.tools.label_faces_cubic(self))
 
     def add_boundary_pores(self, labels=["top", "bottom", "front",
                                          "back", "left", "right"],

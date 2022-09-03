@@ -1,17 +1,11 @@
-from asyncio.log import logger
 import os
-import sys
-import math
-import time
 import inspect
 import warnings
 import functools
 import numpy as np
 import scipy.sparse as sparse
-from collections import OrderedDict
 from collections.abc import Iterable
 from docrep import DocstringProcessor
-from copy import deepcopy
 import numpy.lib.recfunctions as rf
 
 
@@ -93,7 +87,7 @@ class PrintableList(list):
     #     return self.__str__()
 
 
-class PrintableDict(OrderedDict):
+class PrintableDict(dict):
     r"""
     Simple subclass of ``dict`` that has nicer printing.
 

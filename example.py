@@ -30,10 +30,7 @@ pn.regenerate_models()
 
 # Create phase and add phase/physics models
 air = op.phase.Air(network=pn, name="air")
-air.add_model_collection(collections.physics.standard,
-                         domain='domain1')
-air.add_model_collection(collections.physics.standard,
-                         domain='domain2')
+air.add_model_collection(collections.physics.standard)
 air.regenerate_models()
 
 # Add a nonlinear reaction

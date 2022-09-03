@@ -1,6 +1,6 @@
 import openpnm as op
 import numpy as np
-from openpnm.algorithms import MixedInvasionPercolationCoop as mpc
+# from openpnm.algorithms import MixedInvasionPercolationCoop as mpc
 import matplotlib.pyplot as plt
 import openpnm.models.geometry as gm
 
@@ -14,43 +14,43 @@ class MixedPercolationCoopTest:
 
     def setup_class(self, Np=5):
         wrk.clear()
-        # Create Topological Network object
-        self.net = op.network.Cubic([Np, Np, 1], spacing=1)
-        self.net.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders)
-        self.net.regenerate_models()
-        self.net['pore.diameter'] = 0.5
-        self.net['throat.diameter'] = 0.25
-        self.phase = op.phase.Air(network=self.net)
-        self.inlets = [0]
-        self.outlets = [Np*Np - 1]
+    #     # Create Topological Network object
+    #     self.net = op.network.Cubic([Np, Np, 1], spacing=1)
+    #     self.net.add_model_collection(
+    #         op.models.collections.geometry.spheres_and_cylinders)
+    #     self.net.regenerate_models()
+    #     self.net['pore.diameter'] = 0.5
+    #     self.net['throat.diameter'] = 0.25
+    #     self.phase = op.phase.Air(network=self.net)
+    #     self.inlets = [0]
+    #     self.outlets = [Np*Np - 1]
 
-    def run_mp(self, trapping=False, residual=False, snap=False,
-               plot=False, flowrate=None):
-        IP_1 = mpc(network=self.net)
-        if snap:
-            IP_1.settings['snap_off'] = 'throat.snap_off'
-        IP_1.setup(phase=self.phase)
-        IP_1.set_inlets(pores=self.inlets)
-        if residual:
-            IP_1.set_residual(pores=self.phase['pore.occupancy'])
-        IP_1.run()
-        if trapping:
-            IP_1.set_outlets(self.outlets)
-            IP_1.apply_trapping()
-        inv_points = np.arange(0, 100, 1)
-        # returns data as well as plotting
-        alg_data = IP_1.get_intrusion_data(inv_points=inv_points)
-        self.phase.update(IP_1.results(Pc=inv_points.max()))
-        if plot:
-            plt.figure()
-            L = np.sqrt(self.net.Np).astype(int)
-            plt.imshow(IP_1['pore.invasion_sequence'].reshape([L, L]),
-                       cmap=plt.get_cmap('Blues'))
-        if flowrate is not None:
-            IP_1.apply_flow(flowrate=flowrate)
-        self.alg = IP_1
-        return alg_data
+    # def run_mp(self, trapping=False, residual=False, snap=False,
+    #            plot=False, flowrate=None):
+    #     IP_1 = mpc(network=self.net)
+    #     if snap:
+    #         IP_1.settings['snap_off'] = 'throat.snap_off'
+    #     IP_1.setup(phase=self.phase)
+    #     IP_1.set_inlets(pores=self.inlets)
+    #     if residual:
+    #         IP_1.set_residual(pores=self.phase['pore.occupancy'])
+    #     IP_1.run()
+    #     if trapping:
+    #         IP_1.set_outlets(self.outlets)
+    #         IP_1.apply_trapping()
+    #     inv_points = np.arange(0, 100, 1)
+    #     # returns data as well as plotting
+    #     alg_data = IP_1.get_intrusion_data(inv_points=inv_points)
+    #     self.phase.update(IP_1.results(Pc=inv_points.max()))
+    #     if plot:
+    #         plt.figure()
+    #         L = np.sqrt(self.net.Np).astype(int)
+    #         plt.imshow(IP_1['pore.invasion_sequence'].reshape([L, L]),
+    #                    cmap=plt.get_cmap('Blues'))
+    #     if flowrate is not None:
+    #         IP_1.apply_flow(flowrate=flowrate)
+    #     self.alg = IP_1
+    #     return alg_data
 
     # def test_coop_pore_filling(self):
     #     pn = op.network.Cubic(shape=[3, 3, 3], spacing=2.5e-5)
