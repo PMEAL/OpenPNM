@@ -77,17 +77,17 @@ Where's my ``conda`` prompt?
 ###################################
 All the commands in this page need to be typed in the ``conda`` prompt.
 
-.. tabbed:: Windows
+Windows
+-------
+On Windows you should have a shortcut to the "Anaconda prompt" in the
+Anaconda program group in the start menu. This will open a Windows
+command console with access to the Python features added by *conda*,
+such as installing things via ``conda``.
 
-   On Windows you should have a shortcut to the "Anaconda prompt" in the
-   Anaconda program group in the start menu. This will open a Windows
-   command console with access to the Python features added by *conda*,
-   such as installing things via ``conda``.
-
-.. tabbed:: Mac and Linux
-
-   On Mac or Linux, you need to open a normal terminal window, then type
-   ``source activate env`` where you replace ``env`` with the name of
-   the environment you want to install OpenPNM. If you don't know what this
-   means, then use ``source activate base``, which will install OpenPNM in
-   the base environment which is the default.
+Mac and Linux
+-------------
+On Mac or Linux, you need to open a normal terminal window, then type
+``source activate env`` where you replace ``env`` with the name of
+the environment you want to install OpenPNM. If you don't know what this
+means, then use ``source activate base``, which will install OpenPNM in
+the base environment which is the default.
