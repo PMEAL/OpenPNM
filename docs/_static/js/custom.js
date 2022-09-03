@@ -16,10 +16,10 @@ if (location.protocol.startsWith("http") & location.protocol !== 'https:') {
 }
 
 window.onload = function () {
-    var examples_clicked = $( ".active a:contains(Examples)" )
-    if (examples_clicked.length == 1) {
-        $(" nav.bd-links ").children().hide()
-    }
+    // var examples_clicked = $( ".active a:contains(Examples)" )
+    // if (examples_clicked.length == 1) {
+    //     $(" nav.bd-links ").children().hide()
+    // }
 
     // var selected = $("a.current")
     // selected.html("&#8594; " + selected.text())
