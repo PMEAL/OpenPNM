@@ -99,12 +99,10 @@ class Network(Domain):
         if coords is not None:
             coords = np.array(coords)
             self['pore.coords'] = coords
-            self['pore.all'] = np.ones(coords.shape[0], dtype=bool)
 
         if conns is not None:
             conns = np.array(conns)
             self['throat.conns'] = conns
-            self['throat.all'] = np.ones(conns.shape[0], dtype=bool)
 
         self.add_model(propname='pore.coordination_number',
                        model=mods.coordination_number,
@@ -116,7 +114,7 @@ class Network(Domain):
     def __setitem__(self, key, value):
         if key == 'throat.conns':
             if np.any(value[:, 0] > value[:, 1]):
-                logger.debug('Converting throat.conns to be upper triangular')
+                logger.warning('Converting throat.conns to be upper triangular')
                 value = np.sort(value, axis=1)
         super().__setitem__(key, value)
 

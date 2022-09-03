@@ -219,7 +219,7 @@ class ModelsDict(PrintableDict):
             else:
                 raise KeyError(key)
 
-    def update(self, d, domain='all'):
+    def update(self, d, domain=None):
         # Catch un-run function
         if hasattr(d, '__call__'):
             raise Exception('Received dict argument is a function, try running it')

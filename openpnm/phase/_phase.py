@@ -27,6 +27,7 @@ class PhaseSettings:
         a normal ``KeyError`` is raised.
     """
     auto_interpolate = True
+    default_domain = 'all'
 
 
 @docstr.get_sections(base='Phase', sections=['Parameters'])
@@ -46,8 +47,6 @@ class Phase(Domain):
     def __init__(self, network, name='phase_?', **kwargs):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(PhaseSettings())
-        self['pore.all'] = np.ones([network.Np, ], dtype=bool)
-        self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
         # Set standard conditions on the phase
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
