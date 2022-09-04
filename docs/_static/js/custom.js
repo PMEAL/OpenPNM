@@ -21,7 +21,7 @@ window.onload = function () {
     //     $(" nav.bd-links ").children().hide()
     // }
 
-    var is_examples_page = $( ".active a:contains(Examples2)" )
+    var is_examples_page = $( ".active a:contains(Examples)" )
     if (is_examples_page.length == 1) {
         $(".bd-sidenav").attr('style', 'font-family: "Noto Sans" !important')
     }

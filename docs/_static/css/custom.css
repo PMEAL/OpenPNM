@@ -109,7 +109,11 @@ nav .toctree-l3 > ul {
     padding-left: 12.5px !important;
 }
 
-section#examples2 > div > ul > li.toctree-l1 > a {
+.sd-tab-content > .toctree-wrapper > ul {
+    margin-bottom: 0;
+}
+
+section#examples > div > ul > li.toctree-l1 > a {
     font-size: 150%;
     font-weight: 500;
     border-bottom: solid 1px lightgray;
@@ -119,7 +123,7 @@ section#examples2 > div > ul > li.toctree-l1 > a {
     margin-bottom: 10px;
 }
 
-section#examples2 > div > ul > li.toctree-l1 {
+section#examples > div > ul > li.toctree-l1 {
     margin-bottom: 20px;
 }
 
