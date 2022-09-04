@@ -399,7 +399,7 @@ class BaseTest:
 
     def test_labels_on_pores(self):
         a = self.net.labels(element='pore')
-        b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
+        b = ['pore.back', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.left', 'pore.right',
              'pore.top', 'pore.surface']
         assert sorted(a) == sorted(b)
@@ -419,7 +419,7 @@ class BaseTest:
 
     def test_labels_on_all_pores(self):
         a = self.net.labels(pores=self.net.Ps)
-        b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
+        b = ['pore.back', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.left', 'pore.right','pore.top',
              'pore.surface']
         assert sorted(a) == sorted(b)

@@ -106,10 +106,12 @@ class Network(Domain):
 
         self.add_model(propname='pore.coordination_number',
                        model=mods.coordination_number,
-                       regen_mode='deferred')
+                       regen_mode='deferred',
+                       domain='all')
         self.add_model(propname='throat.spacing',
                        model=mods.pore_to_pore_distance,
-                       regen_mode='deferred')
+                       regen_mode='deferred',
+                       domain='all')
 
     def __setitem__(self, key, value):
         if key == 'throat.conns':

@@ -49,17 +49,17 @@ class Delaunay(Network):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
-        super().__init__(**kwargs)
-        points = tools.parse_points(shape=shape, points=points)
+    def __init__(self, shape=[1, 1, 1], points=None, reflect=True, **kwargs):
+        points = tools.parse_points(shape=shape, points=points, reflect=reflect)
         net, tri = delaunay(points=points, shape=shape,
                             node_prefix='pore', edge_prefix='throat')
         Ps = isoutside(net, shape=shape)
         net = trim_nodes(g=net, inds=Ps)
         self.update(net)
+        super().__init__(**kwargs)
 
 
 if __name__ == "__main__":
     import openpnm as op
     dn = Delaunay(shape=[1, 0], points=500)
-    op.topotools.plot_connections(dn)
+    op.visualization.plot_connections(dn)

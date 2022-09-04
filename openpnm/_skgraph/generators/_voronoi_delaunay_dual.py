@@ -7,7 +7,7 @@ from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph import settings
 
 
-def voronoi_delaunay_dual(points, shape, trim=True,
+def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
                           node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
@@ -34,7 +34,7 @@ def voronoi_delaunay_dual(points, shape, trim=True,
 
     """
     # Generate a set of base points if scalar was given
-    points = tools.parse_points(points=points, shape=shape)
+    points = tools.parse_points(points=points, shape=shape, reflect=reflect)
     # Generate mask to remove any dims with all 0's
     mask = ~np.all(points == 0, axis=0)
 

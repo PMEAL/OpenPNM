@@ -38,7 +38,6 @@ class Gabriel(Network):
     """
 
     def __init__(self, shape=[1, 1, 1], points=None, trim=True, **kwargs):
-        super().__init__(**kwargs)
         net = gabriel(shape=shape, points=points,
                       node_prefix='pore', edge_prefix='throat')
         points = net['pore.coords']
@@ -55,3 +54,4 @@ class Gabriel(Network):
         g = np.around(n, decimals=5) == np.around(r, decimals=5)
         net = trim_nodes(net, inds=~g)
         self.update(net)
+        super().__init__(**kwargs)

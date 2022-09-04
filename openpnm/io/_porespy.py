@@ -11,7 +11,7 @@ def network_from_porespy(filename):
     ----------
     filename : str or dict
         Can either be a filename pointing to a pickled dictionary, or a
-        handle to a dictionary in memory.  The second option lets users
+        handle to a dictionary in memory. The second option lets users
         avoid the step of saving the dictionary to a file.
 
     Returns

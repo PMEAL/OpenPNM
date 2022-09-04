@@ -329,11 +329,16 @@ class Base2(dict):
         return self._params
 
     def _count(self, element):
-        network = self.network
         if element == 'pore':
-            N = network['pore.coords'].shape[0]
+            try:
+                N = self['pore.coords'].shape[0]
+            except KeyError:
+                N = self.network['pore.coords'].shape[0]
         elif element == 'throat':
-            N = network['throat.conns'].shape[0]
+            try:
+                N = self['throat.conns'].shape[0]
+            except KeyError:
+                N = self.network['throat.conns'].shape[0]
         return N
 
     # TODO: Delete this once codes stops asking for it
@@ -466,13 +471,17 @@ class ModelMixin2:
                   **kwargs):
         if '@' in propname:
             propname, domain = propname.split('@')
-        else:
-            if domain is None:
-                domain = self.settings['default_domain']
-            element, prop = propname.split('.', 1)
-            if element + '.' + domain not in self.keys() and (prop != 'all'):
+        elif domain is None:
+            domain = self.settings['default_domain']
+        element, prop = propname.split('.', 1)
+        if (element + '.' + domain not in self.keys()) and (prop != 'all'):
+            try:
+                N = self._count(element)
                 self[element + '.' + domain] = True
-            domain = domain.split('.', 1)[-1]
+            except:
+                logger.warning(f'Could not define {element}.{domain} since '
+                               'number of {element}s is not defined yet')
+        domain = domain.split('.', 1)[-1]
 
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
