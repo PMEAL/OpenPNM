@@ -8,24 +8,6 @@
     "# Basic Transport\n",
     "\n"
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 1,
-   "id": "95fd5359",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "import openpnm as op"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "64a87eaf",
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {

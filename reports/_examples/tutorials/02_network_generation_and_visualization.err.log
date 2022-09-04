@@ -17,64 +17,38 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-im = op.topotools.template_cylinder_annulus(z=3, r_outer=8, r_inner=3)
-pn = op.network.CubicTemplate(template=im)
-ax = op.visualization.plot_coordinates(pn)
-ax = op.visualization.plot_connections(pn, ax=ax)
+pn = op.network.Voronoi(points=100, shape=[1, 1, 1])
+pn['pore.diameter'] = np.random.rand(pn.Np)
+ax = op.visualization.plot_notebook(pn, node_color=pn['pore.diameter'], node_size=pn['pore.diameter'], node_scale=50)
+ax.show()
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mTypeError[0m                                 Traceback (most recent call last)
-Input [0;32mIn [9][0m, in [0;36m<cell line: 2>[0;34m()[0m
-[1;32m      1[0m im [38;5;241m=[39m op[38;5;241m.[39mtopotools[38;5;241m.[39mtemplate_cylinder_annulus(z[38;5;241m=[39m[38;5;241m3[39m, r_outer[38;5;241m=[39m[38;5;241m8[39m, r_inner[38;5;241m=[39m[38;5;241m3[39m)
-[0;32m----> 2[0m pn [38;5;241m=[39m [43mop[49m[38;5;241;43m.[39;49m[43mnetwork[49m[38;5;241;43m.[39;49m[43mCubicTemplate[49m[43m([49m[43mtemplate[49m[38;5;241;43m=[39;49m[43mim[49m[43m)[49m
-[1;32m      3[0m ax [38;5;241m=[39m op[38;5;241m.[39mvisualization[38;5;241m.[39mplot_coordinates(pn)
-[1;32m      4[0m ax [38;5;241m=[39m op[38;5;241m.[39mvisualization[38;5;241m.[39mplot_connections(pn, ax[38;5;241m=[39max)
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:570[0m, in [0;36mplot_notebook[0;34m(network, node_color, edge_color, node_size, node_scale, edge_scale, colormap)[0m
+[1;32m    569[0m [38;5;28;01mtry[39;00m:
+[0;32m--> 570[0m     [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mgraph_objects[39;00m [38;5;28;01mas[39;00m [38;5;21;01mgo[39;00m
+[1;32m    571[0m [38;5;28;01mexcept[39;00m [38;5;167;01mImportError[39;00m:
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/network/_cubic_template.py:43[0m, in [0;36mCubicTemplate.__init__[0;34m(self, template, spacing, **kwargs)[0m
-[1;32m     41[0m [38;5;28;01mdef[39;00m [38;5;21m__init__[39m([38;5;28mself[39m, template, spacing[38;5;241m=[39m[[38;5;241m1[39m, [38;5;241m1[39m, [38;5;241m1[39m], [38;5;241m*[39m[38;5;241m*[39mkwargs):
-[1;32m     42[0m     template [38;5;241m=[39m np[38;5;241m.[39matleast_3d(template)
-[0;32m---> 43[0m     [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[38;5;21;43m__init__[39;49m[43m([49m[38;5;241;43m*[39;49m[38;5;241;43m*[39;49m[43mkwargs[49m[43m)[49m
-[1;32m     44[0m     net [38;5;241m=[39m cubic_template(template[38;5;241m=[39mtemplate, spacing[38;5;241m=[39mspacing,
-[1;32m     45[0m                          node_prefix[38;5;241m=[39m[38;5;124m'[39m[38;5;124mpore[39m[38;5;124m'[39m, edge_prefix[38;5;241m=[39m[38;5;124m'[39m[38;5;124mthroat[39m[38;5;124m'[39m)
-[1;32m     46[0m     [38;5;28mself[39m[38;5;241m.[39mupdate(net)
+[0;31mModuleNotFoundError[0m: No module named 'plotly'
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/network/_network.py:107[0m, in [0;36mNetwork.__init__[0;34m(self, conns, coords, name, **kwargs)[0m
-[1;32m    104[0m     conns [38;5;241m=[39m np[38;5;241m.[39marray(conns)
-[1;32m    105[0m     [38;5;28mself[39m[[38;5;124m'[39m[38;5;124mthroat.conns[39m[38;5;124m'[39m] [38;5;241m=[39m conns
-[0;32m--> 107[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43madd_model[49m[43m([49m[43mpropname[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mpore.coordination_number[39;49m[38;5;124;43m'[39;49m[43m,[49m
-[1;32m    108[0m [43m               [49m[43mmodel[49m[38;5;241;43m=[39;49m[43mmods[49m[38;5;241;43m.[39;49m[43mcoordination_number[49m[43m,[49m
-[1;32m    109[0m [43m               [49m[43mregen_mode[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mdeferred[39;49m[38;5;124;43m'[39;49m[43m)[49m
-[1;32m    110[0m [38;5;28mself[39m[38;5;241m.[39madd_model(propname[38;5;241m=[39m[38;5;124m'[39m[38;5;124mthroat.spacing[39m[38;5;124m'[39m,
-[1;32m    111[0m                model[38;5;241m=[39mmods[38;5;241m.[39mpore_to_pore_distance,
-[1;32m    112[0m                regen_mode[38;5;241m=[39m[38;5;124m'[39m[38;5;124mdeferred[39m[38;5;124m'[39m)
+During handling of the above exception, another exception occurred:
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:474[0m, in [0;36mModelMixin2.add_model[0;34m(self, propname, model, domain, regen_mode, **kwargs)[0m
-[1;32m    472[0m     element, prop [38;5;241m=[39m propname[38;5;241m.[39msplit([38;5;124m'[39m[38;5;124m.[39m[38;5;124m'[39m, [38;5;241m1[39m)
-[1;32m    473[0m     [38;5;28;01mif[39;00m element [38;5;241m+[39m [38;5;124m'[39m[38;5;124m.[39m[38;5;124m'[39m [38;5;241m+[39m domain [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m [38;5;28mself[39m[38;5;241m.[39mkeys() [38;5;129;01mand[39;00m (prop [38;5;241m!=[39m [38;5;124m'[39m[38;5;124mall[39m[38;5;124m'[39m):
-[0;32m--> 474[0m         [38;5;28;43mself[39;49m[43m[[49m[43melement[49m[43m [49m[38;5;241;43m+[39;49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43m.[39;49m[38;5;124;43m'[39;49m[43m [49m[38;5;241;43m+[39;49m[43m [49m[43mdomain[49m[43m][49m [38;5;241m=[39m [38;5;28;01mTrue[39;00m
-[1;32m    475[0m     domain [38;5;241m=[39m domain[38;5;241m.[39msplit([38;5;124m'[39m[38;5;124m.[39m[38;5;124m'[39m, [38;5;241m1[39m)[[38;5;241m-[39m[38;5;241m1[39m]
-[1;32m    477[0m [38;5;66;03m# Add model and regen_mode to kwargs dictionary[39;00m
+[0;31mException[0m                                 Traceback (most recent call last)
+Input [0;32mIn [21][0m, in [0;36m<cell line: 3>[0;34m()[0m
+[1;32m      1[0m pn [38;5;241m=[39m op[38;5;241m.[39mnetwork[38;5;241m.[39mVoronoi(points[38;5;241m=[39m[38;5;241m100[39m, shape[38;5;241m=[39m[[38;5;241m1[39m, [38;5;241m1[39m, [38;5;241m1[39m])
+[1;32m      2[0m pn[[38;5;124m'[39m[38;5;124mpore.diameter[39m[38;5;124m'[39m] [38;5;241m=[39m np[38;5;241m.[39mrandom[38;5;241m.[39mrand(pn[38;5;241m.[39mNp)
+[0;32m----> 3[0m ax [38;5;241m=[39m [43mop[49m[38;5;241;43m.[39;49m[43mvisualization[49m[38;5;241;43m.[39;49m[43mplot_notebook[49m[43m([49m[43mpn[49m[43m,[49m[43m [49m[43mnode_color[49m[38;5;241;43m=[39;49m[43mpn[49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mpore.diameter[39;49m[38;5;124;43m'[39;49m[43m][49m[43m,[49m[43m [49m[43mnode_size[49m[38;5;241;43m=[39;49m[43mpn[49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mpore.diameter[39;49m[38;5;124;43m'[39;49m[43m][49m[43m,[49m[43m [49m[43mnode_scale[49m[38;5;241;43m=[39;49m[38;5;241;43m50[39;49m[43m)[49m
+[1;32m      4[0m ax[38;5;241m.[39mshow()
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/network/_network.py:119[0m, in [0;36mNetwork.__setitem__[0;34m(self, key, value)[0m
-[1;32m    117[0m         logger[38;5;241m.[39mwarning([38;5;124m'[39m[38;5;124mConverting throat.conns to be upper triangular[39m[38;5;124m'[39m)
-[1;32m    118[0m         value [38;5;241m=[39m np[38;5;241m.[39msort(value, axis[38;5;241m=[39m[38;5;241m1[39m)
-[0;32m--> 119[0m [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[38;5;21;43m__setitem__[39;49m[43m([49m[43mkey[49m[43m,[49m[43m [49m[43mvalue[49m[43m)[49m
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:572[0m, in [0;36mplot_notebook[0;34m(network, node_color, edge_color, node_size, node_scale, edge_scale, colormap)[0m
+[1;32m    570[0m     [38;5;28;01mimport[39;00m [38;5;21;01mplotly[39;00m[38;5;21;01m.[39;00m[38;5;21;01mgraph_objects[39;00m [38;5;28;01mas[39;00m [38;5;21;01mgo[39;00m
+[1;32m    571[0m [38;5;28;01mexcept[39;00m [38;5;167;01mImportError[39;00m:
+[0;32m--> 572[0m     [38;5;28;01mraise[39;00m [38;5;167;01mException[39;00m([38;5;124m'[39m[38;5;124mPlotly is not installed.[39m[38;5;124m'[39m
+[1;32m    573[0m                     [38;5;124m'[39m[38;5;124mPlease install Plotly using [39m[38;5;124m"[39m[38;5;124mpip install plotly[39m[38;5;124m"[39m[38;5;124m'[39m)
+[1;32m    575[0m [38;5;66;03m# Get xyz coords for points[39;00m
+[1;32m    576[0m x_nodes, y_nodes, z_nodes [38;5;241m=[39m network[38;5;241m.[39mcoords[38;5;241m.[39mT
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:143[0m, in [0;36mBase2.__setitem__[0;34m(self, key, value)[0m
-[1;32m    141[0m     [38;5;28;01mreturn[39;00m
-[1;32m    142[0m [38;5;66;03m# Finally write data[39;00m
-[0;32m--> 143[0m [38;5;28;01mif[39;00m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_count[49m[43m([49m[43melement[49m[43m)[49m [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[1;32m    144[0m     [38;5;28mself[39m[38;5;241m.[39mupdate({key: value})  [38;5;66;03m# If length not defined, do it[39;00m
-[1;32m    145[0m [38;5;28;01melif[39;00m value[38;5;241m.[39mshape[[38;5;241m0[39m] [38;5;241m==[39m [38;5;241m1[39m:  [38;5;66;03m# If value is scalar[39;00m
-
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:334[0m, in [0;36mBase2._count[0;34m(self, element)[0m
-[1;32m    332[0m network [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mnetwork
-[1;32m    333[0m [38;5;28;01mif[39;00m element [38;5;241m==[39m [38;5;124m'[39m[38;5;124mpore[39m[38;5;124m'[39m:
-[0;32m--> 334[0m     N [38;5;241m=[39m [43mnetwork[49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mpore.coords[39;49m[38;5;124;43m'[39;49m[43m][49m[38;5;241m.[39mshape[[38;5;241m0[39m]
-[1;32m    335[0m [38;5;28;01melif[39;00m element [38;5;241m==[39m [38;5;124m'[39m[38;5;124mthroat[39m[38;5;124m'[39m:
-[1;32m    336[0m     N [38;5;241m=[39m network[[38;5;124m'[39m[38;5;124mthroat.conns[39m[38;5;124m'[39m][38;5;241m.[39mshape[[38;5;241m0[39m]
-
-[0;31mTypeError[0m: 'NoneType' object is not subscriptable
-TypeError: 'NoneType' object is not subscriptable
+[0;31mException[0m: Plotly is not installed.Please install Plotly using "pip install plotly"
+Exception: Plotly is not installed.Please install Plotly using "pip install plotly"
 

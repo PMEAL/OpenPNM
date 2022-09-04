@@ -118,8 +118,8 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../examples/index2.html">
-  Examples2
+ <a class="reference internal nav-link" href="../../../examples/index_old.html">
+  Examples (old)
  </a>
 </li>
 
@@ -309,10 +309,12 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.coordination_number&#39;</span><span class="p">,</span>
                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">coordination_number</span><span class="p">,</span>
-                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
+                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span>
+                       <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.spacing&#39;</span><span class="p">,</span>
                        <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">pore_to_pore_distance</span><span class="p">,</span>
-                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
+                       <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span>
+                       <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;throat.conns&#39;</span><span class="p">:</span>

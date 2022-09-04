@@ -1,0 +1,8 @@
+:orphan:
+
+update
+========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: BodyCenteredCubic.update

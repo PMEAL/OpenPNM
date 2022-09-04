@@ -38,12 +38,13 @@ network
       :toctree:
 
    
-      Bravais
+      BodyCenteredCubic
       Cubic
       CubicTemplate
       Delaunay
       DelaunayVoronoiDual
       Demo
+      FaceCenteredCubic
       Gabriel
       Network
       Voronoi

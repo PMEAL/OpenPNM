@@ -119,8 +119,8 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../examples/index2.html">
-  Examples2
+ <a class="reference internal nav-link" href="../../../examples/index_old.html">
+  Examples (old)
  </a>
 </li>
 
@@ -260,56 +260,17 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">Input In [2],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/network/_delaunay.py:53,</span> in <span class="ni">Delaunay.__init__</span><span class="nt">(self, shape, points, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span> <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">53</span>     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">54</span>     <span class="n">points</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">55</span>     <span class="n">net</span><span class="p">,</span> <span class="n">tri</span> <span class="o">=</span> <span class="n">delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">56</span>                         <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/network/_network.py:107,</span> in <span class="ni">Network.__init__</span><span class="nt">(self, conns, coords, name, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">104</span>     <span class="n">conns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conns</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">105</span>     <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conns</span>
-<span class="ne">--&gt; </span><span class="mi">107</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.coordination_number&#39;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">108</span>                <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">coordination_number</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">109</span>                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">110</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.spacing&#39;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">111</span>                <span class="n">model</span><span class="o">=</span><span class="n">mods</span><span class="o">.</span><span class="n">pore_to_pore_distance</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">112</span>                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:474,</span> in <span class="ni">ModelMixin2.add_model</span><span class="nt">(self, propname, model, domain, regen_mode, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">472</span>     <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">473</span>     <span class="k">if</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">prop</span> <span class="o">!=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">474</span>         <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="g g-Whitespace">    </span><span class="mi">475</span>     <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">477</span> <span class="c1"># Add model and regen_mode to kwargs dictionary</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/network/_network.py:119,</span> in <span class="ni">Network.__setitem__</span><span class="nt">(self, key, value)</span>
-<span class="g g-Whitespace">    </span><span class="mi">117</span>         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Converting throat.conns to be upper triangular&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">118</span>         <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">119</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:143,</span> in <span class="ni">Base2.__setitem__</span><span class="nt">(self, key, value)</span>
-<span class="g g-Whitespace">    </span><span class="mi">141</span>     <span class="k">return</span>
-<span class="g g-Whitespace">    </span><span class="mi">142</span> <span class="c1"># Finally write data</span>
-<span class="ne">--&gt; </span><span class="mi">143</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">144</span>     <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>  <span class="c1"># If length not defined, do it</span>
-<span class="g g-Whitespace">    </span><span class="mi">145</span> <span class="k">elif</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># If value is scalar</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:334,</span> in <span class="ni">Base2._count</span><span class="nt">(self, element)</span>
-<span class="g g-Whitespace">    </span><span class="mi">332</span> <span class="n">network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span>
-<span class="g g-Whitespace">    </span><span class="mi">333</span> <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;pore&#39;</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">334</span>     <span class="n">N</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">335</span> <span class="k">elif</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">336</span>     <span class="n">N</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="ne">TypeError</span>: &#39;NoneType&#39; object is not subscriptable
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Delaunay at 0x7fc45dc323b0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coords                                                     200 / 200
+  2  throat.conns                                                    554 / 554
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
@@ -325,8 +286,18 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e6a2a92f8d37d8df56e939c999818d596569de7fd5d9c741a86416fc1160c6d0.svg" src="../../../_images/e6a2a92f8d37d8df56e939c999818d596569de7fd5d9c741a86416fc1160c6d0.svg" /><img alt="../../../_images/5a79040cf23de34a67142530b02dce09c3fe4111be089c8b7a0439c57430d989.png" src="../../../_images/5a79040cf23de34a67142530b02dce09c3fe4111be089c8b7a0439c57430d989.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="nn">Input In [3],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> 
+<span class="g g-Whitespace">      </span><span class="mi">4</span>                               <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+<span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
+</pre></div>
 </div>
+<img alt="../../../_images/b897a1d586c9936a9c6ccfc2d0c0807225b66abff4c4f8a91ed4293dfe1eca00.svg" src="../../../_images/b897a1d586c9936a9c6ccfc2d0c0807225b66abff4c4f8a91ed4293dfe1eca00.svg" /></div>
 </div>
 <p>For the purpose of this tutorial, we will trim these boundary pores from the network since we’ll be adding our own.</p>
 <div class="cell docutils container">

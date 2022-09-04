@@ -1,5 +1,5 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap'); */
-/* @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
 /* @import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
@@ -17,6 +17,14 @@
 
 .bd-sidebar, .bd-toc {
     top: calc(var(--pst-header-height));
+} */
+
+ul.nav.bd-sidenav {
+    margin-right: 10px;
+}
+
+/* div.bd-content {
+    padding-top: 20px;
 } */
 
 div#navbar-menu {
@@ -37,7 +45,11 @@ nav#bd-docs-nav a.current {
     font-size: 1.2em;
 } */
 
-h1, h2, h3, h4, body {
+h1, h2, h3, h4 {
+    font-family: 'Lato';
+}
+
+body {
     font-family: 'Noto Sans';
 }
 
@@ -51,13 +63,17 @@ h1, h2, h3, h4, body {
 } */
 
 .toctree-l3 {
-    font-family: 'JuliaMono Medium', monospace;
+    /* font-family: 'JuliaMono Medium', monospace; */
     font-weight: 300;
 }
 
 .toctree-l4 {
-    font-family: 'JuliaMono Medium', monospace;
+    /* font-family: 'JuliaMono Medium', monospace; */
     font-weight: 300;
+}
+
+.bd-sidenav {
+    font-family: "Roboto Mono" !important;
 }
 
 a {
@@ -89,15 +105,27 @@ nav .toctree-l3 > ul {
     font-family: "JuliaMono Medium", monospace;
 }
 
-section#examples2 > div > ul > li.toctree-l1 > a {
-    font-size: 150%;
-    font-weight: 500;
+.bd-sidenav a {
+    padding-left: 12.5px !important;
 }
 
-section#examples2 > div > ul > li.toctree-l1 {
+.sd-tab-content > .toctree-wrapper > ul {
+    margin-bottom: 0;
+}
+
+section#examples > div > ul > li.toctree-l1 > a {
+    font-size: 150%;
+    font-weight: 500;
+    border-bottom: solid 1px lightgray;
+    width: 100%;
+    float: left;
+    padding-bottom: 3px;
     margin-bottom: 10px;
 }
 
+section#examples > div > ul > li.toctree-l1 {
+    margin-bottom: 20px;
+}
 
 img#banner {
     float: left;

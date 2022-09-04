@@ -1,0 +1,8 @@
+:orphan:
+
+find_connecting_throat
+========================================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: BodyCenteredCubic.find_connecting_throat

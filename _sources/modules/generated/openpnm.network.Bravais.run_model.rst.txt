@@ -1,8 +1,0 @@
-:orphan:
-
-run_model
-=================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Bravais.run_model

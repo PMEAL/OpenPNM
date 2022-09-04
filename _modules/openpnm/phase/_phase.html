@@ -118,8 +118,8 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../examples/index2.html">
-  Examples2
+ <a class="reference internal nav-link" href="../../../examples/index_old.html">
+  Examples (old)
  </a>
 </li>
 
@@ -251,6 +251,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">PhaseSettings</span><span class="p">())</span>
         <span class="c1"># Set standard conditions on the phase</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">298.0</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">101325.0</span>
 
@@ -262,7 +264,7 @@
 
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># Allow look-up from network mostly for label/domain info</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
 
         <span class="c1"># Parse the key</span>
@@ -279,8 +281,8 @@
         <span class="c1"># Next get the data arrays, this is the case if @ notation was used</span>
         <span class="k">if</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span>
+        <span class="c1"># elif element + &#39;.&#39; + prop in self.network.keys():</span>
+        <span class="c1">#     vals = self.network[element + &#39;.&#39; + prop]</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># If above are not triggered then try to interpolate</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;auto_interpolate&#39;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;pore&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">prop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -304,8 +306,8 @@
         <span class="c1"># Next get the data arrays</span>
         <span class="k">if</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span>
+        <span class="c1"># elif element + &#39;.&#39; + prop in self.network.keys():</span>
+        <span class="c1">#     vals = self.network[element + &#39;.&#39; + prop]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;auto_interpolate&#39;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;pore&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">prop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>

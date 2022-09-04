@@ -119,8 +119,8 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../examples/index2.html">
-  Examples2
+ <a class="reference internal nav-link" href="../../../examples/index_old.html">
+  Examples (old)
  </a>
 </li>
 
@@ -267,7 +267,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-coarse_net : &lt;openpnm.network.Cubic at 0x7f00184c2a40&gt;
+coarse_net : &lt;openpnm.network.Cubic at 0x7fdf77d80cc0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -278,14 +278,12 @@ coarse_net : &lt;openpnm.network.Cubic at 0x7f00184c2a40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   1  pore.back                                                             100
   2  pore.bottom                                                           100
-  3  pore.domain_1                                                        1000
-  4  pore.front                                                            100
-  5  pore.left                                                             100
-  6  pore.right                                                            100
-  7  pore.surface                                                          488
-  8  pore.top                                                              100
-  9  throat.domain_1                                                      2700
- 10  throat.surface                                                        972
+  3  pore.front                                                            100
+  4  pore.left                                                             100
+  5  pore.right                                                            100
+  6  pore.surface                                                          488
+  7  pore.top                                                              100
+  8  throat.surface                                                        972
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -303,7 +301,7 @@ coarse_net : &lt;openpnm.network.Cubic at 0x7f00184c2a40&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fine_net : &lt;openpnm.network.Cubic at 0x7f001846fe50&gt;
+fine_net : &lt;openpnm.network.Cubic at 0x7fdf77d30810&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -314,15 +312,13 @@ fine_net : &lt;openpnm.network.Cubic at 0x7f001846fe50&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   1  pore.back                                                             125
   2  pore.bottom                                                           625
-  3  pore.domain_1                                                        3125
-  4  pore.fine                                                            3125
-  5  pore.front                                                            125
-  6  pore.left                                                             125
-  7  pore.right                                                            125
-  8  pore.surface                                                         1538
-  9  pore.top                                                              625
- 10  throat.domain_1                                                      8500
- 11  throat.surface                                                       3072
+  3  pore.fine                                                            3125
+  4  pore.front                                                            125
+  5  pore.left                                                             125
+  6  pore.right                                                            125
+  7  pore.surface                                                         1538
+  8  pore.top                                                              625
+  9  throat.surface                                                       3072
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -359,7 +355,7 @@ fine_net : &lt;openpnm.network.Cubic at 0x7f001846fe50&gt;
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/b2be4ef76c3da0ef0ed39e4b4a9dd8fb18c6e82a5c885bd852e2e2b25da9a6fd.svg" src="../../../_images/b2be4ef76c3da0ef0ed39e4b4a9dd8fb18c6e82a5c885bd852e2e2b25da9a6fd.svg" /></div>
+<img alt="../../../_images/5b608f51715b503dc160a7f5845d2936c6201f75c1c54c878d14cd2f50b70efb.svg" src="../../../_images/5b608f51715b503dc160a7f5845d2936c6201f75c1c54c878d14cd2f50b70efb.svg" /></div>
 </div>
 <p>As can be seen below, <code class="docutils literal notranslate"><span class="pre">fine_net</span></code> (orange) has been repositioned above the <code class="docutils literal notranslate"><span class="pre">coarse_net</span></code> (blue) because we shifted the z-coordinate by 500 um. (10 pores as 50 um per pore).</p>
 <p>But this above plotting was accomplished by sending <em>different</em> networks to the same plot.  The <code class="docutils literal notranslate"><span class="pre">merge</span></code> function let’s us combine the two networks together, as follows:</p>
