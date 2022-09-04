@@ -38,6 +38,8 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
     def __init__(self, network, name='alg_?', **kwargs):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(AlgorithmSettings())
+        self['pore.all'] = np.ones([network.Np, ], dtype=bool)
+        self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
 
     # @functools.cached_property
     @property

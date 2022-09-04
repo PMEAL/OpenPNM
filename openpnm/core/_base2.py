@@ -129,9 +129,6 @@ class Base2(dict):
                 self[f'{key}.{k}'] = v
             return
 
-        if prop == 'all':
-            logger.warning('Cannot use all as a label')
-
         # Enfore correct dict naming
         if element not in ['pore', 'throat']:
             raise Exception('All keys must start with either pore or throat')

@@ -48,6 +48,8 @@ class Phase(Domain):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(PhaseSettings())
         # Set standard conditions on the phase
+        self['pore.all'] = np.ones([network.Np, ], dtype=bool)
+        self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 

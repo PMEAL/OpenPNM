@@ -28,13 +28,13 @@ class PandasTest:
     def test_project_to_dataframe_not_joined(self):
         df = op.io.project_to_pandas(project=self.net.project,
                                      join=False)
-        assert len(df['pore'].keys()) == 19
-        assert len(df['throat'].keys()) == 8
+        assert len(df['pore'].keys()) == 21
+        assert len(df['throat'].keys()) == 10
 
     def test_project_to_dataframe_joined(self):
         df = op.io.project_to_pandas(project=self.net.project,
                                      join=True)
-        assert len(df.keys()) == 27
+        assert len(df.keys()) == 31
         assert np.isnan(df['bob.pore.coords[0]']).sum() > 0
 
 
