@@ -21,7 +21,7 @@ class Demo(Cubic):
 
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, shape=[3, 3, 1], **kwargs):
+        super().__init__(shape=shape, **kwargs)
         self.add_model_collection(spheres_and_cylinders)
         self.regenerate_models()
