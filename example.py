@@ -7,7 +7,7 @@ ws.clear()
 
 pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
 
-# Create domain1
+# Create domain
 Ps = pn.coords[:, 0] < 13e-4
 Ts = pn.find_neighbor_throats(pores=Ps, asmask=True)
 pn['pore.domain1'] = Ps

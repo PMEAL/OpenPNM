@@ -43,7 +43,8 @@ class ThroatSizeTest:
         self.net['pore.diameter'] = 0.1
         self.net.add_model(propname='throat.diameter',
                            model=gm.throat_size.from_neighbor_pores,
-                           prop='pore.diameter')
+                           prop='pore.diameter',
+                           domain='all')
         a = np.unique(self.net['throat.diameter'])
         b = np.array(0.1, ndmin=1)
         assert np.allclose(a, b)
@@ -54,7 +55,8 @@ class ThroatSizeTest:
         self.net.add_model(propname='throat.diameter',
                            model=gm.throat_size.equivalent_diameter,
                            throat_area='throat.cross_sectional_area',
-                           throat_shape='circle')
+                           throat_shape='circle',
+                           domain='all')
         a = np.unique(self.net['throat.diameter'])
         b = np.array(1.12837917, ndmin=1)
         assert np.allclose(a, b)
@@ -62,7 +64,8 @@ class ThroatSizeTest:
         self.net.add_model(propname='throat.diameter',
                            model=gm.throat_size.equivalent_diameter,
                            throat_area='throat.cross_sectional_area',
-                           throat_shape='square')
+                           throat_shape='square',
+                           domain='all')
         a = np.unique(self.net['throat.diameter'])
         b = np.array(1.0, ndmin=1)
         assert np.allclose(a, b)

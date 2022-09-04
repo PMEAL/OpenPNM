@@ -41,8 +41,8 @@ class Voronoi(Network):
 
     def __init__(self, shape, points, trim=True, **kwargs):
         # Clean-up input points
-        self.update(net)
+        super().__init__(**kwargs)
         points = parse_points(shape=shape, points=points)
         net, vor = voronoi(points=points, shape=shape, trim=trim,
                            node_prefix='pore', edge_prefix='throat')
-        super().__init__(**kwargs)
+        self.update(net)
