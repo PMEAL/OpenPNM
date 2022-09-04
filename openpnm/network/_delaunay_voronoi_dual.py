@@ -51,7 +51,10 @@ class DelaunayVoronoiDual(Network):
         if points.shape[1] == 3 and len(np.unique(points[:, 2])) == 1:
             points = points[:, :2]
 
-        net, vor, tri = voronoi_delaunay_dual(shape=shape, points=points)
+        net, vor, tri = voronoi_delaunay_dual(shape=shape,
+                                              points=points,
+                                              node_prefix='pore',
+                                              edge_prefix='throat')
         self.update(net)
         self._vor = vor
         self._tri = tri
@@ -76,7 +79,7 @@ class DelaunayVoronoiDual(Network):
 
     def _trim_external_pores(self, shape):
         # Find all pores within the domain
-        Ps = topotools.isoutside(coords=self['pore.coords'], shape=shape)
+        Ps = topotools.isoutside(g=self, shape=shape)
         self['pore.external'] = False
         self['pore.external'][Ps] = True
 
