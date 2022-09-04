@@ -42,6 +42,7 @@ class BodyCenteredCubic(Network):
     """
 
     def __init__(self, shape, mode='sc', spacing=1, **kwargs):
+        super().__init__(**kwargs)
         shape = np.array(shape)
         if np.any(shape < 2):
             raise Exception('BCC lattice networks must have at least 2 '
@@ -49,7 +50,6 @@ class BodyCenteredCubic(Network):
         net = bcc(shape=shape, spacing=spacing,
                   node_prefix='pore', edge_prefix='throat')
         self.update(net)
-        super().__init__(**kwargs)
         # Deal with labels
         Ts = self.find_neighbor_throats(pores=self.pores('body'),
                                         mode='exclusive_or')

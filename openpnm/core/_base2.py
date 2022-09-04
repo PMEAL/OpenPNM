@@ -334,15 +334,18 @@ class Base2(dict):
     def _count(self, element):
         if element == 'pore':
             try:
-                N = self['pore.coords'].shape[0]
+                return self['pore.coords'].shape[0]
             except KeyError:
-                N = self.network['pore.coords'].shape[0]
+                for k, v in self.items():
+                    if k.startswith('pore.'):
+                        return v.shape[0]
         elif element == 'throat':
             try:
-                N = self['throat.conns'].shape[0]
+                return self['throat.conns'].shape[0]
             except KeyError:
-                N = self.network['throat.conns'].shape[0]
-        return N
+                for k, v in self.items():
+                    if k.startswith('throat.'):
+                        return v.shape[0]
 
     # TODO: Delete this once codes stops asking for it
     @property

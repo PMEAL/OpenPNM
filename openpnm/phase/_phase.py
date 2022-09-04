@@ -59,7 +59,7 @@ class Phase(Domain):
 
         try:  # Allow look-up from network mostly for label/domain info
             return self.network[key]
-        except KeyError:
+        except:
             pass
 
         # Parse the key
@@ -76,8 +76,8 @@ class Phase(Domain):
         # Next get the data arrays, this is the case if @ notation was used
         if element + '.' + prop in self.keys():
             vals = super().__getitem__(element + '.' + prop)
-        elif element + '.' + prop in self.network.keys():
-            vals = self.network[element + '.' + prop]
+        # elif element + '.' + prop in self.network.keys():
+        #     vals = self.network[element + '.' + prop]
         else:  # If above are not triggered then try to interpolate
             if self.settings['auto_interpolate']:
                 if (element == 'pore') and ('throat.'+prop not in self.keys()):
@@ -101,8 +101,8 @@ class Phase(Domain):
         # Next get the data arrays
         if element + '.' + prop in self.keys():
             vals = super().__getitem__(element + '.' + prop)
-        elif element + '.' + prop in self.network.keys():
-            vals = self.network[element + '.' + prop]
+        # elif element + '.' + prop in self.network.keys():
+        #     vals = self.network[element + '.' + prop]
         else:
             if self.settings['auto_interpolate']:
                 if (element == 'pore') and ('throat.'+prop not in self.keys()):

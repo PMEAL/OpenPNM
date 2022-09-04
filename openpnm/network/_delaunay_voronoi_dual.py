@@ -44,7 +44,7 @@ class DelaunayVoronoiDual(Network):
     """
 
     def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
-
+        super().__init__(**kwargs)
         points = parse_points(shape=shape, points=points, reflect=reflect)
 
         # Deal with points that are only 2D...they break tessellations
@@ -55,7 +55,6 @@ class DelaunayVoronoiDual(Network):
         self.update(net)
         self._vor = vor
         self._tri = tri
-        super().__init__(**kwargs)
 
         # Trim all pores that lie outside of the specified domain
         if trim:

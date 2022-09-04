@@ -39,11 +39,11 @@ class CubicTemplate(Network):
     """
 
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
+        super().__init__(**kwargs)
         template = np.atleast_3d(template)
         net = cubic_template(template=template, spacing=spacing,
                              node_prefix='pore', edge_prefix='throat')
         self.update(net)
-        super().__init__(**kwargs)
         self['pore.surface'] = find_surface_nodes(self)
         ndims = dimensionality(self).sum()
         max_neighbors = 6 if ndims == 3 else 4

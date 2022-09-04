@@ -50,13 +50,13 @@ class Delaunay(Network):
     """
 
     def __init__(self, shape=[1, 1, 1], points=None, reflect=True, **kwargs):
+        super().__init__(**kwargs)
         points = tools.parse_points(shape=shape, points=points, reflect=reflect)
         net, tri = delaunay(points=points, shape=shape,
                             node_prefix='pore', edge_prefix='throat')
         Ps = isoutside(net, shape=shape)
         net = trim_nodes(g=net, inds=Ps)
         self.update(net)
-        super().__init__(**kwargs)
 
 
 if __name__ == "__main__":
