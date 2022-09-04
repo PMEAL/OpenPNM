@@ -125,7 +125,6 @@ class InvasionPercolation(Algorithm):
         Performs the algorithm for the given number of steps
 
         """
-
         # Setup arrays and info
         # TODO: This should be called conditionally so that it doesn't
         # overwrite existing data when doing a few steps at a time
@@ -213,14 +212,16 @@ class InvasionPercolation(Algorithm):
 
     def apply_trapping(self):
         r"""
-        Adjusts the invasion sequence of pores and throats that are trapped
-        using the reverse invasion percolation procedure outlined by Masson [1].
+        Adjusts the invasion sequence of pores and throats that are trapped.
+
+        This method uses the reverse invasion percolation procedure outlined
+        by Masson [1].
 
         Returns
         -------
         This function does not return anything. It adjusts the
         ``'pore.invasion_sequence'`` and ``'throat.invasion_sequence'`` arrays
-        on the object by setting trapped pores/throats to -1. It also puts
+        on the object by setting trapped pores/throats to ``ninf``. It also puts
         ``True`` values into the ``'pore.trapped'`` and ``'throat.trapped'``
         arrays.
 
@@ -251,6 +252,15 @@ class InvasionPercolation(Algorithm):
         hits = ~np.any(pmask == tmask, axis=1)
         self['throat.trapped'] = hits
         self['throat.invasion_sequence'][hits] = -1
+        # Make some adjustments
+        Pmask = self['pore.invasion_sequence'] < 0
+        Tmask = self['throat.invasion_sequence'] < 0
+        self['pore.invasion_sequence'] = \
+            self['pore.invasion_sequence'].astype(float)
+        self['pore.invasion_sequence'][Pmask] = np.inf
+        self['throat.invasion_sequence'] = \
+            self['throat.invasion_sequence'].astype(float)
+        self['throat.invasion_sequence'][Tmask] = np.inf
 
     def _apply_trapping_slow(self, step_size=1, mode='mixed'):
         N = self['throat.invasion_sequence'].max()
