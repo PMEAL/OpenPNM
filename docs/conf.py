@@ -33,9 +33,6 @@ shutil.copytree('../examples', '_examples', dirs_exist_ok=True)
 # General config                                                         #
 #------------------------------------------------------------------------#
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -73,6 +70,7 @@ exclude_patterns = ['_build']
 numpydoc_show_inherited_class_members = True
 
 members_to_exclude = [
+    # NumPy methods we don't want to document
     'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
     'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
     'reverse', 'setdefault', 'sort', 'update', 'values',
@@ -86,7 +84,7 @@ members_to_exclude = [
     'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
     'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
     'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
-    'trace', 'transpose', 'var', 'view', '__call__'
+    'trace', 'transpose', 'var', 'view', '__call__',
 ]
 
 autodoc_default_options = {
@@ -190,20 +188,8 @@ globaltoc_maxdepth = 3
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-
 # The master toctree document.
 master_doc = 'index'
-
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-#
-# The short X.Y version.
-# version = '0.2'
-# The full version, including alpha/beta/rc tags.
-# release = '0.2'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
