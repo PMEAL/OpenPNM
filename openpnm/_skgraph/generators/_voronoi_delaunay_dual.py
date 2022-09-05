@@ -4,7 +4,7 @@ import numpy as np
 from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 from openpnm._skgraph.tools import isoutside, conns_to_am
-from openpnm._skgraph import settings
+from openpnm._skgraph.queries import find_neighbor_nodes
 
 
 def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
@@ -110,22 +110,78 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
     Ts = np.sum(network[node_prefix+'.delaunay'][conns].astype(int), axis=1) == 1
     network[edge_prefix+'.interconnect'] = Ts
 
-    # Identify and trim pores outside the domain if requested
+    # Identify and trim nodes outside the domain if requested
     if trim:
-        Ps = isoutside(network, shape=shape)
-        network = trim_nodes(g=network, inds=np.where(Ps)[0])
+        inside_all = ~isoutside(network, shape=shape)
+        inside_delaunay = inside_all*network[node_prefix+'.delaunay']
+        outside_delaunay = (~inside_all)*network[node_prefix+'.delaunay']
+        neighbors = find_neighbor_nodes(g=network,
+                                        inds=np.where(inside_delaunay)[0],
+                                        include_input=True)
+        trim = np.ones([network[node_prefix+'.coords'].shape[0], ], dtype=bool)
+        trim[neighbors] = False  # Keep all neighbors to internal delaunay nodes
+        trim[outside_delaunay] = True  # Re-add external delaunay nodes to trim
+        network = trim_nodes(g=network, inds=np.where(trim)[0])
 
     return network, vor, tri
 
 
 if __name__ == "__main__":
-    settings.node_prefix = 'node'
-    settings.edge_prefix = 'edge'
-    dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
-    print(dvd.keys())
-    print(dvd['node.coords'].shape)
-    print(dvd['edge.conns'].shape)
-    dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], trim=True)
-    print(dvd.keys())
-    print(dvd['node.coords'].shape)
-    print(dvd['edge.conns'].shape)
+    from openpnm._skgraph.visualization import plot_edges
+
+    # dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
+    # print(dvd.keys())
+    # print(dvd['node.coords'].shape)
+    # print(dvd['edge.conns'].shape)
+    # dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], trim=True)
+    # print(dvd.keys())
+    # print(dvd['node.coords'].shape)
+    # print(dvd['edge.conns'].shape)
+    shape = [1]
+    pts = tools.parse_points(points=1000, shape=shape, reflect=True)
+    vn, vor, tri = voronoi_delaunay_dual(points=pts, shape=shape, trim=True)
+    plot_edges(vn)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

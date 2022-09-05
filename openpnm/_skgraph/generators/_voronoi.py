@@ -65,7 +65,13 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
 
 
 if __name__ == "__main__":
+    from openpnm._skgraph.visualization import plot_edges
     vn, vor = voronoi(points=50, shape=[1, 0, 1])
     print(vn.keys())
     print(vn['node.coords'].shape)
     print(vn['edge.conns'].shape)
+
+    shape = [1, 0]
+    pts = tools.parse_points(points=1000, shape=shape, reflect=True)
+    vn, vor = voronoi(points=pts, shape=shape, trim=True, tolerance=[0.2, 0])
+    plot_edges(vn)

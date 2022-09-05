@@ -1,8 +1,9 @@
 import numpy as np
 from openpnm.network import Network
 from openpnm.utils import Docorator
-from openpnm._skgraph.generators import voronoi
+from openpnm._skgraph.generators import voronoi_delaunay_dual
 from openpnm._skgraph.generators.tools import parse_points
+from openpnm._skgraph.operations import trim_nodes
 
 
 docstr = Docorator()
@@ -39,10 +40,14 @@ class Voronoi(Network):
 
     """
 
-    def __init__(self, shape, points, trim=True, **kwargs):
+    def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
         # Clean-up input points
         super().__init__(**kwargs)
-        points = parse_points(shape=shape, points=points)
-        net, vor = voronoi(points=points, shape=shape, trim=trim,
-                           node_prefix='pore', edge_prefix='throat')
+        points = parse_points(shape=shape, points=points, reflect=reflect)
+        net, vor, tri = voronoi_delaunay_dual(points=points,
+                                              shape=shape,
+                                              trim=trim,
+                                              node_prefix='pore',
+                                              edge_prefix='throat')
+        net = trim_nodes(g=net, inds=np.where(net['pore.delaunay'])[0])
         self.update(net)

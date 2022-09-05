@@ -1,10 +1,15 @@
 import numpy as np
 import scipy.spatial as sptl
-from openpnm._skgraph.generators import delaunay as _delaunay, tools
-from openpnm._skgraph import settings
+from openpnm._skgraph.generators import delaunay as _delaunay
 
 
-def gabriel(points=None, delaunay=None, shape=None, node_prefix='node', edge_prefix='edge'):
+__all__ = [
+    'gabriel',
+]
+
+
+def gabriel(points=None, delaunay=None, shape=None,
+            node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Gabriel tessellation, which is a subset of
     the Delaunay triangulation
@@ -29,24 +34,26 @@ def gabriel(points=None, delaunay=None, shape=None, node_prefix='node', edge_pre
 
     """
     if points is not None:
-        delaunay, tri = _delaunay(points=points, shape=shape,
-                                  node_prefix=node_prefix, edge_prefix=edge_prefix)
+        dn, tri = _delaunay(points=points, shape=shape,
+                            node_prefix=node_prefix, edge_prefix=edge_prefix)
+    else:
+        dn = delaunay
     # Find centroid or midpoint of each edge in conns
-    c = delaunay[node_prefix+'.coords'][delaunay[edge_prefix+'.conns']]
+    c = dn[node_prefix+'.coords'][dn[edge_prefix+'.conns']]
     m = (c[:, 0, :] + c[:, 1, :])/2
-    # Find the radius sphere between each pair of nodes
+    # Find the radius the sphere between each pair of nodes
     r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
     # Use the kd-tree function in Scipy's spatial module
-    tree = sptl.cKDTree(delaunay[node_prefix+'.coords'])
+    tree = sptl.cKDTree(dn[node_prefix+'.coords'])
     # Find the nearest point for each midpoint
     n = tree.query(x=m, k=1)[0]
     # If nearest point to m is at distance r, then the edge is a Gabriel edge
     g = n >= r*(0.999)  # This factor avoids precision errors in the distances
     d = {}
-    d.update(delaunay)
+    d.update(dn)
     # Reduce the connectivity to all True values found in g
-    d[edge_prefix+'.conns'] = delaunay[edge_prefix+'.conns'][g]
-    d[node_prefix+'.coords'] = delaunay[node_prefix+'.coords']
+    d[edge_prefix+'.conns'] = dn[edge_prefix+'.conns'][g]
+    d[node_prefix+'.coords'] = dn[node_prefix+'.coords']
     return d
 
 
