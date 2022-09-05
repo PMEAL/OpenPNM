@@ -156,10 +156,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -244,15 +240,60 @@
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../examples/metrics.html">
-   Metrics
+  <a class="reference internal" href="../../examples/applications.html">
+   Applications
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -427,20 +468,11 @@
   <section class="tex2jax_ignore mathjax_ignore" id="storage-of-network-data-and-topology">
 <h1>Storage of Network Data and Topology<a class="headerlink" href="#storage-of-network-data-and-topology" title="Permalink to this heading">#</a></h1>
 <p>As discussed in the first tutorial, OpenPNM uses Numpy <code class="docutils literal notranslate"><span class="pre">ndarrays</span></code> to store all data, and these arrays store all stored in <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, because all OpenPNM objects are subclassed python dictionaries. In this tutorial will take a deper dive into the details of the OpenPNM data storage scheme. The sections to be covered are:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head text-left"><p>Subject</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td class="text-left"><p>The Spreadsheet Analogy</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Maintaining Data Integrity</p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>Representing Topology</p></td>
-</tr>
-</tbody>
-</table>
+<ul class="simple">
+<li><p>The Spreadsheet Analogy</p></li>
+<li><p>Maintaining Data Integrity</p></li>
+<li><p>Representing Topology</p></li>
+</ul>
 <section id="spreadsheet-analogy">
 <h2>Spreadsheet Analogy<a class="headerlink" href="#spreadsheet-analogy" title="Permalink to this heading">#</a></h2>
 <p>The best analogy for explaining data storage in OpenPNM is the humble spreadsheet.  According to this analogy you can imagine all data is stored in a table; two tables actually, one for pore data and one for throat data.  Each pore (or throat) corresponds to a row and each property corresponds to a column.  Consider the following network with 4 pores, 3 throats:</p>
@@ -565,10 +597,10 @@ Name: pore.volume, dtype: float64
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>⚠ <strong>Warning</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>The spreadsheet analogy is very apt, but it breaks down slightly when one considers data that is multiple colums wide such as <strong>‘pore.coords’</strong>.  The is stored as an Np-by-3 array in the network dictionary, but spreadsheets usually require that all data is only a single column wide.</p>
-</div></blockquote>
+</div>
 <section id="rules-to-maintain-data-integrity">
 <h3>Rules to Maintain Data Integrity<a class="headerlink" href="#rules-to-maintain-data-integrity" title="Permalink to this heading">#</a></h3>
 <p>Several rules have been implemented to control the integrity of the data. This is implemented by subclassing the <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> method of the the <code class="docutils literal notranslate"><span class="pre">dict</span></code>. Each time data is assigned to a dictionary key, OpenPNM first checks the data type and dictionary key to ensure the rules are followed.  Each of these checks are explored below.</p>
@@ -844,10 +876,11 @@ lattice_connectivity                6
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>ProTip: Use the “param” prefix</p>
-<p>It is possible use the <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix when reading and writing to the object’s dictionary. This intercepts the given key and dispatches the request to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute. This feature is particularly useful when passing arguments to pore-scale models (to be discussed in a later tutorial) since you can pass either <code class="docutils literal notranslate"><span class="pre">arg='param.value'</span></code> or <code class="docutils literal notranslate"><span class="pre">arg='pore.value'</span></code> and OpenPNM will be able to fetch the requested data by doing <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">pn[arg]</span></code> and both options will work.</p>
-</div></blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the “param” prefix
+It is possible use the <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix when reading and writing to the object’s dictionary. This intercepts the given key and dispatches the request to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute. This feature is particularly useful when passing arguments to pore-scale models (to be discussed in a later tutorial) since you can pass either <code class="docutils literal notranslate"><span class="pre">arg='param.value'</span></code> or <code class="docutils literal notranslate"><span class="pre">arg='pore.value'</span></code> and OpenPNM will be able to fetch the requested data by doing <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">pn[arg]</span></code> and both options will work.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;param.test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
@@ -875,14 +908,11 @@ test                                2
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f2bda05b4c0&gt;
-</pre></div>
-</div>
 <img alt="../../_images/7e2b08fbe88909d6c34c460f09f81479d9787846e531636478fe447a313f926a.png" src="../../_images/7e2b08fbe88909d6c34c460f09f81479d9787846e531636478fe447a313f926a.png" />
 </div>
 </div>

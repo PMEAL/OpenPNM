@@ -1,8 +1,0 @@
-:orphan:
-
-get_adjacency_matrix
-============================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: Gabriel.get_adjacency_matrix

@@ -9,10 +9,8 @@
     "\n",
     "The point of an OpenPNM simulation is ultimately to compute some transport process.  In this notebook we will cover the following subjects:\n",
     "\n",
-    "| Topics |\n",
-    "| :- |\n",
-    "| Defining conductance |\n",
-    "| Settings boundary conditions |\n"
+    "- Defining conductance \n",
+    "- Settings boundary conditions \n"
    ]
   },
   {
@@ -226,9 +224,9 @@
    "id": "7720d25b",
    "metadata": {},
    "source": [
-    ".. tip:: Phase can do auotmatic interpolation to get throat values\n",
-    "\n",
-    "    The ``Phase`` class has a special ability to interpolate pore values to throats, and vice-versa. In PNM simulations all the balances are solved for each pore, so the thermodynamic properties like temperature, pressure, etc. are all defined on pores. Consequently, the physical properties are also defined in pores, like viscosity. However, as shown above we often want viscosity values in the throats. OpenPNM provides a shortcut for this, such that if you request a throat property that does not exist, it will attempt to fetch the pores values and do a linear interpolation of values to produce an array of throat values.  There is also a function for this, ``water.interpolate_data('throat.viscosity')``, but the ``water['throat.viscosity']`` shortcut is very convenient. The automatic interpolation can be disabled in the `phase.settings`."
+    "```{tip} Phase can do auotmatic interpolation to get throat values\n",
+    "  The ``Phase`` class has a special ability to interpolate pore values to throats, and vice-versa. In PNM simulations all the balances are solved for each pore, so the thermodynamic properties like temperature, pressure, etc. are all defined on pores. Consequently, the physical properties are also defined in pores, like viscosity. However, as shown above we often want viscosity values in the throats. OpenPNM provides a shortcut for this, such that if you request a throat property that does not exist, it will attempt to fetch the pores values and do a linear interpolation of values to produce an array of throat values.  There is also a function for this, ``water.interpolate_data('throat.viscosity')``, but the ``water['throat.viscosity']`` shortcut is very convenient. The automatic interpolation can be disabled in the `phase.settings`.\n",
+    "```"
    ]
   },
   {
@@ -377,9 +375,9 @@
    "id": "e81f2e4b",
    "metadata": {},
    "source": [
-    ".. tip:: All boundary conditions are preceeded with 'pore.bc'\n",
-    "\n",
-    "    All boundary conditions are stored as 'pore.bc.<type>', which means that OpenPNM's dictionary lookup tricks can be used to see all types and values of bc's using: `sf['pore.bc']` which will return a `dict`. This can be used as shown below:"
+    "```{tip} All boundary conditions are preceeded with 'pore.bc'\n",
+    "  All boundary conditions are stored as 'pore.bc.<type>', which means that OpenPNM's dictionary lookup tricks can be used to see all types and values of bc's using: `sf['pore.bc']` which will return a `dict`. This can be used as shown below:\n",
+    "```"
    ]
   },
   {

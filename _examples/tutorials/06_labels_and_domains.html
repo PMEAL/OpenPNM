@@ -156,10 +156,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -244,15 +240,60 @@
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../examples/metrics.html">
-   Metrics
+  <a class="reference internal" href="../../examples/applications.html">
+   Applications
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -454,7 +495,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2eaf8233b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -517,15 +558,16 @@ net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
 </div>
 </div>
 </div>
-<blockquote>
-<div><p><strong>Points to Note about Using Labels</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Points to Note about Using Labels</p>
 <ul class="simple">
 <li><p>Labels can be applied to throats in exactly the same way as decribed here for pores.</p></li>
 <li><p>Every OpenPNM object has a <code class="docutils literal notranslate"><span class="pre">pores</span></code> and a <code class="docutils literal notranslate"><span class="pre">throats</span></code> method that can be used to retrieve the pore or throat indices  where a label or combination of labels has been applied.</p></li>
 <li><p>The format of creating an entire ND-array to label just a few locations may seem a bit wasteful of data storage since many <code class="docutils literal notranslate"><span class="pre">False</span></code> values are created to indicate pores do <em>not</em> have a label. Worse, Boolean arrays are actually stored as 8-bit integer arrays by Numpy, so they consume 8x more memory than needed.  Nonetheless, the investment is worth it since Boolean arrays are so convenient.  They can be used to index into Numpy arrays (e.g. <code class="docutils literal notranslate"><span class="pre">arr[mask]</span></code>) and great for combining logic (e.g. <code class="docutils literal notranslate"><span class="pre">locs</span> <span class="pre">=</span> <span class="pre">mask1</span> <span class="pre">*</span> <span class="pre">mask2</span></code>).</p></li>
 <li><p>Labels are used throughout any given script, particularly for specifying boundary conditions, so are an important feature to understand.</p></li>
 </ul>
-</div></blockquote>
+</div>
 <section id="using-the-mode-argument-in-the-pores-and-throats-methods">
 <h3>Using the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument in the <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> methods<a class="headerlink" href="#using-the-mode-argument-in-the-pores-and-throats-methods" title="Permalink to this heading">#</a></h3>
 <p>The advantage of the using the OpenPNM method is that you can create more complex queries, such as pores that are ‘left’ <em>or</em> ‘back’:</p>
@@ -816,7 +858,7 @@ net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2eaf8233b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -860,7 +902,7 @@ net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2eaf8233b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -950,7 +992,7 @@ net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2eaf8233b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1090,7 +1132,7 @@ net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f16d1d9f6d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2eaf8233b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――

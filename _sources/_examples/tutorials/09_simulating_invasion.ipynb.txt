@@ -9,9 +9,9 @@
     "\n",
     "Studying the impact of multiphase conditions on transport in porous materials was the original motivation for pore network modeling. OpenPNM includes a set of algorithms for simulating drainage (i.e. non-wetting phase invasion) using both ordinary and invasion percolation. These will be covered in this notebook.\n",
     "\n",
-    ".. note:: On simulating imbibition\n",
-    "\n",
-    "    Imbibtion is quite a bit more challenging to simulate than drainage, since the menisci movement mechanisms are more complicated. OpenPNM plans to offer some imbibition algorithms, but these need to be carefully developed so are still 'works in progress'."
+    "```{note} On simulating imbibition\n",
+    "  Imbibtion is quite a bit more challenging to simulate than drainage, since the menisci movement mechanisms are more complicated. OpenPNM plans to offer some imbibition algorithms, but these need to be carefully developed so are still 'works in progress'.\n",
+    "```"
    ]
   },
   {
@@ -510,9 +510,9 @@
    "id": "1f6224b9",
    "metadata": {},
    "source": [
-    ".. warning:: Inlet pores start invaded\n",
-    "\n",
-    "    The curve shown above starts at a non-wetting phase saturation slightly above 0.  This is because the inlet pores are set to invaded to begin the algorithm. If the domain is large this is not really noticable. To be fully rigorous, one should actually add \"boundary pores\" to the domain, which are fictitious pores that have no volume. Another solution is to set the pore volume of the inlet pores to 0, with `pn['pore.volume@left'] = 0`."
+    "```{warning} Inlet pores start invaded\n",
+    "  The curve shown above starts at a non-wetting phase saturation slightly above 0.  This is because the inlet pores are set to invaded to begin the algorithm. If the domain is large this is not really noticable. To be fully rigorous, one should actually add \"boundary pores\" to the domain, which are fictitious pores that have no volume. Another solution is to set the pore volume of the inlet pores to 0, with `pn['pore.volume@left'] = 0`.\n",
+    "```"
    ]
   },
   {
@@ -804,9 +804,9 @@
    "id": "2e901ec4",
    "metadata": {},
    "source": [
-    ".. note:: \n",
-    "\n",
-    "    The OpenPNM implementation uses 'just-in-time' compiliation offer by the `numba` package to accelerate the for-loop so the process demonstrated abovec is actually quite fast"
+    "```{note}\n",
+    "  The OpenPNM implementation uses 'just-in-time' compiliation offer by the `numba` package to accelerate the for-loop so the process demonstrated abovec is actually quite fast\n",
+    "```"
    ]
   },
   {
@@ -907,9 +907,9 @@
    "id": "89ff7bcc",
    "metadata": {},
    "source": [
-    ".. note:: Invasion sequence is not contiguous after trapping\n",
-    "\n",
-    "    When `ip.run()` is called the invasion sequence is a contiguous series of numbers from 0 to Nt; however, after trapping is applied the invasion sequence of trapped throats/pores is set to `inf` while the untrapped throats/pores retain their original numbers. "
+    "```{note} Invasion sequence is not contiguous after trapping\n",
+    "  When `ip.run()` is called the invasion sequence is a contiguous series of numbers from 0 to Nt; however, after trapping is applied the invasion sequence of trapped throats/pores is set to `inf` while the untrapped throats/pores retain their original numbers. \n",
+    "```"
    ]
   },
   {

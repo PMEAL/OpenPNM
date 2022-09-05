@@ -158,10 +158,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -246,15 +242,60 @@
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../examples/metrics.html">
-   Metrics
+  <a class="reference internal" href="../../examples/applications.html">
+   Applications
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -396,9 +437,10 @@
   <section class="tex2jax_ignore mathjax_ignore" id="simulating-invasion">
 <h1>Simulating Invasion<a class="headerlink" href="#simulating-invasion" title="Permalink to this heading">#</a></h1>
 <p>Studying the impact of multiphase conditions on transport in porous materials was the original motivation for pore network modeling. OpenPNM includes a set of algorithms for simulating drainage (i.e. non-wetting phase invasion) using both ordinary and invasion percolation. These will be covered in this notebook.</p>
-<p>.. note:: On simulating imbibition</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Imbibtion is quite a bit more challenging to simulate than drainage, since the menisci movement mechanisms are more complicated. OpenPNM plans to offer some imbibition algorithms, but these need to be carefully developed so are still &#39;works in progress&#39;.
-</pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On simulating imbibition
+Imbibtion is quite a bit more challenging to simulate than drainage, since the menisci movement mechanisms are more complicated. OpenPNM plans to offer some imbibition algorithms, but these need to be carefully developed so are still ‘works in progress’.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -685,9 +727,10 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x290d40f5130&gt;
 </div>
 </div>
 <p>The impact of trapping is that the non-wetting phase saturations does not reach 1.0, but plateaus at some lower value.</p>
-<p>.. warning:: Inlet pores start invaded</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The curve shown above starts at a non-wetting phase saturation slightly above 0.  This is because the inlet pores are set to invaded to begin the algorithm. If the domain is large this is not really noticable. To be fully rigorous, one should actually add &quot;boundary pores&quot; to the domain, which are fictitious pores that have no volume. Another solution is to set the pore volume of the inlet pores to 0, with `pn[&#39;pore.volume@left&#39;] = 0`.
-</pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Inlet pores start invaded
+The curve shown above starts at a non-wetting phase saturation slightly above 0.  This is because the inlet pores are set to invaded to begin the algorithm. If the domain is large this is not really noticable. To be fully rigorous, one should actually add “boundary pores” to the domain, which are fictitious pores that have no volume. Another solution is to set the pore volume of the inlet pores to 0, with <code class="docutils literal notranslate"><span class="pre">pn['pore.volume&#64;left']</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p>
 </div>
 </section>
 </section>
@@ -843,9 +886,9 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x290d40f5130&gt;
 <img alt="../../_images/a48acf5a2930e1e80bf6d108d5563fabac4a259576c01d7ccc81f8444b9be2fc.png" src="../../_images/a48acf5a2930e1e80bf6d108d5563fabac4a259576c01d7ccc81f8444b9be2fc.png" />
 </div>
 </div>
-<p>.. note::</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The OpenPNM implementation uses &#39;just-in-time&#39; compiliation offer by the `numba` package to accelerate the for-loop so the process demonstrated abovec is actually quite fast
-</pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The OpenPNM implementation uses ‘just-in-time’ compiliation offer by the <code class="docutils literal notranslate"><span class="pre">numba</span></code> package to accelerate the for-loop so the process demonstrated abovec is actually quite fast</p>
 </div>
 </section>
 <section id="using-the-invasionpercolation-algorithm">
@@ -892,9 +935,10 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x290d40f5130&gt;
 <img alt="../../_images/b24e89ae0c59aa4cdd5118e41227f443d9c9f44d661bd08ce9fa489412ebe995.png" src="../../_images/b24e89ae0c59aa4cdd5118e41227f443d9c9f44d661bd08ce9fa489412ebe995.png" />
 </div>
 </div>
-<p>.. note:: Invasion sequence is not contiguous after trapping</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>When `ip.run()` is called the invasion sequence is a contiguous series of numbers from 0 to Nt; however, after trapping is applied the invasion sequence of trapped throats/pores is set to `inf` while the untrapped throats/pores retain their original numbers. 
-</pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Invasion sequence is not contiguous after trapping
+When <code class="docutils literal notranslate"><span class="pre">ip.run()</span></code> is called the invasion sequence is a contiguous series of numbers from 0 to Nt; however, after trapping is applied the invasion sequence of trapped throats/pores is set to <code class="docutils literal notranslate"><span class="pre">inf</span></code> while the untrapped throats/pores retain their original numbers.</p>
 </div>
 <p>Because IP is a volume-based approach, the actually applied pressure varies up and down depending on the size of the throat being invaded.  The <code class="docutils literal notranslate"><span class="pre">ip</span></code> algorithm also has a <code class="docutils literal notranslate"><span class="pre">pc_curve</span></code> function, which computes the capillary pressure at each saturation and outputs data similar to the drainage algorithm. In fact, it is quite interesting to overlay these curves:</p>
 <div class="cell docutils container">

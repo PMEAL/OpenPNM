@@ -153,10 +153,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -204,7 +200,7 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">openpnm.network</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
-<span class="kn">from</span> <span class="nn">openpnm._skgraph.generators</span> <span class="kn">import</span> <span class="n">delaunay</span><span class="p">,</span> <span class="n">tools</span>
+<span class="kn">from</span> <span class="nn">openpnm._skgraph.generators</span> <span class="kn">import</span> <span class="n">voronoi_delaunay_dual</span><span class="p">,</span> <span class="n">tools</span>
 <span class="kn">from</span> <span class="nn">openpnm._skgraph.tools</span> <span class="kn">import</span> <span class="n">isoutside</span>
 <span class="kn">from</span> <span class="nn">openpnm._skgraph.operations</span> <span class="kn">import</span> <span class="n">trim_nodes</span>
 
@@ -252,19 +248,21 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reflect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">reflect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">points</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">reflect</span><span class="o">=</span><span class="n">reflect</span><span class="p">)</span>
-        <span class="n">net</span><span class="p">,</span> <span class="n">tri</span> <span class="o">=</span> <span class="n">delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
-                            <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">isoutside</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">net</span> <span class="o">=</span> <span class="n">trim_nodes</span><span class="p">(</span><span class="n">g</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">inds</span><span class="o">=</span><span class="n">Ps</span><span class="p">)</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">vor</span><span class="p">,</span> <span class="n">tri</span> <span class="o">=</span> <span class="n">voronoi_delaunay_dual</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                                              <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                                              <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span>
+                                              <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span>
+                                              <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="n">trim_nodes</span><span class="p">(</span><span class="n">g</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">inds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.voronoi&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-    <span class="n">dn</span> <span class="o">=</span> <span class="n">Delaunay</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">dn</span> <span class="o">=</span> <span class="n">Delaunay</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">reflect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">dn</span><span class="p">)</span>
 </pre></div>
 

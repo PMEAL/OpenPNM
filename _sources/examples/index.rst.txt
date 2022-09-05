@@ -12,5 +12,5 @@ The examples are categorized into the following categories:
    :maxdepth: 2
 
    tutorials
-   metrics
+   applications
    reference

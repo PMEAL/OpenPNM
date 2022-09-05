@@ -154,10 +154,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -262,32 +258,20 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.DelaunayVoronoiDual at 0x7fa0d42d84f0&gt;
+net : &lt;openpnm.network.DelaunayVoronoiDual at 0x7f343ded4e50&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                     681 / 681
-  2  throat.conns                                                  3761 / 3761
+  1  pore.coords                                                     652 / 652
+  2  throat.conns                                                  3552 / 3552
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                              46
-  2  pore.bottom                                                            48
-  3  pore.boundary                                                           0
-  4  pore.delaunay                                                         100
-  5  pore.front                                                             48
-  6  pore.internal                                                         681
-  7  pore.left                                                              46
-  8  pore.right                                                             46
-  9  pore.surface                                                            0
- 10  pore.top                                                               36
- 11  pore.voronoi                                                          581
- 12  throat.boundary                                                         0
- 13  throat.delaunay                                                       549
- 14  throat.interconnect                                                  2054
- 15  throat.internal                                                      3761
- 16  throat.surface                                                          0
- 17  throat.voronoi                                                       1158
+  1  pore.delaunay                                                         100
+  2  pore.voronoi                                                          552
+  3  throat.delaunay                                                       518
+  4  throat.interconnect                                                  1934
+  5  throat.voronoi                                                       1100
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -304,12 +288,42 @@ net : &lt;openpnm.network.DelaunayVoronoiDual at 0x7fa0d42d84f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="nn">Input In [3],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">([</span><span class="s1">&#39;voronoi&#39;</span><span class="p">,</span> <span class="s1">&#39;boundary&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:204,</span> in <span class="ni">Base2.__getitem__</span><span class="nt">(self, key)</span>
+<span class="g g-Whitespace">    </span><span class="mi">203</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">204</span>     <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">205</span> <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">206</span>     <span class="c1"># If key is object&#39;s name or all, return ones</span>
 
-<span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
+<span class="ne">KeyError</span>: &#39;throat.boundary&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">Input In [3],</span> in <span class="ni">&lt;cell line: 1&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">throats</span><span class="p">([</span><span class="s1">&#39;voronoi&#39;</span><span class="p">,</span> <span class="s1">&#39;boundary&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_mixins.py:505,</span> in <span class="ni">LabelMixin.throats</span><span class="nt">(self, labels, mode, asmask)</span>
+<span class="g g-Whitespace">    </span><span class="mi">503</span> <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">504</span>     <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+<span class="ne">--&gt; </span><span class="mi">505</span> <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">506</span> <span class="k">if</span> <span class="n">asmask</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">507</span>     <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
+
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_mixins.py:392,</span> in <span class="ni">LabelMixin._get_indices</span><span class="nt">(self, element, labels, mode)</span>
+<span class="g g-Whitespace">    </span><span class="mi">390</span>     <span class="n">intersect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">391</span>     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>  <span class="c1"># Iterate over labels and collect all indices</span>
+<span class="ne">--&gt; </span><span class="mi">392</span>         <span class="n">intersect</span> <span class="o">=</span> <span class="n">intersect</span><span class="o">*</span><span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+<span class="g g-Whitespace">    </span><span class="mi">393</span>     <span class="n">ind</span> <span class="o">=</span> <span class="n">intersect</span>
+<span class="g g-Whitespace">    </span><span class="mi">394</span> <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xor&#39;</span><span class="p">,</span> <span class="s1">&#39;exclusive_or&#39;</span><span class="p">]:</span>
+
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:219,</span> in <span class="ni">Base2.__getitem__</span><span class="nt">(self, key)</span>
+<span class="g g-Whitespace">    </span><span class="mi">217</span>     <span class="k">return</span> <span class="n">vals</span>
+<span class="g g-Whitespace">    </span><span class="mi">218</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">219</span>     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="ne">KeyError</span>: &#39;throat.boundary&#39;
 </pre></div>
 </div>
 </div>

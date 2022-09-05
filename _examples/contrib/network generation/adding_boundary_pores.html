@@ -154,10 +154,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -261,7 +257,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Delaunay at 0x7f55917d5770&gt;
+net : &lt;openpnm.network.Delaunay at 0x7fd52a493270&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -270,6 +266,11 @@ net : &lt;openpnm.network.Delaunay at 0x7f55917d5770&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.delaunay                                                         200
+  2  pore.voronoi                                                            0
+  3  throat.delaunay                                                       554
+  4  throat.interconnect                                                     0
+  5  throat.voronoi                                                          0
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -297,7 +298,7 @@ net : &lt;openpnm.network.Delaunay at 0x7f55917d5770&gt;
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/0517e2f0e68c0e96b86fbb631270a3729d1a94729c7c3c6d14f3b0f78f1ebbc2.svg" src="../../../_images/0517e2f0e68c0e96b86fbb631270a3729d1a94729c7c3c6d14f3b0f78f1ebbc2.svg" /></div>
+<img alt="../../../_images/5ffcd5c74c972641cc86353c0d857b91a67baad7fc57af4fd9016b8edcd10b5f.svg" src="../../../_images/5ffcd5c74c972641cc86353c0d857b91a67baad7fc57af4fd9016b8edcd10b5f.svg" /></div>
 </div>
 <p>For the purpose of this tutorial, we will trim these boundary pores from the network since we’ll be adding our own.</p>
 <div class="cell docutils container">

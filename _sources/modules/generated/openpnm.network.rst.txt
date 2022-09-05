@@ -15,18 +15,6 @@ network
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-      :toctree:
-   
-      from_csv
-      from_jsongraph
-      from_marock
-      from_networkx
-      from_pergeos
-      from_porespy
-   
    
 
    
@@ -45,7 +33,6 @@ network
       DelaunayVoronoiDual
       Demo
       FaceCenteredCubic
-      Gabriel
       Network
       Voronoi
    

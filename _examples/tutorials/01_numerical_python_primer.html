@@ -156,10 +156,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -244,15 +240,60 @@
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../examples/metrics.html">
-   Metrics
+  <a class="reference internal" href="../../examples/applications.html">
+   Applications
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -393,22 +434,13 @@
   <section class="tex2jax_ignore mathjax_ignore" id="numerical-python-primer">
 <h1>Numerical Python Primer<a class="headerlink" href="#numerical-python-primer" title="Permalink to this heading">#</a></h1>
 <p>OpenPNM uses two very common python data structures, so it’s best to get comfortable with them right away.  In this example we’ll cover:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head text-left"><p>Topics Covered</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td class="text-left"><p>Python’s <code class="docutils literal notranslate"><span class="pre">list</span></code></p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Numpy’s <code class="docutils literal notranslate"><span class="pre">ndarray</span></code></p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>Python’s <code class="docutils literal notranslate"><span class="pre">dict</span></code> or <em>dictionary</em></p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Subclassing a <code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
-</tr>
-</tbody>
-</table>
+<p>Topics Covered</p>
+<ul class="simple">
+<li><p>Python’s <code class="docutils literal notranslate"><span class="pre">list</span></code></p></li>
+<li><p>Numpy’s <code class="docutils literal notranslate"><span class="pre">ndarray</span></code></p></li>
+<li><p>Python’s <code class="docutils literal notranslate"><span class="pre">dict</span></code> or <em>dictionary</em></p></li>
+<li><p>Subclassing a <code class="docutils literal notranslate"><span class="pre">dict</span></code></p></li>
+</ul>
 <section id="python-lists-flexible-but-slow">
 <h2>Python Lists: Flexible but Slow<a class="headerlink" href="#python-lists-flexible-but-slow" title="Permalink to this heading">#</a></h2>
 <p>First lets quickly look at Python’s version of an <em>array</em>, which is called a <code class="docutils literal notranslate"><span class="pre">list</span></code>.  It is indicated by square brackets:</p>
@@ -532,6 +564,9 @@
 <section id="numpy-ndarray-optimized-for-numerics">
 <h2>Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>: Optimized for Numerics<a class="headerlink" href="#numpy-ndarray-optimized-for-numerics" title="Permalink to this heading">#</a></h2>
 <p>Given the above noted limitations of python for math, it is natural to wonder why use python for scientific work. The answer to this question is Numpy. Numpy has been around almost as long as python, and it is used almost exclusively in scientific python applications because as discussed above the native <code class="docutils literal notranslate"><span class="pre">list</span></code> is not very fast. Numpy arrays, or <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s on the other hand are actually “C” arrays behind the scenes so are very fast. The downside is that you must learn a ‘mini-language’ to use them. The following few code blocks illustrate this.</p>
+<div class="highlight-{seealso notranslate"><div class="highlight"><pre><span></span>There are many resources for learning and understaning Numpy arrays, such as the [official numpy user guide](https://numpy.org/doc/stable/user/index.html#user) and this fun [illustrated guide](https://betterprogramming.pub/numpy-illustrated-the-visual-guide-to-numpy-3b1d4976de1d).
+</pre></div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -669,7 +704,6 @@
 </div>
 </div>
 </div>
-<p>There are many resources for learning and understaning Numpy arrays, such as the <a class="reference external" href="https://numpy.org/doc/stable/user/index.html#user">official numpy user guide</a> and this fun <a class="reference external" href="https://betterprogramming.pub/numpy-illustrated-the-visual-guide-to-numpy-3b1d4976de1d">illustrated guide</a>.</p>
 </section>
 <section id="methods-versus-functions">
 <h3>Methods versus Functions<a class="headerlink" href="#methods-versus-functions" title="Permalink to this heading">#</a></h3>
@@ -808,7 +842,10 @@
 </div>
 </div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
 <p>For a more detailed overview of using <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, there are many internet tutorials such as <a class="reference external" href="https://python.land/python-data-types/dictionaries">this one</a>, <a class="reference external" href="https://towardsdatascience.com/a-complete-guide-to-dictionaries-in-python-5c3f4c132569">this one</a>, or <a class="reference external" href="https://realpython.com/python-dicts/">this one</a>.</p>
+</div>
 <section id="subclassing-dict">
 <h3>Subclassing <code class="docutils literal notranslate"><span class="pre">dict</span></code><a class="headerlink" href="#subclassing-dict" title="Permalink to this heading">#</a></h3>
 <p>This is may seem like an intimidating concept at first, but it’s actually beautifully simple once you get a feel for how it works. It’s also relevant to learning OpenPNM since it uses <code class="docutils literal notranslate"><span class="pre">dict</span></code>s extensively, and these are often subclassed to augment their functionality.  Subclassing means “taking the basic functionality of the <code class="docutils literal notranslate"><span class="pre">dict</span></code>, then adding to and/or changing it”. For a deep dive into the process of subclassing a <code class="docutils literal notranslate"><span class="pre">dict</span></code> refer to <a class="reference external" href="https://realpython.com/inherit-python-dict/">this tutorial</a>, but here we’ll give a more basic introduction.</p>
@@ -971,6 +1008,22 @@ dict_keys([&#39;pore.test&#39;])
 </div>
 </div>
 </div>
+<p>You can also add other dictionaries!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dnew</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">dnew</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bob&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dnew</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;name&#39;: &#39;bob&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>So in summary, <code class="docutils literal notranslate"><span class="pre">dict</span></code>s are extremely versatile and handy “data containers”.  You can alter their built-in behavior to do things like enforcing that all data are numpy arrays; you can add new methods the allow users interact with the data in specific ways; and you can add data attributes to help users get quick access to needed information.</p>
 </section>
 </section>
 </section>

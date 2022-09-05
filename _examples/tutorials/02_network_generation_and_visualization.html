@@ -156,10 +156,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -244,15 +240,60 @@
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../examples/metrics.html">
-   Metrics
+  <a class="reference internal" href="../../examples/applications.html">
+   Applications
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -351,11 +392,6 @@
    Imported Networks
   </a>
  </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#additional-visualization-functionality">
-   Additional Visualization Functionality
-  </a>
- </li>
 </ul>
 
 </nav>
@@ -402,9 +438,10 @@
 <img alt="../../_images/2b0510c98f200c5010703937d89d48134e26d615ab23024490e289def4dafd70.png" src="../../_images/2b0510c98f200c5010703937d89d48134e26d615ab23024490e289def4dafd70.png" />
 </div>
 </div>
-<p>.. tip:: Quick Visualization in the IDE</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The above block uses `op.visualization.plot_coordinates` and `op.visualization.plot_connections`. The options for visualization are explored late in this tutorial.
-</pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Quick Visualization in the IDE<br />
+The above block uses <code class="docutils literal notranslate"><span class="pre">op.visualization.plot_coordinates</span></code> and <code class="docutils literal notranslate"><span class="pre">op.visualization.plot_connections</span></code>. The options for visualization are explored late in this tutorial.</p>
 </div>
 <p>The shape and spacing of the network can both be altered:</p>
 <div class="cell docutils container">
@@ -448,9 +485,10 @@
 <img alt="../../_images/dd8ebf34032a87fa2810bbfabc9b8d71bd8ee0b9c90759c60879c71b52c9b0b2.png" src="../../_images/dd8ebf34032a87fa2810bbfabc9b8d71bd8ee0b9c90759c60879c71b52c9b0b2.png" />
 </div>
 </div>
-<p>.. tip:: Printing objects to see their details</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>It is very common practice to print the objects at the interactive prompt to see its details using `print(pn)` for example.
-</pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Printing objects to see their details
+It is very common practice to print the objects at the interactive prompt to see its details using <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code> for example.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -460,7 +498,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fc859aa0860&gt;
+net : &lt;openpnm.network.Cubic at 0x7f9275fc6f90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -555,11 +593,12 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 <img alt="../../_images/d2d5978eed75f5a16779e2be2704d7c9ed07969b4387bb323e8b31895985b3fd.png" src="../../_images/d2d5978eed75f5a16779e2be2704d7c9ed07969b4387bb323e8b31895985b3fd.png" />
 </div>
 </div>
-<p>.. note:: The meaning of shape in Bravias lattices</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Note that the 4x4x4 spacing refers to the number of corner sites, so it&#39;s basically the same size and shape as would be obtained using ``Cubic``, but it has the extra nodes placed between the corner sites.
-</pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The meaning of shape in fcc and bcc lattices
+Note that the 4x4x4 spacing refers to the number of corner sites, so it’s basically the same size and shape as would be obtained using <code class="docutils literal notranslate"><span class="pre">Cubic</span></code>, but it has the extra nodes placed between the corner sites.</p>
 </div>
-<p>The Bravais lattices include labels indicating whether pores are are center, corner, or face pores, as well as labels for throats indidcating which type of pores they connect.  These labels can be used in the <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> and <code class="docutils literal notranslate"><span class="pre">plot_coordinates</span></code> functions to show only a portion of the pores and throats or to color them each differently.</p>
+<p>The fcc and bcc lattices include labels indicating whether pores are are center, corner, or face pores, as well as labels for throats indidcating which type of pores they connect.  These labels can be used in the <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> and <code class="docutils literal notranslate"><span class="pre">plot_coordinates</span></code> functions to show only a portion of the pores and throats or to color them each differently.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bcc</span><span class="p">)</span>
@@ -568,7 +607,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.BodyCenteredCubic at 0x7fc85970a900&gt;
+net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9274ba14f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -631,7 +670,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fc85970a900&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c564bc7be3d1b9cd1056b9a197aa087c271a5fd77121550270262df9b0fdadcf.png" src="../../_images/c564bc7be3d1b9cd1056b9a197aa087c271a5fd77121550270262df9b0fdadcf.png" />
+<img alt="../../_images/6a51f031f0690e24e375f144d5f4a4f924c30e1ce264f69437441b23862a3746.png" src="../../_images/6a51f031f0690e24e375f144d5f4a4f924c30e1ce264f69437441b23862a3746.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -650,12 +689,37 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fc85970a900&gt;
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <img alt="../../_images/98fd8dbe21de298bc99c7016017c69d794b28bac42aeac0dfe8d04faf7804c23.png" src="../../_images/98fd8dbe21de298bc99c7016017c69d794b28bac42aeac0dfe8d04faf7804c23.png" />
+</div>
+</div>
+<p>It is also possible to create these lattices in cylindrical and spherical shapes.  This is done via the <code class="docutils literal notranslate"><span class="pre">shape</span></code> argument such that [x, y, z] assumes cartesian, [r, z] assumes cylindrical and [r] assumes spherical:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cyl</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Voronoi</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">cyl</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">cyl</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/67393c48259bc2d9650daa6b5341788b3f36c0727300fcba7d5ded51a408b931.png" src="../../_images/67393c48259bc2d9650daa6b5341788b3f36c0727300fcba7d5ded51a408b931.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sph</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Voronoi</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">sph</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">sph</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1d3839d153db386914c6a38f742a604e6a8763e115cffc33a51b3030ada3d3dc.png" src="../../_images/1d3839d153db386914c6a38f742a604e6a8763e115cffc33a51b3030ada3d3dc.png" />
 </div>
 </div>
 </section>
@@ -718,51 +782,6 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fc85970a900&gt;
 </div>
 </div>
 <p>For extracted networks it is not expected that a user would enter all the values by hand as done above. OpenPNM has an <code class="docutils literal notranslate"><span class="pre">io</span></code> module which contains functions for reading from a wide assortment of file formats, as well as outputting to a limited number.  This is covered in the final tutorial of this series.</p>
-</section>
-<section id="additional-visualization-functionality">
-<h2>Additional Visualization Functionality<a class="headerlink" href="#additional-visualization-functionality" title="Permalink to this heading">#</a></h2>
-<p>The network visualization used so far relies on <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> functions. When using Jupyter notebooks, there is function that uses <code class="docutils literal notranslate"><span class="pre">plotly</span></code> for a more appealing visualization.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Voronoi</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_notebook</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">node_size</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">node_scale</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:570,</span> in <span class="ni">plot_notebook</span><span class="nt">(network, node_color, edge_color, node_size, node_scale, edge_scale, colormap)</span>
-<span class="g g-Whitespace">    </span><span class="mi">569</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">570</span>     <span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
-<span class="g g-Whitespace">    </span><span class="mi">571</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;plotly&#39;
-
-<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
-
-<span class="ne">Exception</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">Input In [21],</span> in <span class="ni">&lt;cell line: 3&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Voronoi</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_notebook</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">node_size</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">node_scale</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">ax</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:572,</span> in <span class="ni">plot_notebook</span><span class="nt">(network, node_color, edge_color, node_size, node_scale, edge_scale, colormap)</span>
-<span class="g g-Whitespace">    </span><span class="mi">570</span>     <span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
-<span class="g g-Whitespace">    </span><span class="mi">571</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">572</span>     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Plotly is not installed.&#39;</span>
-<span class="g g-Whitespace">    </span><span class="mi">573</span>                     <span class="s1">&#39;Please install Plotly using &quot;pip install plotly&quot;&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">575</span> <span class="c1"># Get xyz coords for points</span>
-<span class="g g-Whitespace">    </span><span class="mi">576</span> <span class="n">x_nodes</span><span class="p">,</span> <span class="n">y_nodes</span><span class="p">,</span> <span class="n">z_nodes</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">T</span>
-
-<span class="ne">Exception</span>: Plotly is not installed.Please install Plotly using &quot;pip install plotly&quot;
-</pre></div>
-</div>
-</div>
-</div>
 </section>
 </section>
 

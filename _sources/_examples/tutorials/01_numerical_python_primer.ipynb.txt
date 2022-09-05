@@ -15,12 +15,11 @@
    "source": [
     "OpenPNM uses two very common python data structures, so it's best to get comfortable with them right away.  In this example we'll cover:\n",
     "\n",
-    "| Topics Covered |\n",
-    "| :- |\n",
-    "| Python's ``list`` |\n",
-    "| Numpy's ``ndarray`` |\n",
-    "| Python's `dict` or *dictionary* |\n",
-    "| Subclassing a `dict` |"
+    "Topics Covered\n",
+    "- Python's ``list`` \n",
+    "- Numpy's ``ndarray`` \n",
+    "- Python's `dict` or *dictionary* \n",
+    "- Subclassing a `dict` "
    ]
   },
   {
@@ -34,7 +33,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 31,
    "id": "f11dc182",
    "metadata": {},
    "outputs": [],
@@ -60,7 +59,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
+   "execution_count": 32,
    "id": "8044b257",
    "metadata": {},
    "outputs": [
@@ -95,7 +94,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 11,
+   "execution_count": 33,
    "id": "ff50442c",
    "metadata": {},
    "outputs": [
@@ -122,7 +121,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
+   "execution_count": 34,
    "id": "31671492",
    "metadata": {},
    "outputs": [
@@ -149,7 +148,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
+   "execution_count": 35,
    "id": "9562a42c",
    "metadata": {},
    "outputs": [
@@ -176,7 +175,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
+   "execution_count": 36,
    "id": "ea4c14a8",
    "metadata": {},
    "outputs": [
@@ -207,7 +206,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 15,
+   "execution_count": 37,
    "id": "02de8b44",
    "metadata": {},
    "outputs": [
@@ -233,7 +232,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
+   "execution_count": 38,
    "id": "3c612173",
    "metadata": {},
    "outputs": [
@@ -267,12 +266,16 @@
    "source": [
     "## Numpy ``ndarray``: Optimized for Numerics\n",
     "\n",
-    "Given the above noted limitations of python for math, it is natural to wonder why use python for scientific work. The answer to this question is Numpy. Numpy has been around almost as long as python, and it is used almost exclusively in scientific python applications because as discussed above the native `list` is not very fast. Numpy arrays, or `ndarray`s on the other hand are actually \"C\" arrays behind the scenes so are very fast. The downside is that you must learn a 'mini-language' to use them. The following few code blocks illustrate this.  "
+    "Given the above noted limitations of python for math, it is natural to wonder why use python for scientific work. The answer to this question is Numpy. Numpy has been around almost as long as python, and it is used almost exclusively in scientific python applications because as discussed above the native `list` is not very fast. Numpy arrays, or `ndarray`s on the other hand are actually \"C\" arrays behind the scenes so are very fast. The downside is that you must learn a 'mini-language' to use them. The following few code blocks illustrate this.  \n",
+    "\n",
+    ":::{seealso\n",
+    "There are many resources for learning and understaning Numpy arrays, such as the [official numpy user guide](https://numpy.org/doc/stable/user/index.html#user) and this fun [illustrated guide](https://betterprogramming.pub/numpy-illustrated-the-visual-guide-to-numpy-3b1d4976de1d).\n",
+    ":::"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 39,
    "id": "d113e3fc",
    "metadata": {},
    "outputs": [
@@ -308,7 +311,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 19,
+   "execution_count": 40,
    "id": "a7fded9e",
    "metadata": {},
    "outputs": [
@@ -326,7 +329,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 20,
+   "execution_count": 41,
    "id": "47388a7d",
    "metadata": {},
    "outputs": [
@@ -353,7 +356,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 21,
+   "execution_count": 42,
    "id": "8630d254",
    "metadata": {},
    "outputs": [
@@ -380,7 +383,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 22,
+   "execution_count": 43,
    "id": "7b03303e",
    "metadata": {},
    "outputs": [
@@ -407,7 +410,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 23,
+   "execution_count": 44,
    "id": "7c0cb79f",
    "metadata": {},
    "outputs": [
@@ -434,7 +437,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 24,
+   "execution_count": 45,
    "id": "262b3c26",
    "metadata": {},
    "outputs": [
@@ -464,7 +467,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 25,
+   "execution_count": 46,
    "id": "b9007729",
    "metadata": {},
    "outputs": [
@@ -482,7 +485,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 26,
+   "execution_count": 47,
    "id": "501c3cd3",
    "metadata": {},
    "outputs": [
@@ -500,7 +503,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 27,
+   "execution_count": 48,
    "id": "80206e56",
    "metadata": {},
    "outputs": [
@@ -518,14 +521,6 @@
   },
   {
    "cell_type": "markdown",
-   "id": "3c2c231c",
-   "metadata": {},
-   "source": [
-    "There are many resources for learning and understaning Numpy arrays, such as the [official numpy user guide](https://numpy.org/doc/stable/user/index.html#user) and this fun [illustrated guide](https://betterprogramming.pub/numpy-illustrated-the-visual-guide-to-numpy-3b1d4976de1d)."
-   ]
-  },
-  {
-   "cell_type": "markdown",
    "id": "4fe97fab",
    "metadata": {},
    "source": [
@@ -536,7 +531,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 68,
+   "execution_count": 49,
    "id": "1bd2fc14",
    "metadata": {},
    "outputs": [],
@@ -554,7 +549,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 69,
+   "execution_count": 50,
    "id": "bf70d247",
    "metadata": {},
    "outputs": [
@@ -580,7 +575,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 70,
+   "execution_count": 51,
    "id": "e6792a64",
    "metadata": {},
    "outputs": [
@@ -615,7 +610,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 29,
+   "execution_count": 52,
    "id": "171f689b",
    "metadata": {},
    "outputs": [
@@ -644,7 +639,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 30,
+   "execution_count": 53,
    "id": "97f811be",
    "metadata": {},
    "outputs": [
@@ -670,17 +665,17 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 44,
+   "execution_count": 54,
    "id": "f57d97f8",
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "dict_keys(['arr', 'list', 'test'])"
+       "dict_keys(['arr', 'list'])"
       ]
      },
-     "execution_count": 44,
+     "execution_count": 54,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -699,17 +694,17 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 45,
+   "execution_count": 55,
    "id": "e701de7d",
    "metadata": {},
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "dict_values([array([  0, 111,   0, 222,   0, 333,  90]), ['str', 2, 6, 8, 100, 200, 300], 1.0])"
+       "dict_values([array([  0, 111,   0, 222,   0, 333,  90]), ['str', 2, 6, 8, 100, 200, 300]])"
       ]
      },
-     "execution_count": 45,
+     "execution_count": 55,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -728,7 +723,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 31,
+   "execution_count": 56,
    "id": "19cc45ee",
    "metadata": {},
    "outputs": [
@@ -755,7 +750,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 46,
+   "execution_count": 57,
    "id": "5dca62d4",
    "metadata": {},
    "outputs": [
@@ -782,7 +777,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 47,
+   "execution_count": 58,
    "id": "1cff1d65",
    "metadata": {},
    "outputs": [
@@ -804,7 +799,9 @@
    "id": "783a1c06",
    "metadata": {},
    "source": [
-    "For a more detailed overview of using `dict`s, there are many internet tutorials such as [this one](https://python.land/python-data-types/dictionaries), [this one](https://towardsdatascience.com/a-complete-guide-to-dictionaries-in-python-5c3f4c132569), or [this one](https://realpython.com/python-dicts/)."
+    ":::{seealso}\n",
+    "For a more detailed overview of using `dict`s, there are many internet tutorials such as [this one](https://python.land/python-data-types/dictionaries), [this one](https://towardsdatascience.com/a-complete-guide-to-dictionaries-in-python-5c3f4c132569), or [this one](https://realpython.com/python-dicts/).\n",
+    ":::"
    ]
   },
   {
@@ -821,7 +818,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 48,
+   "execution_count": 59,
    "id": "4cf90058",
    "metadata": {},
    "outputs": [],
@@ -843,7 +840,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 34,
+   "execution_count": 60,
    "id": "306be022",
    "metadata": {},
    "outputs": [],
@@ -861,7 +858,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 36,
+   "execution_count": 61,
    "id": "3af4dc99",
    "metadata": {},
    "outputs": [
@@ -888,7 +885,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 37,
+   "execution_count": 62,
    "id": "99832f5b",
    "metadata": {},
    "outputs": [
@@ -905,7 +902,7 @@
        "1.0"
       ]
      },
-     "execution_count": 37,
+     "execution_count": 62,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -924,7 +921,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 43,
+   "execution_count": 63,
    "id": "ef7ec8dd",
    "metadata": {},
    "outputs": [
@@ -932,7 +929,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "All keys must start with either pore, or throat\n"
+      "All keys must start with either pore or throat\n"
      ]
     }
    ],
@@ -957,7 +954,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 49,
+   "execution_count": 64,
    "id": "529de5f6",
    "metadata": {},
    "outputs": [],
@@ -972,7 +969,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 53,
+   "execution_count": 65,
    "id": "c0ae22fe",
    "metadata": {},
    "outputs": [
@@ -1005,7 +1002,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 62,
+   "execution_count": 66,
    "id": "234ea166",
    "metadata": {},
    "outputs": [],
@@ -1026,7 +1023,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 64,
+   "execution_count": 67,
    "id": "becd2ef0",
    "metadata": {},
    "outputs": [
@@ -1058,7 +1055,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 66,
+   "execution_count": 68,
    "id": "8c1d1758",
    "metadata": {},
    "outputs": [
@@ -1073,6 +1070,42 @@
    "source": [
     "dnew.name = 'bob'\n",
     "print(dnew.name)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7cf58a86",
+   "metadata": {},
+   "source": [
+    "You can also add other dictionaries!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "id": "da5cabea",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'bob'}\n"
+     ]
+    }
+   ],
+   "source": [
+    "dnew.settings = {}\n",
+    "dnew.settings['name'] = 'bob'\n",
+    "print(dnew.settings)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c9352d3c",
+   "metadata": {},
+   "source": [
+    "So in summary, `dict`s are extremely versatile and handy \"data containers\".  You can alter their built-in behavior to do things like enforcing that all data are numpy arrays; you can add new methods the allow users interact with the data in specific ways; and you can add data attributes to help users get quick access to needed information.  "
    ]
   }
  ],

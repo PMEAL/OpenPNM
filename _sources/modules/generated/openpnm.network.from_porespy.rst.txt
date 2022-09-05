@@ -1,6 +1,0 @@
-from\_porespy
-=============
-
-.. currentmodule:: openpnm.network
-
-.. autofunction:: from_porespy

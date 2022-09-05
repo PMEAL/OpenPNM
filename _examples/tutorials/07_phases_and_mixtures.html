@@ -156,10 +156,6 @@
           <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="https://twitter.com/OpenPNM" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
       </ul>
       </div>
       
@@ -244,15 +240,60 @@
   </ul>
  </li>
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../examples/metrics.html">
-   Metrics
+  <a class="reference internal" href="../../examples/applications.html">
+   Applications
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
   <label for="toctree-checkbox-2">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="simple">
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -483,41 +524,20 @@
 <h1>Using Basic Phases<a class="headerlink" href="#using-basic-phases" title="Permalink to this heading">#</a></h1>
 <p>All simulations in OpenPNM eventually require knowing the physical and thermodynamic properties of the fluids and phases.  OpenPNM provides a framework for computing these values in the <code class="docutils literal notranslate"><span class="pre">phase</span></code> submodule, along with a <em>basic</em> set of functions for predicting the properties pure phases and mixtures. Since we can’t possibly support an exhaustive physical property library, our policy is to provide a set of reasonable default functions for use as first approximations.  There are a number of other packages that can be used when more exacting values are required, such as <code class="docutils literal notranslate"><span class="pre">chemicals</span></code> and <code class="docutils literal notranslate"><span class="pre">cantera</span></code>, which can be used within the framework of OpenPNM.</p>
 <p>In the first part of this notebook, we will cover:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head text-left"><p>Part 1: The basic <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td class="text-left"><p>Assigning constant values for fixed properties</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Generating values using built-in pore-scale models</p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>Exploring the dependency handler</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Creating custom pore-scale models</p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>Specific classes for common fluids like <code class="docutils literal notranslate"><span class="pre">Air</span></code> and <code class="docutils literal notranslate"><span class="pre">Water</span></code></p></td>
-</tr>
-</tbody>
-</table>
+<ul class="simple">
+<li><p>Assigning constant values for fixed properties</p></li>
+<li><p>Generating values using built-in pore-scale models</p></li>
+<li><p>Exploring the dependency handler</p></li>
+<li><p>Creating custom pore-scale models</p></li>
+<li><p>Specific classes for common fluids like <code class="docutils literal notranslate"><span class="pre">Air</span></code> and <code class="docutils literal notranslate"><span class="pre">Water</span></code></p></li>
+</ul>
 <p>In the second part we will cover topics relating to mixtures, including:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head text-left"><p>Part 2: Using <code class="docutils literal notranslate"><span class="pre">Species</span></code> and <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> classes }</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td class="text-left"><p>Creating individual <code class="docutils literal notranslate"><span class="pre">Species</span></code> objects from the CAS number</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Combining components into a <code class="docutils literal notranslate"><span class="pre">Mixture</span></code></p></td>
-</tr>
-<tr class="row-even"><td class="text-left"><p>Utilizing the built-in classes for first-approximations of pure gas and liquid properties, and for mixture properties</p></td>
-</tr>
-<tr class="row-odd"><td class="text-left"><p>Leveraging external packages for making better estimates of pure component and mixture properties</p></td>
-</tr>
-</tbody>
-</table>
+<ul class="simple">
+<li><p>Creating individual <code class="docutils literal notranslate"><span class="pre">Species</span></code> objects from the CAS number</p></li>
+<li><p>Combining components into a <code class="docutils literal notranslate"><span class="pre">Mixture</span></code></p></li>
+<li><p>Utilizing the built-in classes for first-approximations of pure gas and liquid properties, and for mixture properties</p></li>
+<li><p>Leveraging external packages for making better estimates of pure component and mixture properties</p></li>
+</ul>
 <section id="part-1-the-phase-class">
 <h2>Part 1: The <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class<a class="headerlink" href="#part-1-the-phase-class" title="Permalink to this heading">#</a></h2>
 <p>If your simulation is simple, then a basic <code class="docutils literal notranslate"><span class="pre">Phase</span></code> object may be sufficient.  It has no predefined models from computing anything, so you have to either assign known values directly (e.g <code class="docutils literal notranslate"><span class="pre">water['pore.viscosity']</span> <span class="pre">=</span> <span class="pre">0.001</span></code>) or define models that will compute the values you need.  The models can be taken from the <code class="docutils literal notranslate"><span class="pre">openpnm.models.phase</span></code> library, or you can write your own. We will cover all three options below.</p>
@@ -546,7 +566,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f3bd27efae0&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7fe44a2be950&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -573,10 +593,10 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f3bd27efae0&gt;
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
-<p>When assigning a scalar value to a dictionary key it gets assigned to every pore (or throat).  The result of the above assignment can be seen below:</p>
-</div></blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>When assigning a scalar value to a dictionary key it gets assigned to every pore (or throat).  The result of the above assignment can be seen below.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phase1</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">]</span>
@@ -625,10 +645,10 @@ After: [0.00091476 0.00091476 0.00091476 0.00091476]
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>When assigning a pore-scale model using the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> function, it is automatically run, so it either overwrites any values present in <code class="docutils literal notranslate"><span class="pre">phase1['pore.viscosity']</span></code> or creates a new array in that location.  To prevent this behavior, for instance if a model needs other information to be computed before it’s run, add <code class="docutils literal notranslate"><span class="pre">regen_mode='deferred'</span></code> to the argument list of the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> method.</p>
-</div></blockquote>
+</div>
 <p>The most important benefit of using a pore-scale model is that it can re-compute each model if one of its dependent properties has changed. To illustrate the point, let’s set the temperature to a random number between 300 and 350 K, the rerun the model at the new temperatures:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -641,7 +661,7 @@ After: [0.00091476 0.00091476 0.00091476 0.00091476]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00091476 0.00091476 0.00091476 0.00091476]
-After: [0.00058529 0.00053314 0.00066282 0.00076561]
+After: [0.00057257 0.00085759 0.00076625 0.00045841]
 </pre></div>
 </div>
 </div>
@@ -661,21 +681,20 @@ After: [0.00058529 0.00053314 0.00066282 0.00076561]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00058529 0.00053314 0.00066282 0.00076561]
-After: [0.00055228 0.00050088 0.00063157 0.00073907]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00057257 0.00085759 0.00076625 0.00045841]
+After: [0.00053959 0.00083461 0.00073974 0.00042766]
 </pre></div>
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>Assigning a new model to <code class="docutils literal notranslate"><span class="pre">propname='pore.viscostiy'</span></code> will overwrite the existing model, which in this case was the custom model we defined above</p>
-</div></blockquote>
-<hr class="docutils" />
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>OpenPNM also has specific models for <strong>air</strong> and <strong>mercury</strong>, which are also common.</p>
-</div></blockquote>
+</div>
 </section>
 <section id="writing-your-own-custom-model">
 <h3>Writing your own custom model<a class="headerlink" href="#writing-your-own-custom-model" title="Permalink to this heading">#</a></h3>
@@ -699,7 +718,7 @@ After: [0.00055228 0.00050088 0.00063157 0.00073907]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00058529 0.00053314 0.00066282 0.00076561]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00057257 0.00085759 0.00076625 0.00045841]
 </pre></div>
 </div>
 </div>
@@ -785,19 +804,19 @@ After: [0.00055228 0.00050088 0.00063157 0.00073907]
 </div>
 </div>
 <p>As can be seen, many of these models include <code class="docutils literal notranslate"><span class="pre">T='pore.temperature'</span></code> as a parameter, which means that these models will fetch the current value of <code class="docutils literal notranslate"><span class="pre">water['pore.temperature']</span></code> when running, thereby using the most current value of temperature.</p>
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>Close inspection of the above printout reveals that <code class="docutils literal notranslate"><span class="pre">'pore.molar_density'</span></code> takes <code class="docutils literal notranslate"><span class="pre">'pore.density'</span></code> as an argument.  OpenPNM uses a graph-based depedency handler to ensure that <code class="docutils literal notranslate"><span class="pre">'pore.density'</span></code> is computed before <code class="docutils literal notranslate"><span class="pre">'pore.molar_denstiy'</span></code>.  This happens automatically when <code class="docutils literal notranslate"><span class="pre">regenerate_model</span></code> is called.  In some cases an error will occur if these dependencies form cycles which cannot be resolved.  This can be fixed by changing the name of one of the “upstream” models, for instance.</p>
-</div></blockquote>
+</div>
 </section>
 </section>
 <section id="part-2-using-species-and-mixtures">
 <h2>Part 2: Using Species and Mixtures<a class="headerlink" href="#part-2-using-species-and-mixtures" title="Permalink to this heading">#</a></h2>
 <p>In some cases a user may wish to compute the thermophysical properties of unusual species, or even mixtures of species. There are packages who’s entire purpose is computing these values, so OpenPNM does not attempt to reproduce this functionality. However, it is needed often enough that OpenPNM has some base level support for making ‘first-approximation’ estimates of species properties, and also has a defined API for dealing with mixtures of individual species.</p>
-<blockquote>
-<div><p>⚠ <strong>Caution</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>In most cases you probably do not need to use the <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> feature is the right choice.</p>
-</div></blockquote>
+</div>
 <section id="pure-species">
 <h3>Pure Species<a class="headerlink" href="#pure-species" title="Permalink to this heading">#</a></h3>
 <p>The API involves starting with several <code class="docutils literal notranslate"><span class="pre">Species</span></code> objects.  Let’s make air, consisting of oxygen and nitrogen.</p>
@@ -826,10 +845,10 @@ phase_03 : &lt;openpnm.phase.Species at 0x2324d428c20&gt;
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">species</span></code> argument is looked up using the <code class="docutils literal notranslate"><span class="pre">thermo</span></code> package which contains numerous synonyms for each species. This is argument is actually passed to <code class="docutils literal notranslate"><span class="pre">thermo.Chemical</span></code>, which does the database look-up to fetch all the needed chemical properties.</p>
-</div></blockquote>
+</div>
 <p>As can be seen above the <code class="docutils literal notranslate"><span class="pre">Species</span></code> class does not compute any properties of the given species, <em>BUT</em> it does contain a host of thermodynamic properties in the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -865,11 +884,10 @@ acentric_factor                     0.021
 </div>
 </div>
 </div>
-<hr class="docutils" />
-<blockquote>
-<div><p>💡 <strong>Pro Tip</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>You can access the values of these parameters either from the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute or using the dictionary lookup of the main object which will dispatch the query to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute.</p>
-</div></blockquote>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o2</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CAS&#39;</span><span class="p">]</span>
@@ -894,9 +912,7 @@ acentric_factor                     0.021
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>Writing also works.</p>
-</div></blockquote>
+<p>Writing also works.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o2</span><span class="p">[</span><span class="s1">&#39;param.foo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
@@ -910,7 +926,6 @@ acentric_factor                     0.021
 </div>
 </div>
 </div>
-<hr class="docutils" />
 <p>These parameters are used in the various property estimation methods.  For instance, to compute the viscosity of oxygen, OpenPNM provides a function that implements the model of Steil and Thodos (<code class="docutils literal notranslate"><span class="pre">openpnm.models.phase.viscosity.gas_pure_ls</span></code>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -993,13 +1008,12 @@ acentric_factor                     0.021
 </div>
 </div>
 </div>
-<hr class="docutils" />
-<blockquote>
-<div><p>💡 <strong>Pro Tip</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>The ability to fetch items from the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute via the standard dictionary look-up was added specifically to support the above behavior.  Within the function the following line is called:</p>
 <p><code class="docutils literal notranslate"><span class="pre">Tcrit</span> <span class="pre">=</span> <span class="pre">phase[Tc]</span></code></p>
 <p>So if <code class="docutils literal notranslate"><span class="pre">Tc='pore.critical_temperature'</span></code> is supplied as the argument, then OpenPNM will look for values in the main dictionary (i.e. <code class="docutils literal notranslate"><span class="pre">phase['pore.critical_temperature']</span></code>.  If however, <code class="docutils literal notranslate"><span class="pre">Tc='param.critical_temperature'</span></code> is specified, then OpenPNM will look in the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute, becuase <code class="docutils literal notranslate"><span class="pre">phase['param.critical_temperature']</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">phase.params['critical_temperature']</span></code>.</p>
-</div></blockquote>
+</div>
 </section>
 <section id="gas-and-liquid-species">
 <h3>Gas and Liquid Species<a class="headerlink" href="#gas-and-liquid-species" title="Permalink to this heading">#</a></h3>
@@ -1201,11 +1215,10 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<hr class="docutils" />
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
-<p>The mole fractions of <em>both</em> species can be retrieved using the <code class="docutils literal notranslate"><span class="pre">dict</span></code> lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys:</p>
-</div></blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The mole fractions of <em>both</em> species can be retrieved using the <code class="docutils literal notranslate"><span class="pre">dict</span></code> lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">])</span>
@@ -1218,9 +1231,7 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>This also means you can index into the returned dictionary using the names:</p>
-</div></blockquote>
+<p>This also means you can index into the returned dictionary using the names:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">][</span><span class="n">o2</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
@@ -1233,9 +1244,7 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>Alternatively the returned dictionary can be used to get a list of components that are currently part of the mixture:</p>
-</div></blockquote>
+<p>Alternatively the returned dictionary can be used to get a list of components that are currently part of the mixture:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -1248,9 +1257,7 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>The individual species can be retrieved using the <code class="docutils literal notranslate"><span class="pre">components</span></code> attribute which returns a dictionary with component names as the keys and handles to the actual objects as values:</p>
-</div></blockquote>
+<p>The individual species can be retrieved using the <code class="docutils literal notranslate"><span class="pre">components</span></code> attribute which returns a dictionary with component names as the keys and handles to the actual objects as values:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">components</span>
@@ -1265,7 +1272,6 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="getting-and-setting-compositions">
 <h3>Getting and Setting Compositions<a class="headerlink" href="#getting-and-setting-compositions" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">x</span></code> method on <code class="docutils literal notranslate"><span class="pre">LiquidMixture</span></code>, and <code class="docutils literal notranslate"><span class="pre">y</span></code> on <code class="docutils literal notranslate"><span class="pre">GasMixture</span></code> can also be used to retrieve the mole fraction of one or both components:</p>
@@ -1313,11 +1319,10 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<hr class="docutils" />
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
-<p>A species is considered a component of a mixture <em>if and only if</em> <code class="docutils literal notranslate"><span class="pre">'pore.mole_fraction.&lt;species.name&gt;'</span></code> appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined. For instance:</p>
-</div></blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>A species is considered a component of a mixture <em>if and only if</em> <code class="docutils literal notranslate"><span class="pre">'pore.mole_fraction.&lt;species.name&gt;'</span></code> appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined.</p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
@@ -1331,9 +1336,7 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>They can be readded in the same way:</p>
-</div></blockquote>
+<p>They can be readded in the same way:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">o2</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.21</span>
@@ -1347,9 +1350,7 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>But there is a specific method for this:</p>
-</div></blockquote>
+<p>But there is a specific method for this:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">add_comp</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="mf">0.79</span><span class="p">)</span>
@@ -1365,7 +1366,6 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 </div>
 </section>
-<hr class="docutils" />
 <section id="info">
 <h4><code class="docutils literal notranslate"><span class="pre">info</span></code><a class="headerlink" href="#info" title="Permalink to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> attribute reports all the existing properties on the mixture (similar to <code class="docutils literal notranslate"><span class="pre">print</span></code>) but also of each of the components:</p>
@@ -1603,11 +1603,10 @@ mole_fraction_too_high              []
 </div>
 <p>The use of the <code class="docutils literal notranslate"><span class="pre">'.*'</span></code> as the suffix of the <code class="docutils literal notranslate"><span class="pre">propname</span></code> argument is crucial here.  As can be seen in the definition of <code class="docutils literal notranslate"><span class="pre">mole_fraction_weighting</span></code>, the call to <code class="docutils literal notranslate"><span class="pre">phase[propname]</span></code> passes <code class="docutils literal notranslate"><span class="pre">'pore.viscsoity.*'</span></code> directly to the dictionary lookup of values from <code class="docutils literal notranslate"><span class="pre">phase</span></code>, and this in turn triggers the retrieval of the <code class="docutils literal notranslate"><span class="pre">'pore.viscosity'</span></code> values from each component.</p>
 <p>If we were to pass <code class="docutils literal notranslate"><span class="pre">'pore.viscosity'</span></code> then the function would throw an error since the call to <code class="docutils literal notranslate"><span class="pre">phase['pore.viscosity']</span></code> would return a single numpy array of viscosity values of the mixture (or not find any values at all).</p>
-<hr class="docutils" />
-<blockquote>
-<div><p>💡 <strong>ProTip!</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
 <p>In summary, <code class="docutils literal notranslate"><span class="pre">air['pore.viscosity']</span></code> will fetch the viscosity of the mixture, while <code class="docutils literal notranslate"><span class="pre">air['pore.viscosity.oxygen']</span></code> will retrieve the values of viscosity from <code class="docutils literal notranslate"><span class="pre">o2</span></code>, and <code class="docutils literal notranslate"><span class="pre">air['pore.viscosity.*']</span></code> will fetch the viscosity from all the components and return them in a dictionary with each component name as the key.</p>
-</div></blockquote>
+</div>
 </section>
 </section>
 </section>
