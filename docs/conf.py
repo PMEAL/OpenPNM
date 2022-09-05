@@ -146,11 +146,6 @@ html_theme_options = {
             "url": "https://github.com/PMEAL/OpenPNM",
             "icon": "fab fa-github-square",
         },
-        {
-            "name": "Twitter",
-            "url": "https://twitter.com/OpenPNM",
-            "icon": "fab fa-twitter-square",
-        },
     ],
     "external_links": [
         {
