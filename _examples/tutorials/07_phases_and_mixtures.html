@@ -252,57 +252,7 @@
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/absolute_permeability.html">
-     Predicting absolute permeability
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/adjusting_pore_size_distributions.html">
-     Adjusting Pore Size Distributions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/dispersion_coefficient.html">
-     Predicting dispersion coefficient
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/drainage_and_imbibition.html">
-     Drainage and Imbibition
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/effective_diffusivity_and_tortuosity.html">
-     Finding Effective Diffusivity and Tortuosity of a Network
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/formation_factor.html">
-     Predicting Formation Factor
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/mercury_intrusion.html">
-     Simulating Mercury Intrusion Porosimetry Curves
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/porosity.html">
-     Predicting Porosity
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/relative_diffusivity.html">
-     Obtaining Relative Diffusivity Curves
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../metrics/relative_permeability.html">
-     Predicting relative permeability
-    </a>
-   </li>
+  <ul class="simple">
   </ul>
  </li>
  <li class="toctree-l1 has-children">
@@ -316,6 +266,11 @@
   </label>
   <ul>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
      The Workspace and Projects
     </a>
@@ -327,7 +282,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/basic_transport.html">
-     Basic Transport
+     Steady State Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -336,33 +291,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/transient_transport.html">
-     Basic Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/uncategorized/settings_attribute_machinery.html">
-     Settings Attribute Machinery
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/uncategorized/size_factors_and_transport_conductance.html">
+    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
      Size Factors and Transport Conductance
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../reference/uncategorized/understanding_basic_transport_settings.html">
-     Understanding Basic Transport Settings
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/uncategorized/understanding_reactive_transport_settings.html">
-     Understanding Reactive Transport Settings
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/uncategorized/understanding_transient_transport_settings.html">
-     Understanding Transient Transport Settings
+    <a class="reference internal" href="../reference/simulations/transient_transport.html">
+     Basic Transport
     </a>
    </li>
   </ul>
@@ -611,7 +546,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f65eee365e0&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f07f4950590&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -706,7 +641,7 @@ After: [0.00091476 0.00091476 0.00091476 0.00091476]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00091476 0.00091476 0.00091476 0.00091476]
-After: [0.00046767 0.0004613  0.00043343 0.00059873]
+After: [0.00054063 0.00061942 0.0004256  0.00080256]
 </pre></div>
 </div>
 </div>
@@ -726,8 +661,8 @@ After: [0.00046767 0.0004613  0.00043343 0.00059873]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00046767 0.0004613  0.00043343 0.00059873]
-After: [0.0004371  0.00043064 0.00039969 0.0005658 ]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00054063 0.00061942 0.0004256  0.00080256]
+After: [0.00050817 0.00058681 0.00038915 0.00077762]
 </pre></div>
 </div>
 </div>
@@ -764,7 +699,7 @@ After: [0.0004371  0.00043064 0.00039969 0.0005658 ]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00046767 0.0004613  0.00043343 0.00059873]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00054063 0.00061942 0.0004256  0.00080256]
 </pre></div>
 </div>
 </div>

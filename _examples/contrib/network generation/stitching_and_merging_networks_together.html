@@ -267,7 +267,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-coarse_net : &lt;openpnm.network.Cubic at 0x7f2246681630&gt;
+coarse_net : &lt;openpnm.network.Cubic at 0x7f546cfdccc0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -301,7 +301,7 @@ coarse_net : &lt;openpnm.network.Cubic at 0x7f2246681630&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fine_net : &lt;openpnm.network.Cubic at 0x7f2246681180&gt;
+fine_net : &lt;openpnm.network.Cubic at 0x7f5476ac3270&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -355,7 +355,7 @@ fine_net : &lt;openpnm.network.Cubic at 0x7f2246681180&gt;
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/b70c67d03b4799ad09cd6ad235ebd0825998511cd8dd2fb1123d87db23502341.svg" src="../../../_images/b70c67d03b4799ad09cd6ad235ebd0825998511cd8dd2fb1123d87db23502341.svg" /></div>
+<img alt="../../../_images/840ad1500e49c617025e4831d80ecc033b6b33fd44fc5cb57db4b217049be20f.svg" src="../../../_images/840ad1500e49c617025e4831d80ecc033b6b33fd44fc5cb57db4b217049be20f.svg" /></div>
 </div>
 <p>As can be seen below, <code class="docutils literal notranslate"><span class="pre">fine_net</span></code> (orange) has been repositioned above the <code class="docutils literal notranslate"><span class="pre">coarse_net</span></code> (blue) because we shifted the z-coordinate by 500 um. (10 pores as 50 um per pore).</p>
 <p>But this above plotting was accomplished by sending <em>different</em> networks to the same plot.  The <code class="docutils literal notranslate"><span class="pre">merge</span></code> function let’s us combine the two networks together, as follows:</p>

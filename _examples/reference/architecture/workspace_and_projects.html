@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Available Matrix Solvers" href="../simulations/available_matrix_solvers.html" />
-    <link rel="prev" title="Reference" href="../../../examples/reference.html" />
+    <link rel="prev" title="Settings Attribute Machinery" href="settings_attribute_machinery.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
   </head>
@@ -252,57 +252,7 @@
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/absolute_permeability.html">
-     Predicting absolute permeability
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/adjusting_pore_size_distributions.html">
-     Adjusting Pore Size Distributions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/dispersion_coefficient.html">
-     Predicting dispersion coefficient
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/drainage_and_imbibition.html">
-     Drainage and Imbibition
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/effective_diffusivity_and_tortuosity.html">
-     Finding Effective Diffusivity and Tortuosity of a Network
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/formation_factor.html">
-     Predicting Formation Factor
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/mercury_intrusion.html">
-     Simulating Mercury Intrusion Porosimetry Curves
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/porosity.html">
-     Predicting Porosity
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/relative_diffusivity.html">
-     Obtaining Relative Diffusivity Curves
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../metrics/relative_permeability.html">
-     Predicting relative permeability
-    </a>
-   </li>
+  <ul class="simple">
   </ul>
  </li>
  <li class="toctree-l1 current active has-children">
@@ -315,6 +265,11 @@
    </i>
   </label>
   <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      The Workspace and Projects
@@ -327,7 +282,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../simulations/basic_transport.html">
-     Basic Transport
+     Steady State Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -336,33 +291,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/transient_transport.html">
-     Basic Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../uncategorized/settings_attribute_machinery.html">
-     Settings Attribute Machinery
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../uncategorized/size_factors_and_transport_conductance.html">
+    <a class="reference internal" href="../simulations/size_factors_and_transport_conductance.html">
      Size Factors and Transport Conductance
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="../uncategorized/understanding_basic_transport_settings.html">
-     Understanding Basic Transport Settings
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../uncategorized/understanding_reactive_transport_settings.html">
-     Understanding Reactive Transport Settings
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../uncategorized/understanding_transient_transport_settings.html">
-     Understanding Transient Transport Settings
+    <a class="reference internal" href="../simulations/transient_transport.html">
+     Basic Transport
     </a>
    </li>
   </ul>
@@ -471,7 +406,7 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7f8702e0de00&gt;
+net : &lt;openpnm.network.Cubic at 0x7fdddfeabe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -499,13 +434,13 @@ proj_01
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7f8702e0de00&gt;
+net : &lt;openpnm.network.Cubic at 0x7fdddfeabe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 proj_02
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Demo at 0x7f8702e0ddb0&gt;
+net : &lt;openpnm.network.Demo at 0x7fdddfe314f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -525,7 +460,7 @@ proj_01
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7f8702e0de00&gt;
+net : &lt;openpnm.network.Cubic at 0x7fdddfeabe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
