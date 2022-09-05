@@ -6503,14 +6503,15 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="openpnm.algorithms.InvasionPercolation.apply_trapping">
 <span class="sig-prename descclassname"><span class="pre">InvasionPercolation.</span></span><span class="sig-name descname"><span class="pre">apply_trapping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/algorithms/_invasion_percolation.html#InvasionPercolation.apply_trapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.algorithms.InvasionPercolation.apply_trapping" title="Permalink to this definition">#</a></dt>
-<dd><p>Adjusts the invasion sequence of pores and throats that are trapped
-using the reverse invasion percolation procedure outlined by Masson [1].</p>
+<dd><p>Adjusts the invasion sequence of pores and throats that are trapped.</p>
+<p>This method uses the reverse invasion percolation procedure outlined
+by Masson [1].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">
 <li><p><em>This function does not return anything. It adjusts the</em></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'pore.invasion_sequence'</span></code> and <code class="docutils literal notranslate"><span class="pre">'throat.invasion_sequence'</span></code> arrays</p></li>
-<li><p><em>on the object by setting trapped pores/throats to -1. It also puts</em></p></li>
+<li><p>on the object by setting trapped pores/throats to <code class="docutils literal notranslate"><span class="pre">ninf</span></code>. It also puts</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">True</span></code> values into the <code class="docutils literal notranslate"><span class="pre">'pore.trapped'</span></code> and <code class="docutils literal notranslate"><span class="pre">'throat.trapped'</span></code></p></li>
 <li><p><em>arrays.</em></p></li>
 </ul>

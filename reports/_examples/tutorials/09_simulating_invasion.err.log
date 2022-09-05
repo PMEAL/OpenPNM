@@ -17,15 +17,17 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-pn = op.network.Demo(shape=[20, 20, 1], spacing=1e-4)
+np.random.seed(5)
+pn = op.network.Demo(shape=[25, 25, 1], spacing=1e-4)
 air = op.phase.Air(network=pn)
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Input [0;32mIn [2][0m, in [0;36m<cell line: 2>[0;34m()[0m
-[1;32m      1[0m pn [38;5;241m=[39m op[38;5;241m.[39mnetwork[38;5;241m.[39mDemo(shape[38;5;241m=[39m[[38;5;241m20[39m, [38;5;241m20[39m, [38;5;241m1[39m], spacing[38;5;241m=[39m[38;5;241m1e-4[39m)
-[0;32m----> 2[0m air [38;5;241m=[39m [43mop[49m[38;5;241;43m.[39;49m[43mphase[49m[38;5;241;43m.[39;49m[43mAir[49m[43m([49m[43mnetwork[49m[38;5;241;43m=[39;49m[43mpn[49m[43m)[49m
+Input [0;32mIn [2][0m, in [0;36m<cell line: 3>[0;34m()[0m
+[1;32m      1[0m np[38;5;241m.[39mrandom[38;5;241m.[39mseed([38;5;241m5[39m)
+[1;32m      2[0m pn [38;5;241m=[39m op[38;5;241m.[39mnetwork[38;5;241m.[39mDemo(shape[38;5;241m=[39m[[38;5;241m25[39m, [38;5;241m25[39m, [38;5;241m1[39m], spacing[38;5;241m=[39m[38;5;241m1e-4[39m)
+[0;32m----> 3[0m air [38;5;241m=[39m [43mop[49m[38;5;241;43m.[39;49m[43mphase[49m[38;5;241;43m.[39;49m[43mAir[49m[43m([49m[43mnetwork[49m[38;5;241;43m=[39;49m[43mpn[49m[43m)[49m
 
 File [0;32m~/work/OpenPNM/OpenPNM/openpnm/phase/_air.py:29[0m, in [0;36mAir.__init__[0;34m(self, **kwargs)[0m
 [1;32m     27[0m [38;5;28;01mdef[39;00m [38;5;21m__init__[39m([38;5;28mself[39m, [38;5;241m*[39m[38;5;241m*[39mkwargs):

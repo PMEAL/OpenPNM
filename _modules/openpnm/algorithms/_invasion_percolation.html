@@ -328,7 +328,6 @@
 <span class="sd">        Performs the algorithm for the given number of steps</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="c1"># Setup arrays and info</span>
         <span class="c1"># TODO: This should be called conditionally so that it doesn&#39;t</span>
         <span class="c1"># overwrite existing data when doing a few steps at a time</span>
@@ -416,14 +415,16 @@
 
 <div class="viewcode-block" id="InvasionPercolation.apply_trapping"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.apply_trapping.html#openpnm.algorithms.InvasionPercolation.apply_trapping">[docs]</a>    <span class="k">def</span> <span class="nf">apply_trapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adjusts the invasion sequence of pores and throats that are trapped</span>
-<span class="sd">        using the reverse invasion percolation procedure outlined by Masson [1].</span>
+<span class="sd">        Adjusts the invasion sequence of pores and throats that are trapped.</span>
+
+<span class="sd">        This method uses the reverse invasion percolation procedure outlined</span>
+<span class="sd">        by Masson [1].</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        This function does not return anything. It adjusts the</span>
 <span class="sd">        ``&#39;pore.invasion_sequence&#39;`` and ``&#39;throat.invasion_sequence&#39;`` arrays</span>
-<span class="sd">        on the object by setting trapped pores/throats to -1. It also puts</span>
+<span class="sd">        on the object by setting trapped pores/throats to ``ninf``. It also puts</span>
 <span class="sd">        ``True`` values into the ``&#39;pore.trapped&#39;`` and ``&#39;throat.trapped&#39;``</span>
 <span class="sd">        arrays.</span>
 
@@ -453,7 +454,16 @@
                           <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">hits</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">pmask</span> <span class="o">==</span> <span class="n">tmask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.trapped&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hits</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">][</span><span class="n">hits</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">][</span><span class="n">hits</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># Make some adjustments</span>
+        <span class="n">Pmask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="n">Tmask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="n">Pmask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">][</span><span class="n">Tmask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span></div>
 
     <span class="k">def</span> <span class="nf">_apply_trapping_slow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mixed&#39;</span><span class="p">):</span>
         <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
