@@ -120,11 +120,11 @@ section#examples > div > ul > li.toctree-l1 > a {
     width: 100%;
     float: left;
     padding-bottom: 3px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-section#examples > div > ul > li.toctree-l1 {
-    margin-bottom: 20px;
+section#examples li.toctree-l2 > a {
+    font-size: 1em !important;
 }
 
 img#banner {
