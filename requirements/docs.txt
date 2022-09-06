@@ -3,6 +3,7 @@ jupyterlab_widgets
 myst-nb
 numpydoc
 pandoc
+plotly
 pydata-sphinx-theme=0.9
 sphinx
 sphinx-copybutton
