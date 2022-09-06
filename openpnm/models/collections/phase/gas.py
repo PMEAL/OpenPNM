@@ -33,6 +33,21 @@ standard_gas_mixture = {
     'pore.viscosity': {
         'model': mods.phase.viscosity.gas_mixture_hz,
     },
+}
+
+binary_gas_mixture = {
+    'pore.density': {
+        'model': mods.phase.density.ideal_gas,
+    },
+    'pore.heat_capacity': {
+        'model': mods.phase.heat_capacity.gas_mixture_yweighted,
+    },
+    'pore.thermal_conductivity': {
+        'model': mods.phase.thermal_conductivity.gas_mixture_whz,
+    },
+    'pore.viscosity': {
+        'model': mods.phase.viscosity.gas_mixture_hz,
+    },
     'pore.diffusivity': {
         'model': mods.phase.diffusivity.gas_mixture_ce,
     },
