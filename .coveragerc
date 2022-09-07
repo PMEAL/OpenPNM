@@ -6,13 +6,17 @@ source =
 [report]
 
 omit =
-    tests/*
-    scripts/*
-    examples/*
     */__init__.py
-    openpnm/__version__.py
+    docs/*
     example.py
+    examples/*
+    openpnm/_skgraph/visualization/*
+    openpnm/solvers/_petsc.py
+    openpnm/__version__.py
+    openpnm/visualization/*
+    scripts/*
     setup.py
+    tests/*
 
 exclude_lines =
     pragma: no cover

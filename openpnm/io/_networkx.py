@@ -51,15 +51,15 @@ def network_from_networkx(G):
 
     # Ensure G is an undirected networkX graph with numerically numbered
     # nodes for which numbering starts at 0 and does not contain any gaps
-    if not isinstance(G, nx.Graph):
+    if not isinstance(G, nx.Graph):  # pragma: no cover
         raise Exception('Provided object is not a NetworkX graph.')
-    if nx.is_directed(G):
+    if nx.is_directed(G):  # pragma: no cover
         raise Exception('Provided graph is directed. Convert to undirected graph.')
-    if not all(isinstance(n, int) for n in G.nodes()):
+    if not all(isinstance(n, int) for n in G.nodes()):  # pragma: no cover
         raise Exception('Node numbering is not numeric. Convert to int.')
-    if min(G.nodes()) != 0:
+    if min(G.nodes()) != 0:  # pragma: no cover
         raise Exception('Node numbering does not start at zero.')
-    if max(G.nodes()) + 1 != len(G.nodes()):
+    if max(G.nodes()) + 1 != len(G.nodes()):  # pragma: no cover
         raise Exception('Node numbering contains gaps. Map nodes to remove gaps.')
 
     # Parsing node data
@@ -90,7 +90,7 @@ def network_from_networkx(G):
     # Deal with conns explicitly
     try:
         conns = list(G.edges)   # NetworkX V2
-    except Exception:
+    except Exception:  # pragma: no cover
         conns = G.edges()       # NetworkX V1
     conns.sort()
 
@@ -148,7 +148,7 @@ def network_to_networkx(network):
     from openpnm.network import Network
 
     # Ensure network is an Network.
-    if not isinstance(network, Network):
+    if not isinstance(network, Network):  # pragma: no cover
         raise Exception('Provided network is not an OpenPNM Network.')
 
     G = nx.Graph()

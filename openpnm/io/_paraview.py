@@ -4,7 +4,7 @@ import openpnm as op
 from flatdict import FlatDict
 
 
-def project_to_paraview(project, filename):
+def project_to_paraview(project, filename):  # pragma: no cover
     r"""
     Exports an OpenPNM network to a paraview state file.
 

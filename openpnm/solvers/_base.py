@@ -4,25 +4,27 @@ __all__ = ['BaseSolver', 'DirectSolver', 'IterativeSolver']
 
 
 class BaseSolver:
-    """Brief description of 'BaseSolver'"""
+    """Base class for all solvers."""
     def __init__(self):
         ...
 
     def solve(self):
-        """Brief description of 'solve'"""
+        """Solves the given linear system of equations Ax=b."""
         raise NotImplementedError
 
 
 class DirectSolver(BaseSolver):
-    """Brief description of 'DirectSolver'"""
+    """Base class for all direct solvers."""
     ...
 
 
 class IterativeSolver(BaseSolver):
-    """Brief description of 'IterativeSolver'"""
-    def __init__(self, tol=1e-8, maxiter=5000):
+    """Base class for iterative solvers."""
+    def __init__(self, tol=1e-8, maxiter=999):
         self.tol = tol
         self.maxiter = maxiter
+        self.atol = None        # needs to be evaluated later
+        self.rtol = None        # needs to be evaluated later
 
     def _get_atol(self, b):
         r"""
@@ -35,9 +37,9 @@ class IterativeSolver(BaseSolver):
             ``norm(A*x-b)`` <= ``atol``
 
         """
-        return norm(self.b) * self.tol
+        return norm(b) * self.tol
 
-    def _get_rtol(self, x0):
+    def _get_rtol(self, A, b, x0):
         r"""
         Returns the relative tolerance ``rtol`` that corresponds to the
         the given tolerance ``tol``.
@@ -48,8 +50,8 @@ class IterativeSolver(BaseSolver):
             ``rtol = residual(@x_final) / residual(@x0)``
 
         """
-        res0 = self._get_residual(A=self.A, b=self.b, x=x0)
-        atol = self._get_atol(b=self.b)
+        res0 = self._get_residual(A, b, x0)
+        atol = self._get_atol(b)
         rtol = atol / res0
         return rtol
 

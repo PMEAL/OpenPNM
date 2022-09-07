@@ -6,11 +6,10 @@ __all__ = ['PardisoSpsolve']
 
 
 class PardisoSpsolve(DirectSolver):
-    """Brief description of 'PardisoSpsolve'"""
+    """Solves a linear system using ``pypardiso.spsolve``."""
 
     def solve(self, A, b, **kwargs):
-        """Brief description of 'solve'"""
+        """Solves the given linear system of equations Ax=b."""
         if not isinstance(A, (csr_matrix, csc_matrix)):
             A = A.tocsr()
-        # TODO: solver.solve should return (x, info) not just x
         return (spsolve(A, b), 0)
