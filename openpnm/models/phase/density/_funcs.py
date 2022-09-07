@@ -1,8 +1,5 @@
-from openpnm.utils import Docorator
 from openpnm.models.phase import _phasedocs
 import numpy as np
-
-docstr = Docorator()
 
 
 __all__ = [
@@ -26,6 +23,7 @@ def ideal_gas(
 
     Parameters
     ----------
+    %(phase)s
     %(T)s
     %(P)s
     %(MW)s
@@ -61,6 +59,7 @@ def water_correlation(
 
     Parameters
     ----------
+    %(phase)s
     %(T)s
     %(salinity)s
 
@@ -124,7 +123,6 @@ def liquid_mixture_COSTALD(
     %(Tcs)s
     %(Vcs)s
     %(omegas)s
-
 
     Returns
     -------
@@ -198,6 +196,10 @@ def liquid_pure_COSTALD(
     %(Vc)s
     %(omega)s
     %(MW)s
+
+    Returns
+    -------
+
     """
     Vc = phase[Vc]
     Tc = phase[Tc]

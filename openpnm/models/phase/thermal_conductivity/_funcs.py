@@ -19,9 +19,10 @@ def water_correlation(
 ):
     r"""
     Calculates thermal conductivity of pure water or seawater at atmospheric
-    pressure using the correlation given by Jamieson and Tudhope. Values at
-    temperature higher  the normal boiling temperature are calculated at the
-    saturation pressure.
+    pressure using the correlation given [1].
+
+    Values at temperature higher the normal boiling temperature are calculated
+    at the saturation pressure.
 
     Parameters
     ----------
@@ -42,7 +43,7 @@ def water_correlation(
 
     References
     ----------
-    D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.
+    [1] D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.
 
     """
     T = phase[T]
@@ -75,6 +76,8 @@ def gas_pure_gismr(
     omega='param.acentric_factor',
 ):
     r"""
+    Calculate the thermal conductivty of a pure gas using the correlation in
+    [1]
 
     Parameters
     ----------
@@ -88,8 +91,11 @@ def gas_pure_gismr(
     Returns
     -------
 
+    References
+    ----------
+    [1] gharagheizi method: doi:10.1002/aic.13938
+
     """
-    # gharagheizi method: doi:10.1002/aic.13938
     T = phase[T]
     MW = phase[MW]
     Tb = phase[Tb]
@@ -115,6 +121,8 @@ def liquid_pure_gismr(
     omega='param.acentric_factor',
 ):
     r"""
+    Calculates the thermal conductivity of a pure liquid using the correlation
+    in [1]
 
     Parameters
     ----------
@@ -128,8 +136,11 @@ def liquid_pure_gismr(
     Returns
     -------
 
+    References
+    ----------
+    [1] gharagheizi method: doi:10.1002/aic.13938
+
     """
-    # gharagheizi method: doi:10.1002/aic.13938
     T = phase[T]
     MW = phase[MW]
     Tb = phase[Tb]
@@ -151,8 +162,8 @@ def liquid_pure_sr(
     Tb='param.boiling_temperature',
 ):
     r"""
-    Uses Sato et al. model to estimate thermal conductivity for pure liquids
-    from first principles at conditions of interest
+    Calculates the thermal conductivity of a pure liquid using the correlation
+    in [1]
 
     Parameters
     ----------
@@ -166,6 +177,10 @@ def liquid_pure_sr(
     -------
     value : ndarray
         A numpy ndarray containing thermal conductivity values in [W/m.K]
+
+    References
+    ----------
+    [1] Sato et al
 
     """
     T = phase[T]
@@ -186,6 +201,8 @@ def liquid_mixture_DIPPR9I(
     MWs='param.molecular_weight.*',
 ):
     r"""
+    Calculates the thermal conductivity of a liquid mixture using the
+    correlation in [1]
 
     Parameters
     ----------
@@ -196,6 +213,10 @@ def liquid_mixture_DIPPR9I(
 
     Returns
     -------
+
+    References
+    ----------
+    [1] DIPPR9I
 
     """
     raise NotImplementedError("This function is not ready yet")
@@ -216,12 +237,15 @@ def liquid_mixture_DIPPR9I(
     return kmix
 
 
+@_phasedocs
 def liquid_mixture_DIPPR9H(
     phase,
     ks='pore.thermal_conductivity.*',
     MWs='param.molecular_weight.*',
 ):
     r"""
+    Calculates the thermal conductivity of a liquid mixture using the
+    correlation in [1]
 
     Parameters
     ----------
@@ -232,8 +256,11 @@ def liquid_mixture_DIPPR9H(
     Returns
     -------
 
+    References
+    ----------
+    [1] DIPPR9H
+
     """
-    # DIPPR9H
     xs = phase['pore.mole_fraction']
     MW = phase.get_comp_vals(MWs)
     ks = phase.get_comp_vals(ks)
@@ -244,6 +271,7 @@ def liquid_mixture_DIPPR9H(
     return kmix
 
 
+@_phasedocs
 def gas_mixture_whz(
     phase,
     T='pore.temperature',
@@ -251,18 +279,22 @@ def gas_mixture_whz(
     MWs='param.molecular_weight.*',
 ):
     r"""
+    Calculates the viscosity of a gas mixture using the correlation in [1]
 
     Parameters
     ----------
     %(phase)s
+    %(T)s
     %(ks)s
     %(MWs)s
 
     Returns
     -------
 
+    References
+    ----------
+    [1] Wassiljew, Herning & Zipperer
     """
-    # Wassiljew_Herning_Zipperer
     T = phase[T]
     ys = phase['pore.mole_fraction']
     kGs = phase.get_comp_vals(ks)

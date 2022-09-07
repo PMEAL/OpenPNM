@@ -70,9 +70,8 @@ def liquid_pure_bb(
     Pc='param.critical_pressure',
 ):
     r"""
-    Computes the surface tension of a pure liquid in its own vapor
-
-    This model uses the correlation of Brock and Bird [1]
+    Computes the surface tension of a pure liquid in its own vapor using the
+    correlation in [1]
 
     Parameters
     ----------
@@ -112,9 +111,8 @@ def liquid_mixture_wsd(
     MWs='param.molecular_weight.*',
 ):
     r"""
-    Computes the surface tension of a liqiud mixture with its own vapor
-
-    This model uses the correlation of Winterfeld, Scriven and Davis [1]
+    Computes the surface tension of a liqiud mixture with its own vapor using
+    the correlation in [1]
 
     Parameters
     ----------

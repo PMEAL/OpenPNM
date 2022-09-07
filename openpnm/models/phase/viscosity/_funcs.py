@@ -1,5 +1,6 @@
 import numpy as np
 from openpnm.models.phase.mixtures import mixing_rule
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -13,27 +14,24 @@ __all__ = [
 ]
 
 
+@_phasedocs
 def water_correlation(
     phase,
     T='pore.temperature',
     salinity='pore.salinity'
 ):
     r"""
-    Calculates viscosity of pure water or seawater at atmospheric pressure
-    using Eq. (22) given by Sharqawy et. al [1]. Values at temperature higher
-    than the normal boiling temperature are calculated at the saturation
-    pressure.
+    Calculates viscosity of pure water or seawater at atmospheric pressure.
+
+    This correlation uses Eq. (22) given by Sharqawy et. al [1]. Values at
+    temperature higher than the normal boiling temperature are calculated
+    at the saturation pressure.
 
     Parameters
     ----------
-    phase : Phase
-        The object for which these values are being calculated.
-    temperature : str
-        The dictionary key containing the temperature values. Temperature must
-        be in Kelvin for this emperical equation to work.
-    salinity : str
-        The dictionary key containing the salinity values. Salinity must be
-        expressed in g of salt per kg of solution (ppt).
+    %(phase)s
+    %(T)s
+    %(salinity)s
 
     Returns
     -------
@@ -45,7 +43,7 @@ def water_correlation(
      T must be in K, and S in g of salt per kg of phase, or ppt (parts per
         thousand)
     VALIDITY: 273 < T < 453 K; 0 < S < 150 g/kg;
-    ACCURACY: 1.5 %
+    ACCURACY: 1.5 percent
 
     References
     ----------
@@ -78,12 +76,30 @@ def water_correlation(
     return value
 
 
+@_phasedocs
 def air_correlation(
     phase,
     T='pore.temperature',
     n_V='pore.molar_density',
 ):
     r"""
+    Calculates the viscosity of air at given conditions
+
+    This model uses the correlation from [1].
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(n_V)s
+
+    Returns
+    -------
+
+    References
+    ----------
+    [1] I forget
+
     """
     raise Exception("This function does not work yet")
     # Get props from object
@@ -115,6 +131,7 @@ def air_correlation(
     return mu
 
 
+@_phasedocs
 def gas_pure_st(
     phase,
     T='pore.temperature',
@@ -122,6 +139,25 @@ def gas_pure_st(
     Pc='param.critical_pressure',
     MW='param.molecular_weight',
 ):
+    r"""
+    Calculates the viscosity of a pure gas using the correlation in [1]
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(Pc)s
+    %(MW)s
+
+    Returns
+    -------
+
+    References
+    ----------
+    [1] Stiel and Thodos
+
+    """
     #  stiel-thodos
     T = phase[T]
     Tc = phase[Tc]
@@ -139,6 +175,7 @@ def gas_pure_st(
     return mu/1000
 
 
+@_phasedocs
 def gas_pure_gesmr(
     phase,
     T='pore.temperature',
@@ -147,8 +184,23 @@ def gas_pure_gesmr(
     MW='param.molecular_weight',
 ):
     r"""
+    Calculates the viscosity of a pure gas using the correlation  [1]
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(Pc)s
+    %(MW)s
+
+    Returns
+    -------
+
+    References
+    ----------
+    [1] Gharagheizi et al
     """
-    # Gharagheizi method from chemicals
     T = phase[T]
     MW = phase[MW]
     Pc = phase[Pc]
@@ -161,6 +213,7 @@ def gas_pure_gesmr(
     return mu
 
 
+@_phasedocs
 def gas_pure_cls(
     phase,
     T='pore.temperature',
@@ -169,23 +222,15 @@ def gas_pure_cls(
     Vc='param.critical_volume'
 ):
     r"""
-    Uses Chung et al. [1] model to estimate viscosity for gases at low
-    pressure (much less than the critical pressure) at conditions of interest.
+    Calculates the viscosity of a pure gas using the correlation of [1]
 
     Parameters
     ----------
-    phase : Phase
-        The object for which these values are being calculated.  This
-        controls the length of the calculated array, and also provides
-        access to other necessary thermofluid properties.
-    temperatre: str
-        The dictionary key containing the temperature values (K)
-    critical_temperature : str
-        The dictionary key containing the temperature values (K)
-    molecular_weight: str
-        The dictionary key containing the molecular weight values (kg/mol)
-    critical_volume : str
-        The dictionary key containing the critical volume values (m3/kmol)
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(Pc)s
+    %(MW)s
 
     Returns
     -------
@@ -217,31 +262,30 @@ def gas_pure_cls(
     return value
 
 
+@_phasedocs
 def gas_mixture_hz(
     phase,
     mus='pore.viscosity.*',
     MWs='param.molecular_weight.*',
 ):
     r"""
-    Computes the viscosity of a gas mixture using a custom written version
-    of ``chemicals.viscosity.Herning_Zipperer``
+    Computes the viscosity of a gas mixture using the correlation in [1]
 
     Parameters
     ----------
-    phase : dict
-        The openpnm object to which this model applies
-    molecular_weight : str
-        The location of the molecular weights of each species. The default is
-        ``'param.molecular_weight'``
-    viscosity : str
-        The locaiton of the viscosities for each individual species.  The
-        default is ``'pore.viscosity'``.
+    %(phase)s
+    %(mus)s
+    %(MWs)s
 
     Returns
     -------
     mu : ndarray
         An ndarray of Np length containing the viscosity of the mixture in
         each pore
+
+    References
+    ----------
+    [1] Herning and Zipperer
     """
     MWs = phase.get_comp_vals(MWs)
     mus = phase.get_comp_vals(mus)
@@ -255,6 +299,7 @@ def gas_mixture_hz(
     return mu
 
 
+@_phasedocs
 def liquid_pure_ls(
     phase,
     T='pore.temperature',
@@ -264,8 +309,28 @@ def liquid_pure_ls(
     omega='param.acentric_factor',
 ):
     r"""
+    Computes the viscosity of a pure liquid using the correlation in [1]
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(MW)s
+    %(Tc)s
+    %(Pc)s
+    %(omega)s
+
+    Returns
+    -------
+    mu : ndarray
+        An ndarray of Np length containing the viscosity of the mixture in
+        each pore
+
+    References
+    ----------
+    [1] Letsou and Stiel
+
     """
-    # Letsou_Stiel
     T = phase[T]
     MW = phase[MW]
     Tc = phase[Tc]
