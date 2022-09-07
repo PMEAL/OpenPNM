@@ -34,6 +34,14 @@ class HDF5Test:
         f.close()
         os.remove(filename)
 
+    def test_print_hdf5(self, tmpdir):
+        fname = tmpdir.join(self.net.project.name)
+        f = op.io.project_to_hdf5(project=self.net.project, filename=fname)
+        op.io.print_hdf5(f)
+        filename = f.filename
+        f.close()
+        os.remove(filename)
+
 
 if __name__ == '__main__':
     # All the tests in this file can be run with 'playing' this file
