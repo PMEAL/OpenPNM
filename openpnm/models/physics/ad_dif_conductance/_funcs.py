@@ -48,19 +48,17 @@ def ad_dif(
 
     """
     network = target.project.network
-    domain = target._domain
-    throats = domain.throats(target.name)
     phase = target
-    cn = network['throat.conns'][throats]
+    cn = network['throat.conns']
     # Find g for half of pore 1, throat, and half of pore 2
     P = phase[pore_pressure]
-    gh = phase[throat_hydraulic_conductance][throats]
-    gd = phase[throat_diffusive_conductance][throats]
-    if gd.size == throats.size:
+    gh = phase[throat_hydraulic_conductance]
+    gd = phase[throat_diffusive_conductance]
+    if gd.size == network.Nt:
         gd = _np.tile(gd, 2)
     # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
-    elif gd.size == 2 * throats.size:
-        gd = gd.reshape(throats.size * 2, order='F')
+    elif gd.size == 2 * network.Nt:
+        gd = gd.reshape(network.Nt * 2, order='F')
     else:
         raise Exception(f"Shape of {throat_diffusive_conductance} must either"
                         r" be (Nt,1) or (Nt,2)")
@@ -86,5 +84,5 @@ def ad_dif(
         w = -Qij / (1 - _np.exp(Peij))
     else:
         raise Exception('Unrecognized discretization scheme: ' + s_scheme)
-    w = w.reshape(throats.size, 2, order='F')
+    w = w.reshape(network.Nt, 2, order='F')
     return w

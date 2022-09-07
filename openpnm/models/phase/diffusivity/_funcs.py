@@ -1,8 +1,5 @@
-from openpnm.utils import Docorator
 import numpy as np
-
-
-docstr = Docorator()
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -13,6 +10,7 @@ __all__ = [
 ]
 
 
+@_phasedocs
 def liquid_mixture_tc(
     phase,
     T='pore.temperature',
@@ -26,8 +24,9 @@ def liquid_mixture_tc(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
+    %(phase)s
+    %(T)s
+    %(mu)s
     Vms_at_Tb : str or list of scalars
         Molar volumes of each component at its boiling temperature (m3/mol).
         Can either be a string to a parameter on each component of a list
@@ -37,7 +36,7 @@ def liquid_mixture_tc(
 
     Returns
     -------
-    %(models.phase.diffusivity.returns)s
+
     """
     T = phase[T]
     mu = phase[mu]
@@ -49,6 +48,7 @@ def liquid_mixture_tc(
     return value
 
 
+@_phasedocs
 def gas_mixture_ce(
     phase,
     T='pore.temperature',
@@ -65,17 +65,19 @@ def gas_mixture_ce(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    MA, MB : scalar
-        The molecular mass of species A and B in units of kg/mol
-    sigma_AB : scalar
-        The collision diameter in units of Angstroms
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(phase)s
+    %(T)s
+    %(P)s
+    %(Tcs)s
+    %(Pcs)s
+    %(omegas)s
+    %(MWs)s
+    %(epsilons)s
+    %(sigmas)s
 
     Returns
     -------
-    %(models.phase.diffusivity.returns)s
+
     """
     # Fetch values from components
     T = phase[T]
@@ -112,6 +114,7 @@ def gas_mixture_ce(
     return DAB
 
 
+@_phasedocs
 def gas_mixture_fesg(
     phase,
     T='pore.temperature',
@@ -125,16 +128,11 @@ def gas_mixture_fesg(
 
     Parameters
     ----------
-    %(models.phase.parameters)s
-    molecular_weight : str
-        Dictionary key containing the molecular weight of each species. The
-        default is 'pore.molecular_weight'
-    molar_diffusion_volume : str
-        Dictionary key containing the molar diffusion volume of each species.
-        This is used by the Fuller correlation. The default is
-        'pore.molar_diffusion_volume'
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(phase)s
+    %(T)s
+    %(P)s
+    %(MWs)s
+    %(Vdms)s
 
     Returns
     -------
@@ -184,16 +182,11 @@ def gas_mixture_fw(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    molecular_weight : str
-        Dictionary key containing the molecular weight of each species.  The
-        default is 'pore.molecular_weight'
-    molar_diffusion_volume : str
-        Dictionary key containing the molar diffusion volume of each species.
-        This is used by the Fuller correlation.  The default is
-        'pore.molar_diffusion_volume'
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(phase)s
+    %(T)s
+    %(P)s
+    %(MWs)s
+    %(Vdms)s
 
     Returns
     -------

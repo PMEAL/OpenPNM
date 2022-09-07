@@ -6,38 +6,8 @@ This submodule contains models for calculating thermophysical properties of
 liquids, gases, and solids.
 
 """
-import logging
 
-logger = logging.getLogger(__name__)
-# The following bits are to initialize some boilerplate docstrings for docrep
-from openpnm.utils import Docorator as _doc
-_docstr = _doc()
-_docstr.params['models.phase.T'] = \
-    r"""temperature : str
-            Name of the dictionary key on ``target`` where the array containing
-            temperature values is stored"""
-_docstr.params['models.phase.P'] = \
-    r"""pressure : str
-            Name of the dictionary key on ``target`` where the array containing
-            pressure values is stored"""
-_docstr.params['models.phase.SI_note'] = \
-    r"""Since numpy arrays don't natively support units, OpenPNM cannot enforce
-    units on values and arrays, however the use of SI is assumed."""
-
-
-from matplotlib.docstring import Substitution as _sub
-_phasedocs = _sub(
-    T=
-    r"""T : dict key (str) or scalar
-            Name of the dictionary key on ``phase`` containing the array of
-            temperature values. If a scalar is passed it get used directly.""",
-    P=
-    r"""P : dict key (str) of scalar
-            Name of the dictionary key on ``phase`` containing the array of
-            temperature values. If a scalar is passed it get used directly.""",
-)
-
-
+from .phasedocs import *
 from . import critical_props
 from . import density
 from . import diffusivity
@@ -49,6 +19,10 @@ from . import surface_tension
 from . import thermal_conductivity
 from . import vapor_pressure
 from . import viscosity
+
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 # %%
