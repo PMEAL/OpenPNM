@@ -1,6 +1,7 @@
 codecov
 jupyter
 nbval
+netgen-mesher
 porespy
 pytest
 pytest-cache
