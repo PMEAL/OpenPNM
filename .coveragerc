@@ -10,6 +10,7 @@ omit =
     docs/*
     example.py
     examples/*
+    openpnm/_skgraph/visualization/*
     openpnm/solvers/_petsc.py
     openpnm/__version__.py
     openpnm/visualization/*
