@@ -12,4 +12,4 @@ Applications
          :maxdepth: 1
          :glob:
 
-         ../_examples/applications/*
+         ../examples/applications/*

@@ -12,4 +12,4 @@
          :maxdepth: 1
          :glob:
 
-         ../_examples/tutorials/*
+         ../examples/tutorials/*

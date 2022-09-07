@@ -33,7 +33,6 @@ simulations.
    basic_usage
    modules/index
    examples/index
-   examples/index_old
 
 ----
 

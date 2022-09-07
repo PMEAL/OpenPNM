@@ -12,4 +12,4 @@ Reference
          :maxdepth: 1
          :glob:
 
-         ../_examples/reference/**
+         ../examples/reference/**
