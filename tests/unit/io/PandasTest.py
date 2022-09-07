@@ -37,6 +37,12 @@ class PandasTest:
         assert len(df.keys()) == 31
         assert np.isnan(df['bob.pore.coords[0]']).sum() > 0
 
+    def test_network_to_dataframe(self):
+        df = op.io.network_to_pandas(network=self.net)
+        assert len(df.keys()) == 2
+        assert len(df['pore'].keys()) == 11
+        assert len(df['throat'].keys()) == 4
+
 
 if __name__ == '__main__':
     t = PandasTest()
@@ -44,5 +50,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()
