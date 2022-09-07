@@ -8,6 +8,7 @@ import networkx as nx
 from pathlib import Path
 
 
+@pytest.mark.skipif(os.name == 'nt', reason="Skipping on Windows")
 class StatoilTest:
 
     def setup_class(self):
