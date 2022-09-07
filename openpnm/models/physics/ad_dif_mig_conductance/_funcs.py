@@ -61,11 +61,9 @@ def ad_dif_mig(target,
     throat_valence = throat_valence + "." + ion
 
     network = target.project.network
-    domain = target._domain
-    throats = domain.throats(target.name)
     phase = target
-    cn = network["throat.conns"][throats]
-    T = phase[throat_temperature][throats]
+    cn = network["throat.conns"]
+    T = phase[throat_temperature]
     # Check if pressure and potential values exist, otherwise, assign zeros
     try:
         P = phase[pore_pressure]
@@ -86,13 +84,13 @@ def ad_dif_mig(target,
     delta_V = _np.append(delta_V, -delta_V)
 
     # Normal treatment when gd is Nt by 1
-    if gd.size == throats.size:
+    if gd.size == network.Nt:
         gd = _np.tile(gd, 2)
         gm = _np.tile(gm, 2)
     # Special treatment when gd is not Nt by 1 (ex. mass partitioning)
-    elif gd.size == 2 * throats.size:
-        gd = gd.reshape(throats.size * 2, order="F")
-        gm = gm.reshape(throats.size * 2, order="F")
+    elif gd.size == 2 * network.Nt:
+        gd = gd.reshape(network.Nt * 2, order="F")
+        gm = gm.reshape(network.Nt * 2, order="F")
     else:
         raise Exception(f"Shape of {throat_diffusive_conductance} must either"
                         r" be (Nt,1) or (Nt,2)")
@@ -139,5 +137,5 @@ def ad_dif_mig(target,
         w = -adv_mig / (1 - _np.exp(Peij_adv_mig))
     else:
         raise Exception("Unrecognized discretization scheme: " + s_scheme)
-    w = w.reshape(throats.size, 2, order="F")
+    w = w.reshape(network.Nt, 2, order="F")
     return w
