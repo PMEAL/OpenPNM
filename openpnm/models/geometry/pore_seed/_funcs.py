@@ -1,13 +1,12 @@
 import numpy as _np
 import scipy as _sp
 from openpnm.models import misc as _misc
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
+
 
 __all__ = ["random",
            "spatially_correlated"
            ]
-
-docstr = Docorator()
 
 
 def random(network, seed=None, num_range=[0, 1]):
@@ -20,14 +19,18 @@ def random(network, seed=None, num_range=[0, 1]):
 random.__doc__ = _misc.random.__doc__
 
 
-@docstr.dedent
-def spatially_correlated(network, weights=None, strel=None):
+@_geodocs
+def spatially_correlated(
+    network,
+    weights=None,
+    strel=None
+):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(network)s
     weights : list of ints, optional
         The [Nx, Ny, Nz] distances (in number of pores) in each direction that
         should be correlated.

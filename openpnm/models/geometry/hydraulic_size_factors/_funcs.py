@@ -1,6 +1,6 @@
 import numpy as _np
 import openpnm.models.geometry.conduit_lengths as _conduit_lengths
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = [
@@ -19,12 +19,9 @@ __all__ = [
     "squares_and_rectangles",
     "ncylinders_in_series"
 ]
-docstr = Docorator()
 
 
-@docstr.get_sections(base='models.geometry.hydraulic_size_factor',
-                     sections=['Parameters', 'Returns', 'Notes'])
-@docstr.dedent
+@_geodocs
 def spheres_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -36,9 +33,9 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.pdia)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
@@ -89,7 +86,7 @@ def spheres_and_cylinders(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def circles_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -101,15 +98,15 @@ def circles_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
@@ -130,7 +127,7 @@ def circles_and_rectangles(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def cones_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -142,18 +139,18 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %()Dts
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.cones_and_cylinders(
         network=network,
         pore_diameter=pore_diameter,
@@ -176,7 +173,7 @@ def cones_and_cylinders(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def intersecting_cones(
     network,
     pore_diameter="pore.diameter",
@@ -187,18 +184,18 @@ def intersecting_cones(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.intersecting_cones(
         network=network,
         throat_coords=throat_coords
@@ -219,7 +216,7 @@ def intersecting_cones(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def hybrid_cones_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -231,18 +228,18 @@ def hybrid_cones_and_cylinders(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.',1 )[-1]).T
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
     L1, Lt, L2 = _conduit_lengths.hybrid_cones_and_cylinders(
         network=network,
         pore_diameter=pore_diameter,
@@ -272,7 +269,7 @@ def hybrid_cones_and_cylinders(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def trapezoids_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -284,16 +281,15 @@ def trapezoids_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
 
@@ -316,7 +312,7 @@ def trapezoids_and_rectangles(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def intersecting_trapezoids(
     network,
     pore_diameter="pore.diameter",
@@ -328,16 +324,15 @@ def intersecting_trapezoids(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
 
@@ -360,7 +355,7 @@ def intersecting_trapezoids(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def hybrid_trapezoids_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -372,16 +367,15 @@ def hybrid_trapezoids_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoord)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
 
@@ -414,7 +408,7 @@ def hybrid_trapezoids_and_rectangles(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def pyramids_and_cuboids(
     network,
     pore_diameter="pore.diameter",
@@ -426,15 +420,15 @@ def pyramids_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
@@ -460,7 +454,7 @@ def pyramids_and_cuboids(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def intersecting_pyramids(
     network,
     pore_diameter="pore.diameter",
@@ -471,15 +465,15 @@ def intersecting_pyramids(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
@@ -503,7 +497,7 @@ def intersecting_pyramids(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def hybrid_pyramids_and_cuboids(
     network,
     pore_diameter="pore.diameter",
@@ -515,15 +509,15 @@ def hybrid_pyramids_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
@@ -557,7 +551,7 @@ def hybrid_pyramids_and_cuboids(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def cubes_and_cuboids(
     network,
     pore_diameter="pore.diameter",
@@ -571,7 +565,9 @@ def cubes_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
     pore_aspect : list
         Aspect ratio of the pores
     throat_aspect : list
@@ -579,11 +575,9 @@ def cubes_and_cuboids(
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
@@ -609,7 +603,7 @@ def cubes_and_cuboids(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def squares_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -623,7 +617,9 @@ def squares_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
     pore_aspect : list
         Aspect ratio of the pores
     throat_aspect : list
@@ -631,12 +627,9 @@ def squares_and_rectangles(
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
-
     This model should only be used for true 2D networks, i.e. with planar
     symmetry.
 
@@ -659,7 +652,7 @@ def squares_and_rectangles(
     return _np.vstack([S1, St, S2]).T
 
 
-@docstr.dedent
+@_geodocs
 def ncylinders_in_series(
     network,
     pore_diameter="pore.diameter",
@@ -672,17 +665,17 @@ def ncylinders_in_series(
 
     Parameters
     ----------
-    %(models.geometry.hydraulic_size_factor.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
     n : int
         Number of cylindrical divisions for each pore
 
     Returns
     -------
-    %(models.geometry.hydraulic_size_factor.returns)s
 
     Notes
     -----
-    %(models.geometry.hydraulic_size_factor.notes)s
 
     """
     D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
