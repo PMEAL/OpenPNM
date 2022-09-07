@@ -1,5 +1,6 @@
 import numpy as np
 from openpnm.models.phase.mixtures import mixing_rule
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -10,6 +11,7 @@ __all__ = [
 ]
 
 
+@_phasedocs
 def liquid_pure_rp(
     phase,
     T='pore.temperature',
@@ -18,6 +20,15 @@ def liquid_pure_rp(
     Cpg='pore.heat_capacity_gas',
 ):
     r"""
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(omega)s
+    %(Cpg)s
+
     """
     # Rowlinson and Poling
     T = phase[T]
@@ -36,12 +47,26 @@ def liquid_pure_rp(
     return Cp
 
 
+@_phasedocs
 def gas_pure_TRC(
     phase,
     T='pore.temperature',
     a=[],
 ):
     r"""
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    a : list
+        The coefficients to use (see notes for form of equation). If not
+        given the ``phase['param.CAS']`` is used to lookup the values from
+        ``chemicals.heat_capacity.TRC_gas_data``
+
+    Returns
+    -------
+
     """
     # TRCCp
     from chemicals.heat_capacity import TRC_gas_data
@@ -59,21 +84,43 @@ def gas_pure_TRC(
     return Cp
 
 
+@_phasedocs
 def gas_mixture_yweighted(
     phase,
     Cps='pore.heat_capacity.*',
 ):
     r"""
+    Uses a linearly mole fraction weighted average
+
+    Parameters
+    ----------
+    %(phase)s
+    %(Cps)s
+
+    Returns
+    -------
+
     """
     Cpmix = mixing_rule(phase=phase, prop=Cps, mode='linear')
     return Cpmix
 
 
+@_phasedocs
 def liquid_mixture_xweighted(
     phase,
     Cps='pore.heat_capacity.*',
 ):
     r"""
+    Uses a linearly mole fraction weighted average
+
+    Parameters
+    ----------
+    %(phase)s
+    %(Cps)s
+
+    Returns
+    -------
+
     """
     Cpmix = mixing_rule(phase=phase, prop=Cps, mode='linear')
     return Cpmix
