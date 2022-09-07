@@ -1,35 +1,11 @@
 import numpy as np
 from openpnm.utils import PrintableList
-from matplotlib.docstring import Substitution
 
 
 __all__ = [
     'ParserMixin',
     'LabelMixin',
 ]
-
-
-_doctxt = Substitution(
-    mode_table=
-    """
-    ==============  =====================================================
-    mode            meaning
-    ==============  =====================================================
-    'or'            Returns the labels that are assigned to *any* of the
-                    given locations. Also accepts 'union' and 'any'
-    'and'           Labels that are present on all the given locations.
-                    also accepts 'intersection' and 'all'
-    'xor'           Labels that are present on *only one*
-                    of the given locations.Also accepts 'exclusive_or'
-    'nor'           Labels that are *not* present on any of
-                    the given locations. Also accepts 'not' and 'none'
-    'nand'          Labels that are present on *all but one* of the given
-                    locations
-    'xnor'          Labels that are present on *more than one* of the given
-                    locations.
-    ==============  =====================================================
-    """
-)
 
 
 class ParserMixin:
@@ -243,7 +219,6 @@ class LabelMixin:
             raise Exception('Unrecognized mode:'+str(mode))
         return PrintableList(temp)
 
-    @_doctxt
     def labels(self, pores=[], throats=[], element=None, mode='union'):
         r"""
         Returns a list of labels present on the object
@@ -263,7 +238,22 @@ class LabelMixin:
             Controls how the query should be performed.  Only applicable
             when ``pores`` or ``throats`` are specified:
 
-            %(mode_table)s
+            ==============  ===================================================
+            mode            meaning
+            ==============  ===================================================
+            'or'            Returns the labels that are assigned to *any* of
+                            the given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the
+                            given locations
+            'xnor'          Labels that are present on *more than one* of the
+                            given locations.
+            ==============  ===================================================
 
         Returns
         -------
@@ -427,7 +417,6 @@ class LabelMixin:
         ind = ind.astype(dtype=int)
         return ind
 
-    @_doctxt
     def pores(self, labels=None, mode='or', asmask=False):
         r"""
         Returns pore indicies where given labels exist, according to the logic
@@ -441,7 +430,22 @@ class LabelMixin:
         mode : str
             Specifies how the query should be performed.  The options are:
 
-            %(mode_table)s
+            ==============  ===================================================
+            mode            meaning
+            ==============  ===================================================
+            'or'            Returns the labels that are assigned to *any* of
+                            the given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the
+                            given locations
+            'xnor'          Labels that are present on *more than one* of the
+                            given locations.
+            ==============  ===================================================
 
         asmask : bool
             If ``True`` then a boolean array of length Np is returned with
@@ -474,7 +478,6 @@ class LabelMixin:
             ind = self.to_mask(pores=ind)
         return ind
 
-    @_doctxt
     def throats(self, labels=None, mode='or', asmask=False):
         r"""
         Returns throat locations where given labels exist, according to the
@@ -489,7 +492,22 @@ class LabelMixin:
         mode : str
             Specifies how the query should be performed. The options are:
 
-            %(mode_table)s
+            ==============  ===================================================
+            mode            meaning
+            ==============  ===================================================
+            'or'            Returns the labels that are assigned to *any* of
+                            the given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the
+                            given locations
+            'xnor'          Labels that are present on *more than one* of the
+                            given locations.
+            ==============  ===================================================
 
         asmask : bool
             If ``True`` then a boolean array of length Nt is returned with
@@ -512,7 +530,6 @@ class LabelMixin:
             ind = self.to_mask(throats=ind)
         return ind
 
-    @_doctxt
     def filter_by_label(self, pores=[], throats=[], labels=None, mode='or'):
         r"""
         Returns which of the supplied pores (or throats) has the specified
@@ -528,7 +545,22 @@ class LabelMixin:
             Controls how the filter is applied. The default value is
             'or'. Options include:
 
-            %(mode_table)s
+            ==============  ===================================================
+            mode            meaning
+            ==============  ===================================================
+            'or'            Returns the labels that are assigned to *any* of
+                            the given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the
+                            given locations
+            'xnor'          Labels that are present on *more than one* of the
+                            given locations.
+            ==============  ===================================================
 
         Returns
         -------
@@ -560,7 +592,6 @@ class LabelMixin:
         ind = mask[locations]
         return locations[ind]
 
-    @_doctxt
     def num_pores(self, labels='all', mode='or'):
         r"""
         Returns the number of pores of the specified labels
@@ -575,7 +606,22 @@ class LabelMixin:
         mode : str, optional
             Specifies how the count should be performed. The options are:
 
-            %(mode_table)s
+            ==============  ===================================================
+            mode            meaning
+            ==============  ===================================================
+            'or'            Returns the labels that are assigned to *any* of
+                            the given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the
+                            given locations
+            'xnor'          Labels that are present on *more than one* of the
+                            given locations.
+            ==============  ===================================================
 
         Returns
         -------
@@ -599,7 +645,6 @@ class LabelMixin:
         Np = np.shape(Ps)[0]
         return Np
 
-    @_doctxt
     def num_throats(self, labels='all', mode='union'):
         r"""
         Return the number of throats of the specified labels
@@ -612,7 +657,22 @@ class LabelMixin:
         mode : str, optional
             Specifies how the count should be performed.  The options are:
 
-            %(mode_table)s
+            ==============  ===================================================
+            mode            meaning
+            ==============  ===================================================
+            'or'            Returns the labels that are assigned to *any* of
+                            the given locations. Also accepts 'union' and 'any'
+            'and'           Labels that are present on all the given locations.
+                            also accepts 'intersection' and 'all'
+            'xor'           Labels that are present on *only one*
+                            of the given locations.Also accepts 'exclusive_or'
+            'nor'           Labels that are *not* present on any of
+                            the given locations. Also accepts 'not' and 'none'
+            'nand'          Labels that are present on *all but one* of the
+                            given locations
+            'xnor'          Labels that are present on *more than one* of the
+                            given locations.
+            ==============  ===================================================
 
         Returns
         -------
