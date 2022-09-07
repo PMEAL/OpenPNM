@@ -29,8 +29,7 @@ class TransportTest:
         #     alg.run()
 
     def test_remove_boundary_conditions(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+        alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
         assert np.sum(np.isfinite(alg['pore.bc.value'])) > 0
@@ -40,18 +39,15 @@ class TransportTest:
         assert np.sum(np.isfinite(alg['pore.bc.value'])) == 0
 
     def test_generic_transport(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+        alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
         alg.set_value_BC(pores=self.net.pores('bottom'), values=0)
-        soln = alg.run()
-        # Check returned data type
+        alg.run()
         from openpnm.algorithms._solution import SteadyStateSolution
         quantity = alg.settings['quantity']
-        assert isinstance(soln[quantity], SteadyStateSolution)
-        # Ensure solution object is attached to the algorithm
+6        # Ensure solution object is attached to the algorithm
         assert isinstance(alg.soln[quantity], SteadyStateSolution)
 
     def test_two_value_conditions(self):
@@ -67,8 +63,7 @@ class TransportTest:
         assert np.all(x == y)
 
     def test_one_value_one_rate(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+        alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
@@ -79,8 +74,7 @@ class TransportTest:
         assert np.all(x == y)
 
     def test_set_value_bc_where_rate_is_already_set_mode_merge(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+        alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1], rates=1, mode='add')
@@ -94,8 +88,7 @@ class TransportTest:
         assert np.isfinite(alg['pore.bc.value']).sum() == 2
 
     def test_cache(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+        alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=self.net.pores('bottom'), rates=1)
@@ -131,8 +124,7 @@ class TransportTest:
         assert np.isclose(alg.rate(pores=self.net.Ps), 0.0)
 
     def test_rate_multiple_pores(self):
-        alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+        alg = op.algorithms.Transport(network=self.net, phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_rate_BC(pores=[0, 1, 2, 3], rates=1.235)

@@ -99,7 +99,6 @@ class TransientMultiPhysics(Algorithm):
             alg.soln = TransientSolution(t, x)
             # Add solution of each alg to solution dictionary
             self.soln[alg.settings['quantity']] = alg.soln
-        return self.soln
 
     def _run_special(self, x0): ...
 

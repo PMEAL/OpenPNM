@@ -170,6 +170,10 @@ class Transport(Algorithm):
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
 
+        This method stores the solution in the algorithm's ``soln``
+        attribute as a ``SolutionContainer`` object. The solution itself
+        is stored in the ``x`` attribute of the algorithm as a NumPy array.
+
         Parameters
         ----------
         x0 : ndarray
@@ -177,8 +181,7 @@ class Transport(Algorithm):
 
         Returns
         -------
-        SolutionContainer
-            Dict containing the solution with self.settings.quantity as key
+        None
 
         """
         logger.info('Running Transport')
@@ -198,7 +201,6 @@ class Transport(Algorithm):
         # Build A and b, then solve the system of equations
         self._update_A_and_b()
         self._run_special(solver=solver, x0=x0, verbose=verbose)
-        return self.soln
 
     def _run_special(self, solver, x0, w=1.0, verbose=None):
         # Make sure A,b are STILL well-defined
