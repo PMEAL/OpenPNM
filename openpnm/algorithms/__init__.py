@@ -18,11 +18,7 @@ from ._ohmic_conduction import *
 from ._ordinary_percolation import *
 from ._invasion_percolation import *
 
-from ._mixed_ip import *
-from ._mixed_ip_coop import *
-
 from ._ionic_conduction import *
 from ._transient_ionic_conduction import *
 
 from ._drainage import *
-from ._imbibition import *
