@@ -6,11 +6,13 @@ source =
 [report]
 
 omit =
+    docs/*
     tests/*
     scripts/*
     examples/*
     */__init__.py
     openpnm/__version__.py
+    openpnm/visualization/*
     example.py
     setup.py
 
