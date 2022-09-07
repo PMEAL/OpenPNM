@@ -32,8 +32,7 @@ simulations.
    installation
    basic_usage
    modules/index
-   examples/index
-   examples/index_old
+   _examples/index
 
 ----
 

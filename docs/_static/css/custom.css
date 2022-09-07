@@ -119,11 +119,16 @@ section#examples > div > ul > li.toctree-l1 > a {
     border-bottom: solid 1px lightgray;
     width: 100%;
     float: left;
-    padding-bottom: 3px;
-    margin-bottom: 20px;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    margin-top: 15px;
 }
 
 section#examples li.toctree-l2 > a {
+    font-size: 1em !important;
+}
+
+.sd-tab-content li.toctree-l1 > a {
     font-size: 1em !important;
 }
 

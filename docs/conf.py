@@ -27,7 +27,7 @@ release = __version__
 
 # Copy examples folder from OpenPNM root to docs folder
 import shutil
-shutil.copytree('../examples', '_examples', dirs_exist_ok=True)
+shutil.copytree('../examples', 'examples', dirs_exist_ok=True)
 
 #------------------------------------------------------------------------#
 # General config                                                         #
