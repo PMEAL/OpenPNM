@@ -29,9 +29,9 @@ core
       Base2
       Domain
       LabelMixin
-      ModelMixin2
       ModelWrapper
       ModelsDict
+      ModelsMixin2
       ParserMixin
    
    

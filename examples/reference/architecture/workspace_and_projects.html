@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>The Workspace and Projects &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>The Workspace and Projects &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -372,8 +372,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#design-of-workspace-and-project-classes">
-   Design of Workspace and Project Classes
+  <a class="reference internal nav-link" href="#workspace-is-a-singleton">
+   Workspace is a Singleton
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#one-network-per-project">
+   One Network per Project
   </a>
  </li>
 </ul>
@@ -395,18 +400,22 @@
               
               <article class="bd-article" role="main">
                 
-  <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">This</span> <span class="ow">is</span> <span class="n">too</span> <span class="n">advanced</span> <span class="n">to</span> <span class="n">be</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">N</span><span class="o">-</span><span class="n">steps</span> <span class="n">guide</span><span class="o">.</span>  <span class="n">This</span> <span class="ow">is</span> <span class="n">really</span> <span class="n">more</span> <span class="n">like</span> <span class="n">Dev</span> <span class="n">guide</span> <span class="n">material</span> <span class="n">since</span> <span class="n">these</span> <span class="n">are</span> <span class="n">basically</span> <span class="n">behind</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">scenes</span> <span class="n">helpers</span>
-</pre></div>
-</div>
-<section class="tex2jax_ignore mathjax_ignore" id="the-workspace-and-projects">
+  <section class="tex2jax_ignore mathjax_ignore" id="the-workspace-and-projects">
 <h1>The Workspace and Projects<a class="headerlink" href="#the-workspace-and-projects" title="Permalink to this heading">#</a></h1>
-<blockquote>
-<div><p>You probably don’t need to worry about these features until your simulations get large and complicated.</p>
-</div></blockquote>
-<p>The <em>Workspace</em> is equivalent to a web browser window, while a <em>Project</em> is like tabs inside the browser. Each <em>Project</em> is an isolated OpenPNM simulation with a single <em>Network</em> and all associated objects.  All <em>Projects</em> are stored in the same <em>Workspace</em>.  There can be only 1 <em>Workspace</em> open at a given time, so all new projects are registered in the same <em>Workspace</em>.  <em>Projects</em> and <em>Workspaces</em> can be saved and loaded.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>You probably don’t need to worry about these features until your simulations get large and complicated.</p>
+</div>
+<p>The <em>Workspace</em> is equivalent to a web browser window, while a <em>Project</em> is like tabs inside the browser. Each <em>Project</em> is an isolated OpenPNM simulation with a single <em>Network</em> and all associated objects.  All <em>Projects</em> are stored in the same <em>Workspace</em>. There can be only 1 <em>Workspace</em> open at a given time, so all new projects are registered in the same <em>Workspace</em>.  <em>Projects</em> and <em>Workspaces</em> can be saved and loaded.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
 </pre></div>
 </div>
 </div>
@@ -446,7 +455,7 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7efd599f29f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa136b14b80&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -474,13 +483,13 @@ proj_01
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7efd599f29f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa136b14b80&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 proj_02
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Demo at 0x7efd109f36d0&gt;
+net : &lt;openpnm.network.Demo at 0x7fa136b14c20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -500,18 +509,78 @@ proj_01
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7efd599f29f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa136b14b80&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="design-of-workspace-and-project-classes">
-<h2>Design of Workspace and Project Classes<a class="headerlink" href="#design-of-workspace-and-project-classes" title="Permalink to this heading">#</a></h2>
-<p>It is worth describing the design of these classes to help explain how they work.  The workspace is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> subclass while the project is a <code class="docutils literal notranslate"><span class="pre">list</span></code> subclass.  Each subclass has numerous methods added to aid in the management of the objects.</p>
-<p>In the Workspace <code class="docutils literal notranslate"><span class="pre">dict</span></code> each project object is stored by name in each ‘key: value’ pair.  Printing the workspace gives a nicely formatted output as shown above, but the basic command-line representation gives its true structure via running <code class="docutils literal notranslate"><span class="pre">ws</span></code> in the command-line:</p>
-<p>Where the only project in the workspace is <code class="docutils literal notranslate"><span class="pre">'sim_02'</span></code>, and it is a list that contains only a single Cubic network object.</p>
+<section id="workspace-is-a-singleton">
+<h2>Workspace is a Singleton<a class="headerlink" href="#workspace-is-a-singleton" title="Permalink to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Workspace</span></code> object is a <a class="reference external" href="https://python-patterns.guide/gang-of-four/singleton/">singleton</a>, which is “design pattern” where only ONE instance of an object can be created in any given session. The reason OpenPNM uses this pattern is to enable the lookup of object relationships, such as which project a network belongs to or what network is associated with a phase.  This is done as follows.  Let’s first create a new network:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>net
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s scan through each <code class="docutils literal notranslate"><span class="pre">project</span></code> in the <code class="docutils literal notranslate"><span class="pre">workspace</span></code> until we find the one that contains <code class="docutils literal notranslate"><span class="pre">pn</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">ws</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">project</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="n">pn</span><span class="p">:</span>
+            <span class="c1"># If this were a function, here would be &quot;return project&quot;</span>
+            <span class="k">break</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+Object Name : Object Class and ID
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+net : &lt;openpnm.network.Demo at 0x7fa1366a6ea0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>We refer to this as a “bottom-up” approach since the object is basically looking for itself. A “top-down” approach would be the case where relationships are hard-coded such that <code class="docutils literal notranslate"><span class="pre">phase.project</span></code> actually contains a handle to the project (i.e. <code class="docutils literal notranslate"><span class="pre">phase.project</span> <span class="pre">=</span> <span class="pre">proj</span></code>). In the “bottom-up” approach, accessing <code class="docutils literal notranslate"><span class="pre">phase.project</span></code> actually triggers a function that does the above search.</p>
+<p>Similarly we can find the network associated with a given phase (or algorithm) as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">project</span> <span class="ow">in</span> <span class="n">ws</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">project</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="n">pn</span><span class="p">:</span>
+            <span class="c1"># If this were a function, here would be &quot;return item&quot;</span>
+            <span class="k">break</span>
+<span class="n">pn</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>net : &lt;openpnm.network.Demo at 0x7fa1366a6ea0&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above two lookups may seem convoluted, but they have the benefit of not requiring that <code class="docutils literal notranslate"><span class="pre">pn</span></code> have an attribute containing handles to all associated objects. It was found in V1 that this lead to memory leaks since all objects contained references to other objects, and it was very tricky to actually delete something. The bottom-up search avoids this, and with the help of Python’s “syntactic sugar” we can make it all occur behind the scenes and uphold the appearance that you’re accessing the object directly.</p>
+</section>
+<section id="one-network-per-project">
+<h2>One Network per Project<a class="headerlink" href="#one-network-per-project" title="Permalink to this heading">#</a></h2>
+<p>Only</p>
 </section>
 </section>
 

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -426,6 +426,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <section id="network">
 <h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h2>
@@ -445,7 +451,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b45f854046ae07b873f40f19076dd9863315c00ae837687c8ad9d5ad11774720.svg" src="../../_images/b45f854046ae07b873f40f19076dd9863315c00ae837687c8ad9d5ad11774720.svg" /></div>
+<img alt="../../_images/1e89f11141001f604e3c31f12a194048e7605323a9b0e621ee73fc2ca5351a1c.svg" src="../../_images/1e89f11141001f604e3c31f12a194048e7605323a9b0e621ee73fc2ca5351a1c.svg" /></div>
 </div>
 </section>
 <section id="geometry">
@@ -499,7 +505,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f1dd8822130&gt;
+net : &lt;openpnm.network.Cubic at 0x7fe64c3234a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -548,7 +554,7 @@ net : &lt;openpnm.network.Cubic at 0x7f1dd8822130&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/294d411cd933c7f4c3dec7302d58e9f61a11e92d5210dc3bfae51df30cc3bff3.svg" src="../../_images/294d411cd933c7f4c3dec7302d58e9f61a11e92d5210dc3bfae51df30cc3bff3.svg" /></div>
+<img alt="../../_images/883f52daf4f5446f4a02b54c2cfda58e656c515409881bf3326a759eb1fc2c05.svg" src="../../_images/883f52daf4f5446f4a02b54c2cfda58e656c515409881bf3326a759eb1fc2c05.svg" /></div>
 </div>
 </section>
 <section id="adjusting-pore-and-throat-sizes">
@@ -593,7 +599,7 @@ net : &lt;openpnm.network.Cubic at 0x7f1dd8822130&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/fd3f49f767e5d3ad3e94a8517bf725893d86585429c7503a6a3eddcba77a037e.svg" src="../../_images/fd3f49f767e5d3ad3e94a8517bf725893d86585429c7503a6a3eddcba77a037e.svg" /></div>
+<img alt="../../_images/5f92008e07184a178f18dcdd36816913c8eb32d16adaafc824cf34d65d2f225d.svg" src="../../_images/5f92008e07184a178f18dcdd36816913c8eb32d16adaafc824cf34d65d2f225d.svg" /></div>
 </div>
 </section>
 <section id="using-pre-defined-models-in-openpnm">
@@ -653,7 +659,7 @@ net : &lt;openpnm.network.Cubic at 0x7f1dd8822130&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b20699b616373f8f67f85df2b93b2335ba4c69856cb336afcb33a3b981e331ef.svg" src="../../_images/b20699b616373f8f67f85df2b93b2335ba4c69856cb336afcb33a3b981e331ef.svg" /></div>
+<img alt="../../_images/acca3d584e9c72e05c4b732951817a7dff07270bfbe847ba30a65145f5f875b2.svg" src="../../_images/acca3d584e9c72e05c4b732951817a7dff07270bfbe847ba30a65145f5f875b2.svg" /></div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
 <div class="cell docutils container">
@@ -676,7 +682,7 @@ net : &lt;openpnm.network.Cubic at 0x7f1dd8822130&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3222de094f4ed3b27f9b1729ef1010d0e7c0b00294b0f3ce374a1f31630617f7.svg" src="../../_images/3222de094f4ed3b27f9b1729ef1010d0e7c0b00294b0f3ce374a1f31630617f7.svg" /></div>
+<img alt="../../_images/379bb37726c4a49eddd04e0f637b532b4062c1a562ebd70558b09c9d0aa7143b.svg" src="../../_images/379bb37726c4a49eddd04e0f637b532b4062c1a562ebd70558b09c9d0aa7143b.svg" /></div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
 <p>Plotting the network itself ahould ideally be done in Paraview, but a quick plot with <code class="docutils literal notranslate"><span class="pre">plot_networkx</span></code> shows the pore sizes.</p>
@@ -688,7 +694,7 @@ net : &lt;openpnm.network.Cubic at 0x7f1dd8822130&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7ec4caadbde9afcb93d6900cf9f258efbc4b6fb3b10dc96de0554b853cebd184.svg" src="../../_images/7ec4caadbde9afcb93d6900cf9f258efbc4b6fb3b10dc96de0554b853cebd184.svg" /></div>
+<img alt="../../_images/bdffea3c72972ff8001bc54648eaf2ff22bdb96ba52ab6997d378008ec249a0f.svg" src="../../_images/bdffea3c72972ff8001bc54648eaf2ff22bdb96ba52ab6997d378008ec249a0f.svg" /></div>
 </div>
 </section>
 </section>

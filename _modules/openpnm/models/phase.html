@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.phase &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>openpnm.models.phase &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -199,38 +199,8 @@
 <span class="sd">liquids, gases, and solids.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="c1"># The following bits are to initialize some boilerplate docstrings for docrep</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span> <span class="k">as</span> <span class="n">_doc</span>
-<span class="n">_docstr</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">()</span>
-<span class="n">_docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.phase.T&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;temperature : str</span>
-<span class="sd">            Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">            temperature values is stored&quot;&quot;&quot;</span>
-<span class="n">_docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.phase.P&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;pressure : str</span>
-<span class="sd">            Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">            pressure values is stored&quot;&quot;&quot;</span>
-<span class="n">_docstr</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;models.phase.SI_note&#39;</span><span class="p">]</span> <span class="o">=</span> \
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Since numpy arrays don&#39;t natively support units, OpenPNM cannot enforce</span>
-<span class="sd">    units on values and arrays, however the use of SI is assumed.&quot;&quot;&quot;</span>
-
-
-<span class="kn">from</span> <span class="nn">matplotlib.docstring</span> <span class="kn">import</span> <span class="n">Substitution</span> <span class="k">as</span> <span class="n">_sub</span>
-<span class="n">_phasedocs</span> <span class="o">=</span> <span class="n">_sub</span><span class="p">(</span>
-    <span class="n">T</span><span class="o">=</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;T : dict key (str) or scalar</span>
-<span class="sd">            Name of the dictionary key on ``phase`` containing the array of</span>
-<span class="sd">            temperature values. If a scalar is passed it get used directly.&quot;&quot;&quot;</span><span class="p">,</span>
-    <span class="n">P</span><span class="o">=</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;P : dict key (str) of scalar</span>
-<span class="sd">            Name of the dictionary key on ``phase`` containing the array of</span>
-<span class="sd">            temperature values. If a scalar is passed it get used directly.&quot;&quot;&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-
+<span class="kn">from</span> <span class="nn">.phasedocs</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">critical_props</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">density</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">diffusivity</span>
@@ -242,6 +212,10 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">thermal_conductivity</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">vapor_pressure</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">viscosity</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="c1"># %%</span>

@@ -30,19 +30,19 @@ Cell [0;32mIn [8], line 4[0m
 [1;32m      3[0m fd[38;5;241m.[39mset_value_BC(pores[38;5;241m=[39mnet[38;5;241m.[39mpores([38;5;124m'[39m[38;5;124mbottom[39m[38;5;124m'[39m), values[38;5;241m=[39m[38;5;241m0.0[39m)
 [0;32m----> 4[0m [43mfd[49m[38;5;241;43m.[39;49m[43mrun[49m[43m([49m[43m)[49m
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:189[0m, in [0;36mTransport.run[0;34m(self, solver, x0, verbose)[0m
-[1;32m    187[0m [38;5;66;03m# Perform pre-solve validations[39;00m
-[1;32m    188[0m [38;5;28mself[39m[38;5;241m.[39m_validate_settings()
-[0;32m--> 189[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_validate_data_health[49m[43m([49m[43m)[49m
-[1;32m    190[0m [38;5;66;03m# Write x0 to algorithm (needed by _update_iterative_props)[39;00m
-[1;32m    191[0m [38;5;28mself[39m[38;5;241m.[39mx [38;5;241m=[39m x0 [38;5;241m=[39m np[38;5;241m.[39mzeros_like([38;5;28mself[39m[38;5;241m.[39mb) [38;5;28;01mif[39;00m x0 [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m [38;5;28;01melse[39;00m x0[38;5;241m.[39mcopy()
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:192[0m, in [0;36mTransport.run[0;34m(self, solver, x0, verbose)[0m
+[1;32m    190[0m [38;5;66;03m# Perform pre-solve validations[39;00m
+[1;32m    191[0m [38;5;28mself[39m[38;5;241m.[39m_validate_settings()
+[0;32m--> 192[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_validate_data_health[49m[43m([49m[43m)[49m
+[1;32m    193[0m [38;5;66;03m# Write x0 to algorithm (needed by _update_iterative_props)[39;00m
+[1;32m    194[0m [38;5;28mself[39m[38;5;241m.[39mx [38;5;241m=[39m x0 [38;5;241m=[39m np[38;5;241m.[39mzeros_like([38;5;28mself[39m[38;5;241m.[39mb) [38;5;28;01mif[39;00m x0 [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m [38;5;28;01melse[39;00m x0[38;5;241m.[39mcopy()
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:283[0m, in [0;36mTransport._validate_data_health[0;34m(self)[0m
-[1;32m    281[0m [38;5;28mself[39m[38;5;241m.[39m_validate_topology_health()
-[1;32m    282[0m [38;5;66;03m# Short-circuit subsequent checks if data are healthy[39;00m
-[0;32m--> 283[0m [38;5;28;01mif[39;00m np[38;5;241m.[39misfinite([38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mA[49m[38;5;241m.[39mdata)[38;5;241m.[39mall() [38;5;129;01mand[39;00m np[38;5;241m.[39misfinite([38;5;28mself[39m[38;5;241m.[39mb)[38;5;241m.[39mall():
-[1;32m    284[0m     [38;5;28;01mreturn[39;00m [38;5;28;01mTrue[39;00m
-[1;32m    286[0m [38;5;66;03m# Fetch phase/geometries/physics[39;00m
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:285[0m, in [0;36mTransport._validate_data_health[0;34m(self)[0m
+[1;32m    283[0m [38;5;28mself[39m[38;5;241m.[39m_validate_topology_health()
+[1;32m    284[0m [38;5;66;03m# Short-circuit subsequent checks if data are healthy[39;00m
+[0;32m--> 285[0m [38;5;28;01mif[39;00m np[38;5;241m.[39misfinite([38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mA[49m[38;5;241m.[39mdata)[38;5;241m.[39mall() [38;5;129;01mand[39;00m np[38;5;241m.[39misfinite([38;5;28mself[39m[38;5;241m.[39mb)[38;5;241m.[39mall():
+[1;32m    286[0m     [38;5;28;01mreturn[39;00m [38;5;28;01mTrue[39;00m
+[1;32m    288[0m [38;5;66;03m# Fetch phase/geometries/physics[39;00m
 
 File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:121[0m, in [0;36mTransport.A[0;34m(self)[0m
 [1;32m    119[0m [38;5;124;03m"""The coefficient matrix, A (in Ax = b)"""[39;00m

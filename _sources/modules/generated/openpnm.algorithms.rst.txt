@@ -34,7 +34,6 @@ algorithms
       InvasionPercolation
       IonicConduction
       OhmicConduction
-      OrdinaryPercolation
       ReactiveTransport
       StokesFlow
       TransientAdvectionDiffusion

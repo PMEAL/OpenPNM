@@ -27,15 +27,15 @@ Cell [0;32mIn [9], line 2[0m
 [1;32m      1[0m vals [38;5;241m=[39m np[38;5;241m.[39mrandom[38;5;241m.[39mrand(pn[38;5;241m.[39mnum_pores([38;5;124m'[39m[38;5;124mfront[39m[38;5;124m'[39m))[38;5;241m*[39m[38;5;241m10.0[39m
 [0;32m----> 2[0m [43mfd[49m[38;5;241;43m.[39;49m[43mset_value_BC[49m[43m([49m[43mpores[49m[38;5;241;43m=[39;49m[43mpn[49m[38;5;241;43m.[39;49m[43mpores[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43mfront[39;49m[38;5;124;43m'[39;49m[43m)[49m[43m,[49m[43m [49m[43mvalues[49m[38;5;241;43m=[39;49m[43mvals[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43madd[39;49m[38;5;124;43m'[39;49m[43m)[49m
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:437[0m, in [0;36mTransport.set_value_BC[0;34m(self, pores, values, mode)[0m
-[1;32m    417[0m [38;5;28;01mdef[39;00m [38;5;21mset_value_BC[39m([38;5;28mself[39m, pores[38;5;241m=[39m[38;5;28;01mNone[39;00m, values[38;5;241m=[39m[], mode[38;5;241m=[39m[38;5;124m'[39m[38;5;124madd[39m[38;5;124m'[39m):
-[1;32m    418[0m     [38;5;124mr[39m[38;5;124;03m"""[39;00m
-[1;32m    419[0m [38;5;124;03m    Applies constant value boundary conditons to the specified pores.[39;00m
-[1;32m    420[0m 
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:439[0m, in [0;36mTransport.set_value_BC[0;34m(self, pores, values, mode)[0m
+[1;32m    419[0m [38;5;28;01mdef[39;00m [38;5;21mset_value_BC[39m([38;5;28mself[39m, pores[38;5;241m=[39m[38;5;28;01mNone[39;00m, values[38;5;241m=[39m[], mode[38;5;241m=[39m[38;5;124m'[39m[38;5;124madd[39m[38;5;124m'[39m):
+[1;32m    420[0m     [38;5;124mr[39m[38;5;124;03m"""[39;00m
+[1;32m    421[0m [38;5;124;03m    Applies constant value boundary conditons to the specified pores.[39;00m
+[1;32m    422[0m 
 [0;32m   (...)[0m
-[1;32m    435[0m 
-[1;32m    436[0m [38;5;124;03m    """[39;00m
-[0;32m--> 437[0m     [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mset_BC[49m[43m([49m[43mpores[49m[38;5;241;43m=[39;49m[43mpores[49m[43m,[49m[43m [49m[43mbctype[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mvalue[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mbcvalues[49m[38;5;241;43m=[39;49m[43mvalues[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m)[49m
+[1;32m    437[0m 
+[1;32m    438[0m [38;5;124;03m    """[39;00m
+[0;32m--> 439[0m     [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mset_BC[49m[43m([49m[43mpores[49m[38;5;241;43m=[39;49m[43mpores[49m[43m,[49m[43m [49m[43mbctype[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mvalue[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mbcvalues[49m[38;5;241;43m=[39;49m[43mvalues[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m)[49m
 
 File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_reactive_transport.py:253[0m, in [0;36mReactiveTransport.set_BC[0;34m(self, pores, bctype, bcvalues, mode)[0m
 [1;32m    251[0m     [38;5;28;01mpass[39;00m

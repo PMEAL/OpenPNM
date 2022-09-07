@@ -1,0 +1,22 @@
+ModelsMixin2
+=========================
+
+.. currentmodule:: openpnm.core
+
+.. autoclass:: ModelsMixin2
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            ModelsMixin2.add_model
+            ModelsMixin2.add_model_collection
+            ModelsMixin2.regenerate_models
+            ModelsMixin2.run_model
+   
+   

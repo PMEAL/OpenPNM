@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Simulating Mercury Intrusion Porosimetry Curves &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Simulating Mercury Intrusion Porosimetry Curves &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -429,6 +429,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <section id="network">
 <h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h2>
@@ -485,8 +491,8 @@
   - WARNING: throat.diffusive_conductance was not run since
              the following property is missing:
              &#39;throat.diffusivity&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:17:16,598    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:38:18,210    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -506,6 +512,18 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">OrdinaryPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mip</span><span class="o">.</span><span class="n">set_inlets</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="ne">AttributeError</span>: module &#39;openpnm.algorithms&#39; has no attribute &#39;OrdinaryPercolation&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>The meaning of this warning message will be analyzed below, but first let’s take a quick look at the result using the built-in plotting method:</p>
 <div class="cell docutils container">
@@ -516,14 +534,13 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Inlets have non-zero volume, perc. curve won&#39;t
-             start at 0. 
+  - WARNING: Inlets have non-zero volume, perc. curve won&#39;t start at 0. 
   - SOURCE : openpnm.algorithms._ordinary_percolation.get_intrusion_data 
-  - TIME   : 2022-09-07 03:17:16,669    
+  - TIME   : 2022-09-02 12:25:02,005    
 ------------------------------------------------------------
 </pre></div>
 </div>
-<img alt="../../_images/fb5107873507d224b4afa6996772bf36fe6e15dec08595e33276de4d6f10cc4b.svg" src="../../_images/fb5107873507d224b4afa6996772bf36fe6e15dec08595e33276de4d6f10cc4b.svg" /></div>
+<img alt="../../_images/970d5b4a40dac87ecaef356f88d837a1011dd09f380c457e1dff5cfaf15b05eb.svg" src="../../_images/970d5b4a40dac87ecaef356f88d837a1011dd09f380c457e1dff5cfaf15b05eb.svg" /></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -533,10 +550,9 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Inlets have non-zero volume, perc. curve won&#39;t
-             start at 0. 
+  - WARNING: Inlets have non-zero volume, perc. curve won&#39;t start at 0. 
   - SOURCE : openpnm.algorithms._ordinary_percolation.get_intrusion_data 
-  - TIME   : 2022-09-07 03:17:17,220    
+  - TIME   : 2022-09-02 12:25:02,324    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -553,7 +569,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a85361a3fa99eeb567abd732c707d3b43f72b7fddf81ae540e20f248238ac203.svg" src="../../_images/a85361a3fa99eeb567abd732c707d3b43f72b7fddf81ae540e20f248238ac203.svg" /></div>
+<img alt="../../_images/d616befab0f7460335415eec3d3e67b52162fbce7d5865ca8ff57e515459f741.svg" src="../../_images/d616befab0f7460335415eec3d3e67b52162fbce7d5865ca8ff57e515459f741.svg" /></div>
 </div>
 </section>
 </section>

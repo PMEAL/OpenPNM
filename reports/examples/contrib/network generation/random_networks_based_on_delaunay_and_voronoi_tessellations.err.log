@@ -23,11 +23,11 @@ op.topotools.plot_connections(network=pn, throats=Ts)
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mKeyError[0m                                  Traceback (most recent call last)
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:204[0m, in [0;36mBase2.__getitem__[0;34m(self, key)[0m
-[1;32m    203[0m [38;5;28;01mtry[39;00m:
-[0;32m--> 204[0m     [38;5;28;01mreturn[39;00m [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[38;5;21;43m__getitem__[39;49m[43m([49m[43mkey[49m[43m)[49m
-[1;32m    205[0m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyError[39;00m:
-[1;32m    206[0m     [38;5;66;03m# If key is object's name or all, return ones[39;00m
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:188[0m, in [0;36mBase2.__getitem__[0;34m(self, key)[0m
+[1;32m    187[0m [38;5;28;01mtry[39;00m:
+[0;32m--> 188[0m     [38;5;28;01mreturn[39;00m [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[38;5;21;43m__getitem__[39;49m[43m([49m[43mkey[49m[43m)[49m
+[1;32m    189[0m [38;5;28;01mexcept[39;00m [38;5;167;01mKeyError[39;00m:
+[1;32m    190[0m     [38;5;66;03m# If key is object's name or all, return ones[39;00m
 
 [0;31mKeyError[0m: 'throat.boundary'
 
@@ -38,24 +38,24 @@ Cell [0;32mIn [3], line 1[0m
 [0;32m----> 1[0m Ts [38;5;241m=[39m [43mpn[49m[38;5;241;43m.[39;49m[43mthroats[49m[43m([49m[43m[[49m[38;5;124;43m'[39;49m[38;5;124;43mvoronoi[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;124;43m'[39;49m[38;5;124;43mboundary[39;49m[38;5;124;43m'[39;49m[43m][49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mand[39;49m[38;5;124;43m'[39;49m[43m)[49m
 [1;32m      2[0m op[38;5;241m.[39mtopotools[38;5;241m.[39mplot_connections(network[38;5;241m=[39mpn, throats[38;5;241m=[39mTs)
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_mixins.py:505[0m, in [0;36mLabelMixin.throats[0;34m(self, labels, mode, asmask)[0m
-[1;32m    503[0m [38;5;28;01mif[39;00m labels [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
-[1;32m    504[0m     labels [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mname
-[0;32m--> 505[0m ind [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_get_indices[49m[43m([49m[43melement[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mthroat[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mlabels[49m[38;5;241;43m=[39;49m[43mlabels[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m)[49m
-[1;32m    506[0m [38;5;28;01mif[39;00m asmask:
-[1;32m    507[0m     ind [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mto_mask(throats[38;5;241m=[39mind)
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_mixins.py:528[0m, in [0;36mLabelMixin.throats[0;34m(self, labels, mode, asmask)[0m
+[1;32m    526[0m [38;5;28;01mif[39;00m labels [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[1;32m    527[0m     labels [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mname
+[0;32m--> 528[0m ind [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_get_indices[49m[43m([49m[43melement[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mthroat[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mlabels[49m[38;5;241;43m=[39;49m[43mlabels[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m)[49m
+[1;32m    529[0m [38;5;28;01mif[39;00m asmask:
+[1;32m    530[0m     ind [38;5;241m=[39m [38;5;28mself[39m[38;5;241m.[39mto_mask(throats[38;5;241m=[39mind)
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_mixins.py:392[0m, in [0;36mLabelMixin._get_indices[0;34m(self, element, labels, mode)[0m
-[1;32m    390[0m     intersect [38;5;241m=[39m np[38;5;241m.[39mones([[38;5;28mself[39m[38;5;241m.[39m_count(element), ], dtype[38;5;241m=[39m[38;5;28mbool[39m)
-[1;32m    391[0m     [38;5;28;01mfor[39;00m item [38;5;129;01min[39;00m labels:  [38;5;66;03m# Iterate over labels and collect all indices[39;00m
-[0;32m--> 392[0m         intersect [38;5;241m=[39m intersect[38;5;241m*[39m[38;5;28;43mself[39;49m[43m[[49m[43melement[49m[38;5;241;43m+[39;49m[38;5;124;43m'[39;49m[38;5;124;43m.[39;49m[38;5;124;43m'[39;49m[38;5;241;43m+[39;49m[43mitem[49m[38;5;241;43m.[39;49m[43msplit[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m.[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;241;43m1[39;49m[43m)[49m[43m[[49m[38;5;241;43m-[39;49m[38;5;241;43m1[39;49m[43m][49m[43m][49m
-[1;32m    393[0m     ind [38;5;241m=[39m intersect
-[1;32m    394[0m [38;5;28;01melif[39;00m mode [38;5;129;01min[39;00m [[38;5;124m'[39m[38;5;124mxor[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mexclusive_or[39m[38;5;124m'[39m]:
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_mixins.py:387[0m, in [0;36mLabelMixin._get_indices[0;34m(self, element, labels, mode)[0m
+[1;32m    385[0m     intersect [38;5;241m=[39m np[38;5;241m.[39mones([[38;5;28mself[39m[38;5;241m.[39m_count(element), ], dtype[38;5;241m=[39m[38;5;28mbool[39m)
+[1;32m    386[0m     [38;5;28;01mfor[39;00m item [38;5;129;01min[39;00m labels:  [38;5;66;03m# Iterate over labels and collect all indices[39;00m
+[0;32m--> 387[0m         intersect [38;5;241m=[39m intersect[38;5;241m*[39m[38;5;28;43mself[39;49m[43m[[49m[43melement[49m[38;5;241;43m+[39;49m[38;5;124;43m'[39;49m[38;5;124;43m.[39;49m[38;5;124;43m'[39;49m[38;5;241;43m+[39;49m[43mitem[49m[38;5;241;43m.[39;49m[43msplit[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m.[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[38;5;241;43m1[39;49m[43m)[49m[43m[[49m[38;5;241;43m-[39;49m[38;5;241;43m1[39;49m[43m][49m[43m][49m
+[1;32m    388[0m     ind [38;5;241m=[39m intersect
+[1;32m    389[0m [38;5;28;01melif[39;00m mode [38;5;129;01min[39;00m [[38;5;124m'[39m[38;5;124mxor[39m[38;5;124m'[39m, [38;5;124m'[39m[38;5;124mexclusive_or[39m[38;5;124m'[39m]:
 
-File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:219[0m, in [0;36mBase2.__getitem__[0;34m(self, key)[0m
-[1;32m    217[0m     [38;5;28;01mreturn[39;00m vals
-[1;32m    218[0m [38;5;28;01melse[39;00m:
-[0;32m--> 219[0m     [38;5;28;01mraise[39;00m [38;5;167;01mKeyError[39;00m(key)
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:203[0m, in [0;36mBase2.__getitem__[0;34m(self, key)[0m
+[1;32m    201[0m     [38;5;28;01mreturn[39;00m vals
+[1;32m    202[0m [38;5;28;01melse[39;00m:
+[0;32m--> 203[0m     [38;5;28;01mraise[39;00m [38;5;167;01mKeyError[39;00m(key)
 
 [0;31mKeyError[0m: 'throat.boundary'
 KeyError: 'throat.boundary'

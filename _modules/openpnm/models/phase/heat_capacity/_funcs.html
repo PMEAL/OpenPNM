@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.phase.heat_capacity._funcs &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>openpnm.models.phase.heat_capacity._funcs &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -193,6 +193,7 @@
   <h1>Source code for openpnm.models.phase.heat_capacity._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.phase.mixtures</span> <span class="kn">import</span> <span class="n">mixing_rule</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -203,7 +204,8 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="liquid_pure_rp"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.liquid_pure_rp.html#openpnm.models.phase.heat_capacity.liquid_pure_rp">[docs]</a><span class="k">def</span> <span class="nf">liquid_pure_rp</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_pure_rp"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.liquid_pure_rp.html#openpnm.models.phase.heat_capacity.liquid_pure_rp">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_pure_rp</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
@@ -211,6 +213,15 @@
     <span class="n">Cpg</span><span class="o">=</span><span class="s1">&#39;pore.heat_capacity_gas&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(Tc)s</span>
+<span class="sd">    %(omega)s</span>
+<span class="sd">    %(Cpg)s</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Rowlinson and Poling</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
@@ -229,12 +240,26 @@
     <span class="k">return</span> <span class="n">Cp</span></div>
 
 
-<div class="viewcode-block" id="gas_pure_TRC"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.gas_pure_TRC.html#openpnm.models.phase.heat_capacity.gas_pure_TRC">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_TRC</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_pure_TRC"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.gas_pure_TRC.html#openpnm.models.phase.heat_capacity.gas_pure_TRC">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_pure_TRC</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">a</span><span class="o">=</span><span class="p">[],</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    a : list</span>
+<span class="sd">        The coefficients to use (see notes for form of equation). If not</span>
+<span class="sd">        given the ``phase[&#39;param.CAS&#39;]`` is used to lookup the values from</span>
+<span class="sd">        ``chemicals.heat_capacity.TRC_gas_data``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TRCCp</span>
     <span class="kn">from</span> <span class="nn">chemicals.heat_capacity</span> <span class="kn">import</span> <span class="n">TRC_gas_data</span>
@@ -252,21 +277,43 @@
     <span class="k">return</span> <span class="n">Cp</span></div>
 
 
-<div class="viewcode-block" id="gas_mixture_yweighted"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.gas_mixture_yweighted.html#openpnm.models.phase.heat_capacity.gas_mixture_yweighted">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_yweighted</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_mixture_yweighted"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.gas_mixture_yweighted.html#openpnm.models.phase.heat_capacity.gas_mixture_yweighted">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_mixture_yweighted</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">Cps</span><span class="o">=</span><span class="s1">&#39;pore.heat_capacity.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses a linearly mole fraction weighted average</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(Cps)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Cpmix</span> <span class="o">=</span> <span class="n">mixing_rule</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">Cps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Cpmix</span></div>
 
 
-<div class="viewcode-block" id="liquid_mixture_xweighted"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.liquid_mixture_xweighted.html#openpnm.models.phase.heat_capacity.liquid_mixture_xweighted">[docs]</a><span class="k">def</span> <span class="nf">liquid_mixture_xweighted</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_mixture_xweighted"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.heat_capacity.liquid_mixture_xweighted.html#openpnm.models.phase.heat_capacity.liquid_mixture_xweighted">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_mixture_xweighted</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">Cps</span><span class="o">=</span><span class="s1">&#39;pore.heat_capacity.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses a linearly mole fraction weighted average</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(Cps)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Cpmix</span> <span class="o">=</span> <span class="n">mixing_rule</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">Cps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Cpmix</span></div>

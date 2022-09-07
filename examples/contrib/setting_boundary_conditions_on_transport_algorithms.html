@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Adding, Removing, and Changing Boundary Conditions &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Adding, Removing, and Changing Boundary Conditions &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -239,6 +239,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <p>Start by creating a basic ‘demo’ network and phase object:</p>
 <div class="cell docutils container">
@@ -255,8 +261,8 @@
   - WARNING: throat.electrical_conductance was not run since
              the following property is missing:
              &#39;throat.electrical_conductivity&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:19:33,279    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:40:56,745    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -264,8 +270,8 @@
   - WARNING: throat.diffusive_conductance was not run since
              the following property is missing:
              &#39;throat.diffusivity&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:19:33,288    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:40:56,754    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -273,8 +279,8 @@
   - WARNING: throat.ad_dif_conductance was not run since the
              following property is missing:
              &#39;throat.diffusive_conductance&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:19:33,290    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:40:56,755    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -367,15 +373,15 @@
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span><span class="o">*</span><span class="mf">10.0</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">)</span>
 
-<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:437,</span> in <span class="ni">Transport.set_value_BC</span><span class="nt">(self, pores, values, mode)</span>
-<span class="g g-Whitespace">    </span><span class="mi">417</span> <span class="k">def</span> <span class="nf">set_value_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">418</span>     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">419</span><span class="sd">     Applies constant value boundary conditons to the specified pores.</span>
-<span class="g g-Whitespace">    </span><span class="mi">420</span><span class="sd"> </span>
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:439,</span> in <span class="ni">Transport.set_value_BC</span><span class="nt">(self, pores, values, mode)</span>
+<span class="g g-Whitespace">    </span><span class="mi">419</span> <span class="k">def</span> <span class="nf">set_value_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">420</span>     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">421</span><span class="sd">     Applies constant value boundary conditons to the specified pores.</span>
+<span class="g g-Whitespace">    </span><span class="mi">422</span><span class="sd"> </span>
 <span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">435</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">436</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">437</span>     <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">437</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">438</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">439</span>     <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
 
 <span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/algorithms/_reactive_transport.py:253,</span> in <span class="ni">ReactiveTransport.set_BC</span><span class="nt">(self, pores, bctype, bcvalues, mode)</span>
 <span class="g g-Whitespace">    </span><span class="mi">251</span>     <span class="k">pass</span>

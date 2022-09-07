@@ -12,7 +12,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 2,
+   "execution_count": 5,
    "id": "7826f9bc",
    "metadata": {},
    "outputs": [],
@@ -24,13 +24,154 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 6,
    "id": "3140ac3a",
    "metadata": {},
    "outputs": [],
    "source": [
-    "pn = op.network.Demo([3, 3, 1], spacing=5e-5)"
+    "pn = op.network.Cubic([3, 3, 1], spacing=5e-5)"
    ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4d08dd7d",
+   "metadata": {},
+   "source": [
+    "As we can see, the `Cubic` class has a few pore-scale models already attached to it, but none of them compute geometrical information. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "70929445",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "#   Property Name                       Parameter                 Value\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "1   pore.coordination_number@all        model:                    coordination_number\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
+      "2   throat.spacing@all                  model:                    pore_to_pore_distance\n",
+      "                                        regeneration mode:        deferred\n",
+      "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(pn.models)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ca019498",
+   "metadata": {},
+   "source": [
+    "In this notebook we'll add pore-scale models for computing seed values to put into each pore, then finding the pore and throat diameter by using those seed values in statistical distributions.  Let's start by creating our own model to compute pore seed values. This model needs to receive the `network` so that is knows how many pores require values. We might also want to limit the range of values it returns to avoid getting size values in the long tails of the distribution. And finally we might want to set the random number generator's starting point.  These features are all included in the following function definition:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "0e0bb507",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def pore_seed(network, num_range=[0.1, 0.9], seed=None):\n",
+    "    Np = network.Np\n",
+    "    np.random.seed(seed)\n",
+    "    vals = np.random.rand(Np)\n",
+    "    vals = vals*(num_range[1] - num_range[0]) + num_range[0]\n",
+    "    return vals"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "aa80ea65",
+   "metadata": {},
+   "source": [
+    "Now let's call our function to see how it works:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "f565cf4e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.5292881  0.62911362 0.56165803 0.52692991 0.45419288 0.58753647\n",
+      " 0.46255233 0.7350638  0.77819766]\n"
+     ]
+    }
+   ],
+   "source": [
+    "vals = pore_seed(network=pn, num_range=[0.2, 0.8], seed=0)\n",
+    "print(vals)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d4ccbff0",
+   "metadata": {},
+   "source": [
+    "You might be wondering why we both to return the values instead of just writing them to the `network` which we happen to have direct access to since it was passed in as an argument. The reason is that we don't necessarily *know* what dictionary key the user wants these values stored in.  It's likely to be `'pore.seed'`, but we don't want to force this on a user. Instead, the model is expect to return the values, which are then caught and written to the `network` object:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "7963f619",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.5292881  0.62911362 0.56165803 0.52692991 0.45419288 0.58753647\n",
+      " 0.46255233 0.7350638  0.77819766]\n"
+     ]
+    }
+   ],
+   "source": [
+    "pn['pore.seed'] = pore_seed(network=pn, num_range=[0.2, 0.8], seed=0)\n",
+    "print(pn['pore.seed'])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f6905f8d",
+   "metadata": {},
+   "source": [
+    "The next feature we might like is the ability to *re-run* the models. So instead of having to re-write the above line at various placesn throughout our script, it is desirable to store the model *on the object* for later use. For this purpose there is a `models` attribute on every OpenPNM object. The `models` attribute is actually a dictionary where the keys indicate where the proudced data should be stored."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "0bbdff63",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pn.models['pore.diameter@all'] = {'model': pore_seed, \n",
+    "                                  'num_range': [0.2, 0.8],\n",
+    "                                  'seed': None}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "bc06513e",
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
  ],
  "metadata": {

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Adding Boundary Pores &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Adding Boundary Pores &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -240,6 +240,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <p>Start by creating a Delaunay network.  Because it uses random base points it will better illustrate the process of adding boundary pores to arbitrary networks:</p>
 <div class="cell docutils container">
@@ -251,7 +257,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Delaunay at 0x7f1b159d19a0&gt;
+net : &lt;openpnm.network.Delaunay at 0x7f0d8bb2fb30&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -292,7 +298,7 @@ net : &lt;openpnm.network.Delaunay at 0x7f1b159d19a0&gt;
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/801f193832370c10de6e39a148a8b2667833b1d10dda57cc95bb38575177c5e2.svg" src="../../../_images/801f193832370c10de6e39a148a8b2667833b1d10dda57cc95bb38575177c5e2.svg" /></div>
+<img alt="../../../_images/c5655f38bd7a3aeb9fba51d0959f7e6a071df8c1e08279866a4623a4e76d8657.svg" src="../../../_images/c5655f38bd7a3aeb9fba51d0959f7e6a071df8c1e08279866a4623a4e76d8657.svg" /></div>
 </div>
 <p>For the purpose of this tutorial, we will trim these boundary pores from the network since we’ll be adding our own.</p>
 <div class="cell docutils container">

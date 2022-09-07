@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Steady State Transport &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Steady State Transport &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -424,6 +424,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <section id="creating-the-coefficient-matrix">
 <h2>Creating the Coefficient Matrix<a class="headerlink" href="#creating-the-coefficient-matrix" title="Permalink to this heading">#</a></h2>
@@ -444,10 +450,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.47982284  0.87529262  0.60453022  0.        ]
- [ 0.87529262 -1.7399545   0.          0.86466188]
- [ 0.60453022  0.         -0.69670667  0.09217645]
- [ 0.          0.86466188  0.09217645 -0.95683834]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.38449198  0.90627289  0.4782191   0.        ]
+ [ 0.90627289 -1.37954271  0.          0.47326982]
+ [ 0.4782191   0.         -0.84626994  0.36805084]
+ [ 0.          0.47326982  0.36805084 -0.84132066]]
 </pre></div>
 </div>
 </div>
@@ -477,9 +483,9 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.87529262 -1.7399545   0.          0.86466188]
- [ 0.60453022  0.         -0.69670667  0.09217645]
- [ 0.          0.86466188  0.09217645 -0.95683834]]
+ [ 0.90627289 -1.37954271  0.          0.47326982]
+ [ 0.4782191   0.         -0.84626994  0.36805084]
+ [ 0.          0.47326982  0.36805084 -0.84132066]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -499,7 +505,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.51748556 1.87153881 1.02903875]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.66942661 1.58092367 1.03640569]
 </pre></div>
 </div>
 </div>
@@ -585,9 +591,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.87529262 -1.7399545   0.          0.86466188]
- [ 0.60453022  0.         -0.69670667  0.09217645]
- [ 0.          0.86466188  0.09217645 -0.95683834]]
+ [ 0.90627289 -1.37954271  0.          0.47326982]
+ [ 0.4782191   0.         -0.84626994  0.36805084]
+ [ 0.          0.47326982  0.36805084 -0.84132066]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -604,7 +610,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.51748556 1.87153881 1.02903875]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.66942661 1.58092367 1.03640569]
 </pre></div>
 </div>
 </div>

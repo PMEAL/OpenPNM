@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.phase.diffusivity._funcs &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>openpnm.models.phase.diffusivity._funcs &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -191,11 +191,8 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for openpnm.models.phase.diffusivity._funcs</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -206,7 +203,8 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="liquid_mixture_tc"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.liquid_mixture_tc.html#openpnm.models.phase.diffusivity.liquid_mixture_tc">[docs]</a><span class="k">def</span> <span class="nf">liquid_mixture_tc</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_mixture_tc"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.liquid_mixture_tc.html#openpnm.models.phase.diffusivity.liquid_mixture_tc">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_mixture_tc</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">mu</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
@@ -219,8 +217,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(mu)s</span>
 <span class="sd">    Vms_at_Tb : str or list of scalars</span>
 <span class="sd">        Molar volumes of each component at its boiling temperature (m3/mol).</span>
 <span class="sd">        Can either be a string to a parameter on each component of a list</span>
@@ -230,7 +229,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.phase.diffusivity.returns)s</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">mu</span><span class="p">]</span>
@@ -242,7 +241,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="gas_mixture_ce"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.gas_mixture_ce.html#openpnm.models.phase.diffusivity.gas_mixture_ce">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_ce</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_mixture_ce"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.gas_mixture_ce.html#openpnm.models.phase.diffusivity.gas_mixture_ce">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_mixture_ce</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">P</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
@@ -258,17 +258,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    MA, MB : scalar</span>
-<span class="sd">        The molecular mass of species A and B in units of kg/mol</span>
-<span class="sd">    sigma_AB : scalar</span>
-<span class="sd">        The collision diameter in units of Angstroms</span>
-<span class="sd">    %(models.phase.T)s</span>
-<span class="sd">    %(models.phase.P)s</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(P)s</span>
+<span class="sd">    %(Tcs)s</span>
+<span class="sd">    %(Pcs)s</span>
+<span class="sd">    %(omegas)s</span>
+<span class="sd">    %(MWs)s</span>
+<span class="sd">    %(epsilons)s</span>
+<span class="sd">    %(sigmas)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.phase.diffusivity.returns)s</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fetch values from components</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
@@ -305,7 +307,8 @@
     <span class="k">return</span> <span class="n">DAB</span></div>
 
 
-<div class="viewcode-block" id="gas_mixture_fesg"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.gas_mixture_fesg.html#openpnm.models.phase.diffusivity.gas_mixture_fesg">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_fesg</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_mixture_fesg"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.diffusivity.gas_mixture_fesg.html#openpnm.models.phase.diffusivity.gas_mixture_fesg">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_mixture_fesg</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">P</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
@@ -318,16 +321,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.phase.parameters)s</span>
-<span class="sd">    molecular_weight : str</span>
-<span class="sd">        Dictionary key containing the molecular weight of each species. The</span>
-<span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
-<span class="sd">    molar_diffusion_volume : str</span>
-<span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
-<span class="sd">        This is used by the Fuller correlation. The default is</span>
-<span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
-<span class="sd">    %(models.phase.T)s</span>
-<span class="sd">    %(models.phase.P)s</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(P)s</span>
+<span class="sd">    %(MWs)s</span>
+<span class="sd">    %(Vdms)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -377,16 +375,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    molecular_weight : str</span>
-<span class="sd">        Dictionary key containing the molecular weight of each species.  The</span>
-<span class="sd">        default is &#39;pore.molecular_weight&#39;</span>
-<span class="sd">    molar_diffusion_volume : str</span>
-<span class="sd">        Dictionary key containing the molar diffusion volume of each species.</span>
-<span class="sd">        This is used by the Fuller correlation.  The default is</span>
-<span class="sd">        &#39;pore.molar_diffusion_volume&#39;</span>
-<span class="sd">    %(models.phase.T)s</span>
-<span class="sd">    %(models.phase.P)s</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(P)s</span>
+<span class="sd">    %(MWs)s</span>
+<span class="sd">    %(Vdms)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

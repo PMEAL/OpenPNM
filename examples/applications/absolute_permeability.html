@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Predicting absolute permeability &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Predicting absolute permeability &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -421,6 +421,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <section id="create-a-random-cubic-network">
 <h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Permalink to this heading">#</a></h2>
@@ -452,8 +458,8 @@
   - WARNING: throat.entry_pressure was not run since the
              following property is missing:
              &#39;throat.surface_tension&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:16:42,163    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:37:37,859    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -461,8 +467,8 @@
   - WARNING: throat.diffusive_conductance was not run since
              the following property is missing:
              &#39;throat.diffusivity&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:16:42,178    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:37:37,867    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -494,6 +500,16 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">soln</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="ne">----&gt; </span><span class="mi">7</span> <span class="n">phase</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span>
+
+<span class="ne">TypeError</span>: &#39;NoneType&#39; object is not iterable
+</pre></div>
+</div>
 </div>
 </div>
 <p>.. Note:: <solution></p>
@@ -509,7 +525,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2099e74a1ddf74a0ff9e482a4875d4a5a0b1d645ef8104359ae07729b2f7e58c.svg" src="../../_images/2099e74a1ddf74a0ff9e482a4875d4a5a0b1d645ef8104359ae07729b2f7e58c.svg" /></div>
+<img alt="../../_images/c5ed545644cc23f83ef1b2d251d3407b002441d40ead25e03688351e7b470e2e.svg" src="../../_images/c5ed545644cc23f83ef1b2d251d3407b002441d40ead25e03688351e7b470e2e.svg" /></div>
 </div>
 </section>
 <section id="calculate-permeability">
@@ -533,15 +549,12 @@
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
   - WARNING: Attempting to estimate inlet area...will be low 
   - SOURCE : openpnm.topotools._topotools.get_domain_area 
-  - TIME   : 2022-09-07 03:16:44,889    
+  - TIME   : 2022-09-01 10:35:39,051    
 ------------------------------------------------------------
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Attempting to estimate domain length...could be
-             low if boundary pores were not added 
+------------------------------------------------------------
+  - WARNING: Attempting to estimate domain length...could be low if boundary pores were not added 
   - SOURCE : openpnm.topotools._topotools.get_domain_length 
-  - TIME   : 2022-09-07 03:16:44,893    
+  - TIME   : 2022-09-01 10:35:39,061    
 ------------------------------------------------------------
 </pre></div>
 </div>

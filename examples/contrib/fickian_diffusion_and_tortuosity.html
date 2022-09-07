@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Fickian Diffusion and Tortuosity &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Fickian Diffusion and Tortuosity &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -290,6 +290,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <section id="generating-network">
 <h2>Generating network<a class="headerlink" href="#generating-network" title="Permalink to this heading">#</a></h2>
@@ -325,7 +331,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f0e8bda2950&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2e9d3339a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -388,8 +394,8 @@ net : &lt;openpnm.network.Cubic at 0x7f0e8bda2950&gt;
   - WARNING: throat.entry_pressure was not run since the
              following property is missing:
              &#39;throat.surface_tension&#39; 
-  - SOURCE : openpnm.core._base2.regenerate_models 
-  - TIME   : 2022-09-07 03:18:31,780    
+  - SOURCE : openpnm.core._models.regenerate_models 
+  - TIME   : 2022-09-07 12:39:43,164    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -444,25 +450,6 @@ net : &lt;openpnm.network.Cubic at 0x7f0e8bda2950&gt;
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.concentration&#39;: SteadyStateSolution([1.     , 1.     , 1.     , 1.     , 1.     , 1.     ,
-                      1.     , 1.     , 1.     , 1.     , 0.91247, 0.90179,
-                      0.90063, 0.91127, 0.91092, 0.89035, 0.87522, 0.87787,
-                      0.85195, 0.84409, 0.8086 , 0.80099, 0.77881, 0.82206,
-                      0.83878, 0.81892, 0.8155 , 0.77651, 0.80579, 0.79607,
-                      0.71218, 0.69453, 0.70386, 0.70642, 0.70437, 0.68794,
-                      0.687  , 0.66227, 0.69233, 0.73643, 0.63349, 0.63437,
-                      0.59717, 0.60263, 0.57961, 0.56621, 0.57162, 0.59177,
-                      0.55168, 0.57888, 0.50755, 0.4831 , 0.44376, 0.47502,
-                      0.51439, 0.51734, 0.50933, 0.49063, 0.45289, 0.4257 ,
-                      0.39291, 0.35487, 0.35859, 0.33091, 0.37506, 0.43326,
-                      0.3751 , 0.34388, 0.32536, 0.30339, 0.24265, 0.25011,
-                      0.25119, 0.25372, 0.22365, 0.24942, 0.21214, 0.21747,
-                      0.20779, 0.20799, 0.08587, 0.12816, 0.14487, 0.1239 ,
-                      0.11533, 0.11314, 0.10743, 0.11603, 0.1247 , 0.1043 ,
-                      0.     , 0.     , 0.     , 0.     , 0.     , 0.     ,
-                      0.     , 0.     , 0.     , 0.     ])}
-</pre></div>
-</div>
 </div>
 </div>
 </section>
@@ -480,7 +467,7 @@ net : &lt;openpnm.network.Cubic at 0x7f0e8bda2950&gt;
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 Settings                            Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-uuid                                90b21edc-01b2-427a-bc29-186faa3a894e
+uuid                                a1741b56-f62d-4fd8-9b35-d63c99be1414
 default_domain                      domain_1
 cache                               True
 conductance                         throat.diffusive_conductance
@@ -524,7 +511,7 @@ x_rtol                              1e-06
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_coordinates&#39;
 </pre></div>
 </div>
-<img alt="../../_images/d6c895eae22e12cd6da1366faadf15266b5350a8ff1dee9e303f9643a3c9dd1c.svg" src="../../_images/d6c895eae22e12cd6da1366faadf15266b5350a8ff1dee9e303f9643a3c9dd1c.svg" /></div>
+<img alt="../../_images/0dd2e6eef90ae91fa7b2f424e01946757cca7f2affc7069faee53bea404ede05.svg" src="../../_images/0dd2e6eef90ae91fa7b2f424e01946757cca7f2affc7069faee53bea404ede05.svg" /></div>
 </div>
 </section>
 <section id="calculating-flux">

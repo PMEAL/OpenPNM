@@ -1,8 +1,0 @@
-:orphan:
-
-throats
-==============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: OrdinaryPercolation.throats

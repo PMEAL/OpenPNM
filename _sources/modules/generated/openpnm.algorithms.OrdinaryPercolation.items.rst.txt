@@ -1,8 +1,0 @@
-:orphan:
-
-items
-============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: OrdinaryPercolation.items

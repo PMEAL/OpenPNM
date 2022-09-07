@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Size Factors and Transport Conductance &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Size Factors and Transport Conductance &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -373,6 +373,18 @@
    Size Factors vs. Shape Factors
   </a>
  </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#deriving-the-size-factor-for-arbitrary-geometries">
+   Deriving the size factor for arbitrary geometries
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#diffusive-size-factor">
+     Diffusive size factor
+    </a>
+   </li>
+  </ul>
+ </li>
 </ul>
 
 </nav>
@@ -407,24 +419,26 @@
 <p>Consider a conduit in a pore network model, as shown by the following figure (we assumed spherical pores and cylindrical throats, but this is not necessary):</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
 <p>where L is length, A is the cross-sectional area, and the subscripts <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(ik\)</span> denote pore <span class="math notranslate nohighlight">\(i\)</span>, pore <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>. Now consider diffusional mass transfer between pore <span class="math notranslate nohighlight">\(i\)</span> and pore <span class="math notranslate nohighlight">\(k\)</span> with a mass flow rate of <span class="math notranslate nohighlight">\(m_{ik}\)</span>, which can be described by the following equation:</p>
-<div class="math notranslate nohighlight">
-\[
+<div class="math notranslate nohighlight" id="equation-mass-flow-rate">
+<span class="eqno">(1)<a class="headerlink" href="#equation-mass-flow-rate" title="Permalink to this equation">#</a></span>\[
 m_{ik} = g_{ik} \cdot (c_i - c_k)
 \]</div>
+<p>where <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the overall conductance of the conduit containing pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and the connecting throat <span class="math notranslate nohighlight">\(ik\)</span>. The overall conductance is a function of the pore sizes, throat sizes, and physical properties of the fluid. For example, the overall conductance can be written as:</p>
 <p>where <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the diffusive conductance of the entire conduit, and <span class="math notranslate nohighlight">\(c_i\)</span> and <span class="math notranslate nohighlight">\(c_k\)</span> are the concentrations in pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, respectively. Note that the conduit <span class="math notranslate nohighlight">\(ik\)</span> consists of pore <span class="math notranslate nohighlight">\(i\)</span>, throat <span class="math notranslate nohighlight">\(ik\)</span>, and pore <span class="math notranslate nohighlight">\(j\)</span>, which are connected in series. By electrical circuit analogy, the resistance (inverse of the conductance) of each element can be related to the overall resistance by the following equation:</p>
 <div class="math notranslate nohighlight">
 \[
 R_{ik} = R_i^p + R_k^p + R_{ik}^t
 \]</div>
 <p>where the superscripts <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(t\)</span> denote pore and throat resistances, respectively, and <span class="math notranslate nohighlight">\(R_{ik}\)</span> is the resistance of the entire conduit. The equation above can be rewritten in form of conductance as follows:</p>
-<div class="math notranslate nohighlight">
-\[
+<div class="math notranslate nohighlight" id="equation-resistors-in-series">
+<span class="eqno">(2)<a class="headerlink" href="#equation-resistors-in-series" title="Permalink to this equation">#</a></span>\[
 1/g_{ik} = 1/g_i^p + 1/g_k^p + 1/g_{ik}^t
 \]</div>
-<p>where <span class="math notranslate nohighlight">\(g_i^p\)</span> and <span class="math notranslate nohighlight">\(g_k^p\)</span> are the pore resistances, and <span class="math notranslate nohighlight">\(g_{ik}^t\)</span> is the throat resistance.</p>
+<p>where <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the overall conductance of the conduit containing pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and the connecting throat <span class="math notranslate nohighlight">\(ik\)</span>. The equation above is the basis for calculating the overall conductance of a conduit in a pore network model. The pore and throat resistances can be calculated using the following equations:</p>
+<p>where <span class="math notranslate nohighlight">\(g_i^p\)</span> and <span class="math notranslate nohighlight">\(g_k^p\)</span> are the pore conductances, and <span class="math notranslate nohighlight">\(g_{ik}^t\)</span> is the throat conductance.</p>
 <p>For simplicity, let’s assume that the shape of the pores and throats are cylindrical as shown in the figure below:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png"><img alt="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" src="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" style="width: 750px;" /></a>
-<p>Based on this assumption, the diffusive conductance of each element can be expressed as:</p>
+<p>Based on this assumption, the diffusive conductance of each element can be expressed as (more on how to derive these equations comes later):</p>
 <div class="math notranslate nohighlight">
 \[
 g_i^p = D \frac{\pi d_i^2/4}{\ell_i} \quad , \quad g_k^p = D \frac{\pi d_k^2/4}{\ell_k} \quad , \quad g_{ik}^t = D \frac{\pi d_{ik}^2/4}{\ell_{ik}}
@@ -448,7 +462,7 @@ m_{ik} = \mathcal{S} \cdot D \cdot (c_i - c_k)
 \[
 g = \mathcal{S} \cdot D
 \]</div>
-<p>OpenPNM has a number of built-in functions to calculate the size factor, which can be found under <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry.diffusive_size_factors</span></code>, and <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry.hydraulic_size_factors</span></code>. Let’s inspect the available diffusive size factor models.</p>
+<p>OpenPNM has a number of built-in functions to calculate the size factor, which can be found under <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry</span></code>, and <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry</span></code>. Let’s inspect the available diffusive size factor models:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
@@ -481,6 +495,39 @@ ncylinders_in_series
 <p class="admonition-title">Note</p>
 <p>Note that the diffusive size factor models can be used for any physics that involves molecular diffusion such as heat conduction, electron transport, etc, and therefore, it is not limited to <em>diffusive mass transport</em>. The hydraulic size factor models, however, are only applicable to the flow algorithms such as <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code>.</p>
 </div>
+</section>
+<section id="deriving-the-size-factor-for-arbitrary-geometries">
+<h2>Deriving the size factor for arbitrary geometries<a class="headerlink" href="#deriving-the-size-factor-for-arbitrary-geometries" title="Permalink to this heading">#</a></h2>
+<p>In this section, we will derive the equation for the size factor for arbitrary geometries, then we will apply it to the case of cylindrical pores and throats to retrieve the equations we used in the previous section.</p>
+<p>Consider the following conduit, which consists of a pore <span class="math notranslate nohighlight">\(i\)</span>, a throat <span class="math notranslate nohighlight">\(ik\)</span>, and a pore <span class="math notranslate nohighlight">\(k\)</span>:</p>
+<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
+<p>Note that the choice of spheres and cylinders in the above figure is arbitrary and will not be taken into account in the derivation.</p>
+<section id="diffusive-size-factor">
+<h3>Diffusive size factor<a class="headerlink" href="#diffusive-size-factor" title="Permalink to this heading">#</a></h3>
+<p>From the Fick’s law of diffusion, the diffusive mass flow rate between pore <span class="math notranslate nohighlight">\(i\)</span> and pore <span class="math notranslate nohighlight">\(k\)</span> is given by (assuming that the transport begins at the center of pore <span class="math notranslate nohighlight">\(i\)</span> and ends at the center of pore <span class="math notranslate nohighlight">\(k\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[
+m_{ik} = -D \cdot A(x) \cdot \frac{dc}{dx}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(A(x)\)</span> is the cross-sectional area of the conduit at position <span class="math notranslate nohighlight">\(x\)</span>, and <span class="math notranslate nohighlight">\(dc/dx\)</span> is the concentration gradient. Rearranging the equation above, we get:</p>
+<div class="math notranslate nohighlight">
+\[
+m_{ik} A(x) dx = -D \cdot dc
+\]</div>
+<p>Integrating the above equation over the entire conduit, we get:</p>
+<div class="math notranslate nohighlight">
+\[
+m_{ik} \int_{x_i}^{x_k} \frac{dx}{A(x)} = -D \int_{x_i}^{x_k} dc
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_i\)</span> and <span class="math notranslate nohighlight">\(x_k\)</span> are the coordinates of the centers of pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, respectively. Note that <span class="math notranslate nohighlight">\(m_{ik}\)</span> and <span class="math notranslate nohighlight">\(D\)</span> are not a function of <span class="math notranslate nohighlight">\(x\)</span>, so they can be taken out of the integral. Since the conduit is connected in series, the above equation can be rewritten as:</p>
+<p>$$
+m_{ik} \Bigg[ \Big( \int \frac{dx}{A(x)} \Big)<em>{\text{pore 1}} + \Big( \int \frac{dx}{A(x)} \Big)</em>{\text{throat}} + \Big( \int \frac{dx}{A(x)} \Big)_{\text{pore 2}} \Bigg] = D \cdot (c_i - c_k)</p>
+<p>By comparing the above equation with equations <code class="xref math math-numref docutils literal notranslate"><span class="pre">euler</span></code>, and <a class="reference internal" href="#equation-resistors-in-series">(2)</a>, the size factor for each element can be inferred as:</p>
+<div class="math notranslate nohighlight">
+\[
+g_{i}^p = \int_{L_i} \frac{dx}{A_i(x)} \quad , \quad g_{k}^p = \int_{L_k} \frac{dx}{A_k(x)} \quad , \quad g_{ik}^t = \int_{L_{ik}} \frac{dx}{A_{ik}(x)}
+\]</div>
+</section>
 </section>
 </section>
 

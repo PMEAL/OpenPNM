@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.core._base2 &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>openpnm.core._base2 &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -192,15 +192,13 @@
                 
   <h1>Source code for openpnm.core._base2</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">openpnm.core</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">LabelMixin</span><span class="p">,</span>
-    <span class="n">ModelsDict</span><span class="p">,</span>
-    <span class="n">ModelWrapper</span><span class="p">,</span>
     <span class="n">ParserMixin</span><span class="p">,</span>
+    <span class="n">ModelsMixin2</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Workspace</span><span class="p">,</span>
@@ -210,7 +208,6 @@
     <span class="n">Docorator</span><span class="p">,</span>
     <span class="n">get_printable_props</span><span class="p">,</span>
     <span class="n">get_printable_labels</span><span class="p">,</span>
-    <span class="n">prettify_logger_message</span>
 <span class="p">)</span>
 
 
@@ -221,7 +218,6 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;Base2&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;ModelMixin2&#39;</span><span class="p">,</span>
     <span class="s1">&#39;Domain&#39;</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -245,7 +241,8 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Base2</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base class</span>
+<span class="sd">    A subclassed dictionary used for storing Network, Phase, and Algorithm</span>
+<span class="sd">    objects.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -380,19 +377,6 @@
             <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">vals</span><span class="p">[</span><span class="n">locs</span><span class="p">]</span>
 
-        <span class="c1"># This allows for lookup of all data that &#39;ends with&#39; a certain</span>
-        <span class="c1"># string, like pn[*diameter&#39;] will return a dict with pore and throat</span>
-        <span class="c1"># as the dict keys</span>
-        <span class="c1"># if key.startswith(&#39;*&#39;):</span>
-        <span class="c1">#     d = {}</span>
-        <span class="c1">#     key = key[1:]  # Remove astrisk</span>
-        <span class="c1">#     if key.startswith(&#39;.&#39;):  # Remove leading dot if *. was given</span>
-        <span class="c1">#         key = key[1:]</span>
-        <span class="c1">#     for k, v in self.items():</span>
-        <span class="c1">#         if k.endswith(key):</span>
-        <span class="c1">#             d[k[:-len(key)-1]] = super().__getitem__(k)</span>
-        <span class="c1">#     return d</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -451,6 +435,27 @@
                     <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Base2.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.keys.html#openpnm.algorithms.Base2.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An overloaded version of ``keys`` that optionally accepts a ``mode``</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            If given, optionally, it controls which type of keys are returned.</span>
+<span class="sd">            Options are:</span>
+
+<span class="sd">            ========== =======================================================</span>
+<span class="sd">            mode       description</span>
+<span class="sd">            ========== =======================================================</span>
+<span class="sd">            props      Returns only keys that contain numerical arrays</span>
+<span class="sd">            labels     Returns only keys that contain boolean arrays</span>
+<span class="sd">            models     Returns only keys that were generated by a pore-scale</span>
+<span class="sd">                       model</span>
+<span class="sd">            constants  Returns only keys are were *not* generated by a pore-</span>
+<span class="sd">                       scale model</span>
+<span class="sd">            ========== =======================================================</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -537,11 +542,6 @@
                     <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;throat.&#39;</span><span class="p">):</span>
                         <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="c1"># TODO: Delete this once codes stops asking for it</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">Nt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
@@ -562,6 +562,25 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">indices</span><span class="p">})</span>
 
 <div class="viewcode-block" id="Base2.to_mask"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.to_mask.html#openpnm.algorithms.Base2.to_mask">[docs]</a>    <span class="k">def</span> <span class="nf">to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a boolean mask with `True` values in the given locations</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : array_like</span>
+<span class="sd">            The pore indices where `True` values will be placed. If `pores` is</span>
+<span class="sd">            given the `throats` is ignored.</span>
+<span class="sd">        throats : array_like</span>
+<span class="sd">            The throat indices where `True` values will be placed. If `pores` is</span>
+<span class="sd">            given the `throats` is ignored.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mask : ndarray, boolean</span>
+<span class="sd">            A boolean array of length Np is `pores` was given or Nt if</span>
+<span class="sd">            `throats` was given.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Np</span>
@@ -575,10 +594,47 @@
         <span class="k">return</span> <span class="n">mask</span></div>
 
 <div class="viewcode-block" id="Base2.to_indices"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.to_indices.html#openpnm.algorithms.Base2.to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">to_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a boolean mask to pore or throat indices</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mask : ndarray</span>
+<span class="sd">            A boolean mask with `True` values indicating either pore or</span>
+<span class="sd">            throat indices. This array must either be Nt or Np long, otherwise</span>
+<span class="sd">            an Exception is raised.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indices : ndarray</span>
+<span class="sd">            An array containing numerical indices of where `mask` was `True`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function is equivalent to just calling `np.where(mask)[0]` but</span>
+<span class="sd">        does check to ensure that `mask` is a valid length.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Mask must be either Nt or Np long&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Base2.props"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.props.html#openpnm.algorithms.Base2.props">[docs]</a>    <span class="k">def</span> <span class="nf">props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves a list of keys that contain numerical data (i.e. &quot;properties&quot;)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        element : str, list of strings</span>
+<span class="sd">            Indicates whether `&#39;pore&#39;` or `&#39;throat&#39;` properties should be returned.</span>
+<span class="sd">            The default is `[&#39;pore&#39;, &#39;throat&#39;]`, so both are returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        props : list of strings</span>
+<span class="sd">            The names of all dictionary keys on the object that contain</span>
+<span class="sd">            numerical data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">element</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">element</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -593,6 +649,26 @@
         <span class="k">return</span> <span class="n">props</span></div>
 
 <div class="viewcode-block" id="Base2.interpolate_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.interpolate_data.html#openpnm.algorithms.Base2.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates an array of the requested pore/throat data by interpolating</span>
+<span class="sd">        the neighboring throat/pore data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            The data to be generated.</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            Dictate how the interpolation is done. Options are &#39;mean&#39;, &#39;min&#39;,</span>
+<span class="sd">            and &#39;max&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data : ndarray</span>
+<span class="sd">            An ndarray containing the interpolated data.  E.g. Requesting</span>
+<span class="sd">            &#39;throat.temperature&#39; will read the values of &#39;pore.temperature&#39;</span>
+<span class="sd">            in each of the neighboring pores and compute the average</span>
+<span class="sd">            (if `mode=&#39;mean&#39;`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">openpnm.models.misc</span> <span class="kn">import</span> <span class="n">from_neighbor_throats</span><span class="p">,</span> <span class="n">from_neighbor_pores</span>
         <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span>
@@ -607,8 +683,7 @@
 
 <div class="viewcode-block" id="Base2.get_conduit_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.get_conduit_data.html#openpnm.algorithms.Base2.get_conduit_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_conduit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fetches an Nt-by-3 array of the request property in the form of</span>
-<span class="sd">        [pore1, throat, pore2].</span>
+<span class="sd">        Fetches an Nt-by-3 array of the requested property</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -657,126 +732,14 @@
         <span class="k">return</span> <span class="n">lines</span></div>
 
 
-<div class="viewcode-block" id="ModelMixin2"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelMixin2.html#openpnm.algorithms.ModelMixin2">[docs]</a><span class="k">class</span> <span class="nc">ModelMixin2</span><span class="p">:</span>
+<div class="viewcode-block" id="Domain"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Domain.html#openpnm.algorithms.Domain">[docs]</a><span class="k">class</span> <span class="nc">Domain</span><span class="p">(</span><span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ModelsMixin2</span><span class="p">,</span> <span class="n">Base2</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The main class used for Network, Phase and Algorithm objects.</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="n">ModelsDict</span><span class="p">()</span>
+<span class="sd">    This class inherits from ``Base2``, but also has several mixins for</span>
+<span class="sd">    added functionality.</span>
 
-<div class="viewcode-block" id="ModelMixin2.add_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelMixin2.add_model.html#openpnm.algorithms.ModelMixin2.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
-                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>
-            <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;default_domain&#39;</span><span class="p">]</span>
-        <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="n">domain</span> <span class="o">!=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not define </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1"> since &#39;</span>
-                               <span class="sa">f</span><span class="s1">&#39;number of </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">s is not defined yet&#39;</span><span class="p">)</span>
-        <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="c1"># Add model and regen_mode to kwargs dictionary</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span> <span class="s1">&#39;regen_mode&#39;</span><span class="p">:</span> <span class="n">regen_mode</span><span class="p">})</span>
-        <span class="c1"># Insepct model to extract arguments and default values</span>
-        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="vm">__defaults__</span><span class="p">:</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span>
-            <span class="n">keys</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">):]</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>  <span class="c1"># Put defaults into kwargs</span>
-                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>  <span class="c1"># Skip if argument was given in kwargs</span>
-                    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">!=</span> <span class="s1">&#39;deferred&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ModelMixin2.add_model_collection"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelMixin2.add_model_collection.html#openpnm.algorithms.ModelMixin2.add_model_collection">[docs]</a>    <span class="k">def</span> <span class="nf">add_model_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">models</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">domain</span>
-            <span class="k">if</span> <span class="s1">&#39;regen_mode&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;regen_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">regen_mode</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ModelMixin2.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelMixin2.regenerate_models.html#openpnm.algorithms.ModelMixin2.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="n">all_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_list</span><span class="p">()</span>
-        <span class="c1"># Regenerate all properties by default</span>
-        <span class="k">if</span> <span class="n">propnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">propnames</span> <span class="o">=</span> <span class="n">all_models</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">propnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">propnames</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="c1"># Remove any that are specifically excluded</span>
-        <span class="n">propnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">propnames</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="c1"># Reorder given propnames according to dependency tree</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">]</span>
-        <span class="n">idx_sorted</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_models</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
-        <span class="n">propnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">idx_sorted</span><span class="p">,</span> <span class="n">propnames</span><span class="p">))]</span>
-        <span class="c1"># Now run each on in sequence</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> was not run since the following property&quot;</span>
-                       <span class="sa">f</span><span class="s2">&quot; is missing: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;regen_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;deferred&#39;</span></div>
-
-<div class="viewcode-block" id="ModelMixin2.run_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelMixin2.run_model.html#openpnm.algorithms.ModelMixin2.run_model">[docs]</a>    <span class="k">def</span> <span class="nf">run_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>  <span class="c1"># Get domain from propname if present</span>
-                <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># No domain means run model for ALL domains</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
-                        <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># domain was given explicitly</span>
-            <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">propname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="n">mod_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span>
-            <span class="c1"># Collect kwargs</span>
-            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;domain&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">}</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">mod_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;regen_mode&#39;</span><span class="p">]:</span>
-                    <span class="n">kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
-            <span class="c1"># Deal with models that don&#39;t have domain argument yet</span>
-            <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-                <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
-                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Returned item was a scalar</span>
-                            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
-                        <span class="n">vals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>  <span class="c1"># Handle models that return a float</span>
-                    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>  <span class="c1"># Index into full domain result for use below</span>
-                    <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Model that accepts domain arg</span>
-                <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="c1"># Finally add model results to self</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>  <span class="c1"># If model returns single array</span>
-                <span class="k">if</span> <span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="c1"># Create empty array if not found</span>
-                    <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),</span>
-                                                     <span class="o">*</span><span class="n">vals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
-                <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">vals</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># If model returns a dict of arrays</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="c1"># Create empty array if not found</span>
-                        <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),</span> <span class="o">*</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
-                    <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span></div></div>
-
-
-<div class="viewcode-block" id="Domain"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Domain.html#openpnm.algorithms.Domain">[docs]</a><span class="k">class</span> <span class="nc">Domain</span><span class="p">(</span><span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ModelMixin2</span><span class="p">,</span> <span class="n">Base2</span><span class="p">):</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span></div>
 
 
@@ -835,8 +798,8 @@
                 <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
                 <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,)</span>
 
-    <span class="c1">## Run some basic tests</span>
-
+    <span class="c1"># Run some basic tests</span>
+    <span class="c1"># --------------------</span>
     <span class="c1"># Use official args</span>
     <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;pore.left&#39;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>

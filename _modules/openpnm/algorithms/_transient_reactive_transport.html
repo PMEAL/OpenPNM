@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.algorithms._transient_reactive_transport &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>openpnm.algorithms._transient_reactive_transport &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -288,8 +288,7 @@
         <span class="n">soln</span> <span class="o">=</span> <span class="n">integrator</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">tspan</span><span class="p">,</span> <span class="n">saveat</span><span class="p">)</span>
         <span class="c1"># Return solution as dictionary</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">soln</span> <span class="o">=</span> <span class="n">SolutionContainer</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">soln</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">soln</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">soln</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soln</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">soln</span></div>
 
     <span class="k">def</span> <span class="nf">_run_special</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span> <span class="o">...</span>
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.phase._mixture &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>openpnm.phase._mixture &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -197,6 +197,7 @@
 <span class="kn">from</span> <span class="nn">openpnm.models.phase.mixtures</span> <span class="kn">import</span> <span class="n">mole_summation</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">standard_liquid_mixture</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">standard_gas_mixture</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">binary_gas_mixture</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">HealthDict</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">Workspace</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">get_printable_props</span><span class="p">,</span> <span class="n">get_printable_labels</span>
@@ -225,14 +226,15 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Mixture</span><span class="p">(</span><span class="n">Phase</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates Phase object that represents a multicomponent mixture</span>
-<span class="sd">    consisting of a given list of individual phase objects as components.</span>
+<span class="sd">    Creates ``Phase`` object that represents a multicomponent mixture</span>
+<span class="sd">    consisting of a given list of individual ``Species`` objects as</span>
+<span class="sd">    components.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(Phase.parameters)s</span>
-<span class="sd">    components : list</span>
-<span class="sd">        A list of all components that constitute this mixture</span>
+<span class="sd">    components : list of ``Species`` objects</span>
+<span class="sd">        A list of all components that constitute the mixture</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -407,9 +409,42 @@
     <span class="n">components</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_comps</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_comps</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Mixture.add_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.add_comp.html#openpnm.phase.Mixture.add_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to add a component</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        component : Species object</span>
+<span class="sd">            The pure ``Species`` object to add</span>
+<span class="sd">        mole_fraction : float or array_like</span>
+<span class="sd">            The mole fraction of the given component in each pore. Can either</span>
+<span class="sd">            be a scalar which is applied to every pore, or an Np-long</span>
+<span class="sd">            ``ndarray`` with values for each pore.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method just adds `&#39;pore.mole_fraction.&lt;component.name&gt;&#39;`</span>
+<span class="sd">        to the `Mixture` dictionary, and assigns the given `mole_fraction`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">mole_fraction</span></div>
 
 <div class="viewcode-block" id="Mixture.remove_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.remove_comp.html#openpnm.phase.Mixture.remove_comp">[docs]</a>    <span class="k">def</span> <span class="nf">remove_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to remove a component from the mixture</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        component : Species object or str name</span>
+<span class="sd">            The `Species` to remove from the mixture. Can either be a handle to</span>
+<span class="sd">            the object, or the object&#39;s `name`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method just calls</span>
+<span class="sd">        `del mixture[&#39;pore.mole_fraction.&lt;component.name&gt;&#39;]` to remove the</span>
+<span class="sd">        given component.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">):</span>
             <span class="n">component</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span>
         <span class="k">try</span><span class="p">:</span>
@@ -419,17 +454,18 @@
 
 <div class="viewcode-block" id="Mixture.check_mixture_health"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.check_mixture_health.html#openpnm.phase.Mixture.check_mixture_health">[docs]</a>    <span class="k">def</span> <span class="nf">check_mixture_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks the &quot;health&quot; of the mixture</span>
+<span class="sd">        Checks the state of health of the mixture</span>
 
 <span class="sd">        Calculates the mole fraction of all species in each pore and returns</span>
-<span class="sd">        an list of where values are too low or too high</span>
+<span class="sd">        an list of where values are too low or too high,</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        health : dict</span>
 <span class="sd">            A HealthDict object containing lists of locations where the mole</span>
 <span class="sd">            fractions are not unity. One value indicates locations that are</span>
-<span class="sd">            too high, and another where they are too low.</span>
+<span class="sd">            too high, and another where they are too low. This `dict` evaluates</span>
+<span class="sd">            to `True` if all items are healthy.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">HealthDict</span><span class="p">()</span>
@@ -446,6 +482,12 @@
 
 
 <div class="viewcode-block" id="LiquidMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.LiquidMixture.html#openpnm.phase.LiquidMixture">[docs]</a><span class="k">class</span> <span class="nc">LiquidMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper class for creating a liquid mixture.</span>
+
+<span class="sd">    This class has a helper method `x` which allows for setting and getting</span>
+<span class="sd">    of compositions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="LiquidMixture.x"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.LiquidMixture.x.html#openpnm.phase.LiquidMixture.x">[docs]</a>    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -482,6 +524,12 @@
 
 
 <div class="viewcode-block" id="GasMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.GasMixture.html#openpnm.phase.GasMixture">[docs]</a><span class="k">class</span> <span class="nc">GasMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper class for creating a gas mixture.</span>
+
+<span class="sd">    This class has a helper method `y` which allows for setting and getting</span>
+<span class="sd">    of compositions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GasMixture.y"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.GasMixture.y.html#openpnm.phase.GasMixture.y">[docs]</a>    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -518,15 +566,43 @@
 
 
 <div class="viewcode-block" id="BinaryGas"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.BinaryGas.html#openpnm.phase.BinaryGas">[docs]</a><span class="k">class</span> <span class="nc">BinaryGas</span><span class="p">(</span><span class="n">GasMixture</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A `GasMixture` class that has a predefined set of models for computing the</span>
+<span class="sd">    properties of the mixture as a function of composition.</span>
 
-<div class="viewcode-block" id="BinaryGas.add_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.BinaryGas.add_comp.html#openpnm.phase.BinaryGas.add_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Binary mixtures cannot have more than 2 components&quot;</span>
-                            <span class="o">+</span> <span class="s2">&quot;, remove one first&quot;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_comp</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="n">mole_fraction</span><span class="p">)</span></div></div>
+<span class="sd">    The number of components is capped at 2 (i.e. binary) since the calculation</span>
+<span class="sd">    of diffusion coefficients using the Lennard-Jones method in the `chemicals`</span>
+<span class="sd">    package only works for binary mixtures.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">binary_gas_mixture</span><span class="p">)</span>
+        <span class="c1"># Running models doesn&#39;t make sense as compositions are not set yet</span>
+        <span class="c1"># self.regenerate_models()</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Binary mixtures cannot have more than&quot;</span> \
+                            <span class="s2">&quot; 2 components, remove one first&quot;</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="StandardLiquidMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.StandardLiquidMixture.html#openpnm.phase.StandardLiquidMixture">[docs]</a><span class="k">class</span> <span class="nc">StandardLiquidMixture</span><span class="p">(</span><span class="n">LiquidMixture</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A `LiquidMixture` class that also has a predefined suite of models for</span>
+<span class="sd">    computing the properties of the mixture as a function of composition.</span>
+
+<span class="sd">    The models are taken from the `chemicals` package and can be viewed with</span>
+<span class="sd">    `print(liq_mix.models)`, where `liq_mix` is an instance of this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -536,6 +612,13 @@
 
 
 <div class="viewcode-block" id="StandardGasMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.StandardGasMixture.html#openpnm.phase.StandardGasMixture">[docs]</a><span class="k">class</span> <span class="nc">StandardGasMixture</span><span class="p">(</span><span class="n">GasMixture</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A `GasMixture` class that also has a predefined suite of models for</span>
+<span class="sd">    computing the properties of the mixture as a function of composition.</span>
+
+<span class="sd">    The models are taken from the `chemicals` package and can be viewed with</span>
+<span class="sd">    `print(gas_mix.models)`, where `gas_mix` is an instance of this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

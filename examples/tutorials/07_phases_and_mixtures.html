@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Creating Phases &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Creating Phases &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -553,6 +553,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <p>All simulations start by defining/creating a network.  The <code class="docutils literal notranslate"><span class="pre">Demo</span></code> class creates a simple cubic network with an assortment of useful properties included:</p>
 <div class="cell docutils container">
@@ -572,7 +578,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f55c00b09a0&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f5e3af608b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -668,7 +674,7 @@ When assigning a pore-scale model using the <code class="docutils literal notran
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00091476 0.00091476 0.00091476 0.00091476]
-After: [0.00065321 0.00045812 0.00073913 0.00048742]
+After: [0.00043208 0.00084282 0.00041887 0.00086137]
 </pre></div>
 </div>
 </div>
@@ -688,8 +694,8 @@ After: [0.00065321 0.00045812 0.00073913 0.00048742]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00065321 0.00045812 0.00073913 0.00048742]
-After: [0.00062159 0.00042736 0.00071135 0.00045661]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00043208 0.00084282 0.00041887 0.00086137]
+After: [0.00039798 0.00081937 0.00037803 0.0008385 ]
 </pre></div>
 </div>
 </div>
@@ -726,7 +732,7 @@ Assigning a new model with <code class="docutils literal notranslate"><span clas
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00065321 0.00045812 0.00073913 0.00048742]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00043208 0.00084282 0.00041887 0.00086137]
 </pre></div>
 </div>
 </div>
@@ -745,7 +751,7 @@ Assigning a new model with <code class="docutils literal notranslate"><span clas
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_02 : &lt;openpnm.phase.Water at 0x7f55c00d0590&gt;
+phase_02 : &lt;openpnm.phase.Water at 0x7f5e3af764a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -845,7 +851,7 @@ In most cases you probably do not need to use the <code class="docutils literal 
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_03 : &lt;openpnm.phase.Species at 0x7f55bdecd1d0&gt;
+phase_03 : &lt;openpnm.phase.Species at 0x7f5e38d4fe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1054,7 +1060,7 @@ The ability to fetch items from the <code class="docutils literal notranslate"><
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_04 : &lt;openpnm.phase.StandardGas at 0x7f55bdeb7090&gt;
+phase_04 : &lt;openpnm.phase.StandardGas at 0x7f5e38d6ba90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1083,7 +1089,7 @@ phase_04 : &lt;openpnm.phase.StandardGas at 0x7f55bdeb7090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7f55bdeb7770&gt;
+phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7f5e38d674f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1193,19 +1199,18 @@ phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7f55bdeb7770&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f55bdeb7130&gt;
+mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f5e38d5be00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   1  pore.density                                                        4 / 4
-  2  pore.diffusivity                                                    4 / 4
-  3  pore.heat_capacity                                                  4 / 4
-  4  pore.mole_fraction.nitrogen                                         4 / 4
-  5  pore.mole_fraction.oxygen                                           4 / 4
-  6  pore.pressure                                                       4 / 4
-  7  pore.temperature                                                    4 / 4
-  8  pore.thermal_conductivity                                           4 / 4
-  9  pore.viscosity                                                      4 / 4
+  2  pore.heat_capacity                                                  4 / 4
+  3  pore.mole_fraction.nitrogen                                         4 / 4
+  4  pore.mole_fraction.oxygen                                           4 / 4
+  5  pore.pressure                                                       4 / 4
+  6  pore.temperature                                                    4 / 4
+  7  pore.thermal_conductivity                                           4 / 4
+  8  pore.viscosity                                                      4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1285,8 +1290,8 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f55bdeab4a0&gt;,
- &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f55bdec0b80&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f5e38d6b770&gt;,
+ &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f5e38d5b7c0&gt;}
 </pre></div>
 </div>
 </div>
@@ -1334,7 +1339,7 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f55bdec0b80&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f5e38d5b7c0&gt;}
 </pre></div>
 </div>
 </div>
@@ -1365,7 +1370,7 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f55bdeab4a0&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f5e38d6b770&gt;}
 </pre></div>
 </div>
 </div>
@@ -1379,8 +1384,8 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f55bdeab4a0&gt;,
- &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f55bdec0b80&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f5e38d6b770&gt;,
+ &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f5e38d5b7c0&gt;}
 </pre></div>
 </div>
 </div>
@@ -1397,19 +1402,18 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f55bdeb7130&gt;
+mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f5e38d5be00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   1  pore.density                                                        4 / 4
-  2  pore.diffusivity                                                    4 / 4
-  3  pore.heat_capacity                                                  4 / 4
-  4  pore.mole_fraction.nitrogen                                         4 / 4
-  5  pore.mole_fraction.oxygen                                           4 / 4
-  6  pore.pressure                                                       4 / 4
-  7  pore.temperature                                                    4 / 4
-  8  pore.thermal_conductivity                                           4 / 4
-  9  pore.viscosity                                                      4 / 4
+  2  pore.heat_capacity                                                  4 / 4
+  3  pore.mole_fraction.nitrogen                                         4 / 4
+  4  pore.mole_fraction.oxygen                                           4 / 4
+  5  pore.pressure                                                       4 / 4
+  6  pore.temperature                                                    4 / 4
+  7  pore.thermal_conductivity                                           4 / 4
+  8  pore.viscosity                                                      4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1418,7 +1422,7 @@ mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f55bdeb7130&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 Component Phases
 ══════════════════════════════════════════════════════════════════════════════
-oxygen : &lt;openpnm.phase.StandardGas at 0x7f55bdeab4a0&gt;
+oxygen : &lt;openpnm.phase.StandardGas at 0x7f5e38d6b770&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1435,7 +1439,7 @@ oxygen : &lt;openpnm.phase.StandardGas at 0x7f55bdeab4a0&gt;
   1  pore.all.oxygen                                                         4
   2  throat.all.oxygen                                                       4
 ══════════════════════════════════════════════════════════════════════════════
-nitrogen : &lt;openpnm.phase.StandardGas at 0x7f55bdec0b80&gt;
+nitrogen : &lt;openpnm.phase.StandardGas at 0x7f5e38d5b7c0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――

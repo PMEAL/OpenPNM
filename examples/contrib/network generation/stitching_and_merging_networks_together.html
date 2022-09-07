@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Stitching and Merging Networks &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+    <title>Stitching and Merging Networks &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -246,6 +246,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -257,7 +263,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-coarse_net : &lt;openpnm.network.Cubic at 0x7f964e0eb3b0&gt;
+coarse_net : &lt;openpnm.network.Cubic at 0x7f3937dda1d0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -291,7 +297,7 @@ coarse_net : &lt;openpnm.network.Cubic at 0x7f964e0eb3b0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fine_net : &lt;openpnm.network.Cubic at 0x7f964e0eb360&gt;
+fine_net : &lt;openpnm.network.Cubic at 0x7f3937dda180&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -345,7 +351,7 @@ fine_net : &lt;openpnm.network.Cubic at 0x7f964e0eb360&gt;
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/be02dc737bb33a1091875f542f73695fa8969121da42adb121cf5c0e4bb73a5d.svg" src="../../../_images/be02dc737bb33a1091875f542f73695fa8969121da42adb121cf5c0e4bb73a5d.svg" /></div>
+<img alt="../../../_images/b116792e052bb0b3b26125e90af2e433358cbaade11ba19f56c7fd79715114b7.svg" src="../../../_images/b116792e052bb0b3b26125e90af2e433358cbaade11ba19f56c7fd79715114b7.svg" /></div>
 </div>
 <p>As can be seen below, <code class="docutils literal notranslate"><span class="pre">fine_net</span></code> (orange) has been repositioned above the <code class="docutils literal notranslate"><span class="pre">coarse_net</span></code> (blue) because we shifted the z-coordinate by 500 um. (10 pores as 50 um per pore).</p>
 <p>But this above plotting was accomplished by sending <em>different</em> networks to the same plot.  The <code class="docutils literal notranslate"><span class="pre">merge</span></code> function let’s us combine the two networks together, as follows:</p>
