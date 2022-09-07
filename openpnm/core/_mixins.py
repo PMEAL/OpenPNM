@@ -1,10 +1,12 @@
 import numpy as np
-from collections import namedtuple
 from openpnm.utils import PrintableList
 from matplotlib.docstring import Substitution
 
 
-__all__ = ['ParserMixin', 'LabelMixin']
+__all__ = [
+    'ParserMixin',
+    'LabelMixin',
+]
 
 
 _doctxt = Substitution(
@@ -205,7 +207,10 @@ class ParserMixin:
 
 
 class LabelMixin:
-    """Brief explanation of LabelMixin"""
+    """r
+    This mixin add functionality to the Base2 class so that boolean arrays
+    are treated as labels.
+    """
 
     def _get_labels(self, element, locations, mode):
         r"""
