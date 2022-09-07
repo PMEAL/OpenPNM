@@ -1,6 +1,5 @@
 import os
 import py
-import pytest
 import numpy as np
 import scipy as sp
 import openpnm as op
@@ -48,7 +47,7 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print('Running test: {item}')
             try:
                 t.__getattribute__(item)()
             except TypeError:

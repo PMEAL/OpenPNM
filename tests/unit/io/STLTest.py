@@ -6,7 +6,7 @@ import openpnm as op
 from openpnm.models.misc import from_neighbor_pores
 
 
-@pytest.mark.skip(reason="'netgen' is only available on conda")
+@pytest.mark.skipif(os.name == 'nt', reason="Skipping on Windows")
 class STLTest:
 
     def setup_class(self):
@@ -22,9 +22,9 @@ class STLTest:
         os.remove("custom_stl.stl")
 
     def test_export_data_stl(self):
-        op.io.to_stl(network=self.net)
+        op.io.network_to_stl(network=self.net)
         assert os.path.isfile(f"{self.net.name}.stl")
-        op.io.to_stl(network=self.net, filename="custom_stl")
+        op.io.network_to_stl(network=self.net, filename="custom_stl")
         assert os.path.isfile("custom_stl.stl")
 
 
