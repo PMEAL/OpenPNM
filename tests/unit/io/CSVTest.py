@@ -1,7 +1,6 @@
-import openpnm as op
-import pytest
-import py
 import os
+import py
+import openpnm as op
 
 
 class CSVTest:
@@ -30,10 +29,26 @@ class CSVTest:
 
     def test_project_to_csv(self, tmpdir):
         fname = tmpdir.join(self.net.project.name)
-        len_before = len(tmpdir.listdir())
         op.io.project_to_csv(self.net.project, filename=fname)
-        assert len(tmpdir.listdir()) == (len_before + 1)
+        assert os.path.isfile(fname + '.csv')
         os.remove(fname.dirpath().join(self.net.project.name + '.csv'))
+
+    def test_network_to_csv(self, tmpdir):
+        fname = tmpdir.join(self.net.name)
+        op.io.network_to_csv(self.net, filename=fname)
+        assert os.path.isfile(fname + '.csv')
+        os.remove(fname.dirpath().join(self.net.name + '.csv'))
+
+    def test_network_from_csv(self, tmpdir):
+        fname = tmpdir.join(self.net.name)
+        op.io.network_to_csv(self.net, filename=fname)
+        net = op.io.network_from_csv(fname + '.csv')
+        assert net.name == self.net.name
+        assert net.Np == self.net.Np
+        assert net.Nt == self.net.Nt
+        assert net['pore.boo'].all() == self.net['pore.boo'].all()
+        assert net['throat.boo'].all() == self.net['throat.boo'].all()
+        os.remove(fname.dirpath().join(self.net.name + '.csv'))
 
 
 if __name__ == '__main__':
