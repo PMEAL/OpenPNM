@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/simulations/transient/transient_fickian_diffusion_with_reaction.ipynb"
-}

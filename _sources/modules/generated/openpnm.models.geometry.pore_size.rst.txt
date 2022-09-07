@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Pore\_size
+pore\_size
 ==========
 
 .. automodule:: openpnm.models.geometry.pore_size

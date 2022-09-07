@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/tutorials/physics/pore_scale_models.ipynb"
-}

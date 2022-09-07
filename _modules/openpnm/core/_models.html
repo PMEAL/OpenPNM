@@ -1,83 +1,69 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>openpnm.core._models &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
-  <script>
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
-  
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/openpnm/core/_models';</script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="None">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
-  <label class="overlay overlay-primary" for="__primary"></label>
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+    <div class="bd-header-announcement container-fluid" id="banner">
       
-<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
-  </div>
 
-  
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
-  </label>
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
   <div id="navbar-start">
     
     
@@ -85,94 +71,70 @@
 
 
 <a class="navbar-brand logo" href="../../../index.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
   
   
 </a>
     
   </div>
 
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
   
-  <div class=" navbar-header-items">
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../modules/index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
 
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
-</nav>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
       
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-      </div>
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -182,193 +144,78 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
       
     </div>
   </div>
-
-
-  
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-  </div>
-
-  
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
-  </label>
-  
-
 </div>
-  </nav>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
-        
-  
-  <div class="sidebar-header-items sidebar-primary__section">
+    </nav>
     
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
     
-      <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../modules/index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
+  </div>
 </nav>
-      </div>
-      
-      </div>
-    
-
-    
-    
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-      </ul>
-      </div>
-      
-    </div>
-    
   </div>
-
-  
-
-  
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-end-items">
   </div>
+</div>
 
-      </div>
-      <main class="bd-main">
-        
-        
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
+              <article class="bd-article" role="main">
+                
   <h1>Source code for openpnm.core._models</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableDict</span><span class="p">,</span> <span class="n">Workspace</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">is_valid_propname</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PrintableDict</span><span class="p">,</span>
+    <span class="n">Workspace</span><span class="p">,</span>
+    <span class="n">is_valid_propname</span><span class="p">,</span>
+    <span class="n">prettify_logger_message</span><span class="p">,</span>
+<span class="p">)</span>
+
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ModelsDict&#39;</span><span class="p">,</span> <span class="s1">&#39;ModelWrapper&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;ModelsDict&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ModelWrapper&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ModelsMixin2&#39;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
-<div class="viewcode-block" id="ModelsDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.html#openpnm.core.ModelsDict">[docs]</a><span class="k">class</span> <span class="nc">ModelsDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.html#openpnm.phase.ModelsDict">[docs]</a><span class="k">class</span> <span class="nc">ModelsDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This subclassed dictionary is assigned to the ``models`` attribute of</span>
 <span class="sd">    all objects that inherit from the ``ModelsMixin`` class.  Each</span>
@@ -394,7 +241,7 @@
                         <span class="k">return</span> <span class="n">obj</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No target object found!&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ModelsDict.dependency_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_list.html#openpnm.core.ModelsDict.dependency_list">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict.dependency_list"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_list.html#openpnm.phase.ModelsDict.dependency_list">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of dependencies in the order with which they should</span>
 <span class="sd">        be called to ensure data is calculated by one model before it&#39;s</span>
@@ -423,7 +270,7 @@
         <span class="n">d</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">dag</span><span class="o">.</span><span class="n">lexicographical_topological_sort</span><span class="p">(</span><span class="n">dtree</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ModelsDict.dependency_graph"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_graph.html#openpnm.core.ModelsDict.dependency_graph">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict.dependency_graph"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_graph.html#openpnm.phase.ModelsDict.dependency_graph">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a NetworkX graph object of the dependencies</span>
 
@@ -457,7 +304,7 @@
 
         <span class="k">return</span> <span class="n">dtree</span></div>
 
-<div class="viewcode-block" id="ModelsDict.dependency_map"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_map.html#openpnm.core.ModelsDict.dependency_map">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ModelsDict.dependency_map"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.dependency_map.html#openpnm.phase.ModelsDict.dependency_map">[docs]</a>    <span class="k">def</span> <span class="nf">dependency_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                        <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -578,7 +425,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ModelsDict.update"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.update.html#openpnm.core.ModelsDict.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsDict.update"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsDict.update.html#openpnm.phase.ModelsDict.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Catch un-run function</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Received dict argument is a function, try running it&#39;</span><span class="p">)</span>
@@ -587,13 +434,13 @@
             <span class="n">parent</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ModelWrapper"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelWrapper.html#openpnm.core.ModelWrapper">[docs]</a><span class="k">class</span> <span class="nc">ModelWrapper</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelWrapper"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelWrapper.html#openpnm.phase.ModelWrapper">[docs]</a><span class="k">class</span> <span class="nc">ModelWrapper</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is used to hold individual models and provide some extra</span>
 <span class="sd">    functionality, such as pretty-printing and the ability to run itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ModelWrapper.__call__"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelWrapper.__call__.html#openpnm.core.ModelWrapper.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelWrapper.__call__"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelWrapper.__call__.html#openpnm.phase.ModelWrapper.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_target</span><span class="p">()</span>
         <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -651,7 +498,7 @@
 
     <span class="k">def</span> <span class="nf">_find_target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Finds and returns the parent object to self.</span>
+<span class="sd">        Finds and returns the parent object to self</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">ws</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">proj</span><span class="p">:</span>
@@ -662,228 +509,277 @@
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No target object found!&quot;</span><span class="p">)</span></div>
 
 
-<span class="c1"># class ModelsMixin:</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     This class is meant to be combined by the Base class in multiple</span>
-<span class="c1">#     inheritence. This approach is used since Network and Algorithm do not</span>
-<span class="c1">#     need to have any ``models`` attribute, while Phase, Geometry, and</span>
-<span class="c1">#     Physics do. By using a mixin class, all objects can inherit from Base</span>
-<span class="c1">#     while the model functionality can be added only where needed.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ModelsMixin2"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.html#openpnm.phase.ModelsMixin2">[docs]</a><span class="k">class</span> <span class="nc">ModelsMixin2</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is added to ``Network`` and ``Phase`` objects under the</span>
+<span class="sd">    ``models`` attribute. It provides the functionality for storing and</span>
+<span class="sd">    running pore-scale models.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<span class="c1">#     def add_model(self, propname, model, regen_mode=&#39;&#39;, **kwargs):</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         Adds a new model to the models dictionary.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="n">ModelsDict</span><span class="p">()</span>
 
-<span class="c1">#         Parameters</span>
-<span class="c1">#         ----------</span>
-<span class="c1">#         propname : str</span>
-<span class="c1">#             The name of the property to be calculated by the model.</span>
-<span class="c1">#         model : function</span>
-<span class="c1">#             A reference (handle) to the function to be used.</span>
-<span class="c1">#         regen_mode : str</span>
-<span class="c1">#             Controls how/when the model is run (See Notes for more details).</span>
-<span class="c1">#             Options are:</span>
+<div class="viewcode-block" id="ModelsMixin2.add_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.add_model.html#openpnm.phase.ModelsMixin2.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a pore-scale model to the object, along with the desired arguments</span>
 
-<span class="c1">#             ===========  =====================================================</span>
-<span class="c1">#             mode         meaning</span>
-<span class="c1">#             ===========  =====================================================</span>
-<span class="c1">#             &#39;normal&#39;     The model is run directly upon being</span>
-<span class="c1">#                          assigned, and also run every time ``regenerate_models``</span>
-<span class="c1">#                          is called.</span>
-<span class="c1">#             &#39;constant&#39;   The model is run directly upon being assigned, but</span>
-<span class="c1">#                          is not called again, thus making its data act like a</span>
-<span class="c1">#                          constant. If, however, the data is deleted from the</span>
-<span class="c1">#                          object it will be regenerated again.</span>
-<span class="c1">#             &#39;deferred&#39;   Is not run upon being assigned, but is run the first</span>
-<span class="c1">#                          time that ``regenerate_models`` is called.</span>
-<span class="c1">#             &#39;explicit&#39;   Is only run if the model name is explicitly passed</span>
-<span class="c1">#                          to the ``regenerate_models`` method.  This allows</span>
-<span class="c1">#                          full control of when the model is run.</span>
-<span class="c1">#             ===========  =====================================================</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            The name of the property being computed. E.g. if</span>
+<span class="sd">            ``propname=&#39;pore.diameter&#39;`` then the computed results will be stored</span>
+<span class="sd">            in ``obj[&#39;pore.diameter&#39;]``.</span>
+<span class="sd">        model : function handle</span>
+<span class="sd">            The function that produces the values</span>
+<span class="sd">        domain : str</span>
+<span class="sd">            The label indicating which locations the results generated by</span>
+<span class="sd">            ``model`` should be stored. See `Notes` for more details.</span>
+<span class="sd">        regen_mode : str</span>
+<span class="sd">            How the model should be regenerated. Options are:</span>
 
+<span class="sd">            ============ =====================================================</span>
+<span class="sd">            regen_mode   description</span>
+<span class="sd">            ============ =====================================================</span>
+<span class="sd">            normal       (default) The model is run immediately upon being</span>
+<span class="sd">                         added, and is also run each time ``regenerate_models``</span>
+<span class="sd">                         is called.</span>
+<span class="sd">            deferred     The model is NOT run when added, but is run each time</span>
+<span class="sd">                         ``regenerate_models`` is called. This is useful for</span>
+<span class="sd">                         models that depend on other data that may not exist</span>
+<span class="sd">                         yet.</span>
+<span class="sd">            constant     The model is run immediately upon being added, but is</span>
+<span class="sd">                         is not run when ``regenerate_models`` is called,</span>
+<span class="sd">                         effectively turning the property into a constant.</span>
+<span class="sd">            ============ =====================================================</span>
 
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         if propname in kwargs.values():  # Prevent infinite loops of look-ups</span>
-<span class="c1">#             raise Exception(propname+&#39; can\&#39;t be both dependency and propname&#39;)</span>
-<span class="c1">#         # Look for default regen_mode in settings if present, else use &#39;normal&#39;</span>
-<span class="c1">#         if regen_mode == &#39;&#39;:</span>
-<span class="c1">#             if &#39;regen_mode&#39; in self.settings._attrs:</span>
-<span class="c1">#                 regen_mode = self.settings[&#39;regen_mode&#39;]</span>
-<span class="c1">#             else:</span>
-<span class="c1">#                 regen_mode = &#39;normal&#39;</span>
-<span class="c1">#         # Add model and regen_mode to kwargs dictionary</span>
-<span class="c1">#         kwargs.update({&#39;model&#39;: model, &#39;regen_mode&#39;: regen_mode})</span>
-<span class="c1">#         # Insepct model to extract arguments and default values</span>
-<span class="c1">#         if model.__defaults__:</span>
-<span class="c1">#             vals = list(inspect.getfullargspec(model).defaults)</span>
-<span class="c1">#             keys = inspect.getfullargspec(model).args[-len(vals):]</span>
-<span class="c1">#             for k, v in zip(keys, vals):  # Put defaults into kwargs</span>
-<span class="c1">#                 if k not in kwargs:  # Skip if argument was given in kwargs</span>
-<span class="c1">#                     kwargs.update({k: v})</span>
-<span class="c1">#         self.models[propname] = ModelWrapper(kwargs)  # Store all kwargs</span>
-<span class="c1">#         # Regenerate model values if necessary</span>
-<span class="c1">#         if regen_mode not in [&#39;deferred&#39;, &#39;explicit&#39;]:</span>
-<span class="c1">#             self._regen(propname)</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The ``domain`` argument dictates where the results of ``model`` should</span>
+<span class="sd">        be stored. For instance, given ``propname=&#39;pore.diameter&#39;`` and</span>
+<span class="sd">        ``domain=&#39;left&#39;`` then when `model` is run, the results are stored in</span>
+<span class="sd">        in the pores labelled left. Note that if ``model`` returns ``Np``</span>
+<span class="sd">        values, then values not belonging to ``&#39;pore.left&#39;`` are discarded.</span>
+<span class="sd">        The following steps outline the process:</span>
 
-<span class="c1">#     def regenerate_models(self, propnames=None, exclude=[], deep=False):</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         Re-runs the specified model or models.</span>
+<span class="sd">        1. Find the pore indices:</span>
 
-<span class="c1">#         Parameters</span>
-<span class="c1">#         ----------</span>
-<span class="c1">#         propnames : str or list of str</span>
-<span class="c1">#             The list of property names to be regenerated.  If none are given</span>
-<span class="c1">#             then ALL models are re-run (except for those whose ``regen_mode``</span>
-<span class="c1">#             is &#39;constant&#39;).</span>
-<span class="c1">#         exclude : list of str</span>
-<span class="c1">#             Since the default behavior is to run ALL models, this can be used</span>
-<span class="c1">#             to exclude specific models.  It may be more convenient to supply</span>
-<span class="c1">#             as list of 2 models to exclude than to specify 8 models to include.</span>
+<span class="sd">        .. code-block:: python</span>
 
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         # If empty list of propnames was given, do nothing and return</span>
-<span class="c1">#         if isinstance(propnames, list) and len(propnames) == 0:</span>
-<span class="c1">#             return</span>
-<span class="c1">#         if isinstance(propnames, str):  # Convert string to list if necessary</span>
-<span class="c1">#             propnames = [propnames]</span>
-<span class="c1">#         if propnames is None:  # If no props given, then regenerate them all</span>
-<span class="c1">#             propnames = self.models.dependency_list()</span>
-<span class="c1">#             # If some props are to be excluded, remove them from list</span>
-<span class="c1">#             for k, v in self.models.items():</span>
-<span class="c1">#                 if &#39;regen_mode&#39; not in v:</span>
-<span class="c1">#                     pass</span>
-<span class="c1">#                 elif v[&#39;regen_mode&#39;] == &#39;explicit&#39;:</span>
-<span class="c1">#                     exclude.extend([k])</span>
-<span class="c1">#             propnames = [i for i in propnames if i not in exclude]</span>
-<span class="c1">#         # Re-order given propnames according to dependency tree</span>
-<span class="c1">#         self_models = self.models.dependency_list()</span>
-<span class="c1">#         propnames = [i for i in self_models if i in propnames]</span>
-<span class="c1">#         for item in propnames:</span>
-<span class="c1">#             self._regen(item)</span>
+<span class="sd">          Ps = obj.pores(&#39;left&#39;)</span>
 
-<span class="c1">#     def _regen(self, prop):</span>
-<span class="c1">#         # Create a temporary dict of all model arguments</span>
-<span class="c1">#         model = self.models[prop][&#39;model&#39;]</span>
-<span class="c1">#         regen_mode = self.models[prop][&#39;regen_mode&#39;]</span>
-<span class="c1">#         kwargs = {}</span>
-<span class="c1">#         for k, v in self.models[prop].items():</span>
-<span class="c1">#             if k not in [&#39;model&#39;, &#39;regen_mode&#39;]:</span>
-<span class="c1">#                 kwargs[k] = v</span>
-<span class="c1">#         # Only regenerate model if regen_mode is correct</span>
-<span class="c1">#         if regen_mode == &#39;constant&#39;:</span>
-<span class="c1">#             # Only regenerate if data not already in dictionary</span>
-<span class="c1">#             if prop not in self.keys():</span>
-<span class="c1">#                 self[prop] = model(self, **kwargs)</span>
-<span class="c1">#         else:</span>
-<span class="c1">#             try:</span>
-<span class="c1">#                 self[prop] = model(self, **kwargs)</span>
-<span class="c1">#             except KeyError as e:</span>
-<span class="c1">#                 msg = (f&quot;{prop} was not run since the following property&quot;</span>
-<span class="c1">#                        f&quot; is missing: {e}&quot;)</span>
-<span class="c1">#                 logger.error(prettify_logger_message(msg))</span>
-<span class="c1">#                 self.models[prop][&#39;regen_mode&#39;] = &#39;deferred&#39;</span>
+<span class="sd">        2. Run the model:</span>
 
-<span class="c1">#     def remove_model(self, propname=None, mode=[&#39;model&#39;, &#39;data&#39;]):</span>
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         Removes model and data from object.</span>
+<span class="sd">        .. code-block:: python</span>
 
-<span class="c1">#         Parameters</span>
-<span class="c1">#         ----------</span>
-<span class="c1">#         propname : str or list[str]</span>
-<span class="c1">#             The property or list of properties to remove</span>
-<span class="c1">#         mode : list[str]</span>
-<span class="c1">#             Controls what is removed. Options are:</span>
+<span class="sd">          vals = model(**kwargs)</span>
 
-<span class="c1">#             ===========  =====================================================</span>
-<span class="c1">#             mode         meaning</span>
-<span class="c1">#             ===========  =====================================================</span>
-<span class="c1">#             &#39;model&#39;      Removes the model but not any numerical data that may</span>
-<span class="c1">#                          already exist.</span>
-<span class="c1">#             data&#39;        Removes the data but leaves the model.</span>
-<span class="c1">#             ===========  =====================================================</span>
-<span class="c1">#         The default is both.</span>
+<span class="sd">        3. If the model returns a full Np-length array, then extract the</span>
+<span class="sd">        correct values and apply them to the corresponding locations:</span>
 
-<span class="c1">#         &quot;&quot;&quot;</span>
-<span class="c1">#         if isinstance(propname, str):</span>
-<span class="c1">#             propname = [propname]</span>
-<span class="c1">#         for item in propname:</span>
-<span class="c1">#             if &#39;model&#39; in mode:</span>
-<span class="c1">#                 if item in self.models.keys():</span>
-<span class="c1">#                     del self.models[item]</span>
-<span class="c1">#             if &#39;data&#39; in mode:</span>
-<span class="c1">#                 if item in self.keys():</span>
-<span class="c1">#                     del self[item]</span>
+<span class="sd">        .. code-block:: python</span>
 
-<span class="c1">#     def _get_models(self):</span>
-<span class="c1">#         &quot;&quot;&quot;List of available models on the objects&quot;&quot;&quot;</span>
-<span class="c1">#         if not hasattr(self, &#39;_models_dict&#39;):</span>
-<span class="c1">#             self._models_dict = ModelsDict()</span>
-<span class="c1">#         return self._models_dict</span>
+<span class="sd">          if len(vals) == obj.Np:</span>
+<span class="sd">              obj[&#39;pore.diameter&#39;][Ps] = vals[Ps]</span>
 
-<span class="c1">#     def _set_models(self, dict_):</span>
-<span class="c1">#         self._models_dict = ModelsDict()</span>
-<span class="c1">#         # Renerate all models in new dict if regen mode says so</span>
-<span class="c1">#         for model in dict_.keys():</span>
-<span class="c1">#             self.add_model(propname=model, **dict_[model])</span>
+<span class="sd">        4. If the model was designed to return only the subset of values then:</span>
 
-<span class="c1">#     models = property(fget=_get_models, fset=_set_models)</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">          if len(vals) == obj.num_pores(&#39;left&#39;):</span>
+<span class="sd">              obj[&#39;pore.diameter&#39;][Ps] = vals</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>
+            <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">domain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;default_domain&#39;</span><span class="p">]</span>
+        <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="n">domain</span> <span class="o">!=</span> <span class="s1">&#39;all&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not define </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1"> since &#39;</span>
+                               <span class="sa">f</span><span class="s1">&#39;number of </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">s is not defined yet&#39;</span><span class="p">)</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Add model and regen_mode to kwargs dictionary</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span> <span class="s1">&#39;regen_mode&#39;</span><span class="p">:</span> <span class="n">regen_mode</span><span class="p">})</span>
+        <span class="c1"># Insepct model to extract arguments and default values</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="vm">__defaults__</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">):]</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>  <span class="c1"># Put defaults into kwargs</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>  <span class="c1"># Skip if argument was given in kwargs</span>
+                    <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">!=</span> <span class="s1">&#39;deferred&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelsMixin2.add_model_collection"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.add_model_collection.html#openpnm.phase.ModelsMixin2.add_model_collection">[docs]</a>    <span class="k">def</span> <span class="nf">add_model_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a collection of several models at once</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        models : dict</span>
+<span class="sd">            The collection of models to add. Collections are dictionaries</span>
+<span class="sd">            that are formatted the same as ``obj.models``. Several model</span>
+<span class="sd">            collections are available in ``opnpnm.models.collections``.</span>
+<span class="sd">        regen_mode : str</span>
+<span class="sd">            By default the models are not regenerated upon addition. See the</span>
+<span class="sd">            docstring for ``add_model`` for more information.</span>
+<span class="sd">        domain : str</span>
+<span class="sd">            The label indicate which pores/throats the supplied collection</span>
+<span class="sd">            of models should be applied to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">domain</span>
+            <span class="k">if</span> <span class="s1">&#39;regen_mode&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;regen_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">regen_mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ModelsMixin2.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.regenerate_models.html#openpnm.phase.ModelsMixin2.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs all the models stored in ``models``</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propnames : list of strings</span>
+<span class="sd">            If given then only the specified models are run</span>
+<span class="sd">        exclude : list of strings</span>
+<span class="sd">            If given then these models will *not* be run</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function will ensure that models are called in the correct order</span>
+<span class="sd">        such that &#39;pore.diameter&#39; will be run before &#39;pore.volume&#39;, since</span>
+<span class="sd">        the diameter is required to compute the volume.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_list</span><span class="p">()</span>
+        <span class="c1"># Regenerate all properties by default</span>
+        <span class="k">if</span> <span class="n">propnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">propnames</span> <span class="o">=</span> <span class="n">all_models</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">propnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">propnames</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="c1"># Remove any that are specifically excluded</span>
+        <span class="n">propnames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">propnames</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="c1"># Reorder given propnames according to dependency tree</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">]</span>
+        <span class="n">idx_sorted</span> <span class="o">=</span> <span class="p">[</span><span class="n">all_models</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
+        <span class="n">propnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">idx_sorted</span><span class="p">,</span> <span class="n">propnames</span><span class="p">))]</span>
+        <span class="c1"># Now run each on in sequence</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> was not run since the following property&quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot; is missing: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">prettify_logger_message</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;regen_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;deferred&#39;</span></div>
+
+<div class="viewcode-block" id="ModelsMixin2.run_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.run_model.html#openpnm.phase.ModelsMixin2.run_model">[docs]</a>    <span class="k">def</span> <span class="nf">run_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the requested model and places the result into the correct</span>
+<span class="sd">        locations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        propname : str</span>
+<span class="sd">            The name of the model to run. If a domain is included in the</span>
+<span class="sd">            propname (i.e. &#39;@domain&#39;) or ``domain`` is specified, then it</span>
+<span class="sd">            is solely run. If no domain is included than all models that</span>
+<span class="sd">            start with ``propname`` are run.</span>
+<span class="sd">        domain : str</span>
+<span class="sd">            The label of the domain for which the model should be run. Passing</span>
+<span class="sd">            ``propname=&#39;pore.diameter@domain1`` and ``domain=None`` is</span>
+<span class="sd">            equivalent to passing ``propname=&#39;pore.diameter`` and</span>
+<span class="sd">            ``domain=domain1``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>  <span class="c1"># Get domain from propname if present</span>
+                <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># No domain means run model for ALL domains</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
+                        <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># domain was given explicitly</span>
+            <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">propname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">prop</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">mod_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span>
+            <span class="c1"># Collect kwargs</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;domain&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">mod_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;regen_mode&#39;</span><span class="p">]:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+            <span class="c1"># Deal with models that don&#39;t have domain argument yet</span>
+            <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Returned item was a scalar</span>
+                            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">))</span>
+                        <span class="n">vals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>  <span class="c1"># Handle models that return a float</span>
+                    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># Index into full domain result for use below</span>
+                    <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Model that accepts domain arg</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># Finally add model results to self</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>  <span class="c1"># If model returns single array</span>
+                <span class="k">if</span> <span class="n">propname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="c1"># Create empty array if not found</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),</span>
+                                                     <span class="o">*</span><span class="n">vals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">propname</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">vals</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># If model returns a dict of arrays</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="c1"># Create empty array if not found</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_count</span><span class="p">(</span><span class="n">element</span><span class="p">),</span> <span class="o">*</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">propname</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">v</span></div></div>
 </pre></div>
 
-            </article>
-            
-            
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+              </article>
               
-<div class="toc-item">
-  
-</div>
 
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
-            
+              
           </div>
-        </footer>
-        
-      </main>
+          
+      </div>
     </div>
-  </div>
 
   
-    
+  
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+<footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    
-<p class="copyright">
-
+    <p class="copyright">
     &copy; Copyright 2022, PMEAL.<br>
-
 </p>
-
   </div>
   
   <div class="footer-item">
-    
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
   </div>
   
 </div>
-  </footer>
+</footer>
   </body>
 </html>

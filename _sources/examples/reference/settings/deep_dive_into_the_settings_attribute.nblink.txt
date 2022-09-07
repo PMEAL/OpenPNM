@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/settings/deep_dive_into_the_settings_attribute.ipynb"
-}

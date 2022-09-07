@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/workspace/overview_of_subdomains.ipynb"
-}

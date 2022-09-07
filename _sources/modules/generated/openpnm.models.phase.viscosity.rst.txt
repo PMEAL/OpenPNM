@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Viscosity
+viscosity
 =========
 
 .. automodule:: openpnm.models.phase.viscosity

@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/data_management/data_exchange_between_objects.ipynb"
-}

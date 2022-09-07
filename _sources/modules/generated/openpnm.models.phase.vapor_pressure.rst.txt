@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Vapor\_pressure
+vapor\_pressure
 ===============
 
 .. automodule:: openpnm.models.phase.vapor_pressure

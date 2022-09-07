@@ -1,86 +1,72 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Heat_capacity &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
-  <script>
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
+    <title>heat_capacity &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
 
-  
+
   <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
-  
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'modules/generated/openpnm.models.phase.heat_capacity';</script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="gas_mixture_yweighted" href="openpnm.models.phase.heat_capacity.gas_mixture_yweighted.html" />
     <link rel="prev" title="liquid_mixture_tc" href="openpnm.models.phase.diffusivity.liquid_mixture_tc.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="None">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
-  <label class="overlay overlay-primary" for="__primary"></label>
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+    <div class="bd-header-announcement container-fluid" id="banner">
       
-<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
-  </div>
 
-  
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
-  </label>
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
   <div id="navbar-start">
     
     
@@ -88,94 +74,70 @@
 
 
 <a class="navbar-brand logo" href="../../index.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
   
   
 </a>
     
   </div>
 
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
   
-  <div class=" navbar-header-items">
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module Reference
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
 
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
-</nav>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
       
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-      </div>
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -185,172 +147,36 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
       
     </div>
   </div>
-
-
-  
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-  </div>
-
-  
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
-  </label>
-  
-
 </div>
-  </nav>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-      <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
-</nav>
-      </div>
-      
-      </div>
+    </nav>
     
 
-    
-    
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-      </ul>
-      </div>
-      
-    </div>
-    
-  </div>
 
-  
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.utils.html">
-   Utils
+   utils
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-1">
+  <label for="toctree-checkbox-1">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -440,7 +266,7 @@
      Docorator
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-2">
+    <label for="toctree-checkbox-2">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -567,44 +393,20 @@
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.utils.HealthDict.html">
      HealthDict
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-3">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.utils.HealthDict.move_to_end.html">
-       move_to_end
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="openpnm.utils.NestedDict.html">
      NestedDict
     </a>
    </li>
-   <li class="toctree-l2 has-children">
+   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.utils.PrintableDict.html">
      PrintableDict
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-4">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.utils.PrintableDict.move_to_end.html">
-       move_to_end
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="openpnm.utils.PrintableList.html">
@@ -640,8 +442,8 @@
     <a class="reference internal" href="openpnm.utils.TypedSet.html">
      TypedSet
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-5">
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -712,8 +514,8 @@
     <a class="reference internal" href="openpnm.utils.Workspace.html">
      Workspace
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-6">
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -759,10 +561,10 @@
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.core.html">
-   Core
+   core
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-7">
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -771,8 +573,8 @@
     <a class="reference internal" href="openpnm.core.Base2.html">
      Base2
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-8">
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -782,18 +584,48 @@
        get_conduit_data
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base2.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base2.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base2.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Base2.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.core.Domain.html">
      Domain
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-9">
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.core.Domain.filter_by_label.html">
        filter_by_label
@@ -802,6 +634,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.core.Domain.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -825,6 +662,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.core.Domain.set_label.html">
        set_label
       </a>
@@ -834,14 +686,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.Domain.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.core.LabelMixin.html">
      LabelMixin
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-10">
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -884,11 +746,6 @@
     </ul>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.core.ModelMixin2.html">
-     ModelMixin2
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.core.ModelWrapper.html">
      ModelWrapper
     </a>
@@ -897,8 +754,8 @@
     <a class="reference internal" href="openpnm.core.ModelsDict.html">
      ModelsDict
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-11">
+    <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+    <label for="toctree-checkbox-9">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -918,9 +775,36 @@
        dependency_map
       </a>
      </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="openpnm.core.ModelsMixin2.html">
+     ModelsMixin2
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.core.ModelsDict.move_to_end.html">
-       move_to_end
+      <a class="reference internal" href="openpnm.core.ModelsMixin2.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsMixin2.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsMixin2.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.core.ModelsMixin2.run_model.html">
+       run_model
       </a>
      </li>
     </ul>
@@ -934,147 +818,157 @@
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.network.html">
-   Network
+   network
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-12">
+  <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+  <label for="toctree-checkbox-11">
    <i class="fas fa-chevron-down">
    </i>
   </label>
   <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.network.from_csv.html">
-     from_csv
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.network.from_jsongraph.html">
-     from_jsongraph
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.network.from_marock.html">
-     from_marock
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.network.from_networkx.html">
-     from_networkx
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.network.from_pergeos.html">
-     from_pergeos
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.network.from_porespy.html">
-     from_porespy
-    </a>
-   </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="openpnm.network.Bravais.html">
-     Bravais
+    <a class="reference internal" href="openpnm.network.BodyCenteredCubic.html">
+     BodyCenteredCubic
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-13">
+    <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+    <label for="toctree-checkbox-12">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.add_boundary_pores.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.add_boundary_pores.html">
        add_boundary_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.create_adjacency_matrix.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.create_adjacency_matrix.html">
        create_adjacency_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.create_incidence_matrix.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.create_incidence_matrix.html">
        create_incidence_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.filter_by_label.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.filter_by_label.html">
        filter_by_label
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.find_connected_pores.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.find_connected_pores.html">
        find_connected_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.find_connecting_throat.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.find_connecting_throat.html">
        find_connecting_throat
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.find_nearby_pores.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.find_nearby_pores.html">
        find_nearby_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.find_neighbor_pores.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.find_neighbor_pores.html">
        find_neighbor_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.find_neighbor_throats.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.find_neighbor_throats.html">
        find_neighbor_throats
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.get_adjacency_matrix.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.get_adjacency_matrix.html">
        get_adjacency_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.get_conduit_data.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.get_conduit_data.html">
        get_conduit_data
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.get_incidence_matrix.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.get_incidence_matrix.html">
        get_incidence_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.labels.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.labels.html">
        labels
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.num_neighbors.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.num_neighbors.html">
        num_neighbors
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.num_pores.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.num_pores.html">
        num_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.num_throats.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.num_throats.html">
        num_throats
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.pores.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.pores.html">
        pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.set_label.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.set_label.html">
        set_label
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Bravais.throats.html">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.BodyCenteredCubic.to_mask.html">
+       to_mask
       </a>
      </li>
     </ul>
@@ -1083,8 +977,8 @@
     <a class="reference internal" href="openpnm.network.Cubic.html">
      Cubic
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-14">
+    <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+    <label for="toctree-checkbox-13">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1092,6 +986,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Cubic.add_boundary_pores.html">
        add_boundary_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.add_model_collection.html">
+       add_model_collection
       </a>
      </li>
      <li class="toctree-l3">
@@ -1150,6 +1054,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Cubic.labels.html">
        labels
       </a>
@@ -1175,6 +1084,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Cubic.set_label.html">
        set_label
       </a>
@@ -1184,18 +1108,38 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Cubic.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.network.CubicTemplate.html">
      CubicTemplate
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-15">
+    <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+    <label for="toctree-checkbox-14">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.CubicTemplate.create_adjacency_matrix.html">
        create_adjacency_matrix
@@ -1252,6 +1196,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.CubicTemplate.labels.html">
        labels
       </a>
@@ -1277,6 +1226,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.CubicTemplate.set_label.html">
        set_label
       </a>
@@ -1286,18 +1250,38 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.CubicTemplate.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.network.Delaunay.html">
      Delaunay
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-16">
+    <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+    <label for="toctree-checkbox-15">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Delaunay.create_adjacency_matrix.html">
        create_adjacency_matrix
@@ -1354,6 +1338,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Delaunay.labels.html">
        labels
       </a>
@@ -1379,6 +1368,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Delaunay.set_label.html">
        set_label
       </a>
@@ -1388,14 +1392,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Delaunay.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.html">
      DelaunayVoronoiDual
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-17">
+    <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
+    <label for="toctree-checkbox-16">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1403,6 +1417,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_boundary_pores.html">
        add_boundary_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_model_collection.html">
+       add_model_collection
       </a>
      </li>
      <li class="toctree-l3">
@@ -1471,6 +1495,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.labels.html">
        labels
       </a>
@@ -1496,6 +1525,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.set_label.html">
        set_label
       </a>
@@ -1505,14 +1549,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.network.Demo.html">
      Demo
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-18">
+    <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
+    <label for="toctree-checkbox-17">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -1520,6 +1574,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Demo.add_boundary_pores.html">
        add_boundary_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.add_model_collection.html">
+       add_model_collection
       </a>
      </li>
      <li class="toctree-l3">
@@ -1578,6 +1642,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Demo.labels.html">
        labels
       </a>
@@ -1603,6 +1672,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Demo.set_label.html">
        set_label
       </a>
@@ -1612,106 +1696,161 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Demo.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="openpnm.network.Gabriel.html">
-     Gabriel
+    <a class="reference internal" href="openpnm.network.FaceCenteredCubic.html">
+     FaceCenteredCubic
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-19">
+    <input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
+    <label for="toctree-checkbox-18">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.create_adjacency_matrix.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.add_boundary_pores.html">
+       add_boundary_pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.create_adjacency_matrix.html">
        create_adjacency_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.create_incidence_matrix.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.create_incidence_matrix.html">
        create_incidence_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.filter_by_label.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.filter_by_label.html">
        filter_by_label
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.find_connected_pores.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.find_connected_pores.html">
        find_connected_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.find_connecting_throat.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.find_connecting_throat.html">
        find_connecting_throat
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.find_nearby_pores.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.find_nearby_pores.html">
        find_nearby_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.find_neighbor_pores.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.find_neighbor_pores.html">
        find_neighbor_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.find_neighbor_throats.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.find_neighbor_throats.html">
        find_neighbor_throats
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.get_adjacency_matrix.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.get_adjacency_matrix.html">
        get_adjacency_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.get_conduit_data.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.get_conduit_data.html">
        get_conduit_data
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.get_incidence_matrix.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.get_incidence_matrix.html">
        get_incidence_matrix
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.labels.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.labels.html">
        labels
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.num_neighbors.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.num_neighbors.html">
        num_neighbors
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.num_pores.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.num_pores.html">
        num_pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.num_throats.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.num_throats.html">
        num_throats
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.pores.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.pores.html">
        pores
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.set_label.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.set_label.html">
        set_label
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.Gabriel.throats.html">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.FaceCenteredCubic.to_mask.html">
+       to_mask
       </a>
      </li>
     </ul>
@@ -1720,12 +1859,22 @@
     <a class="reference internal" href="openpnm.network.Network.html">
      Network
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-20">
+    <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
+    <label for="toctree-checkbox-19">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Network.create_adjacency_matrix.html">
        create_adjacency_matrix
@@ -1782,6 +1931,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Network.labels.html">
        labels
       </a>
@@ -1807,6 +1961,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Network.set_label.html">
        set_label
       </a>
@@ -1816,18 +1985,38 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Network.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.network.Voronoi.html">
      Voronoi
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-21">
+    <input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
+    <label for="toctree-checkbox-20">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Voronoi.create_adjacency_matrix.html">
        create_adjacency_matrix
@@ -1884,6 +2073,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Voronoi.labels.html">
        labels
       </a>
@@ -1909,6 +2103,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.Voronoi.set_label.html">
        set_label
       </a>
@@ -1918,16 +2127,26 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.network.Voronoi.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.phase.html">
-   Phase
+   phase
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-22">
+  <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
+  <label for="toctree-checkbox-21">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -1936,12 +2155,22 @@
     <a class="reference internal" href="openpnm.phase.Air.html">
      Air
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-23">
+    <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
+    <label for="toctree-checkbox-22">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Air.filter_by_label.html">
        filter_by_label
@@ -1950,6 +2179,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Air.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -1973,6 +2207,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Air.set_label.html">
        set_label
       </a>
@@ -1982,18 +2231,43 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Air.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.BinaryGas.html">
      BinaryGas
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-24">
+    <input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
+    <label for="toctree-checkbox-23">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.add_comp.html">
+       add_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.BinaryGas.check_mixture_health.html">
        check_mixture_health
@@ -2020,6 +2294,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.BinaryGas.labels.html">
        labels
       </a>
@@ -2040,6 +2319,26 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.remove_comp.html">
+       remove_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.BinaryGas.set_label.html">
        set_label
       </a>
@@ -2047,6 +2346,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.BinaryGas.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.BinaryGas.to_mask.html">
+       to_mask
       </a>
      </li>
      <li class="toctree-l3">
@@ -2060,12 +2369,27 @@
     <a class="reference internal" href="openpnm.phase.GasMixture.html">
      GasMixture
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-25">
+    <input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/>
+    <label for="toctree-checkbox-24">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.add_comp.html">
+       add_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.GasMixture.check_mixture_health.html">
        check_mixture_health
@@ -2092,6 +2416,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.GasMixture.labels.html">
        labels
       </a>
@@ -2112,6 +2441,26 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.remove_comp.html">
+       remove_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.GasMixture.set_label.html">
        set_label
       </a>
@@ -2119,6 +2468,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.GasMixture.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.GasMixture.to_mask.html">
+       to_mask
       </a>
      </li>
      <li class="toctree-l3">
@@ -2132,12 +2491,27 @@
     <a class="reference internal" href="openpnm.phase.LiquidMixture.html">
      LiquidMixture
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-26">
+    <input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/>
+    <label for="toctree-checkbox-25">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.add_comp.html">
+       add_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.LiquidMixture.check_mixture_health.html">
        check_mixture_health
@@ -2164,6 +2538,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.LiquidMixture.labels.html">
        labels
       </a>
@@ -2184,6 +2563,26 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.remove_comp.html">
+       remove_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.LiquidMixture.set_label.html">
        set_label
       </a>
@@ -2191,6 +2590,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.LiquidMixture.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.LiquidMixture.to_mask.html">
+       to_mask
       </a>
      </li>
      <li class="toctree-l3">
@@ -2204,12 +2613,22 @@
     <a class="reference internal" href="openpnm.phase.Mercury.html">
      Mercury
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-27">
+    <input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/>
+    <label for="toctree-checkbox-26">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Mercury.filter_by_label.html">
        filter_by_label
@@ -2218,6 +2637,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Mercury.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -2241,6 +2665,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Mercury.set_label.html">
        set_label
       </a>
@@ -2250,18 +2689,43 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mercury.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.Mixture.html">
      Mixture
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-28">
+    <input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/>
+    <label for="toctree-checkbox-27">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.add_comp.html">
+       add_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Mixture.check_mixture_health.html">
        check_mixture_health
@@ -2288,6 +2752,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Mixture.labels.html">
        labels
       </a>
@@ -2308,6 +2777,26 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.remove_comp.html">
+       remove_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Mixture.set_label.html">
        set_label
       </a>
@@ -2317,18 +2806,38 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Mixture.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.Phase.html">
      Phase
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-29">
+    <input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/>
+    <label for="toctree-checkbox-28">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Phase.filter_by_label.html">
        filter_by_label
@@ -2337,6 +2846,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Phase.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -2360,6 +2874,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Phase.set_label.html">
        set_label
       </a>
@@ -2369,18 +2898,38 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Phase.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.Species.html">
      Species
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-30">
+    <input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/>
+    <label for="toctree-checkbox-29">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Species.filter_by_label.html">
        filter_by_label
@@ -2389,6 +2938,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Species.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -2412,6 +2966,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Species.set_label.html">
        set_label
       </a>
@@ -2421,18 +2990,38 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Species.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.StandardGas.html">
      StandardGas
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-31">
+    <input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/>
+    <label for="toctree-checkbox-30">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGas.filter_by_label.html">
        filter_by_label
@@ -2441,6 +3030,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGas.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -2464,6 +3058,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGas.set_label.html">
        set_label
       </a>
@@ -2473,18 +3082,43 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGas.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.StandardGasMixture.html">
      StandardGasMixture
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-32">
+    <input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/>
+    <label for="toctree-checkbox-31">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.add_comp.html">
+       add_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGasMixture.check_mixture_health.html">
        check_mixture_health
@@ -2511,6 +3145,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGasMixture.labels.html">
        labels
       </a>
@@ -2531,6 +3170,26 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.remove_comp.html">
+       remove_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGasMixture.set_label.html">
        set_label
       </a>
@@ -2538,6 +3197,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardGasMixture.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardGasMixture.to_mask.html">
+       to_mask
       </a>
      </li>
      <li class="toctree-l3">
@@ -2551,12 +3220,22 @@
     <a class="reference internal" href="openpnm.phase.StandardLiquid.html">
      StandardLiquid
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-33">
+    <input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/>
+    <label for="toctree-checkbox-32">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquid.filter_by_label.html">
        filter_by_label
@@ -2565,6 +3244,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquid.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -2588,6 +3272,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquid.set_label.html">
        set_label
       </a>
@@ -2597,18 +3296,43 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquid.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.html">
      StandardLiquidMixture
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-34">
+    <input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/>
+    <label for="toctree-checkbox-33">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.add_comp.html">
+       add_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.check_mixture_health.html">
        check_mixture_health
@@ -2635,6 +3359,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.labels.html">
        labels
       </a>
@@ -2655,6 +3384,26 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.remove_comp.html">
+       remove_comp
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.set_label.html">
        set_label
       </a>
@@ -2662,6 +3411,16 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.StandardLiquidMixture.to_mask.html">
+       to_mask
       </a>
      </li>
      <li class="toctree-l3">
@@ -2675,12 +3434,22 @@
     <a class="reference internal" href="openpnm.phase.Water.html">
      Water
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-35">
+    <input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/>
+    <label for="toctree-checkbox-34">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.add_model.html">
+       add_model
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.add_model_collection.html">
+       add_model_collection
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Water.filter_by_label.html">
        filter_by_label
@@ -2689,6 +3458,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Water.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -2712,6 +3486,21 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.regenerate_models.html">
+       regenerate_models
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.run_model.html">
+       run_model
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.phase.Water.set_label.html">
        set_label
       </a>
@@ -2721,36 +3510,46 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.phase.Water.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
   </ul>
  </li>
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="openpnm.models.html">
-   Models
+   models
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-36">
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/>
+  <label for="toctree-checkbox-35">
    <i class="fas fa-chevron-down">
    </i>
   </label>
   <ul class="current">
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.models.collections.html">
-     Collections
+     collections
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-37">
+    <input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/>
+    <label for="toctree-checkbox-36">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.collections.geometry.html">
-       Geometry
+       geometry
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-38">
+      <input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/>
+      <label for="toctree-checkbox-37">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -2794,15 +3593,15 @@
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.models.collections.network.html">
-       Network
+       network
       </a>
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.collections.phase.html">
-       Phase
+       phase
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-39">
+      <input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/>
+      <label for="toctree-checkbox-38">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -2814,12 +3613,12 @@
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="openpnm.models.collections.phase.gas.html">
-         Gas
+         gas
         </a>
        </li>
        <li class="toctree-l4">
         <a class="reference internal" href="openpnm.models.collections.phase.liquid.html">
-         Liquid
+         liquid
         </a>
        </li>
        <li class="toctree-l4">
@@ -2836,10 +3635,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.collections.physics.html">
-       Physics
+       physics
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-40">
+      <input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/>
+      <label for="toctree-checkbox-39">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -2860,20 +3659,20 @@
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.models.geometry.html">
-     Geometry
+     geometry
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-41">
+    <input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/>
+    <label for="toctree-checkbox-40">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.conduit_lengths.html">
-       Conduit_lengths
+       conduit_lengths
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-42">
+      <input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/>
+      <label for="toctree-checkbox-41">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -2947,10 +3746,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.diffusive_size_factors.html">
-       Diffusive_size_factors
+       diffusive_size_factors
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-43">
+      <input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/>
+      <label for="toctree-checkbox-42">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3029,10 +3828,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.hydraulic_size_factors.html">
-       Hydraulic_size_factors
+       hydraulic_size_factors
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-44">
+      <input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/>
+      <label for="toctree-checkbox-43">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3111,10 +3910,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.pore_cross_sectional_area.html">
-       Pore_cross_sectional_area
+       pore_cross_sectional_area
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-45">
+      <input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/>
+      <label for="toctree-checkbox-44">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3148,10 +3947,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.pore_seed.html">
-       Pore_seed
+       pore_seed
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-46">
+      <input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/>
+      <label for="toctree-checkbox-45">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3170,10 +3969,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.pore_size.html">
-       Pore_size
+       pore_size
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-47">
+      <input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" type="checkbox"/>
+      <label for="toctree-checkbox-46">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3217,10 +4016,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.pore_surface_area.html">
-       Pore_surface_area
+       pore_surface_area
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-48">
+      <input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" type="checkbox"/>
+      <label for="toctree-checkbox-47">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3249,10 +4048,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.pore_volume.html">
-       Pore_volume
+       pore_volume
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-49">
+      <input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" type="checkbox"/>
+      <label for="toctree-checkbox-48">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3286,10 +4085,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_capillary_shape_factor.html">
-       Throat_capillary_shape_factor
+       throat_capillary_shape_factor
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-50">
+      <input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" type="checkbox"/>
+      <label for="toctree-checkbox-49">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3313,10 +4112,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_centroid.html">
-       Throat_centroid
+       throat_centroid
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-51">
+      <input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" type="checkbox"/>
+      <label for="toctree-checkbox-50">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3330,10 +4129,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_cross_sectional_area.html">
-       Throat_cross_sectional_area
+       throat_cross_sectional_area
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-52">
+      <input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" type="checkbox"/>
+      <label for="toctree-checkbox-51">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3356,11 +4155,28 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
+      <a class="reference internal" href="openpnm.models.geometry.throat_endpoints.html">
+       throat_endpoints
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" type="checkbox"/>
+      <label for="toctree-checkbox-52">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="openpnm.models.geometry.throat_endpoints.spheres_and_cylinders.html">
+         spheres_and_cylinders
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_length.html">
-       Throat_length
+       throat_length
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-53">
+      <label for="toctree-checkbox-53">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3434,10 +4250,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_perimeter.html">
-       Throat_perimeter
+       throat_perimeter
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-54">
+      <label for="toctree-checkbox-54">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3461,10 +4277,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_seed.html">
-       Throat_seed
+       throat_seed
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-55">
+      <label for="toctree-checkbox-55">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3483,10 +4299,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_size.html">
-       Throat_size
+       throat_size
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-56">
+      <label for="toctree-checkbox-56">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3525,10 +4341,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_surface_area.html">
-       Throat_surface_area
+       throat_surface_area
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-57">
+      <label for="toctree-checkbox-57">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3557,10 +4373,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_vector.html">
-       Throat_vector
+       throat_vector
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-58">
+      <label for="toctree-checkbox-58">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3574,10 +4390,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.geometry.throat_volume.html">
-       Throat_volume
+       throat_volume
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-59">
+      <label for="toctree-checkbox-59">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3618,10 +4434,10 @@
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.models.misc.html">
-     Misc
+     misc
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-60">
+    <label for="toctree-checkbox-60">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -3639,6 +4455,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.models.misc.constant.html">
        constant
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.models.misc.difference.html">
+       difference
       </a>
      </li>
      <li class="toctree-l3">
@@ -3725,10 +4546,10 @@
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.models.network.html">
-     Network
+     network
     </a>
     <input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-61">
+    <label for="toctree-checkbox-61">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -3804,11 +4625,6 @@
       </a>
      </li>
      <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.models.network.reduce_coordination.html">
-       reduce_coordination
-      </a>
-     </li>
-     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.models.network.reversed_throats.html">
        reversed_throats
       </a>
@@ -3817,10 +4633,10 @@
    </li>
    <li class="toctree-l2 current active has-children">
     <a class="reference internal" href="openpnm.models.phase.html">
-     Phase
+     phase
     </a>
     <input checked="" class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-62">
+    <label for="toctree-checkbox-62">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -3832,15 +4648,15 @@
      </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.models.phase.critical_props.html">
-       Critical_props
+       critical_props
       </a>
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.density.html">
-       Density
+       density
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-63">
+      <label for="toctree-checkbox-63">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3874,10 +4690,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.diffusivity.html">
-       Diffusivity
+       diffusivity
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-64">
+      <label for="toctree-checkbox-64">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3901,10 +4717,10 @@
      </li>
      <li class="toctree-l3 current active has-children">
       <a class="current reference internal" href="#">
-       Heat_capacity
+       heat_capacity
       </a>
       <input checked="" class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-65">
+      <label for="toctree-checkbox-65">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3933,10 +4749,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.misc.html">
-       Misc
+       misc
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-66">
+      <label for="toctree-checkbox-66">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3955,10 +4771,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.mixtures.html">
-       Mixtures
+       mixtures
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-67">
+      <label for="toctree-checkbox-67">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -3987,10 +4803,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.partition_coefficient.html">
-       Partition_coefficient
+       partition_coefficient
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-68" name="toctree-checkbox-68" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-68">
+      <label for="toctree-checkbox-68">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4003,11 +4819,28 @@
       </ul>
      </li>
      <li class="toctree-l3 has-children">
-      <a class="reference internal" href="openpnm.models.phase.surface_tension.html">
-       Surface_tension
+      <a class="reference internal" href="openpnm.models.phase.phasedocs.html">
+       phasedocs
       </a>
       <input class="toctree-checkbox" id="toctree-checkbox-69" name="toctree-checkbox-69" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-69">
+      <label for="toctree-checkbox-69">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="openpnm.models.phase.phasedocs.Substitution.html">
+         Substitution
+        </a>
+       </li>
+      </ul>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="openpnm.models.phase.surface_tension.html">
+       surface_tension
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-70" name="toctree-checkbox-70" type="checkbox"/>
+      <label for="toctree-checkbox-70">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4031,10 +4864,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.thermal_conductivity.html">
-       Thermal_conductivity
+       thermal_conductivity
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-70" name="toctree-checkbox-70" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-70">
+      <input class="toctree-checkbox" id="toctree-checkbox-71" name="toctree-checkbox-71" type="checkbox"/>
+      <label for="toctree-checkbox-71">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4068,10 +4901,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.vapor_pressure.html">
-       Vapor_pressure
+       vapor_pressure
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-71" name="toctree-checkbox-71" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-71">
+      <input class="toctree-checkbox" id="toctree-checkbox-72" name="toctree-checkbox-72" type="checkbox"/>
+      <label for="toctree-checkbox-72">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4095,10 +4928,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.phase.viscosity.html">
-       Viscosity
+       viscosity
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-72" name="toctree-checkbox-72" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-72">
+      <input class="toctree-checkbox" id="toctree-checkbox-73" name="toctree-checkbox-73" type="checkbox"/>
+      <label for="toctree-checkbox-73">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4144,20 +4977,20 @@
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.models.physics.html">
-     Physics
+     physics
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-73" name="toctree-checkbox-73" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-73">
+    <input class="toctree-checkbox" id="toctree-checkbox-74" name="toctree-checkbox-74" type="checkbox"/>
+    <label for="toctree-checkbox-74">
      <i class="fas fa-chevron-down">
      </i>
     </label>
     <ul>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.ad_dif_conductance.html">
-       Ad_dif_conductance
+       ad_dif_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-74" name="toctree-checkbox-74" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-74">
+      <input class="toctree-checkbox" id="toctree-checkbox-75" name="toctree-checkbox-75" type="checkbox"/>
+      <label for="toctree-checkbox-75">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4171,10 +5004,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.ad_dif_mig_conductance.html">
-       Ad_dif_mig_conductance
+       ad_dif_mig_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-75" name="toctree-checkbox-75" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-75">
+      <input class="toctree-checkbox" id="toctree-checkbox-76" name="toctree-checkbox-76" type="checkbox"/>
+      <label for="toctree-checkbox-76">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4188,10 +5021,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.capillary_pressure.html">
-       Capillary_pressure
+       capillary_pressure
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-76" name="toctree-checkbox-76" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-76">
+      <input class="toctree-checkbox" id="toctree-checkbox-77" name="toctree-checkbox-77" type="checkbox"/>
+      <label for="toctree-checkbox-77">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4225,10 +5058,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.diffusive_conductance.html">
-       Diffusive_conductance
+       diffusive_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-77" name="toctree-checkbox-77" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-77">
+      <input class="toctree-checkbox" id="toctree-checkbox-78" name="toctree-checkbox-78" type="checkbox"/>
+      <label for="toctree-checkbox-78">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4262,10 +5095,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.electrical_conductance.html">
-       Electrical_conductance
+       electrical_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-78" name="toctree-checkbox-78" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-78">
+      <input class="toctree-checkbox" id="toctree-checkbox-79" name="toctree-checkbox-79" type="checkbox"/>
+      <label for="toctree-checkbox-79">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4284,10 +5117,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.hydraulic_conductance.html">
-       Hydraulic_conductance
+       hydraulic_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-79" name="toctree-checkbox-79" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-79">
+      <input class="toctree-checkbox" id="toctree-checkbox-80" name="toctree-checkbox-80" type="checkbox"/>
+      <label for="toctree-checkbox-80">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4316,10 +5149,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.ionic_conductance.html">
-       Ionic_conductance
+       ionic_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-80" name="toctree-checkbox-80" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-80">
+      <input class="toctree-checkbox" id="toctree-checkbox-81" name="toctree-checkbox-81" type="checkbox"/>
+      <label for="toctree-checkbox-81">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4338,10 +5171,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.meniscus.html">
-       Meniscus
+       meniscus
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-81" name="toctree-checkbox-81" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-81">
+      <input class="toctree-checkbox" id="toctree-checkbox-82" name="toctree-checkbox-82" type="checkbox"/>
+      <label for="toctree-checkbox-82">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4365,10 +5198,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.multiphase.html">
-       Multiphase
+       multiphase
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-82" name="toctree-checkbox-82" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-82">
+      <input class="toctree-checkbox" id="toctree-checkbox-83" name="toctree-checkbox-83" type="checkbox"/>
+      <label for="toctree-checkbox-83">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4387,10 +5220,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.source_terms.html">
-       Source_terms
+       source_terms
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-83" name="toctree-checkbox-83" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-83">
+      <input class="toctree-checkbox" id="toctree-checkbox-84" name="toctree-checkbox-84" type="checkbox"/>
+      <label for="toctree-checkbox-84">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4454,10 +5287,10 @@
      </li>
      <li class="toctree-l3 has-children">
       <a class="reference internal" href="openpnm.models.physics.thermal_conductance.html">
-       Thermal_conductance
+       thermal_conductance
       </a>
-      <input class="toctree-checkbox" id="toctree-checkbox-84" name="toctree-checkbox-84" type="checkbox"/>
-      <label class="toctree-toggle" for="toctree-checkbox-84">
+      <input class="toctree-checkbox" id="toctree-checkbox-85" name="toctree-checkbox-85" type="checkbox"/>
+      <label for="toctree-checkbox-85">
        <i class="fas fa-chevron-down">
        </i>
       </label>
@@ -4480,10 +5313,10 @@
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.solvers.html">
-   Solvers
+   solvers
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-85" name="toctree-checkbox-85" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-85">
+  <input class="toctree-checkbox" id="toctree-checkbox-86" name="toctree-checkbox-86" type="checkbox"/>
+  <label for="toctree-checkbox-86">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -4492,8 +5325,8 @@
     <a class="reference internal" href="openpnm.solvers.BaseSolver.html">
      BaseSolver
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-86" name="toctree-checkbox-86" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-86">
+    <input class="toctree-checkbox" id="toctree-checkbox-87" name="toctree-checkbox-87" type="checkbox"/>
+    <label for="toctree-checkbox-87">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4509,8 +5342,8 @@
     <a class="reference internal" href="openpnm.solvers.DirectSolver.html">
      DirectSolver
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-87" name="toctree-checkbox-87" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-87">
+    <input class="toctree-checkbox" id="toctree-checkbox-88" name="toctree-checkbox-88" type="checkbox"/>
+    <label for="toctree-checkbox-88">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4526,8 +5359,8 @@
     <a class="reference internal" href="openpnm.solvers.IterativeSolver.html">
      IterativeSolver
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-88" name="toctree-checkbox-88" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-88">
+    <input class="toctree-checkbox" id="toctree-checkbox-89" name="toctree-checkbox-89" type="checkbox"/>
+    <label for="toctree-checkbox-89">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4543,8 +5376,8 @@
     <a class="reference internal" href="openpnm.solvers.PETScLinearSolver.html">
      PETScLinearSolver
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-89" name="toctree-checkbox-89" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-89">
+    <input class="toctree-checkbox" id="toctree-checkbox-90" name="toctree-checkbox-90" type="checkbox"/>
+    <label for="toctree-checkbox-90">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4560,8 +5393,8 @@
     <a class="reference internal" href="openpnm.solvers.PardisoSpsolve.html">
      PardisoSpsolve
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-90" name="toctree-checkbox-90" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-90">
+    <input class="toctree-checkbox" id="toctree-checkbox-91" name="toctree-checkbox-91" type="checkbox"/>
+    <label for="toctree-checkbox-91">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4577,8 +5410,8 @@
     <a class="reference internal" href="openpnm.solvers.ScipyCG.html">
      ScipyCG
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-91" name="toctree-checkbox-91" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-91">
+    <input class="toctree-checkbox" id="toctree-checkbox-92" name="toctree-checkbox-92" type="checkbox"/>
+    <label for="toctree-checkbox-92">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4594,8 +5427,8 @@
     <a class="reference internal" href="openpnm.solvers.ScipySpsolve.html">
      ScipySpsolve
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-92" name="toctree-checkbox-92" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-92">
+    <input class="toctree-checkbox" id="toctree-checkbox-93" name="toctree-checkbox-93" type="checkbox"/>
+    <label for="toctree-checkbox-93">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4611,10 +5444,10 @@
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.integrators.html">
-   Integrators
+   integrators
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-93" name="toctree-checkbox-93" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-93">
+  <input class="toctree-checkbox" id="toctree-checkbox-94" name="toctree-checkbox-94" type="checkbox"/>
+  <label for="toctree-checkbox-94">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -4628,8 +5461,8 @@
     <a class="reference internal" href="openpnm.integrators.ScipyRK45.html">
      ScipyRK45
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-94" name="toctree-checkbox-94" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-94">
+    <input class="toctree-checkbox" id="toctree-checkbox-95" name="toctree-checkbox-95" type="checkbox"/>
+    <label for="toctree-checkbox-95">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4645,10 +5478,10 @@
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.algorithms.html">
-   Algorithms
+   algorithms
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-95" name="toctree-checkbox-95" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-95">
+  <input class="toctree-checkbox" id="toctree-checkbox-96" name="toctree-checkbox-96" type="checkbox"/>
+  <label for="toctree-checkbox-96">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -4657,8 +5490,8 @@
     <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.html">
      AdvectionDiffusion
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-96" name="toctree-checkbox-96" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-96">
+    <input class="toctree-checkbox" id="toctree-checkbox-97" name="toctree-checkbox-97" type="checkbox"/>
+    <label for="toctree-checkbox-97">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4689,6 +5522,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.labels.html">
        labels
       </a>
@@ -4706,6 +5544,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -4753,14 +5596,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.AdvectionDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.Algorithm.html">
      Algorithm
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-97" name="toctree-checkbox-97" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-97">
+    <input class="toctree-checkbox" id="toctree-checkbox-98" name="toctree-checkbox-98" type="checkbox"/>
+    <label for="toctree-checkbox-98">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4778,6 +5631,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Algorithm.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Algorithm.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -4801,6 +5659,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Algorithm.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Algorithm.set_BC.html">
        set_BC
       </a>
@@ -4815,14 +5678,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Algorithm.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Algorithm.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.Drainage.html">
      Drainage
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-98" name="toctree-checkbox-98" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-98">
+    <input class="toctree-checkbox" id="toctree-checkbox-99" name="toctree-checkbox-99" type="checkbox"/>
+    <label for="toctree-checkbox-99">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4848,6 +5721,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Drainage.labels.html">
        labels
       </a>
@@ -4868,8 +5746,28 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.reset.html">
+       reset
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.run.html">
+       run
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Drainage.set_BC.html">
        set_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.set_inlet_BC.html">
+       set_inlet_BC
       </a>
      </li>
      <li class="toctree-l3">
@@ -4878,8 +5776,23 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.set_outlet_BC.html">
+       set_outlet_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Drainage.throats.html">
        throats
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Drainage.to_mask.html">
+       to_mask
       </a>
      </li>
     </ul>
@@ -4888,8 +5801,8 @@
     <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.html">
      FickianDiffusion
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-99" name="toctree-checkbox-99" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-99">
+    <input class="toctree-checkbox" id="toctree-checkbox-100" name="toctree-checkbox-100" type="checkbox"/>
+    <label for="toctree-checkbox-100">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -4920,6 +5833,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.labels.html">
        labels
       </a>
@@ -4937,6 +5855,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -4979,14 +5902,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FickianDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.FourierConduction.html">
      FourierConduction
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-100" name="toctree-checkbox-100" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-100">
+    <input class="toctree-checkbox" id="toctree-checkbox-101" name="toctree-checkbox-101" type="checkbox"/>
+    <label for="toctree-checkbox-101">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5017,6 +5950,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.FourierConduction.labels.html">
        labels
       </a>
@@ -5034,6 +5972,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.FourierConduction.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5076,14 +6019,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.FourierConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.html">
      InvasionPercolation
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-101" name="toctree-checkbox-101" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-101">
+    <input class="toctree-checkbox" id="toctree-checkbox-102" name="toctree-checkbox-102" type="checkbox"/>
+    <label for="toctree-checkbox-102">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5106,6 +6059,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.get_conduit_data.html">
        get_conduit_data
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.interpolate_data.html">
+       interpolate_data
       </a>
      </li>
      <li class="toctree-l3">
@@ -5134,6 +6092,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.props.html">
+       props
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.run.html">
        run
       </a>
@@ -5153,14 +6116,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.IonicConduction.html">
      IonicConduction
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-102" name="toctree-checkbox-102" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-102">
+    <input class="toctree-checkbox" id="toctree-checkbox-103" name="toctree-checkbox-103" type="checkbox"/>
+    <label for="toctree-checkbox-103">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5191,6 +6164,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.IonicConduction.labels.html">
        labels
       </a>
@@ -5208,6 +6186,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.IonicConduction.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5250,14 +6233,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.IonicConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.OhmicConduction.html">
      OhmicConduction
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-103" name="toctree-checkbox-103" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-103">
+    <input class="toctree-checkbox" id="toctree-checkbox-104" name="toctree-checkbox-104" type="checkbox"/>
+    <label for="toctree-checkbox-104">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5288,6 +6281,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.OhmicConduction.labels.html">
        labels
       </a>
@@ -5305,6 +6303,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.OhmicConduction.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5347,14 +6350,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.OhmicConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.html">
      ReactiveTransport
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-104" name="toctree-checkbox-104" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-104">
+    <input class="toctree-checkbox" id="toctree-checkbox-105" name="toctree-checkbox-105" type="checkbox"/>
+    <label for="toctree-checkbox-105">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5385,6 +6398,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.labels.html">
        labels
       </a>
@@ -5402,6 +6420,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5444,14 +6467,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.StokesFlow.html">
      StokesFlow
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-105" name="toctree-checkbox-105" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-105">
+    <input class="toctree-checkbox" id="toctree-checkbox-106" name="toctree-checkbox-106" type="checkbox"/>
+    <label for="toctree-checkbox-106">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5482,6 +6515,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.StokesFlow.labels.html">
        labels
       </a>
@@ -5499,6 +6537,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.StokesFlow.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5541,14 +6584,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.StokesFlow.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.html">
      TransientAdvectionDiffusion
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-106" name="toctree-checkbox-106" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-106">
+    <input class="toctree-checkbox" id="toctree-checkbox-107" name="toctree-checkbox-107" type="checkbox"/>
+    <label for="toctree-checkbox-107">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5579,6 +6632,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.labels.html">
        labels
       </a>
@@ -5596,6 +6654,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5643,14 +6706,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.html">
      TransientFickianDiffusion
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-107" name="toctree-checkbox-107" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-107">
+    <input class="toctree-checkbox" id="toctree-checkbox-108" name="toctree-checkbox-108" type="checkbox"/>
+    <label for="toctree-checkbox-108">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5681,6 +6754,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.labels.html">
        labels
       </a>
@@ -5698,6 +6776,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5740,14 +6823,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.html">
      TransientIonicConduction
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-108" name="toctree-checkbox-108" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-108">
+    <input class="toctree-checkbox" id="toctree-checkbox-109" name="toctree-checkbox-109" type="checkbox"/>
+    <label for="toctree-checkbox-109">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5778,6 +6871,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.labels.html">
        labels
       </a>
@@ -5795,6 +6893,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5837,14 +6940,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.html">
      TransientReactiveTransport
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-109" name="toctree-checkbox-109" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-109">
+    <input class="toctree-checkbox" id="toctree-checkbox-110" name="toctree-checkbox-110" type="checkbox"/>
+    <label for="toctree-checkbox-110">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5875,6 +6988,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.labels.html">
        labels
       </a>
@@ -5892,6 +7010,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -5934,14 +7057,24 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.Transport.html">
      Transport
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-110" name="toctree-checkbox-110" type="checkbox"/>
-    <label class="toctree-toggle" for="toctree-checkbox-110">
+    <input class="toctree-checkbox" id="toctree-checkbox-111" name="toctree-checkbox-111" type="checkbox"/>
+    <label for="toctree-checkbox-111">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -5972,6 +7105,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Transport.interpolate_data.html">
+       interpolate_data
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Transport.labels.html">
        labels
       </a>
@@ -5989,6 +7127,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.Transport.pores.html">
        pores
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Transport.props.html">
+       props
       </a>
      </li>
      <li class="toctree-l3">
@@ -6026,16 +7169,26 @@
        throats
       </a>
      </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Transport.to_indices.html">
+       to_indices
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.Transport.to_mask.html">
+       to_mask
+      </a>
+     </li>
     </ul>
    </li>
   </ul>
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.topotools.html">
-   Topotools
+   topotools
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-111" name="toctree-checkbox-111" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-111">
+  <input class="toctree-checkbox" id="toctree-checkbox-112" name="toctree-checkbox-112" type="checkbox"/>
+  <label for="toctree-checkbox-112">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -6221,6 +7374,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.topotools.reduce_coordination.html">
+     reduce_coordination
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.topotools.reflect_base_points.html">
      reflect_base_points
     </a>
@@ -6284,10 +7442,10 @@
  </li>
  <li class="toctree-l1 has-children">
   <a class="reference internal" href="openpnm.io.html">
-   Io
+   io
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-112" name="toctree-checkbox-112" type="checkbox"/>
-  <label class="toctree-toggle" for="toctree-checkbox-112">
+  <input class="toctree-checkbox" id="toctree-checkbox-113" name="toctree-checkbox-113" type="checkbox"/>
+  <label for="toctree-checkbox-113">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -6413,110 +7571,99 @@
 
   </div>
 </nav>
-    </div>
   </div>
-  
-
-  
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-end-items">
   </div>
+</div>
 
-      </div>
-      <main class="bd-main">
-        
-        
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
+              <article class="bd-article" role="main">
+                
   <p hidden>This is a module</p><section id="module-openpnm.models.phase.heat_capacity">
-<span id="heat-capacity"></span><h1>Heat_capacity<a class="headerlink" href="#module-openpnm.models.phase.heat_capacity" title="Permalink to this headline">#</a></h1>
+<span id="heat-capacity"></span><h1>heat_capacity<a class="headerlink" href="#module-openpnm.models.phase.heat_capacity" title="Permalink to this heading">#</a></h1>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.phase.heat_capacity.gas_mixture_yweighted.html#openpnm.models.phase.heat_capacity.gas_mixture_yweighted" title="openpnm.models.phase.heat_capacity.gas_mixture_yweighted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gas_mixture_yweighted</span></code></a>(phase[, Cps])</p></td>
-<td><p></p></td>
+<td><p>Uses a linearly mole fraction weighted average</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.phase.heat_capacity.gas_pure_TRC.html#openpnm.models.phase.heat_capacity.gas_pure_TRC" title="openpnm.models.phase.heat_capacity.gas_pure_TRC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gas_pure_TRC</span></code></a>(phase[, T, a])</p></td>
-<td><p></p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param phase<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.phase.heat_capacity.liquid_mixture_xweighted.html#openpnm.models.phase.heat_capacity.liquid_mixture_xweighted" title="openpnm.models.phase.heat_capacity.liquid_mixture_xweighted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">liquid_mixture_xweighted</span></code></a>(phase[, Cps])</p></td>
-<td><p></p></td>
+<td><p>Uses a linearly mole fraction weighted average</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.phase.heat_capacity.liquid_pure_rp.html#openpnm.models.phase.heat_capacity.liquid_pure_rp" title="openpnm.models.phase.heat_capacity.liquid_pure_rp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">liquid_pure_rp</span></code></a>(phase[, T, Tc, omega, Cpg])</p></td>
-<td><p></p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param phase<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 
 
-            </article>
-            
-            
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+              </article>
               
-<div class="toc-item">
-  
-</div>
 
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
-            
+              
           </div>
-        </footer>
-        
-      </main>
+          
+      </div>
     </div>
-  </div>
 
   
-    
+  
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+<footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    
-<p class="copyright">
-
+    <p class="copyright">
     &copy; Copyright 2022, PMEAL.<br>
-
 </p>
-
   </div>
   
   <div class="footer-item">
-    
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
   </div>
   
 </div>
-  </footer>
+</footer>
   </body>
 </html>

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Critical\_props
+critical\_props
 ===============
 
 .. automodule:: openpnm.models.phase.critical_props

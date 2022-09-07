@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/simulations/percolation/C_mixed_invasion_percolation.ipynb"
-}

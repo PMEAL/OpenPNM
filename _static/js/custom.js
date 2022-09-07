@@ -16,9 +16,14 @@ if (location.protocol.startsWith("http") & location.protocol !== 'https:') {
 }
 
 window.onload = function () {
-    var examples_clicked = $( ".active a:contains(Examples)" )
-    if (examples_clicked.length == 1) {
-        $(" nav.bd-links ").children().hide()
+    // var examples_clicked = $( ".active a:contains(Examples)" )
+    // if (examples_clicked.length == 1) {
+    //     $(" nav.bd-links ").children().hide()
+    // }
+
+    var is_examples_page = $( ".active a:contains(Examples)" )
+    if (is_examples_page.length == 1) {
+        $(".bd-sidenav").attr('style', 'font-family: "Noto Sans" !important')
     }
 
     // var selected = $("a.current")

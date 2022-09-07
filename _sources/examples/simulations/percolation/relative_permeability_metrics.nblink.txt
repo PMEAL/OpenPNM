@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/simulations/percolation/relative_permeability_metrics.ipynb"
-}

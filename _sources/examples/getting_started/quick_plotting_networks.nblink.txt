@@ -1,3 +1,0 @@
-{    
-    "path": "../../../examples/getting_started/quick_plotting_networks.ipynb"
-}

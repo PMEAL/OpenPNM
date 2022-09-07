@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/data_management/interleaving_data.ipynb"
-}

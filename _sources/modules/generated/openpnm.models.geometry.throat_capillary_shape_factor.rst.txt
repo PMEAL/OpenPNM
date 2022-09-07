@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_capillary\_shape\_factor
+throat\_capillary\_shape\_factor
 ================================
 
 .. automodule:: openpnm.models.geometry.throat_capillary_shape_factor

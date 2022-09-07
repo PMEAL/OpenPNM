@@ -1,0 +1,8 @@
+:orphan:
+
+add_boundary_pores
+====================================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: BodyCenteredCubic.add_boundary_pores

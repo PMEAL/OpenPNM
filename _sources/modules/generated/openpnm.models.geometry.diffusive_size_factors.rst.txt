@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Diffusive\_size\_factors
+diffusive\_size\_factors
 ========================
 
 .. automodule:: openpnm.models.geometry.diffusive_size_factors

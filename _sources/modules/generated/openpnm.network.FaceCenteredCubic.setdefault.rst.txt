@@ -1,0 +1,8 @@
+:orphan:
+
+setdefault
+============================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: FaceCenteredCubic.setdefault

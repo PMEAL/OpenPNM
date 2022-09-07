@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/settings/understanding_basic_transport_settings.ipynb"
-}

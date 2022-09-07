@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/tutorials/network/dual_cubic_lattices.ipynb"
-}

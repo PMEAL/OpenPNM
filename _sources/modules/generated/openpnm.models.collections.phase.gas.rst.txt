@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Gas
+gas
 ===
 
 .. automodule:: openpnm.models.collections.phase.gas

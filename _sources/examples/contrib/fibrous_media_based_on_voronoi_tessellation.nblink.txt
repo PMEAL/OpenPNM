@@ -1,3 +1,0 @@
-{    
-    "path": "../../../examples/contrib/fibrous_media_based_on_voronoi_tessellation.ipynb"
-}

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Throat\_centroid
+throat\_centroid
 ================
 
 .. automodule:: openpnm.models.geometry.throat_centroid

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Capillary\_pressure
+capillary\_pressure
 ===================
 
 .. automodule:: openpnm.models.physics.capillary_pressure

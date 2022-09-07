@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/class_inheritance/overview_of_inheritance.ipynb"
-}

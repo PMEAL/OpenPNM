@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Conduit\_lengths
+conduit\_lengths
 ================
 
 .. automodule:: openpnm.models.geometry.conduit_lengths

@@ -1,0 +1,56 @@
+FaceCenteredCubic
+=================================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: FaceCenteredCubic
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            FaceCenteredCubic.add_boundary_pores
+            FaceCenteredCubic.add_model
+            FaceCenteredCubic.add_model_collection
+            FaceCenteredCubic.clear
+            FaceCenteredCubic.copy
+            FaceCenteredCubic.create_adjacency_matrix
+            FaceCenteredCubic.create_incidence_matrix
+            FaceCenteredCubic.filter_by_label
+            FaceCenteredCubic.find_connected_pores
+            FaceCenteredCubic.find_connecting_throat
+            FaceCenteredCubic.find_nearby_pores
+            FaceCenteredCubic.find_neighbor_pores
+            FaceCenteredCubic.find_neighbor_throats
+            FaceCenteredCubic.fromkeys
+            FaceCenteredCubic.get
+            FaceCenteredCubic.get_adjacency_matrix
+            FaceCenteredCubic.get_conduit_data
+            FaceCenteredCubic.get_incidence_matrix
+            FaceCenteredCubic.interpolate_data
+            FaceCenteredCubic.items
+            FaceCenteredCubic.keys
+            FaceCenteredCubic.labels
+            FaceCenteredCubic.num_neighbors
+            FaceCenteredCubic.num_pores
+            FaceCenteredCubic.num_throats
+            FaceCenteredCubic.pop
+            FaceCenteredCubic.popitem
+            FaceCenteredCubic.pores
+            FaceCenteredCubic.props
+            FaceCenteredCubic.regenerate_models
+            FaceCenteredCubic.run_model
+            FaceCenteredCubic.set_label
+            FaceCenteredCubic.setdefault
+            FaceCenteredCubic.throats
+            FaceCenteredCubic.to_indices
+            FaceCenteredCubic.to_mask
+            FaceCenteredCubic.update
+            FaceCenteredCubic.values
+   
+   

@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/simulations/steady_state/deep_dive_into_conductance_models.ipynb"
-}

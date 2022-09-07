@@ -1,0 +1,655 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Predicting Porosity &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Obtaining Relative Diffusivity Curves" href="relative_diffusivity.html" />
+    <link rel="prev" title="Simulating Mercury Intrusion Porosimetry Curves" href="mercury_intrusion.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/tutorials.html">
+   10 Steps to Learn OpenPNM
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/01_numerical_python_primer.html">
+     Numerical Python Primer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/02_network_generation_and_visualization.html">
+     Generating Networks and Quick Visualization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/03_data_and_topology_storage.html">
+     Storage of Network Data and Topology
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/04_graph_queries_and_manipulation.html">
+     Network Representation, Queries, and Manipulation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/05_defining_geometry.html">
+     Assigning Geometric Properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/06_labels_and_domains.html">
+     Using Labels and Defining Domains
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/07_phases_and_mixtures.html">
+     Creating Phases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/08_simulating_transport.html">
+     Simulating Single Phase Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/09_simulating_invasion.html">
+     Simulating Invasion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../tutorials/10_visualization_options.html">
+     Visualization options
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../_examples/applications.html">
+   Applications
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/reference.html">
+   Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/pore_scale_models.html">
+     Pore-Scale Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
+     The Workspace and Projects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">
+     Available Matrix Solvers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/basic_transport.html">
+     Steady State Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/reactive_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
+     Size Factors and Transport Conductance
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/transient_transport.html">
+     Basic Transport
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-a-random-cubic-network">
+   Create a random cubic network
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#calculate-void-and-bulk-volume">
+   Calculate void and bulk volume
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#discussions-and-issues">
+   Discussions and Issues
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#domain-volume">
+   Domain volume:
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#overlapping-pores-and-throats">
+   Overlapping pores and throats:
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#extracted-networks">
+   Extracted networks
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#void-volume">
+   Void volume:
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="predicting-porosity">
+<h1>Predicting Porosity<a class="headerlink" href="#predicting-porosity" title="Permalink to this heading">#</a></h1>
+<p>The example explains how to estimate porosity of a network. We also discuss some challenges in estimating the porosity of the network and how to reduce the estimation error.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s2">&quot;InlineBackend.figure_formats = [&#39;svg&#39;]&quot;</span><span class="p">)</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;porespy&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<section id="create-a-random-cubic-network">
+<h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">cubes_and_cuboids</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="calculate-void-and-bulk-volume">
+<h2>Calculate void and bulk volume<a class="headerlink" href="#calculate-void-and-bulk-volume" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Vol_void</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">])</span>
+<span class="n">inlet</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">outlet</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">get_domain_area</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlet</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">get_domain_length</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlet</span><span class="p">)</span>
+<span class="n">Vol_bulk</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">L</span>
+<span class="n">Poro</span> <span class="o">=</span> <span class="n">Vol_void</span> <span class="o">/</span> <span class="n">Vol_bulk</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The value of Porosity is: </span><span class="si">{</span><span class="n">Poro</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
+  - WARNING: Attempting to estimate inlet area...will be low 
+  - SOURCE : openpnm.topotools._topotools.get_domain_area 
+  - TIME   : 2022-09-01 15:36:47,485    
+------------------------------------------------------------
+------------------------------------------------------------
+  - WARNING: Attempting to estimate domain length...could be low if boundary pores were not added 
+  - SOURCE : openpnm.topotools._topotools.get_domain_length 
+  - TIME   : 2022-09-01 15:36:47,499    
+------------------------------------------------------------
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The value of Porosity is: 0.21
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="discussions-and-issues">
+<h2>Discussions and Issues<a class="headerlink" href="#discussions-and-issues" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="domain-volume">
+<h2>Domain volume:<a class="headerlink" href="#domain-volume" title="Permalink to this heading">#</a></h2>
+<p>One of the issues in estimation of porosity of the network is to estimate the domain volume correctly. In a cubic network for example, finding the length at x direction using Nx * spacing is erroneous. The reason is the domain length in x direction includes additional lengths from half of pore diameter for pores that locate on the left and right side. This is shown in figure below:</p>
+<p>left) the green plane is located at the pore centers of left boundary pores and some pore volume on the left is ignored. Applying a similar plane on other sides of the network to find the length in each direction, the resulting bulk volume could be underestimated.</p>
+<p>right) the green plane is located at the far left side. Applying a similar plane on other sides of the network to find the length in each direction, the resulting bulk volume could be overestimated.</p>
+<p><img alt="image" src="https://user-images.githubusercontent.com/43128873/187976526-d36c60be-8514-4326-8ee5-00a24ea90d56.png" /></p>
+</section>
+<section id="overlapping-pores-and-throats">
+<h2>Overlapping pores and throats:<a class="headerlink" href="#overlapping-pores-and-throats" title="Permalink to this heading">#</a></h2>
+<p>Another issue is to ensure that the pore-scale models for volume are consistent. For example there is no overlapping pores, because in this case the void volume calculation will overestimate the real void space. Depending on the pore scale model used for the shape of pores and throats, they may need special methods to calculate the void volume to account for the overlap between throats and pores. Depending on the method that was used for assigning throat lengths, this overlap volume may be included in volume calculations. Existing methods to correct the throat volumes are <code class="docutils literal notranslate"><span class="pre">lens</span></code> and <code class="docutils literal notranslate"><span class="pre">pendular_ring</span></code> methods available in geometry models for throat_volume. For example assuming a spheres and cylinders geometry, <code class="docutils literal notranslate"><span class="pre">lens</span></code> model in geometry collection tackles this problem. The <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> geometry collection includes <code class="docutils literal notranslate"><span class="pre">throat.total_volume</span></code> and <code class="docutils literal notranslate"><span class="pre">throat.volume</span></code>. <code class="docutils literal notranslate"><span class="pre">throat.volume</span></code> is the volume of throat with corrections using <code class="docutils literal notranslate"><span class="pre">lens</span></code> volume:</p>
+<p>Throat volume (<code class="docutils literal notranslate"><span class="pre">throat.volume</span></code>) = volume of cylinder (<code class="docutils literal notranslate"><span class="pre">throat.total</span> <span class="pre">volume</span></code>) - the overlap of cylinder with spherical pores at its two ends  (<code class="docutils literal notranslate"><span class="pre">difference</span></code>)</p>
+<p>Let’s create a spheres and cylinders geometry:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Vol_void_initial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.total_volume&#39;</span><span class="p">])</span>
+<span class="n">Vol_void_corrected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">])</span>
+<span class="n">Poro_initial</span> <span class="o">=</span> <span class="n">Vol_void_initial</span> <span class="o">/</span> <span class="n">Vol_bulk</span>
+<span class="n">Poro_corrected</span> <span class="o">=</span> <span class="n">Vol_void_corrected</span> <span class="o">/</span> <span class="n">Vol_bulk</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Initial Porosity: </span><span class="si">{</span><span class="n">Poro_initial</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Corrected Porosity: </span><span class="si">{</span><span class="n">Poro_corrected</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Initial Porosity: 0.12852
+Corrected Porosity: 0.12590
+</pre></div>
+</div>
+</div>
+</div>
+<p>Although in this example the lens volume was negligible, depending on the size of the pores and throats, this value can be too high to be neglected.</p>
+<p>.. Note:: <Pendular ring correction></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`Pendular_ring` method calculates the volume of the pendular rings residing between the end of a cylindrical throat and spherical pores that are in contact but not overlapping. This volume should be added to the throat volume if the throat length was found as the center-to-center distance less the pore radii.
+</pre></div>
+</div>
+</section>
+<section id="extracted-networks">
+<h2>Extracted networks<a class="headerlink" href="#extracted-networks" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="void-volume">
+<h2>Void volume:<a class="headerlink" href="#void-volume" title="Permalink to this heading">#</a></h2>
+<p>In extracted networks, different geometrical shapes can be assigned to the pores and throats and their volume can be calculated using existing geometry models. However, the original segmented pore regions are not regular shapes. Therefore, the total pore and throat volumes in the network don’t add up to the known void volume, since the pores and throats don’t fill space perfectly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">overlapping_spheres</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">50</span><span class="p">]);</span>
+<span class="n">im_poro</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Porosity from image: </span><span class="si">{</span><span class="n">im_poro</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Porosity from image: 63.3%
+</pre></div>
+</div>
+<img alt="../../_images/5c7da205b2f26ce5dbe39ccaaaddf95895e24f05c56d327044ab72811ec15e85.svg" src="../../_images/5c7da205b2f26ce5dbe39ccaaaddf95895e24f05c56d327044ab72811ec15e85.svg" /></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">boundary_width</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">network</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">network_from_porespy</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.inscribed_diameter&#39;</span><span class="p">]</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.inscribed_diameter&#39;</span><span class="p">]</span>
+<span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">cubes_and_cuboids</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+             <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">cube</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+             <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cuboid</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+             <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Vol_void</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">])</span>
+<span class="n">Vol_bulk</span> <span class="o">=</span> <span class="mi">100</span><span class="o">**</span><span class="mi">3</span> <span class="c1"># from the image</span>
+<span class="n">pnm_poro</span> <span class="o">=</span> <span class="n">Vol_void</span> <span class="o">/</span> <span class="n">Vol_bulk</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Porosity from pnm: </span><span class="si">{</span><span class="n">pnm_poro</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Porosity from pnm: 67.5%
+</pre></div>
+</div>
+</div>
+</div>
+<p>.. Notes:: <Volume errors></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1) Note that in the example above, we assumed the original image was available for calculating the bulk volume. Assuming the original image is not available, calculating the bulk volume for the extracted network is another source of approximation error. Existing methods in topotools such as `get_domain_length` and `get_domain_area` tackle this problem to provide a better approximation of bulk volume of the network. 
+
+2) Note that in the example above, we assumed cubic pores and cuboid throats for the network. Assigning other diameters, shapes, and volume functions would result in a different estimation of void volume.
+</pre></div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

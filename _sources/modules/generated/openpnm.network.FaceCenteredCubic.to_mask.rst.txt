@@ -1,0 +1,8 @@
+:orphan:
+
+to_mask
+=========================================
+
+.. currentmodule:: openpnm.network
+
+.. automethod:: FaceCenteredCubic.to_mask

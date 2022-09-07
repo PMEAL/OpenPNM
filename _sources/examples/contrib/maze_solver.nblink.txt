@@ -1,3 +1,0 @@
-{    
-    "path": "../../../examples/contrib/maze_solver.ipynb"
-}

@@ -3,14 +3,12 @@
 .. module:: openpnm
    :noindex:
 
-.. admonition:: Under Development
+.. warning::
 
    This documentation is under active development, and is not ready yet.
-   We aim to release OpenPNM v3 by April 2022. This documentation,
-   therefore, does not reflect the latest stable release on
-   PyPI/conda-forge (v2.8.2).
+   We aim to release OpenPNM v3 by mid September 2022.
 
-.. image:: ./_static/images/openpnm_logo.png
+.. image:: ./_static/images/openpnm_logo.jpg
    :name: banner
 
 #########################################
@@ -24,14 +22,17 @@ OpenPNM is an open source project to provide porous media researchers
 with a ready-made framework for performing a wide range of pore network
 simulations.
 
+.. image:: https://user-images.githubusercontent.com/14086031/188250733-9d08db14-7822-4ba7-97a5-af148e1deabb.png
+   :name: banner2
+
 .. toctree::
    :hidden:
    :maxdepth: 0
 
-   user_guide/installation
-   user_guide/index
+   installation
+   basic_usage
    modules/index
-   examples_index
+   _examples/index
 
 ----
 

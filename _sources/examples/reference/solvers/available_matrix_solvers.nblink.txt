@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/solvers/available_matrix_solvers.ipynb"
-}

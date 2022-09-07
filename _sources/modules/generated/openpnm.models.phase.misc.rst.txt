@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Misc
+misc
 ====
 
 .. automodule:: openpnm.models.phase.misc

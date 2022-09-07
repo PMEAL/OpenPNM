@@ -1,83 +1,69 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>openpnm.network._delaunay_voronoi_dual &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
-  <script>
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
-  
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/openpnm/network/_delaunay_voronoi_dual';</script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="None">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
-  <label class="overlay overlay-primary" for="__primary"></label>
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+    <div class="bd-header-announcement container-fluid" id="banner">
       
-<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
-  </div>
 
-  
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
-  </label>
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
   <div id="navbar-start">
     
     
@@ -85,94 +71,70 @@
 
 
 <a class="navbar-brand logo" href="../../../index.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
   
   
 </a>
     
   </div>
 
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
   
-  <div class=" navbar-header-items">
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../modules/index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
 
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
-</nav>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
       
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-      </div>
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -182,180 +144,52 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
       
     </div>
   </div>
-
-
-  
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-  </div>
-
-  
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
-  </label>
-  
-
 </div>
-  </nav>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
-        
-  
-  <div class="sidebar-header-items sidebar-primary__section">
+    </nav>
     
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
     
-      <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../modules/index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
+  </div>
 </nav>
-      </div>
-      
-      </div>
-    
-
-    
-    
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-      </ul>
-      </div>
-      
-    </div>
-    
   </div>
-
-  
-
-  
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-end-items">
   </div>
+</div>
 
-      </div>
-      <main class="bd-main">
-        
-        
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
+              <article class="bd-article" role="main">
+                
   <h1>Source code for openpnm.network._delaunay_voronoi_dual</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
@@ -402,24 +236,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reflect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">reflect</span><span class="o">=</span><span class="n">reflect</span><span class="p">)</span>
 
-        <span class="n">points</span> <span class="o">=</span> <span class="n">parse_points</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
-
-        <span class="c1"># Deal with points that are only 2D...they break tessellations</span>
-        <span class="k">if</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
-
-        <span class="n">net</span><span class="p">,</span> <span class="n">vor</span><span class="p">,</span> <span class="n">tri</span> <span class="o">=</span> <span class="n">voronoi_delaunay_dual</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">net</span><span class="p">,</span> <span class="n">vor</span><span class="p">,</span> <span class="n">tri</span> <span class="o">=</span> <span class="n">voronoi_delaunay_dual</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                                              <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                                              <span class="n">trim</span><span class="o">=</span><span class="n">trim</span><span class="p">,</span>
+                                              <span class="n">node_prefix</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span>
+                                              <span class="n">edge_prefix</span><span class="o">=</span><span class="s1">&#39;throat&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_vor</span> <span class="o">=</span> <span class="n">vor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span> <span class="o">=</span> <span class="n">tri</span>
-
-        <span class="c1"># Trim all pores that lie outside of the specified domain</span>
-        <span class="k">if</span> <span class="n">trim</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_trim_external_pores</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_label_faces</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -433,71 +261,6 @@
     <span class="k">def</span> <span class="nf">vor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A shortcut to get a handle to the Voronoi subnetwork&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vor</span>
-
-    <span class="k">def</span> <span class="nf">_trim_external_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-        <span class="c1"># Find all pores within the domain</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">isoutside</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">],</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.external&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.external&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># Find which internal pores are delaunay</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.external&#39;</span><span class="p">])</span><span class="o">*</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.delaunay&#39;</span><span class="p">]</span>
-
-        <span class="c1"># Find all pores connected to an internal delaunay pore</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">include_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># Mark them all as keepers</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.keep&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.keep&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># Trim all bad pores</span>
-        <span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=~</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.keep&#39;</span><span class="p">])</span>
-
-        <span class="c1"># Now label boundary pores</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.delaunay&#39;</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.external&#39;</span><span class="p">]</span>
-
-        <span class="c1"># Label Voronoi pores on boundary</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">))</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.voronoi&#39;</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># Label Voronoi and interconnect throats on boundary</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">)</span>
-        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.boundary&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># Trim throats between Delaunay boundary pores</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="s1">&#39;delaunay&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
-        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
-        <span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
-
-        <span class="c1"># Move Delaunay boundary pores to centroid of Voronoi facet</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="s1">&#39;delaunay&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">P</span> <span class="ow">in</span> <span class="n">Ps</span><span class="p">:</span>
-            <span class="n">Ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
-            <span class="n">Ns</span> <span class="o">=</span> <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.voronoi&#39;</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ns</span><span class="p">)</span>
-            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">Ns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">P</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span>
-
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.internal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;internal&#39;</span><span class="p">)</span>
-        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.internal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.internal&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># Label surface pores and throats between boundary and internal</span>
-        <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">throats</span><span class="p">([</span><span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="s1">&#39;internal&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.surface&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">surf_pores</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">Ts</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="n">surf_pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">surf_pores</span><span class="p">[</span><span class="o">~</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">][</span><span class="n">surf_pores</span><span class="p">]])</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.surface&#39;</span><span class="p">][</span><span class="n">surf_pores</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># Clean-up</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.external&#39;</span><span class="p">]</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.keep&#39;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="DelaunayVoronoiDual.find_throat_facets"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.DelaunayVoronoiDual.find_throat_facets.html#openpnm.network.DelaunayVoronoiDual.find_throat_facets">[docs]</a>    <span class="k">def</span> <span class="nf">find_throat_facets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -558,20 +321,6 @@
             <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_label_faces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Label the pores sitting on the faces of the domain in accordance</span>
-<span class="sd">        with the conventions used for cubic etc.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">min_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]</span>
-        <span class="n">max_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">]</span>
-        <span class="n">min_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">max_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">min_labels</span><span class="p">[</span><span class="n">ax</span><span class="p">]]</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="n">ax</span><span class="p">]</span> <span class="o">==</span> <span class="n">min_coords</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">max_labels</span><span class="p">[</span><span class="n">ax</span><span class="p">]]</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="n">ax</span><span class="p">]</span> <span class="o">==</span> <span class="n">max_coords</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span>
-
 <div class="viewcode-block" id="DelaunayVoronoiDual.add_boundary_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.DelaunayVoronoiDual.add_boundary_pores.html#openpnm.network.DelaunayVoronoiDual.add_boundary_pores">[docs]</a>    <span class="k">def</span> <span class="nf">add_boundary_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
                                          <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">],</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -605,60 +354,35 @@
                                          <span class="n">apply_label</span><span class="o">=</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;_boundary&#39;</span><span class="p">)</span></div></div>
 </pre></div>
 
-            </article>
-            
-            
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+              </article>
               
-<div class="toc-item">
-  
-</div>
 
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
-            
+              
           </div>
-        </footer>
-        
-      </main>
+          
+      </div>
     </div>
-  </div>
 
   
-    
+  
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+<footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    
-<p class="copyright">
-
+    <p class="copyright">
     &copy; Copyright 2022, PMEAL.<br>
-
 </p>
-
   </div>
   
   <div class="footer-item">
-    
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
   </div>
   
 </div>
-  </footer>
+</footer>
   </body>
 </html>

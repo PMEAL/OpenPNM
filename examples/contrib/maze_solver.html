@@ -1,88 +1,72 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Maze Solver &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
-  <script>
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
-  
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/contrib/maze_solver';</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Simulating Drainage with Ordinary Percolation" href="ordinary_percolation.html" />
-    <link rel="prev" title="Part 1: Import Networks from Statoil Files" href="loading_statoil_finding_permeability.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="None">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
-  <label class="overlay overlay-primary" for="__primary"></label>
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+    <div class="bd-header-announcement container-fluid" id="banner">
       
-<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
-  </div>
 
-  
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
-  </label>
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
   <div id="navbar-start">
     
     
@@ -90,94 +74,70 @@
 
 
 <a class="navbar-brand logo" href="../../index.html">
-
   
   
   
   
-  
-  
-  
-
-  
-    <img src="../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
   
   
 </a>
     
   </div>
 
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
   
-  <div class=" navbar-header-items">
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../modules/index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
 
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
-</nav>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
       
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-      </div>
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -187,922 +147,150 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
       
     </div>
   </div>
-
-
-  
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-  </div>
-
-  
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
-  </label>
-  
-
 </div>
-  </nav>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-      <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/installation.html">
-                        Installation
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="../../modules/index.html">
-                        Module Reference
-                    </a>
-                </li>
-                
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../../examples_index.html">
-                        Examples
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-            <div class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    More
-                </button>
-                <div class="dropdown-menu">
-                    
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-                </div>
-            </div>
-            
-    </ul>
-</nav>
-      </div>
-      
-      </div>
+    </nav>
     
 
-    
-    
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-      </ul>
-      </div>
-      
-    </div>
-    
-  </div>
 
-  
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../getting_started/concise_overview_of_openpnm.html">
-   Concise Overview of OpenPNM
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../getting_started/intro_to_openpnm_basic.html">
-   Tutorial 1 - Basic
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../getting_started/intro_to_openpnm_intermediate.html">
-   Tutorial 2 - Intermediate
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../getting_started/quick_plotting_networks.html">
-   Quick Plotting Networks
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/adding_boundary_pores.html">
-   Adding Boundary Pores
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/coupling_continuum_regions_with_pore_networks.html">
-   Stitch Two Networks with Different Spacing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/cubic_networks.html">
-   Cubic Lattice
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/cubic_templates.html">
-   Cubic Template
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/dual_cubic_lattices.html">
-   Dual Cubic Lattice
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/finding_neighbor_pores_and_throats.html">
-   Querying the Topology to Find Neighbors
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/manually_adding_pores_and_throats.html">
-   Manually Adding and Removing Pores and Throats
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/random_networks_based_on_delaunay_and_voronoi_tessellations.html">
-   Delaunay and Voronoi Tessalation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/network/stitching_and_merging_networks_together.html">
-   Stitching and Merging Networks
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/geometry/adjusting_pore_size_distributions.html">
-   Adjusting Pore Size Distributions
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/geometry/stick_and_ball.html">
-   The Stick and Ball Geometry
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/phase/empty_example.html">
-   Empty example!
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/physics/pore_scale_models.html">
-   Pore Scale Models
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/A_ordinary_percolation.html">
-   Ordinary Percolation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/B_invasion_percolation.html">
-   Invasion Percolation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/C_mixed_invasion_percolation.html">
-   Mixed Invasion Percolation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/D_meniscus_model_comparison.html">
-   Meniscus Model Comparison
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/capillary_pressure_curves.html">
-   Mercury Intrusion Porosimetry
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/relative_diffusivity.html">
-   Relative Diffusivity
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/percolation/relative_permeability_metrics.html">
-   Relative Permeability
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/steady_state/continuum_heat_transfer.html">
-   Fourier Conduction
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/steady_state/deep_dive_into_conductance_models.html">
-   Deep Dive into Conductance Models
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/steady_state/diffusion_with_concentration_dependent_diffusivity.html">
-   Fickian Diffusion with Variable Diffusivity
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/steady_state/fickian_diffusion_and_tortuosity.html">
-   Fickian Diffusion and Tortuosity
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/steady_state/stokes_flow_and_permeability_tensor.html">
-   Stokes Flow and Permeability Tensor
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/reactive/diffusion_with_source_and_sink_terms.html">
-   Fickian Diffusion with Reaction
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/transient/transient_advection_diffusion.html">
-   Transient Advection-Diffusion
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/transient/transient_fickian_diffusion.html">
-   Transient Fickian Diffusion
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/transient/transient_fickian_diffusion_with_reaction.html">
-   Transient Fickian Diffusion with Reaction
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../simulations/multiphysics/advection_diffusion.html">
-   Advection-Diffusion
-  </a>
- </li>
-</ul>
-<ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="fibrous_media_based_on_voronoi_tessellation.html">
-   Fibrous Media with Voronoi Tessellations
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="loading_statoil_finding_permeability.html">
-   Part 1: Import Networks from Statoil Files
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Maze Solver
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ordinary_percolation.html">
-   Simulating Drainage with Ordinary Percolation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="predicting_effective_permeability_of_berea.html">
-   Predicting Permeability of Berea
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/class_inheritance/creating_a_custom_phase.html">
-   Creating a Custom Phase
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/class_inheritance/overview_of_inheritance.html">
-   Overview of Inheritance
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/data_management/data_and_topology_storage.html">
-   Storage of Network Data and Topology
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/data_management/data_exchange_between_objects.html">
-   Data Exchange Between Objects
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/data_management/interleaving_data.html">
-   Interleaving Data
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/data_management/using_and_creating_labels.html">
-   Using and Creating Labels
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/settings/deep_dive_into_the_settings_attribute.html">
-   Overview of the Settings Attribute
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/settings/understanding_basic_transport_settings.html">
-   Understanding Basic Transport Settings
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/settings/understanding_reactive_transport_settings.html">
-   Understanding Reactive Transport Settings
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/settings/understanding_transient_transport_settings.html">
-   Understanding Transient Transport Settings
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/solvers/available_matrix_solvers.html">
-   Available Matrix Solvers
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/workspace/overview_of_subdomains.html">
-   Overview of Subdomains
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/workspace/overview_of_workspace_and_projects.html">
-   The Workspace and Projects
-  </a>
- </li>
-</ul>
-<ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/uncategorized/intro_to_openpnm_advanced.html">
-   Tutorial 3 - Advanced
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/uncategorized/managing_geometrical_properties_of_imported_networks.html">
-   Geometry of Imported Networks
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/uncategorized/overview_of_domain_syntax.html">
-   OpenPNM Version 3: The new @domain syntax
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/uncategorized/overview_of_shape_factors.html">
-   Overview of Shape Factors
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/uncategorized/the_problem_with_domain_length_and_area.html">
-   Problem with Domain Area and Length
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../reference/uncategorized/working_with_extracted_networks.html">
-   Working with Extracted Networks
-  </a>
- </li>
-</ul>
-
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
   </div>
 </nav>
-    </div>
   </div>
-  
-
-  
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-end-items">
   </div>
+</div>
 
-      </div>
-      <main class="bd-main">
-        
-        
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#load-maze-samples">
+   Load maze samples
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#approach-a-direct-numerical-simulation">
+   Approach A: Direct numerical simulation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#thicken-the-walls-to-reduce-number-of-unknowns">
+   Thicken the walls to reduce number of unknowns
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convert-the-maze-into-a-cubic-network">
+   Convert the maze into a Cubic network
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#solve-the-poisson-equation-nabla-2-phi-0-on-the-maze">
+   Solve the Poisson equation (
+   <span class="math notranslate nohighlight">
+    \(\nabla^2 \phi = 0\)
+   </span>
+   ) on the maze
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#follow-the-gradient">
+   Follow the gradient!
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#approach-b-network-extraction">
+   Approach B: Network extraction
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#network-extraction-using-snow-algorithm">
+   Network extraction using SNOW algorithm
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#solve-the-poisson-equation-nabla-2-phi-0-on-the-extracted-network">
+   Solve the Poisson equation (
+   <span class="math notranslate nohighlight">
+    \(\nabla^2 \phi = 0\)
+   </span>
+   ) on the extracted network
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id1">
+   Follow the gradient!
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-  
-<style>
-/* CSS for nbsphinx extension */
-
-/* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-}
-
-/* avoid gaps between output lines */
-div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-}
-
-/* input/output containers */
-div.nbinput.container,
-div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
-    width: 100%;
-}
-@media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-}
-
-/* input container */
-div.nbinput.container {
-    padding-top: 5px;
-}
-
-/* last container */
-div.nblast.container {
-    padding-bottom: 5px;
-}
-
-/* input prompt */
-div.nbinput.container div.prompt pre {
-    color: #307FC1;
-}
-
-/* output prompt */
-div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-}
-
-/* all prompts */
-div.nbinput.container div.prompt,
-div.nboutput.container div.prompt {
-    width: 0;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-}
-
-div.nbinput.container div.prompt > div,
-div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-}
-
-@media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-}
-
-/* disable scrollbars on prompts */
-div.nbinput.container div.prompt pre,
-div.nboutput.container div.prompt pre {
-    overflow: hidden;
-}
-
-/* input/output area */
-div.nbinput.container div.input_area,
-div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-}
-@media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-}
-
-/* input area */
-div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    /*background: #f5f5f5;*/
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.imgmath center alignment in output cells */
-div.nboutput.container div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-default-inverse-fg { color: #FFFFFF; }
-.ansi-default-inverse-bg { background-color: #000000; }
-
-.ansi-bold { font-weight: bold; }
-.ansi-underline { text-decoration: underline; }
-
-
-div.nbinput.container div.input_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight].math,
-div.nboutput.container div.output_area.rendered_html,
-div.nboutput.container div.output_area > div.output_javascript,
-div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-}
-
-/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-div.nbinput.container div.input_area > div[class^='highlight'],
-div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-}
-
-/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt .copybtn {
-    display: none;
-}
-
-/* Some additional styling taken form the Jupyter notebook CSS */
-.jp-RenderedHTMLCommon table,
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-.jp-RenderedHTMLCommon thead,
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-.jp-RenderedHTMLCommon tr,
-.jp-RenderedHTMLCommon th,
-.jp-RenderedHTMLCommon td,
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-.jp-RenderedHTMLCommon th,
-div.rendered_html th {
-  font-weight: bold;
-}
-.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-.jp-RenderedHTMLCommon tbody tr:hover,
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-</style>
-<section id="Maze-Solver">
-<h1>Maze Solver<a class="headerlink" href="#Maze-Solver" title="Permalink to this headline">#</a></h1>
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="maze-solver">
+<h1>Maze Solver<a class="headerlink" href="#maze-solver" title="Permalink to this heading">#</a></h1>
 <p>In this notebook, we write a maze solver by solving the Poisson equation with two Dirichlet boundary conditions imposed on the two faces that correspond to the start and end of the maze, respectively.</p>
 <p>The logic is pretty simple: once we have the solution, we just need to start off from one face and follow the gradient. Since the gradient in the deadends is almost close to 0, following the nonzero gradient should guide us toward the other side of the maze.</p>
 <p>We implement two different approaches:</p>
 <ol class="arabic simple">
-<li><p>Direct numerical simulation Here, we first convert the image into a Cubic network, trim the pores that correspond to the walls, and finally run a basic <code class="docutils literal notranslate"><span class="pre">OhmicConduction</span></code> (or <code class="docutils literal notranslate"><span class="pre">FickianDiffusion</span></code>) on the resulting trimmed network.</p></li>
-<li><p>Network extraction Here, we first use the SNOW algorithm to extract the equivalent network of the maze. Note that the nodes in the equivalent network will not exactly give us the corners of the maze, but at least it gives us a rough idea, enough for solving the maze! Then, like the first approach, we run a basic <code class="docutils literal notranslate"><span class="pre">OhmicConduction</span></code> on the extracted network. The advantage of this approach is that it’s way faster due to much fewer unknowns.</p></li>
+<li><p>Direct numerical simulation
+Here, we first convert the image into a Cubic network, trim the pores that correspond to the walls, and finally run a basic <code class="docutils literal notranslate"><span class="pre">OhmicConduction</span></code> (or <code class="docutils literal notranslate"><span class="pre">FickianDiffusion</span></code>) on the resulting trimmed network.</p></li>
+<li><p>Network extraction
+Here, we first use the SNOW algorithm to extract the equivalent network of the maze. Note that the nodes in the equivalent network will not exactly give us the corners of the maze, but at least it gives us a rough idea, enough for solving the maze! Then, like the first approach, we run a basic <code class="docutils literal notranslate"><span class="pre">OhmicConduction</span></code> on the extracted network. The advantage of this approach is that it’s way faster due to much fewer unknowns.</p></li>
 </ol>
-<p>Note: Inspired by this post by Jeremy Theler <a class="reference external" href="https://www.linkedin.com/posts/jeremytheler_how-to-solve-a-maze-without-ai-use-laplaces-activity-6831291311832760320-x9d5">https://www.linkedin.com/posts/jeremytheler_how-to-solve-a-maze-without-ai-use-laplaces-activity-6831291311832760320-x9d5</a></p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the required pmeal packages in the current Jupyter kernel</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="o">!{</span>sys.executable<span class="o">}</span> -m pip install openpnm
-    <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="o">!{</span>sys.executable<span class="o">}</span> -m pip install porespy
-    <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Collecting porespy
-  Downloading porespy-2.2.0-py3-none-any.whl (139 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">139.9/139.9 kB</span> <span class="ansi-red-fg">16.3 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Collecting scikit-fmm
-  Downloading scikit-fmm-2022.8.15.tar.gz (438 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">438.2/438.2 kB</span> <span class="ansi-red-fg">60.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-  Installing build dependencies ... - \ | / - \ done
-  Getting requirements to build wheel ... - done
-  Preparing metadata (pyproject.toml) ... - done
-Requirement already satisfied: pandas in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (1.4.4)
-Requirement already satisfied: psutil in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (5.9.2)
-Requirement already satisfied: numpy in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (1.23.2)
-Requirement already satisfied: imageio in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (2.21.2)
-Collecting pyfastnoisesimd
-  Downloading pyfastnoisesimd-0.4.2-cp38-cp38-manylinux2010_x86_64.whl (3.5 MB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">3.5/3.5 MB</span> <span class="ansi-red-fg">83.3 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Collecting edt
-  Downloading edt-2.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.9 MB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">2.9/2.9 MB</span> <span class="ansi-red-fg">90.5 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Requirement already satisfied: numba in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (0.56.2)
-Collecting pyevtk
-  Downloading pyevtk-1.5.0-py3-none-any.whl (20 kB)
-Requirement already satisfied: openpnm in /home/runner/work/OpenPNM/OpenPNM (from porespy) (2.8.2.dev111141)
-Requirement already satisfied: scipy in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (1.9.1)
-Requirement already satisfied: tqdm in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (4.64.1)
-Collecting trimesh
-  Downloading trimesh-3.14.1-py3-none-any.whl (660 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">660.4/660.4 kB</span> <span class="ansi-red-fg">68.9 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Requirement already satisfied: matplotlib in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (3.5.3)
-Collecting deprecated
-  Downloading Deprecated-1.2.13-py2.py3-none-any.whl (9.6 kB)
-Collecting dask
-  Downloading dask-2022.9.0-py3-none-any.whl (1.1 MB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">1.1/1.1 MB</span> <span class="ansi-red-fg">65.1 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Collecting loguru
-  Downloading loguru-0.6.0-py3-none-any.whl (58 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">58.3/58.3 kB</span> <span class="ansi-red-fg">17.8 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Requirement already satisfied: scikit-image in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from porespy) (0.19.3)
-Collecting numpy-stl
-  Downloading numpy_stl-2.17.1-py3-none-any.whl (18 kB)
-Collecting partd&gt;=0.3.10
-  Downloading partd-1.3.0-py3-none-any.whl (18 kB)
-Collecting toolz&gt;=0.8.2
-  Downloading toolz-0.12.0-py3-none-any.whl (55 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">55.8/55.8 kB</span> <span class="ansi-red-fg">17.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Collecting pyyaml&gt;=5.3.1
-  Downloading PyYAML-6.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl (701 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">701.2/701.2 kB</span> <span class="ansi-red-fg">67.5 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Requirement already satisfied: packaging&gt;=20.0 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from dask-&gt;porespy) (21.3)
-Collecting fsspec&gt;=0.6.0
-  Downloading fsspec-2022.8.2-py3-none-any.whl (140 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">140.8/140.8 kB</span> <span class="ansi-red-fg">38.0 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Collecting cloudpickle&gt;=1.1.1
-  Downloading cloudpickle-2.2.0-py3-none-any.whl (25 kB)
-Collecting wrapt&lt;2,&gt;=1.10
-  Downloading wrapt-1.14.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (81 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">81.0/81.0 kB</span> <span class="ansi-red-fg">21.8 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
-Requirement already satisfied: pillow&gt;=8.3.2 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from imageio-&gt;porespy) (9.2.0)
-Requirement already satisfied: pyparsing&gt;=2.2.1 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from matplotlib-&gt;porespy) (3.0.9)
-Requirement already satisfied: kiwisolver&gt;=1.0.1 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from matplotlib-&gt;porespy) (1.4.4)
-Requirement already satisfied: fonttools&gt;=4.22.0 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from matplotlib-&gt;porespy) (4.37.1)
-Requirement already satisfied: python-dateutil&gt;=2.7 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from matplotlib-&gt;porespy) (2.8.2)
-Requirement already satisfied: cycler&gt;=0.10 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from matplotlib-&gt;porespy) (0.11.0)
-Requirement already satisfied: importlib-metadata in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from numba-&gt;porespy) (4.11.4)
-Requirement already satisfied: setuptools&lt;60 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from numba-&gt;porespy) (59.8.0)
-Requirement already satisfied: llvmlite&lt;0.40,&gt;=0.39.0dev0 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from numba-&gt;porespy) (0.39.1)
-Collecting python-utils&gt;=1.6.2
-  Downloading python_utils-3.3.3-py2.py3-none-any.whl (23 kB)
-Requirement already satisfied: chemicals in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (1.1.1)
-Requirement already satisfied: docrep in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (0.3.2)
-Requirement already satisfied: flatdict in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (4.0.1)
-Requirement already satisfied: h5py in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (3.7.0)
-Requirement already satisfied: jsonschema in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (4.15.0)
-Requirement already satisfied: json-tricks in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (3.15.5)
-Requirement already satisfied: networkx in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (2.8.6)
-Requirement already satisfied: pypardiso in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (0.4.1)
-Requirement already satisfied: sympy in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (1.11.1)
-Requirement already satisfied: terminaltables in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (3.1.10)
-Requirement already satisfied: traits in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (6.4.1)
-Requirement already satisfied: transforms3d in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from openpnm-&gt;porespy) (0.4.1)
-Requirement already satisfied: pytz&gt;=2020.1 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from pandas-&gt;porespy) (2022.2.1)
-Requirement already satisfied: tifffile&gt;=2019.7.26 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from scikit-image-&gt;porespy) (2022.8.12)
-Requirement already satisfied: PyWavelets&gt;=1.1.1 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from scikit-image-&gt;porespy) (1.3.0)
-Collecting locket
-  Downloading locket-1.0.0-py2.py3-none-any.whl (4.4 kB)
-Requirement already satisfied: six&gt;=1.5 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from python-dateutil&gt;=2.7-&gt;matplotlib-&gt;porespy) (1.16.0)
-Requirement already satisfied: fluids&gt;=1.0.21 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from chemicals-&gt;openpnm-&gt;porespy) (1.0.22)
-Requirement already satisfied: zipp&gt;=0.5 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from importlib-metadata-&gt;numba-&gt;porespy) (3.8.1)
-Requirement already satisfied: attrs&gt;=17.4.0 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from jsonschema-&gt;openpnm-&gt;porespy) (22.1.0)
-Requirement already satisfied: pkgutil-resolve-name&gt;=1.3.10 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from jsonschema-&gt;openpnm-&gt;porespy) (1.3.10)
-Requirement already satisfied: importlib-resources&gt;=1.4.0 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from jsonschema-&gt;openpnm-&gt;porespy) (5.9.0)
-Requirement already satisfied: pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,&gt;=0.14.0 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from jsonschema-&gt;openpnm-&gt;porespy) (0.18.1)
-Requirement already satisfied: mkl in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from pypardiso-&gt;openpnm-&gt;porespy) (2022.1.0)
-Requirement already satisfied: mpmath&gt;=0.19 in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from sympy-&gt;openpnm-&gt;porespy) (1.2.1)
-Requirement already satisfied: tbb==2021.* in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from mkl-&gt;pypardiso-&gt;openpnm-&gt;porespy) (2021.6.0)
-Requirement already satisfied: intel-openmp==2022.* in /usr/share/miniconda3/envs/test/lib/python3.8/site-packages (from mkl-&gt;pypardiso-&gt;openpnm-&gt;porespy) (2022.1.0)
-Building wheels for collected packages: scikit-fmm
-  Building wheel for scikit-fmm (pyproject.toml) ... - \ | / - \ | / done
-  Created wheel for scikit-fmm: filename=scikit_fmm-2022.8.15-cp38-cp38-linux_x86_64.whl size=58610 sha256=8f91525aa01c7a0e9a0cfac4a9964e30a2afabfdb71001585f27a3099a5cd519
-  Stored in directory: /home/runner/.cache/pip/wheels/23/5b/cf/00eee57aa425649cb96fbdf99b1adff0be82bd70e125f2807e
-Successfully built scikit-fmm
-Installing collected packages: wrapt, trimesh, toolz, scikit-fmm, pyyaml, python-utils, pyfastnoisesimd, pyevtk, loguru, locket, fsspec, edt, cloudpickle, partd, numpy-stl, deprecated, dask, porespy
-Successfully installed cloudpickle-2.2.0 dask-2022.9.0 deprecated-1.2.13 edt-2.3.0 fsspec-2022.8.2 locket-1.0.0 loguru-0.6.0 numpy-stl-2.17.1 partd-1.3.0 porespy-2.2.0 pyevtk-1.5.0 pyfastnoisesimd-0.4.2 python-utils-3.3.3 pyyaml-6.0 scikit-fmm-2022.8.15 toolz-0.12.0 trimesh-3.14.1 wrapt-1.14.1
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<p>Note: Inspired by this post by Jeremy Theler https://www.linkedin.com/posts/jeremytheler_how-to-solve-a-maze-without-ai-use-laplaces-activity-6831291311832760320-x9d5</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
 <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">tic</span><span class="p">,</span> <span class="n">toc</span>
 <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
 <span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
@@ -1111,30 +299,26 @@ Successfully installed cloudpickle-2.2.0 dask-2022.9.0 deprecated-1.2.13 edt-2.3
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [2], line 7</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> <span class="ansi-bold" style="color: rgb(0,0,255)">porespy</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> <span class="ansi-bold" style="color: rgb(0,0,255)">ps</span>
-<span class="ansi-green-intense-fg ansi-bold">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> <span class="ansi-bold" style="color: rgb(0,0,255)">openpnm</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> <span class="ansi-bold" style="color: rgb(0,0,255)">op</span>
-<span class="ansi-green-fg">----&gt; 7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">openpnm</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">utils</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> tic, toc
-<span class="ansi-green-intense-fg ansi-bold">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">PIL</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Image
-<span class="ansi-green-intense-fg ansi-bold">      9</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">io</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> BytesIO
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">6</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="ne">----&gt; </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
 
-<span class="ansi-red-fg">ImportError</span>: cannot import name &#39;tic&#39; from &#39;openpnm.utils&#39; (/home/runner/work/OpenPNM/OpenPNM/openpnm/utils/__init__.py)
-</pre></div></div>
-</div>
-<section id="Load-maze-samples">
-<h2>Load maze samples<a class="headerlink" href="#Load-maze-samples" title="Permalink to this headline">#</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;porespy&#39;
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_size</span> <span class="o">=</span> <span class="s1">&#39;medium&#39;</span>
+</div>
+</div>
+<section id="load-maze-samples">
+<h2>Load maze samples<a class="headerlink" href="#load-maze-samples" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_size</span> <span class="o">=</span> <span class="s1">&#39;medium&#39;</span>
 
 <span class="k">if</span> <span class="n">im_size</span> <span class="o">==</span> <span class="s1">&#39;small&#39;</span><span class="p">:</span>
     <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://imgur.com/ZLbV4eh.png&#39;</span>
@@ -1145,11 +329,10 @@ Cell <span class="ansi-green-fg">In [2], line 7</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">getdata</span><span class="p">())</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">4</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">255</span>
@@ -1162,101 +345,52 @@ Cell <span class="ansi-green-fg">In [2], line 7</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [4], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> response <span style="color: rgb(98,98,98)">=</span> requests<span style="color: rgb(98,98,98)">.</span>get(url)
-<span class="ansi-green-fg">----&gt; 2</span> img <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">Image</span><span style="color: rgb(98,98,98)">.</span>open(BytesIO(response<span style="color: rgb(98,98,98)">.</span>content))
-<span class="ansi-green-intense-fg ansi-bold">      3</span> im <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>array(img<span style="color: rgb(98,98,98)">.</span>getdata())<span style="color: rgb(98,98,98)">.</span>reshape(img<span style="color: rgb(98,98,98)">.</span>size[<span style="color: rgb(98,98,98)">0</span>], img<span style="color: rgb(98,98,98)">.</span>size[<span style="color: rgb(98,98,98)">1</span>], <span style="color: rgb(98,98,98)">4</span>)[:, :, <span style="color: rgb(98,98,98)">0</span>]
-<span class="ansi-green-intense-fg ansi-bold">      4</span> im <span style="color: rgb(98,98,98)">=</span> im <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(98,98,98)">255</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;Image&#39; is not defined
-</pre></div></div>
+<div class="cell_output docutils container">
+<img alt="../../_images/39ecefe811ed28cb20250884628d906696a56b74e5eb9456877af592529e624c.svg" src="../../_images/39ecefe811ed28cb20250884628d906696a56b74e5eb9456877af592529e624c.svg" /></div>
 </div>
 </section>
-<section id="Approach-A:-Direct-numerical-simulation">
-<h2>Approach A: Direct numerical simulation<a class="headerlink" href="#Approach-A:-Direct-numerical-simulation" title="Permalink to this headline">#</a></h2>
+<section id="approach-a-direct-numerical-simulation">
+<h2>Approach A: Direct numerical simulation<a class="headerlink" href="#approach-a-direct-numerical-simulation" title="Permalink to this heading">#</a></h2>
 </section>
-<section id="Thicken-the-walls-to-reduce-number-of-unknowns">
-<h2>Thicken the walls to reduce number of unknowns<a class="headerlink" href="#Thicken-the-walls-to-reduce-number-of-unknowns" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Structuring element for thickening walls</span>
+<section id="thicken-the-walls-to-reduce-number-of-unknowns">
+<h2>Thicken the walls to reduce number of unknowns<a class="headerlink" href="#thicken-the-walls-to-reduce-number-of-unknowns" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Structuring element for thickening walls</span>
 <span class="n">strel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 
 <span class="c1"># Save some computation by thickening the walls</span>
 <span class="k">def</span> <span class="nf">thicken_wall</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
-    <span class="k">return</span> <span class="o">~</span><span class="n">ndimage</span><span class="o">.</span><span class="n">morphology</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">~</span><span class="n">ndimage</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">thicken_wall</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [5], line 11</span>
-<span class="ansi-green-intense-fg ansi-bold">      8</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(98,98,98)">~</span>ndimage<span style="color: rgb(98,98,98)">.</span>morphology<span style="color: rgb(98,98,98)">.</span>binary_dilation(<span style="color: rgb(98,98,98)">~</span>im, structure<span style="color: rgb(98,98,98)">=</span>strel)
-<span class="ansi-green-intense-fg ansi-bold">     10</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> _ <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">range</span>(<span style="color: rgb(98,98,98)">5</span>):
-<span class="ansi-green-fg">---&gt; 11</span>     im <span style="color: rgb(98,98,98)">=</span> thicken_wall(<span class="ansi-yellow-bg">im</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;im&#39; is not defined
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [6], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> fig, ax <span style="color: rgb(98,98,98)">=</span> plt<span style="color: rgb(98,98,98)">.</span>subplots(figsize<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">5</span>, <span style="color: rgb(98,98,98)">5</span>))
-<span class="ansi-green-fg">----&gt; 2</span> ax<span style="color: rgb(98,98,98)">.</span>imshow(<span class="ansi-yellow-bg">im</span>, cmap<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Blues</span><span style="color: rgb(175,0,0)">&#39;</span>, interpolation<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">none</span><span style="color: rgb(175,0,0)">&#34;</span>)
-<span class="ansi-green-intense-fg ansi-bold">      3</span> ax<span style="color: rgb(98,98,98)">.</span>axis(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">off</span><span style="color: rgb(175,0,0)">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;im&#39; is not defined
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/examples_contrib_maze_solver_9_1.png" src="../../_images/examples_contrib_maze_solver_9_1.png" />
-</div>
-</div>
-</section>
-<section id="Convert-the-maze-into-a-Cubic-network">
-<h2>Convert the maze into a Cubic network<a class="headerlink" href="#Convert-the-maze-into-a-Cubic-network" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(-0.5, 801.5, 801.5, -0.5)
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get top and bottom boundaries</span>
+<img alt="../../_images/6f48756f95ea15be0e77b84b89f93f6e9436c273cbfb9c34921f536934630772.svg" src="../../_images/6f48756f95ea15be0e77b84b89f93f6e9436c273cbfb9c34921f536934630772.svg" /></div>
+</div>
+</section>
+<section id="convert-the-maze-into-a-cubic-network">
+<h2>Convert the maze into a Cubic network<a class="headerlink" href="#convert-the-maze-into-a-cubic-network" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get top and bottom boundaries</span>
 <span class="n">BP_top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 <span class="n">BP_bot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 <span class="n">BP_top</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1275,68 +409,40 @@ Cell <span class="ansi-green-fg">In [6], line 2</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [7], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># Get top and bottom boundaries</span>
-<span class="ansi-green-fg">----&gt; 2</span> BP_top <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>zeros_like(<span class="ansi-yellow-bg">im</span>)
-<span class="ansi-green-intense-fg ansi-bold">      3</span> BP_bot <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>zeros_like(im)
-<span class="ansi-green-intense-fg ansi-bold">      4</span> BP_top[<span style="color: rgb(98,98,98)">0</span>, :] <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;im&#39; is not defined
-</pre></div></div>
 </div>
 </section>
-<section id="Solve-the-Poisson-equation-(\nabla^2-\phi-=-0)-on-the-maze">
-<h2>Solve the Poisson equation (<span class="math notranslate nohighlight">\(\nabla^2 \phi = 0\)</span>) on the maze<a class="headerlink" href="#Solve-the-Poisson-equation-(\nabla^2-\phi-=-0)-on-the-maze" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up a dummy phase and apply uniform arbitrary conductance</span>
-<span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<section id="solve-the-poisson-equation-nabla-2-phi-0-on-the-maze">
+<h2>Solve the Poisson equation (<span class="math notranslate nohighlight">\(\nabla^2 \phi = 0\)</span>) on the maze<a class="headerlink" href="#solve-the-poisson-equation-nabla-2-phi-0-on-the-maze" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up a dummy phase and apply uniform arbitrary conductance</span>
+<span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
 <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.electrical_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1"># Run algorithm</span>
 <span class="n">alg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">OhmicConduction</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
 <span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;BP_top&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;BP_bot&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-<span class="n">tic</span><span class="p">()</span>
+
+<span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">alg</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="n">toc</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Solve time: </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [8], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># Set up a dummy phase and apply uniform arbitrary conductance</span>
-<span class="ansi-green-fg">----&gt; 2</span> phase <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">phases</span><span style="color: rgb(98,98,98)">.</span>GenericPhase(network<span style="color: rgb(98,98,98)">=</span>net)
-<span class="ansi-green-intense-fg ansi-bold">      3</span> phase[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.electrical_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">1.0</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span> <span style="color: rgb(95,135,135)"># Run algorithm</span>
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;phases&#39;
-</pre></div></div>
-</div>
-</section>
-<section id="Follow-the-gradient!">
-<h2>Follow the gradient!<a class="headerlink" href="#Follow-the-gradient!" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solve time: 1.879 s                                                               
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate flux in throats and show in pores</span>
+</div>
+</div>
+</section>
+<section id="follow-the-gradient">
+<h2>Follow the gradient!<a class="headerlink" href="#follow-the-gradient" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate flux in throats and show in pores</span>
 <span class="c1"># Note: No need to calculate pore.rate as it auto interpolates from throat values</span>
 <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">)</span>
 <span class="n">rate_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -1350,260 +456,108 @@ Cell <span class="ansi-green-fg">In [8], line 2</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [9], line 3</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># Calculate flux in throats and show in pores</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(95,135,135)"># Note: No need to calculate pore.rate as it auto interpolates from throat values</span>
-<span class="ansi-green-fg">----&gt; 3</span> phase[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.rate</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>rate(throats<span style="color: rgb(98,98,98)">=</span>net<span style="color: rgb(98,98,98)">.</span>Ts, mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">single</span><span style="color: rgb(175,0,0)">&#39;</span>)
-<span class="ansi-green-intense-fg ansi-bold">      4</span> rate_im <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>ones([Nx, Ny])<span style="color: rgb(98,98,98)">.</span>flatten() <span style="color: rgb(98,98,98)">*</span> np<span style="color: rgb(98,98,98)">.</span>nan
-<span class="ansi-green-intense-fg ansi-bold">      5</span> rate_im[net[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.index</span><span style="color: rgb(175,0,0)">&#39;</span>]] <span style="color: rgb(98,98,98)">=</span> phase[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.rate</span><span style="color: rgb(175,0,0)">&#39;</span>]
-
-<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
-</pre></div></div>
+<div class="cell_output docutils container">
+<img alt="../../_images/07da3b7bb5a9db1fa41728eed7497a265f9a16878b8f846a7b569068ba7223c1.svg" src="../../_images/07da3b7bb5a9db1fa41728eed7497a265f9a16878b8f846a7b569068ba7223c1.svg" /></div>
 </div>
 </section>
-<section id="Approach-B:-Network-extraction">
-<h2>Approach B: Network extraction<a class="headerlink" href="#Approach-B:-Network-extraction" title="Permalink to this headline">#</a></h2>
+<section id="approach-b-network-extraction">
+<h2>Approach B: Network extraction<a class="headerlink" href="#approach-b-network-extraction" title="Permalink to this heading">#</a></h2>
 </section>
-<section id="Network-extraction-using-SNOW-algorithm">
-<h2>Network extraction using SNOW algorithm<a class="headerlink" href="#Network-extraction-using-SNOW-algorithm" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We need to pass image transpose since matrix xy coords is inverted</span>
+<section id="network-extraction-using-snow-algorithm">
+<h2>Network extraction using SNOW algorithm<a class="headerlink" href="#network-extraction-using-snow-algorithm" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We need to pass image transpose since matrix xy coords is inverted</span>
 <span class="c1"># i.e., row is x and col is y, whereas in Cartesian convention, it&#39;s the opposite.</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="n">proj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">PoreSpy</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">network</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> 
+<span class="n">proj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">network_from_porespy</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">network</span><span class="p">)</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">network</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [10], line 3</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># We need to pass image transpose since matrix xy coords is inverted</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(95,135,135)"># i.e., row is x and col is y, whereas in Cartesian convention, it&#39;s the opposite.</span>
-<span class="ansi-green-fg">----&gt; 3</span> out <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>networks<span style="color: rgb(98,98,98)">.</span>snow2(<span class="ansi-yellow-bg">im</span><span style="color: rgb(98,98,98)">.</span>T)
-<span class="ansi-green-intense-fg ansi-bold">      4</span> proj <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>io<span style="color: rgb(98,98,98)">.</span>PoreSpy<span style="color: rgb(98,98,98)">.</span>import_data(out<span style="color: rgb(98,98,98)">.</span>network)
-<span class="ansi-green-intense-fg ansi-bold">      5</span> net <span style="color: rgb(98,98,98)">=</span> proj<span style="color: rgb(98,98,98)">.</span>network
-
-<span class="ansi-red-fg">NameError</span>: name &#39;im&#39; is not defined
-</pre></div></div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "697cc2b97f084e2e8702e72bf4c8f235", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "e6f7d2a1fd6c453b823af1797183b527", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "8cae5ddc3c0c47a7b8ee1f58a68136f7", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "f103b1943f044787a439ebc947bc3bf6", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "8877fe3e69714cfb87d54e1f3bd3afbf", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
-<section id="Solve-the-Poisson-equation-(\nabla^2-\phi-=-0)-on-the-extracted-network">
-<h2>Solve the Poisson equation (<span class="math notranslate nohighlight">\(\nabla^2 \phi = 0\)</span>) on the extracted network<a class="headerlink" href="#Solve-the-Poisson-equation-(\nabla^2-\phi-=-0)-on-the-extracted-network" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up a dummy phase and apply uniform arbitrary conductance</span>
-<span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<section id="solve-the-poisson-equation-nabla-2-phi-0-on-the-extracted-network">
+<h2>Solve the Poisson equation (<span class="math notranslate nohighlight">\(\nabla^2 \phi = 0\)</span>) on the extracted network<a class="headerlink" href="#solve-the-poisson-equation-nabla-2-phi-0-on-the-extracted-network" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set up a dummy phase and apply uniform arbitrary conductance</span>
+<span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
 <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.electrical_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 
 <span class="c1"># Run algorithm</span>
 <span class="n">alg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">OhmicConduction</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
 <span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;ymin&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;ymax&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-<span class="n">tic</span><span class="p">()</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">alg</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="n">toc</span><span class="p">(</span><span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Solve time: </span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Solve time: 0.015 s                                                  
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [11], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># Set up a dummy phase and apply uniform arbitrary conductance</span>
-<span class="ansi-green-fg">----&gt; 2</span> phase <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">phases</span><span style="color: rgb(98,98,98)">.</span>GenericPhase(network<span style="color: rgb(98,98,98)">=</span>net)
-<span class="ansi-green-intense-fg ansi-bold">      3</span> phase[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.electrical_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">1.0</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span> <span style="color: rgb(95,135,135)"># Run algorithm</span>
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;phases&#39;
-</pre></div></div>
+</div>
 </div>
 </section>
 <section id="id1">
-<h2>Follow the gradient!<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get throat rate values</span>
+<h2>Follow the gradient!<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get throat rate values</span>
 <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">)</span>
 
 <span class="c1"># Plot the maze solution (i.e., throat rates!)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-                              <span class="n">color_by</span><span class="o">=</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;throat.rate&quot;</span><span class="p">],</span>
-                              <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Wistia&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">);</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                                  <span class="n">color_by</span><span class="o">=</span><span class="n">phase</span><span class="p">[</span><span class="s2">&quot;throat.rate&quot;</span><span class="p">],</span>
+                                  <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Wistia&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In [12], line 2</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span style="color: rgb(95,135,135)"># Get throat rate values</span>
-<span class="ansi-green-fg">----&gt; 2</span> phase[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.rate</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>rate(throats<span style="color: rgb(98,98,98)">=</span>net<span style="color: rgb(98,98,98)">.</span>Ts, mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">single</span><span style="color: rgb(175,0,0)">&#39;</span>)
-<span class="ansi-green-intense-fg ansi-bold">      4</span> <span style="color: rgb(95,135,135)"># Plot the maze solution (i.e., throat rates!)</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span> fig, ax <span style="color: rgb(98,98,98)">=</span> plt<span style="color: rgb(98,98,98)">.</span>subplots(figsize<span style="color: rgb(98,98,98)">=</span>(<span style="color: rgb(98,98,98)">5</span>, <span style="color: rgb(98,98,98)">5</span>))
-
-<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
-</pre></div></div>
+<div class="cell_output docutils container">
+<img alt="../../_images/ff8270b6c06c7f41fb461a08193600a7621f3681acbece2565f0553a1a41cf29.svg" src="../../_images/ff8270b6c06c7f41fb461a08193600a7621f3681acbece2565f0553a1a41cf29.svg" /></div>
 </div>
 </section>
 </section>
 
 
-            </article>
-            
-            
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+              </article>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fas fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Load-maze-samples">
-   Load maze samples
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Approach-A:-Direct-numerical-simulation">
-   Approach A: Direct numerical simulation
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Thicken-the-walls-to-reduce-number-of-unknowns">
-   Thicken the walls to reduce number of unknowns
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Convert-the-maze-into-a-Cubic-network">
-   Convert the maze into a Cubic network
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Solve-the-Poisson-equation-(\nabla^2-\phi-=-0)-on-the-maze">
-   Solve the Poisson equation (
-   <span class="math notranslate nohighlight">
-    \(\nabla^2 \phi = 0\)
-   </span>
-   ) on the maze
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Follow-the-gradient!">
-   Follow the gradient!
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Approach-B:-Network-extraction">
-   Approach B: Network extraction
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Network-extraction-using-SNOW-algorithm">
-   Network extraction using SNOW algorithm
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Solve-the-Poisson-equation-(\nabla^2-\phi-=-0)-on-the-extracted-network">
-   Solve the Poisson equation (
-   <span class="math notranslate nohighlight">
-    \(\nabla^2 \phi = 0\)
-   </span>
-   ) on the extracted network
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id1">
-   Follow the gradient!
-  </a>
- </li>
-</ul>
 
-</nav>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
-            
+              
           </div>
-        </footer>
-        
-      </main>
+          
+      </div>
     </div>
-  </div>
 
   
-    
+  
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+<footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    
-<p class="copyright">
-
+    <p class="copyright">
     &copy; Copyright 2022, PMEAL.<br>
-
 </p>
-
   </div>
   
   <div class="footer-item">
-    
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
   </div>
   
 </div>
-  </footer>
+</footer>
   </body>
 </html>

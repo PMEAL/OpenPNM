@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Core
+core
 ====
 
 .. automodule:: openpnm.core
@@ -29,9 +29,9 @@ Core
       Base2
       Domain
       LabelMixin
-      ModelMixin2
       ModelWrapper
       ModelsDict
+      ModelsMixin2
       ParserMixin
    
    

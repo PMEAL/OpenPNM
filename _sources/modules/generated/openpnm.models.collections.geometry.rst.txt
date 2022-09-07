@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Geometry
+geometry
 ========
 
 .. automodule:: openpnm.models.collections.geometry

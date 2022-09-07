@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Advection-Diffusion &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Advection-Diffusion
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-network">
+     Generating network
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#add-geometrical-properties-to-the-network">
+     Add geometrical properties to the network
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#add-phase">
+     Add phase
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#add-geometry-based-thermophysical-properties-to-the-phase">
+     Add geometry-based thermophysical properties to the phase
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#performing-stokes-flow">
+   Performing Stokes flow
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#performing-advection-diffusion">
+     Performing advection-diffusion
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-boundary-conditions">
+     Adding boundary conditions
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#running-the-algorithm">
+     Running the algorithm
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#post-processing">
+   Post processing
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#heatmap">
+     Heatmap
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="advection-diffusion">
+<h1>Advection-Diffusion<a class="headerlink" href="#advection-diffusion" title="Permalink to this heading">#</a></h1>
+<p>In this example, we will learn how to perform an advection-diffusion simulation of a given chemical species through a <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> network. The algorithm can be applied to more complex networks in the same manner as described in this example. For the sake of simplicity, a one layer 3D cubic network is used here. On <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code>, 4 different space discretization schemes for the advection-diffusion problem are available and consist of:</p>
+<ol class="arabic simple">
+<li><p>Upwind</p></li>
+<li><p>Hybrid</p></li>
+<li><p>Powerlaw</p></li>
+<li><p>Exponential</p></li>
+</ol>
+<p>Depending on the Peclet number characterizing the transport (ratio of advective to diffusive fluxes), the solutions obtained using these schemes may differ. In order to achive a high numerical accuracy, the user should use either the <code class="docutils literal notranslate"><span class="pre">powerlaw</span></code> or the <code class="docutils literal notranslate"><span class="pre">exponential</span></code> schemes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1.axes_divider</span> <span class="kn">import</span> <span class="n">make_axes_locatable</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;loglevel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
+  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
+</pre></div>
+</div>
+</div>
+</div>
+<section id="generating-network">
+<h2>Generating network<a class="headerlink" href="#generating-network" title="Permalink to this heading">#</a></h2>
+<p>First, we need to generate a <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> network. For now, we stick to a one layer 3D network, but you might as well try more complex networks!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-geometrical-properties-to-the-network">
+<h2>Add geometrical properties to the network<a class="headerlink" href="#add-geometrical-properties-to-the-network" title="Permalink to this heading">#</a></h2>
+<p>Next, we need to add geometrical properties to the network. <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> has many built-in models that you can manually add to your network. However, for convenience, you can add one of <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code>’s geometry model colletions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mods</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">mods</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">mods</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">net</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">mods</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">net</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+
+<span class="ne">TypeError</span>: &#39;dict&#39; object is not callable
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-phase">
+<h2>Add phase<a class="headerlink" href="#add-phase" title="Permalink to this heading">#</a></h2>
+<p>Next, we need to add a phase to our simulation. A phase object(s) contain(s) thermophysical information about the working fluid(s) in the simulation. <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> has tons of prebuilt phases as well! For this simulation, we use air as our working fluid.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-geometry-based-thermophysical-properties-to-the-phase">
+<h2>Add geometry-based thermophysical properties to the phase<a class="headerlink" href="#add-geometry-based-thermophysical-properties-to-the-phase" title="Permalink to this heading">#</a></h2>
+<p>Finally, we need to add geometry-based thermophysical properties, such as “diffusive conductance”, “hydraulic conductance”, etc. Similar to geometrical properties, <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> provides many built-in models that you can manually add. Again, for convenience, you can add one of <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code>’s model collections.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mods</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span><span class="p">()</span>
+<span class="n">air</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">mods</span><span class="p">)</span>
+<span class="n">air</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="performing-stokes-flow">
+<h1>Performing Stokes flow<a class="headerlink" href="#performing-stokes-flow" title="Permalink to this heading">#</a></h1>
+<p>Note that the advection diffusion algorithm assumes that velocity field is given. Naturally, we solve Stokes flow inside a pore network model to obtain the pressure field, and eventually the velocity field. Therefore, we need to run the <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code> algorithm prior to running our advection diffusion. There’s a separate tutorial on how to run <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code> in <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code>, but here’s a simple code snippet that does the job for us.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">102_325</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">101_325</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                        
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is essential that you attach the results from <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code> (i.e. pressure field) to the corresponding phase, since the results from any algorithm in <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> are by default only attached to the algorithm object (in this case to <code class="docutils literal notranslate"><span class="pre">sf</span></code>). Here’s how you can update your phase:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sf</span><span class="o">.</span><span class="n">soln</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="performing-advection-diffusion">
+<h2>Performing advection-diffusion<a class="headerlink" href="#performing-advection-diffusion" title="Permalink to this heading">#</a></h2>
+<p>Now that everything is set up, it’s time to perform our advection-diffusion simulation. For this purpose, we need to add corresponding algorithm to our simulation. As mentioned above, <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> supports 4 different discretizations that may be used with the <code class="docutils literal notranslate"><span class="pre">AdvectionDiffusion</span></code> and <code class="docutils literal notranslate"><span class="pre">Dispersion</span></code> algorithms.
+Setting the discretization scheme can be performed when defining the physics model as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">ad_dif_conductance</span><span class="o">.</span><span class="n">ad_dif</span>
+<span class="n">air</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.ad_dif_conductance&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">mod</span><span class="p">,</span> <span class="n">s_scheme</span><span class="o">=</span><span class="s1">&#39;powerlaw&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then, the advection-diffusion algorithm is defined by:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ad</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">AdvectionDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">network</span></code> and <code class="docutils literal notranslate"><span class="pre">phase</span></code> are required parameters for pretty much every algorithm we add, since we need to specify on which network and for which phase do we want to run the algorithm.</p>
+<p>Note that you can also specify the discretization scheme by modifying the <code class="docutils literal notranslate"><span class="pre">settings</span></code> of our <code class="docutils literal notranslate"><span class="pre">AdvectionDiffusion</span></code> algorithm. You can choose between <code class="docutils literal notranslate"><span class="pre">upwind</span></code>, <code class="docutils literal notranslate"><span class="pre">hybrid</span></code>, <code class="docutils literal notranslate"><span class="pre">powerlaw</span></code>, and <code class="docutils literal notranslate"><span class="pre">exponential</span></code>.
+It is important to note that the scheme specified within the algorithm’s settings is only used when calling the <code class="docutils literal notranslate"><span class="pre">rate</span></code> method for post processing.</p>
+</section>
+<section id="adding-boundary-conditions">
+<h2>Adding boundary conditions<a class="headerlink" href="#adding-boundary-conditions" title="Permalink to this heading">#</a></h2>
+<p>Next, we need to add some boundary conditions to the simulation. By default, <code class="docutils literal notranslate"><span class="pre">OpenPNM</span></code> assumes zero flux for the boundary pores.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inlet</span>  <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">)</span> 
+<span class="n">outlet</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">])</span>
+<span class="n">ad</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;overwrite&quot;</span><span class="p">)</span>
+<span class="n">ad</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;overwrite&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">set_value_BC</span></code> applies the so-called “Dirichlet” boundary condition to the specified pores. Note that unless you want to apply a single value to all of the specified pores (like we just did), you must pass a list (or <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>) as the <code class="docutils literal notranslate"><span class="pre">values</span></code> parameter.</p>
+</section>
+<section id="running-the-algorithm">
+<h2>Running the algorithm<a class="headerlink" href="#running-the-algorithm" title="Permalink to this heading">#</a></h2>
+<p>Now, it’s time to run the algorithm. This is done by calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> method attached to the algorithm object.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ad</span><span class="o">.</span><span class="n">run</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                        
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="post-processing">
+<h1>Post processing<a class="headerlink" href="#post-processing" title="Permalink to this heading">#</a></h1>
+<p>When an algorithm is successfully run, the results are attached to the same object. To access the results, you need to know the quantity for which the algorithm was solving. For instance, <code class="docutils literal notranslate"><span class="pre">AdvectionDiffusion</span></code> solves for the quantity <code class="docutils literal notranslate"><span class="pre">pore.concentration</span></code>, which is somewhat intuitive. However, if you ever forget it, or wanted to manually check the quantity, you can take a look at the algorithm <code class="docutils literal notranslate"><span class="pre">settings</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ad</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Settings                            Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+uuid                                7c2b757f-df1d-4b34-b961-39f11b60f239
+cache                               False
+conductance                         throat.ad_dif_conductance
+phase                               phase_01
+quantity                            pore.concentration
+variable_props                      TypedSet()
+f_rtol                              1e-06
+newton_maxiter                      5000
+relaxation_factor                   1.0
+x_rtol                              1e-06
+diffusive_conductance               throat.diffusive_conductance
+hydraulic_conductance               throat.hydraulic_conductance
+pressure                            pore.pressure
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now that we know the quantity for which <code class="docutils literal notranslate"><span class="pre">AdvectionDiffusion</span></code> was solved, let’s take a look at the results:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">soln</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="heatmap">
+<h2>Heatmap<a class="headerlink" href="#heatmap" title="Permalink to this heading">#</a></h2>
+<p>Since the network is 2d, we can simply reshape the results in form of a 2d array similar to the shape of the network and plot the heatmap of it using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Concentration (mol/m$^3$)&#39;</span><span class="p">);</span>
+<span class="n">divider</span> <span class="o">=</span> <span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;4%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/10b1a185299ff8f31fe967eca4d6651874af4dce87615b6d6d1a2d28db2dc417.svg" src="../../_images/10b1a185299ff8f31fe967eca4d6651874af4dce87615b6d6d1a2d28db2dc417.svg" /></div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

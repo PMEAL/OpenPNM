@@ -1,3 +1,0 @@
-{    
-    "path": "../../../examples/contrib/loading_statoil_finding_permeability.ipynb"
-}

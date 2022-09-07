@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-Thermal\_conductivity
+thermal\_conductivity
 =====================
 
 .. automodule:: openpnm.models.phase.thermal_conductivity

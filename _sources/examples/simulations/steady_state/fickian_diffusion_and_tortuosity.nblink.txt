@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/simulations/steady_state/fickian_diffusion_and_tortuosity.ipynb"
-}

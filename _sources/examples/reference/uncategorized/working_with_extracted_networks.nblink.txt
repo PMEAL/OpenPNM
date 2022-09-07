@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/uncategorized/working_with_extracted_networks.ipynb"
-}

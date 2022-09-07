@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/uncategorized/overview_of_domain_syntax.ipynb"
-}

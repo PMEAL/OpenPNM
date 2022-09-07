@@ -1,3 +1,0 @@
-{    
-    "path": "../../../examples/getting_started/intro_to_openpnm_intermediate.ipynb"
-}

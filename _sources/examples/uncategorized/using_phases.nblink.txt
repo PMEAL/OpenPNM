@@ -1,3 +1,0 @@
-{    
-    "path": "../../../examples/uncategorized/using_phases.ipynb"
-}

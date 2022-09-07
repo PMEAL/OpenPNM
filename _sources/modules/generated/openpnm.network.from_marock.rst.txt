@@ -1,6 +1,0 @@
-from\_marock
-============
-
-.. currentmodule:: openpnm.network
-
-.. autofunction:: from_marock

@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/simulations/steady_state/diffusion_with_concentration_dependent_diffusivity.ipynb"
-}

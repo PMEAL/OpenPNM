@@ -1,6 +1,0 @@
-from\_networkx
-==============
-
-.. currentmodule:: openpnm.network
-
-.. autofunction:: from_networkx

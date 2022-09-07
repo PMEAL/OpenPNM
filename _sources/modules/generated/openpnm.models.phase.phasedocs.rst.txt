@@ -1,0 +1,39 @@
+:noindex:
+
+.. raw:: html
+
+   <p hidden>This is a module</p>
+
+phasedocs
+=========
+
+.. automodule:: openpnm.models.phase.phasedocs
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+
+   
+      Substitution
+   
+   
+
+   
+   
+   
+
+   
+   
+   

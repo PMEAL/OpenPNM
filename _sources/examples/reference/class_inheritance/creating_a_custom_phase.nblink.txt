@@ -1,3 +1,0 @@
-{    
-    "path": "../../../../examples/reference/class_inheritance/creating_a_custom_phase.ipynb"
-}
