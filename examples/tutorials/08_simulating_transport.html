@@ -1,0 +1,1014 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Simulating Invasion" href="09_simulating_invasion.html" />
+    <link rel="prev" title="Creating Phases" href="07_phases_and_mixtures.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../_examples/tutorials.html">
+   10 Steps to Learn OpenPNM
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01_numerical_python_primer.html">
+     Numerical Python Primer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02_network_generation_and_visualization.html">
+     Generating Networks and Quick Visualization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="03_data_and_topology_storage.html">
+     Storage of Network Data and Topology
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="04_graph_queries_and_manipulation.html">
+     Network Representation, Queries, and Manipulation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="05_defining_geometry.html">
+     Assigning Geometric Properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="06_labels_and_domains.html">
+     Using Labels and Defining Domains
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="07_phases_and_mixtures.html">
+     Creating Phases
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Simulating Single Phase Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="09_simulating_invasion.html">
+     Simulating Invasion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="10_visualization_options.html">
+     Visualization options
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/applications.html">
+   Applications
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/reference.html">
+   Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/pore_scale_models.html">
+     Pore-Scale Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
+     The Workspace and Projects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">
+     Available Matrix Solvers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/basic_transport.html">
+     Steady State Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/reactive_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
+     Size Factors and Transport Conductance
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/transient_transport.html">
+     Basic Transport
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#define-phase-viscosity">
+   Define Phase Viscosity
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#basic-conductance-calculation">
+   Basic Conductance Calculation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-algorithm-object">
+   Create Algorithm Object
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#assign-boundary-conditions">
+   Assign Boundary Conditions
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#rigorous-conductance-calculation-manual-method">
+   Rigorous Conductance Calculation: Manual Method
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#rigorous-conductance-calculation-pore-scale-model-method">
+   Rigorous Conductance Calculation: Pore-Scale Model Method
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="simulating-single-phase-transport">
+<h1>Simulating Single Phase Transport<a class="headerlink" href="#simulating-single-phase-transport" title="Permalink to this heading">#</a></h1>
+<p>The point of an OpenPNM simulation is ultimately to compute some transport process.  In this notebook we will cover the following subjects:</p>
+<ul class="simple">
+<li><p>Defining conductance</p></li>
+<li><p>Settings boundary conditions</p></li>
+</ul>
+<p>Start by defining a network.  We’ll use the <code class="docutils literal notranslate"><span class="pre">Demo</span></code> class which happens to include all the geometrical pore-scale models already.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">5e-5</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Demo at 0x7f67328a1130&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coordination_number                                          25 / 25
+  2  pore.coords                                                       25 / 25
+  3  pore.diameter                                                     25 / 25
+  4  pore.max_size                                                     25 / 25
+  5  pore.seed                                                         25 / 25
+  6  pore.volume                                                       25 / 25
+  7  throat.conns                                                      40 / 40
+  8  throat.cross_sectional_area                                       40 / 40
+  9  throat.diameter                                                   40 / 40
+ 10  throat.diffusive_size_factors                                     40 / 40
+ 11  throat.hydraulic_size_factors                                     40 / 40
+ 12  throat.length                                                     40 / 40
+ 13  throat.lens_volume                                                40 / 40
+ 14  throat.max_size                                                   40 / 40
+ 15  throat.spacing                                                    40 / 40
+ 16  throat.total_volume                                               40 / 40
+ 17  throat.volume                                                     40 / 40
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               5
+  2  pore.domain_1                                                          25
+  3  pore.front                                                              5
+  4  pore.left                                                               5
+  5  pore.right                                                              5
+  6  pore.surface                                                           16
+  7  throat.domain_1                                                        40
+  8  throat.surface                                                         16
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<section id="define-phase-viscosity">
+<h2>Define Phase Viscosity<a class="headerlink" href="#define-phase-viscosity" title="Permalink to this heading">#</a></h2>
+<p>To fully illustrate the process of performing transport calculations, we’ll use an empty <code class="docutils literal notranslate"><span class="pre">Phase</span></code> object and add all the needed properties manually:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s assume that we are interested in pressure driven flow. This requires knowing the viscosity of the phase, so let’s add a pore-scale model for computing the viscosity of water:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">water_correlation</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+phase_01 : &lt;openpnm.phase.Phase at 0x7f66e64449a0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.pressure                                                     25 / 25
+  2  pore.temperature                                                  25 / 25
+  3  pore.viscosity                                                    25 / 25
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.all                                                               25
+  2  throat.all                                                             40
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>And we can check the individual values to verify they make sense:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00089319 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319
+ 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319
+ 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319
+ 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319 0.00089319
+ 0.00089319]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="basic-conductance-calculation">
+<h2>Basic Conductance Calculation<a class="headerlink" href="#basic-conductance-calculation" title="Permalink to this heading">#</a></h2>
+<p>Determining the conductance of the conduits between each pair of connected pores is the most important part of performing a simulation. The details of conductance models are covered elsewhere. <span class="xref myst"></span>  For this demonstration will assume the very simplest case where all pressure loss occurs in the throats.</p>
+<p>Recall the Hagan-Poiseuille equation for fluid flow through a cylindrical tube:</p>
+<div class="math notranslate nohighlight">
+\[ Q = \frac{\pi R^4}{8 \mu L} \Delta P\]</div>
+<p>where <span class="math notranslate nohighlight">\(R\)</span> and <span class="math notranslate nohighlight">\(L\)</span> are the radius and length of the throat, and <span class="math notranslate nohighlight">\(\mu\)</span> is the viscosity of the fluid.  Together this prefactor can be referred to as the hydraulic conductance, <span class="math notranslate nohighlight">\(g_h\)</span>, giving:</p>
+<div class="math notranslate nohighlight">
+\[ Q = g_h \Delta P \]</div>
+<p>So the aim is the compute values of <span class="math notranslate nohighlight">\(g_h\)</span> for each throat.  We start by doing this manually:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">]</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.viscosity&#39;</span><span class="p">]</span>  <span class="c1"># See ProTip below</span>
+<span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="n">L</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.95292878e-15 2.89081809e-14 6.38942807e-14 1.30511169e-14
+ 3.56714821e-15 2.35265451e-15 3.03099835e-15 5.58806877e-14
+ 2.68848079e-14 5.65817448e-15 4.93966587e-15 3.48514416e-15
+ 9.28771292e-15 3.77363408e-14 7.45129581e-16 6.35746906e-16
+ 8.25969137e-15 1.72092717e-15 1.73742531e-15 2.72471467e-15
+ 3.02617309e-15 3.47988236e-15 2.95861589e-15 7.77267226e-14
+ 1.17457950e-14 2.58760994e-14 3.68235894e-15 2.41561520e-15
+ 1.28586490e-14 4.02948778e-15 7.98680710e-15 5.26280269e-14
+ 5.44730146e-15 6.83163089e-16 3.15157908e-15 7.55155881e-15
+ 1.01758659e-14 1.92323831e-15 6.76325841e-16 2.54610387e-15]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Phase can do auotmatic interpolation to get throat values
+The <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class has a special ability to interpolate pore values to throats, and vice-versa. In PNM simulations all the balances are solved for each pore, so the thermodynamic properties like temperature, pressure, etc. are all defined on pores. Consequently, the physical properties are also defined in pores, like viscosity. However, as shown above we often want viscosity values in the throats. OpenPNM provides a shortcut for this, such that if you request a throat property that does not exist, it will attempt to fetch the pores values and do a linear interpolation of values to produce an array of throat values.  There is also a function for this, <code class="docutils literal notranslate"><span class="pre">water.interpolate_data('throat.viscosity')</span></code>, but the <code class="docutils literal notranslate"><span class="pre">water['throat.viscosity']</span></code> shortcut is very convenient. The automatic interpolation can be disabled in the <code class="docutils literal notranslate"><span class="pre">phase.settings</span></code>.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">interpolate_data</span><span class="p">(</span><span class="s1">&#39;throat.viscosity&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.viscosity&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319,
+       0.00089319, 0.00089319, 0.00089319, 0.00089319, 0.00089319])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-algorithm-object">
+<h2>Create Algorithm Object<a class="headerlink" href="#create-algorithm-object" title="Permalink to this heading">#</a></h2>
+<p>OpenPNM contains a variety of <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> classes in the <code class="docutils literal notranslate"><span class="pre">openpnm.algorithms</span></code> module.  Let’s initialize a <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code> algorithm, since this simulates pressure driven flow through the network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f66e6406040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.bc.rate                                                       0 / 25
+  2  pore.bc.value                                                      0 / 25
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.all                                                               25
+  2  throat.all                                                             40
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="assign-boundary-conditions">
+<h2>Assign Boundary Conditions<a class="headerlink" href="#assign-boundary-conditions" title="Permalink to this heading">#</a></h2>
+<p>As can be seen in the print-out above there are predefined <code class="docutils literal notranslate"><span class="pre">'pore.bc'</span></code> arrays, but they contain no valid values, meaning they are all <code class="docutils literal notranslate"><span class="pre">nans</span></code>. Once we set some boundary conditions, this will change.  Let’s apply pressure BCs on one side of the network, and rate BCs on the other:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_rate_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">rates</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f66e6406040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.bc.rate                                                       5 / 25
+  2  pore.bc.value                                                      5 / 25
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.all                                                               25
+  2  throat.all                                                             40
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All boundary conditions are preceeded with ‘pore.bc’
+All boundary conditions are stored as ‘pore.bc.<type>’, which means that OpenPNM’s dictionary lookup tricks can be used to see all types and values of bc’s using: <code class="docutils literal notranslate"><span class="pre">sf['pore.bc']</span></code> which will return a <code class="docutils literal notranslate"><span class="pre">dict</span></code>. This can be used as shown below:</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">[</span><span class="s1">&#39;pore.bc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;rate&#39;, &#39;value&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can see there are 5 valid values of each type.  The <code class="docutils literal notranslate"><span class="pre">sf</span></code> algorithm will look for <code class="docutils literal notranslate"><span class="pre">'throat.hydraulic_conductance'</span></code> on <code class="docutils literal notranslate"><span class="pre">water</span></code> by default, so we can just <code class="docutils literal notranslate"><span class="pre">run</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">soln</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stokes_01 : Newton iterations:   0%|          | 0/100 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                      
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> method solves the mass balance around each pore and computes the pressure within each pore that is required to sustain the flow defined by the boundary conditions.  The <code class="docutils literal notranslate"><span class="pre">soln</span></code> object that is returned is a dictionary with the key corresponding to the quantity that was solved for.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.pressure&#39;: SteadyStateSolution([100000.        , 100000.        , 100000.        ,
+                     100000.        , 100000.        , 134902.87533096,
+                     124085.04134522, 113493.67254532, 102927.35035738,
+                     103670.14782662, 140476.00894748, 143133.19122932,
+                     132963.35770396, 114903.63269787, 124669.55077432,
+                     149587.6756343 , 146916.77698346, 147410.43444262,
+                     159920.95222206, 162318.12854321, 162509.46655809,
+                     162216.43673223, 193168.9090948 , 216923.25526306,
+                     209518.27171746])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The reason for the dict format is to provide a consistent API for single components and multiphysics, where multiple different quanties might be solved for.  However, these <code class="docutils literal notranslate"><span class="pre">'pore.pressure'</span></code> values are also written to the dictionary of the algorithm object as well:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f66e6406040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.bc.rate                                                       5 / 25
+  2  pore.bc.value                                                      5 / 25
+  3  pore.initial_guess                                                25 / 25
+  4  pore.pressure                                                     25 / 25
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.all                                                               25
+  2  throat.all                                                             40
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally we can look at how much pressure was required in the “right” pores to meet the required flow rate:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span><span class="p">[</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">][</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([162509.46655809, 162216.43673223, 193168.9090948 , 216923.25526306,
+       209518.27171746])
+</pre></div>
+</div>
+</div>
+</div>
+<p>So we can see that 150 kPa was required to accomplish the requested flow.</p>
+</section>
+<section id="rigorous-conductance-calculation-manual-method">
+<h2>Rigorous Conductance Calculation: Manual Method<a class="headerlink" href="#rigorous-conductance-calculation-manual-method" title="Permalink to this heading">#</a></h2>
+<p>The above demonstration used a very simplistic conductance calculation.  It was also stated that computing conductance is the most important part of doing a PNM simulation.  To finish this notebook, we’ll look more closely at this process.</p>
+<p>Let’s print the network object again:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Demo at 0x7f67328a1130&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coordination_number                                          25 / 25
+  2  pore.coords                                                       25 / 25
+  3  pore.diameter                                                     25 / 25
+  4  pore.max_size                                                     25 / 25
+  5  pore.seed                                                         25 / 25
+  6  pore.volume                                                       25 / 25
+  7  throat.conns                                                      40 / 40
+  8  throat.cross_sectional_area                                       40 / 40
+  9  throat.diameter                                                   40 / 40
+ 10  throat.diffusive_size_factors                                     40 / 40
+ 11  throat.hydraulic_size_factors                                     40 / 40
+ 12  throat.length                                                     40 / 40
+ 13  throat.lens_volume                                                40 / 40
+ 14  throat.max_size                                                   40 / 40
+ 15  throat.spacing                                                    40 / 40
+ 16  throat.total_volume                                               40 / 40
+ 17  throat.volume                                                     40 / 40
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               5
+  2  pore.domain_1                                                          25
+  3  pore.front                                                              5
+  4  pore.left                                                               5
+  5  pore.right                                                              5
+  6  pore.surface                                                           16
+  7  throat.domain_1                                                        40
+  8  throat.surface                                                         16
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note the <code class="docutils literal notranslate"><span class="pre">'throat.hydraulic_size_factors'</span></code> array.  This is computed by a pore-scale model on the <code class="docutils literal notranslate"><span class="pre">Demo</span></code> network.  This computation is more rigorous in the following ways:</p>
+<ol class="arabic simple">
+<li><p>The conductance of each half pore and that throat is considered.</p></li>
+<li><p>The throat length is computed carefully by accounting for the ‘lens’ between the intersection of the spherical pore bodies and the cylindrical throat.</p></li>
+<li><p>The net cross-sectional area of the pores are computed by integrating between the pore center and the pore-throat intersection point</p></li>
+</ol>
+<p>The conductance of each element in the conduit is returned as an <em>Nt-by-3</em> array, where columns 1 and 3 contain the hydraulic conductance of the half pore on either end of the throat, and the column 1 contains the throat conductance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_size_factors&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[7.23817003e-17, 2.63752925e-18, 1.29665677e-16],
+       [3.43593188e-16, 2.58205255e-17, 4.07452583e-16],
+       [5.47408072e-16, 5.70697932e-17, 6.45140402e-16],
+       [3.27150096e-16, 1.16571395e-17, 1.83795907e-16],
+       [1.48506828e-16, 3.18614449e-18, 8.14428994e-17],
+       [7.30624351e-17, 2.10136971e-18, 6.87274399e-17],
+       [6.87274399e-17, 2.70726028e-18, 1.57025123e-16],
+       [5.62460133e-16, 4.99121244e-17, 5.30155310e-16],
+       [3.31780319e-16, 2.40132670e-17, 3.83186062e-16],
+       [1.93438853e-16, 5.05383022e-18, 1.10643475e-16],
+       [1.10643475e-16, 4.41206484e-18, 1.35299801e-16],
+       [1.15689045e-16, 3.11289921e-18, 8.60620840e-17],
+       [1.48058083e-16, 8.29570110e-18, 2.71916479e-16],
+       [4.98244278e-16, 3.37057580e-17, 3.92191195e-16],
+       [7.22620617e-17, 6.65542996e-19, 2.63904799e-17],
+       [2.63904799e-17, 5.67843381e-19, 4.07727711e-17],
+       [1.78875011e-16, 7.37748156e-18, 1.57867762e-16],
+       [7.90550454e-17, 1.53711657e-18, 5.24262635e-17],
+       [5.24262635e-17, 1.55185255e-18, 8.18935951e-17],
+       [1.00259938e-16, 2.43369048e-18, 7.26214447e-17],
+       [7.23817003e-17, 2.70295041e-18, 1.37976690e-16],
+       [1.39541394e-16, 3.10819942e-18, 8.14428994e-17],
+       [1.49493816e-16, 2.64260893e-18, 6.87274399e-17],
+       [7.01046434e-16, 6.94248050e-17, 6.24772929e-16],
+       [1.83795907e-16, 1.04912378e-17, 2.72668355e-16],
+       [3.56612254e-16, 2.31122977e-17, 3.31780319e-16],
+       [8.14428994e-17, 3.28904967e-18, 1.59801868e-16],
+       [6.87274399e-17, 2.15760563e-18, 8.18189994e-17],
+       [2.97537538e-16, 1.14852289e-17, 1.91354520e-16],
+       [1.70054742e-16, 3.59910201e-18, 8.60620840e-17],
+       [1.99615848e-16, 7.13374380e-18, 1.48058083e-16],
+       [4.92401991e-16, 4.70068772e-17, 5.74433677e-16],
+       [1.10643475e-16, 4.86548035e-18, 1.77481926e-16],
+       [5.54275115e-17, 6.10195087e-19, 2.63904799e-17],
+       [8.51973271e-17, 2.81496190e-18, 8.47222006e-17],
+       [1.48058083e-16, 6.74498397e-18, 1.71802439e-16],
+       [2.83003868e-16, 9.08899135e-18, 1.57867762e-16],
+       [1.11400853e-16, 1.71781905e-18, 5.24262635e-17],
+       [2.63904799e-17, 6.04088118e-19, 5.34063360e-17],
+       [7.67640052e-17, 2.27415693e-18, 7.26214447e-17]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>This data is called the <code class="docutils literal notranslate"><span class="pre">size</span> <span class="pre">factor</span></code> because it is purely the geometrical information required for the computation of the hydraulic conductance.  So the Hagan-Poisseiulle equation for each element is written as:</p>
+<div class="math notranslate nohighlight">
+\[ Q = \frac{F_h}{\mu} \Delta P = g_h \Delta P\]</div>
+<p>Note that both the <span class="math notranslate nohighlight">\(\frac{\pi R^4}{8}\)</span> term and <span class="math notranslate nohighlight">\(L\)</span> have been rolled into the <span class="math notranslate nohighlight">\(F_h\)</span> value.</p>
+<p>The total conductance of the pore-throat-pore conduit can be found as the sum of three resistors in series.  Since we have conductance values, we add the inverses, and invert again.  The full expression for the hydraulic conductance between pores i and j, through throat k, is:</p>
+<div class="math notranslate nohighlight">
+\[ Q = \bigg( \frac{\mu}{F_{h, i}} + \frac{\mu}{F_{h, k}} + \frac{\mu}{F_{h, j}} \bigg) ^ {-1} \Delta P \]</div>
+<p>This can be computed by hand:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">F_h</span> <span class="o">=</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_size_factors&#39;</span><span class="p">]</span>
+<span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">F_h</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.79426967e-15, 2.53910358e-14, 5.35704237e-14, 1.18748343e-14,
+       3.36340732e-15, 2.22087511e-15, 2.86854627e-15, 4.72410073e-14,
+       2.36861290e-14, 5.27911820e-15, 4.60580937e-15, 3.27835269e-15,
+       8.54798473e-15, 3.27120562e-14, 7.20329231e-16, 6.13984826e-16,
+       7.59179686e-15, 1.64091107e-15, 1.65697852e-15, 2.57586615e-15,
+       2.86316478e-15, 3.28155024e-15, 2.80138106e-15, 6.42289820e-14,
+       1.07212989e-14, 2.28089327e-14, 3.47075800e-15, 2.28369930e-15,
+       1.17043473e-14, 3.79073156e-15, 7.36845094e-15, 4.47024550e-14,
+       5.08433890e-15, 6.60615827e-16, 2.95571484e-15, 6.96113962e-15,
+       9.33831623e-15, 1.83482446e-15, 6.53959415e-16, 2.39985541e-15])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_rate_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">rates</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">soln</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sf</span><span class="p">[</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">][</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stokes_02 : Newton iterations:   0%|          | 0/100 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                      
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([167427.12754015, 167161.25309183, 199305.06221685, 224111.68789305,
+       216481.17468948])
+</pre></div>
+</div>
+</div>
+</div>
+<p>As can be seen the numbers are about the same as with the simple case, but should be somewhat more correct.  In fact, these above pressures are a bit higher, which is because the total conductance of the conduit is lower due to the inclusion of the pore body lengths into the total length, compared to above where only the throat length was included.</p>
+</section>
+<section id="rigorous-conductance-calculation-pore-scale-model-method">
+<h2>Rigorous Conductance Calculation: Pore-Scale Model Method<a class="headerlink" href="#rigorous-conductance-calculation-pore-scale-model-method" title="Permalink to this heading">#</a></h2>
+<p>Instead of computing the hydraulic conductance manually as done above, there is a pore-scale model available:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">hydraulic_conductance</span><span class="o">.</span><span class="n">generic_hydraulic</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_rate_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">rates</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">soln</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">sf</span><span class="p">[</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">][</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stokes_03 : Newton iterations:   0%|          | 0/100 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                      
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([167427.12754015, 167161.25309183, 199305.06221685, 224111.68789305,
+       216481.17468948])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Which gives exactly the same result, without have to manually deal with the conductances-in-series calculation.</p>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

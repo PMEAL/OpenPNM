@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Stitch Two Networks with Different Spacing &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#generate-two-networks-with-different-spacing">
+   Generate Two Networks with Different Spacing
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#position-networks-appropriately-then-stitch-together">
+   Position Networks Appropriately, then Stitch Together
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#quickly-visualize-the-network">
+   Quickly Visualize the Network
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-geometry-objects-for-each-layer">
+   Create Geometry Objects for Each Layer
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#add-geometrical-properties-to-the-small-domain">
+     Add Geometrical Properties to the
+     <em>
+      Small
+     </em>
+     Domain
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#add-geometrical-properties-to-the-large-domain">
+     Add Geometrical Properties to the
+     <em>
+      Large
+     </em>
+     Domain
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-phase-and-physics-objects">
+   Create Phase and Physics Objects
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#add-a-reaction-term-to-the-small-layer">
+     Add a Reaction Term to the Small Layer
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#perform-a-diffusion-calculation">
+   Perform a Diffusion Calculation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualize-the-concentration-distribution">
+   Visualize the Concentration Distribution
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="stitch-two-networks-with-different-spacing">
+<h1>Stitch Two Networks with Different Spacing<a class="headerlink" href="#stitch-two-networks-with-different-spacing" title="Permalink to this heading">#</a></h1>
+<p>This tutorial explains how to use the stitch function to not only combine two networks into a single domain, but to have OpenPNM automatically creat throats between the two domains based on the spatial proximity of pores on each network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="kn">import</span> <span class="nn">openpnm.models.geometry</span> <span class="k">as</span> <span class="nn">gm</span>
+<span class="kn">import</span> <span class="nn">openpnm.models.physics</span> <span class="k">as</span> <span class="nn">pm</span>
+<span class="kn">import</span> <span class="nn">openpnm.models.misc</span> <span class="k">as</span> <span class="nn">mm</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;loglevel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+</div>
+<section id="generate-two-networks-with-different-spacing">
+<h2>Generate Two Networks with Different Spacing<a class="headerlink" href="#generate-two-networks-with-different-spacing" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spacing_lg</span> <span class="o">=</span> <span class="mf">6e-5</span>
+<span class="n">layer_lg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing_lg</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spacing_sm</span> <span class="o">=</span> <span class="mf">2e-5</span>
+<span class="n">layer_sm</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing_sm</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="position-networks-appropriately-then-stitch-together">
+<h2>Position Networks Appropriately, then Stitch Together<a class="headerlink" href="#position-networks-appropriately-then-stitch-together" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start by assigning labels to each network for identification later</span>
+<span class="n">layer_sm</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;small&quot;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">layer_sm</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">layer_sm</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+<span class="n">layer_lg</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;large&quot;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">layer_lg</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">layer_lg</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+
+<span class="c1"># Next manually offset CL one full thickness relative to the GDL</span>
+<span class="n">layer_sm</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">spacing_sm</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">layer_sm</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">spacing_lg</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">spacing_sm</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># And shift up by 1/2 a lattice spacing</span>
+
+<span class="c1"># Finally, send both networks to stitch which will stitch CL onto GDL</span>
+<span class="kn">from</span> <span class="nn">openpnm.topotools</span> <span class="kn">import</span> <span class="n">stitch</span>
+<span class="n">stitch</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">layer_lg</span><span class="p">,</span> <span class="n">donor</span><span class="o">=</span><span class="n">layer_sm</span><span class="p">,</span>
+       <span class="n">P_network</span><span class="o">=</span><span class="n">layer_lg</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">),</span> <span class="n">P_donor</span><span class="o">=</span><span class="n">layer_sm</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">),</span>
+       <span class="n">len_max</span><span class="o">=</span><span class="mf">5e-5</span><span class="p">)</span>
+<span class="n">combo_net</span> <span class="o">=</span> <span class="n">layer_lg</span>
+<span class="n">combo_net</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;combo&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="quickly-visualize-the-network">
+<h2>Quickly Visualize the Network<a class="headerlink" href="#quickly-visualize-the-network" title="Permalink to this heading">#</a></h2>
+<p>Let’s just make sure things are working as planned using OpenPNMs basic visualization tools:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
+</pre></div>
+</div>
+<img alt="../../../_images/281810c4a97976a70998388ecd64f192e6adf25a4479a4cb14caa36473efe9c5.svg" src="../../../_images/281810c4a97976a70998388ecd64f192e6adf25a4479a4cb14caa36473efe9c5.svg" /></div>
+</div>
+</section>
+<section id="create-geometry-objects-for-each-layer">
+<h2>Create Geometry Objects for Each Layer<a class="headerlink" href="#create-geometry-objects-for-each-layer" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">combo_net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;small&#39;</span><span class="p">)</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">combo_net</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;small&#39;</span><span class="p">)</span>
+<span class="n">geom_sm</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">combo_net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">combo_net</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="s1">&#39;small&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">)</span>
+<span class="n">geom_lg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="add-geometrical-properties-to-the-small-domain">
+<h3>Add Geometrical Properties to the <em>Small</em> Domain<a class="headerlink" href="#add-geometrical-properties-to-the-small-domain" title="Permalink to this heading">#</a></h3>
+<p>The <em>small</em> domain will be treated as a continua, so instead of assigning pore sizes we want the ‘pore’ to be same size as the lattice cell.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom_sm</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing_sm</span>
+<span class="n">geom_sm</span><span class="p">[</span><span class="s1">&#39;pore.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing_sm</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">geom_sm</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing_sm</span>
+<span class="n">geom_sm</span><span class="p">[</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing_sm</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">geom_sm</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-12</span>  <span class="c1"># A very small number to represent nearly 0-length</span>
+<span class="c1"># geom_sm.add_model(propname=&#39;throat.length&#39;,</span>
+<span class="c1">#                   model=gm.throat_length.classic)</span>
+<span class="n">geom_sm</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">diffusive_size_factors</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-geometrical-properties-to-the-large-domain">
+<h3>Add Geometrical Properties to the <em>Large</em> Domain<a class="headerlink" href="#add-geometrical-properties-to-the-large-domain" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom_lg</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spacing_lg</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">combo_net</span><span class="o">.</span><span class="n">num_pores</span><span class="p">(</span><span class="s1">&#39;large&#39;</span><span class="p">))</span>
+<span class="n">geom_lg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">pore_cross_sectional_area</span><span class="o">.</span><span class="n">sphere</span><span class="p">)</span>
+<span class="n">geom_lg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">mm</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+                  <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
+<span class="n">geom_lg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_cross_sectional_area</span><span class="o">.</span><span class="n">cylinder</span><span class="p">)</span>
+<span class="n">geom_lg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+<span class="n">geom_lg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">gm</span><span class="o">.</span><span class="n">diffusive_size_factors</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="create-phase-and-physics-objects">
+<h2>Create Phase and Physics Objects<a class="headerlink" href="#create-phase-and-physics-objects" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;air&#39;</span><span class="p">)</span>
+<span class="n">phys_lg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">GenericPhysics</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geom_lg</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">phys_sm</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">GenericPhysics</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geom_sm</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Add pore-scale models for diffusion to each Physics:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys_lg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">pm</span><span class="o">.</span><span class="n">diffusive_conductance</span><span class="o">.</span><span class="n">ordinary_diffusion</span><span class="p">)</span>
+<span class="n">phys_sm</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">pm</span><span class="o">.</span><span class="n">diffusive_conductance</span><span class="o">.</span><span class="n">ordinary_diffusion</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For the <em>small</em> layer we’ve used a normal diffusive conductance model, which when combined with the diffusion coefficient of air will be equivalent to open-air diffusion.  If we want the <em>small</em> layer to have some tortuosity we must account for this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">porosity</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">tortuosity</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">phys_sm</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="n">porosity</span><span class="o">/</span><span class="n">tortuosity</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that this extra line is NOT a pore-scale model, so it will be over-written when the <code class="docutils literal notranslate"><span class="pre">phys_sm</span></code> object is regenerated.</p>
+<section id="add-a-reaction-term-to-the-small-layer">
+<h3>Add a Reaction Term to the Small Layer<a class="headerlink" href="#add-a-reaction-term-to-the-small-layer" title="Permalink to this heading">#</a></h3>
+<p>A standard n-th order chemical reaction is <span class="math notranslate nohighlight">\( r=k \cdot x^b \)</span>, or more generally: <span class="math notranslate nohighlight">\( r = A_1 \cdot x^{A_2} + A_3 \)</span>.  This model is available in <code class="docutils literal notranslate"><span class="pre">OpenPNM.Physics.models.generic_source_terms</span></code>, and we must specify values for each of the constants.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set source term</span>
+<span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.A1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e-10</span>  <span class="c1"># Reaction pre-factor</span>
+<span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.A2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>       <span class="c1"># Reaction order</span>
+<span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.A3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c1"># A generic offset that is not needed so set to 0</span>
+<span class="n">phys_sm</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.reaction&#39;</span><span class="p">,</span>
+                  <span class="n">model</span><span class="o">=</span><span class="n">pm</span><span class="o">.</span><span class="n">generic_source_term</span><span class="o">.</span><span class="n">power_law</span><span class="p">,</span>
+                  <span class="n">A1</span><span class="o">=</span><span class="s1">&#39;pore.A1&#39;</span><span class="p">,</span> <span class="n">A2</span><span class="o">=</span><span class="s1">&#39;pore.A2&#39;</span><span class="p">,</span> <span class="n">A3</span><span class="o">=</span><span class="s1">&#39;pore.A3&#39;</span><span class="p">,</span>
+                  <span class="n">X</span><span class="o">=</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">,</span> 
+                  <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="perform-a-diffusion-calculation">
+<h2>Perform a Diffusion Calculation<a class="headerlink" href="#perform-a-diffusion-calculation" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Deff</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">ReactiveTransport</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">combo_net</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;large&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;intersection&#39;</span><span class="p">)</span>
+<span class="n">Deff</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">combo_net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;small&#39;</span><span class="p">)</span>
+<span class="n">Deff</span><span class="o">.</span><span class="n">set_source</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.reaction&#39;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">)</span>
+<span class="n">Deff</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;throat.diffusive_conductance&#39;</span>
+<span class="n">Deff</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pore.concentration&#39;</span>
+<span class="n">Deff</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualize-the-concentration-distribution">
+<h2>Visualize the Concentration Distribution<a class="headerlink" href="#visualize-the-concentration-distribution" title="Permalink to this heading">#</a></h2>
+<p>And the result would look something like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">combo_net</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">Deff</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">],</span> 
+                              <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/d07827c2319ecde3abdc5d6f5e438db0f743bcb83894a0cea63acee4b4aac3d6.svg" src="../../../_images/d07827c2319ecde3abdc5d6f5e438db0f743bcb83894a0cea63acee4b4aac3d6.svg" /></div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

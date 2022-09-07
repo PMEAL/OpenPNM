@@ -1,0 +1,1011 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Simulating Invasion &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Visualization options" href="10_visualization_options.html" />
+    <link rel="prev" title="Simulating Single Phase Transport" href="08_simulating_transport.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../_examples/tutorials.html">
+   10 Steps to Learn OpenPNM
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01_numerical_python_primer.html">
+     Numerical Python Primer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02_network_generation_and_visualization.html">
+     Generating Networks and Quick Visualization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="03_data_and_topology_storage.html">
+     Storage of Network Data and Topology
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="04_graph_queries_and_manipulation.html">
+     Network Representation, Queries, and Manipulation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="05_defining_geometry.html">
+     Assigning Geometric Properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="06_labels_and_domains.html">
+     Using Labels and Defining Domains
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="07_phases_and_mixtures.html">
+     Creating Phases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="08_simulating_transport.html">
+     Simulating Single Phase Transport
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Simulating Invasion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="10_visualization_options.html">
+     Visualization options
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/applications.html">
+   Applications
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/reference.html">
+   Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/pore_scale_models.html">
+     Pore-Scale Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
+     The Workspace and Projects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">
+     Available Matrix Solvers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/basic_transport.html">
+     Steady State Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/reactive_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
+     Size Factors and Transport Conductance
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/transient_transport.html">
+     Basic Transport
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#drainage">
+   Drainage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#manual-implementation-of-the-drainge-process">
+     Manual Implementation of the Drainge Process
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-the-drainage-algorithm">
+     Using the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Drainage
+      </span>
+     </code>
+     Algorithm
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#invasion-percolation">
+   Invasion Percolation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#manual-implementation-of-the-invasion-percolation-process">
+     Manual Implementation of the Invasion Percolation Process
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-the-invasionpercolation-algorithm">
+     Using the
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       InvasionPercolation
+      </span>
+     </code>
+     Algorithm
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="simulating-invasion">
+<h1>Simulating Invasion<a class="headerlink" href="#simulating-invasion" title="Permalink to this heading">#</a></h1>
+<p>Studying the impact of multiphase conditions on transport in porous materials was the original motivation for pore network modeling. OpenPNM includes a set of algorithms for simulating drainage (i.e. non-wetting phase invasion) using both ordinary and invasion percolation. These will be covered in this notebook.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On simulating imbibition
+Imbibtion is quite a bit more challenging to simulate than drainage, since the menisci movement mechanisms are more complicated. OpenPNM plans to offer some imbibition algorithms, but these need to be carefully developed so are still ‘works in progress’.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Setup the necessary objects:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">air</span></code> phase created above need some physics model that relates fluid properties like surface tension and contact angle, to geometric properties such pore and throat diameter.  Let’s assume that water is the wetting phase, and air is non-wetting, with a contact angle of 120 degrees, and let’s also use the Washburn equation to compute the capillary entry pressure.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.contact_angle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">120</span>
+<span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.surface_tension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.072</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">capillary_pressure</span><span class="o">.</span><span class="n">washburn</span>
+<span class="n">air</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">,</span>
+              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> 
+              <span class="n">surface_tension</span><span class="o">=</span><span class="s1">&#39;throat.surface_tension&#39;</span><span class="p">,</span>
+              <span class="n">contact_angle</span><span class="o">=</span><span class="s1">&#39;throat.contact_angle&#39;</span><span class="p">,</span>
+              <span class="n">diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="drainage">
+<h2>Drainage<a class="headerlink" href="#drainage" title="Permalink to this heading">#</a></h2>
+<p>Drainage refers to the process of a non-wetting fluid displacing a wetting fluid, by application of increasingly high capillary pressures where <span class="math notranslate nohighlight">\( P_c = P_{nwp} - P_{wp} \)</span>.  Thus, either the non-wetting phase pressure can be increased, or the wetting phase pressure can be decreased (i.e. suction).  The term “drainage” stems from the process of <em>draining</em> water from a sand column, where water is the wetting phase and air is non-wetting, so “draining” water is actually invasion of air. The term drainage is now used for any case regardless of which fluids are involved. When it is not clear which fluid is wetting or not, it is best to use the terms <em>injection</em> and <em>withdrawal</em> to avoid confusion.</p>
+<section id="manual-implementation-of-the-drainge-process">
+<h3>Manual Implementation of the Drainge Process<a class="headerlink" href="#manual-implementation-of-the-drainge-process" title="Permalink to this heading">#</a></h3>
+<p>Before outlining the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm in OpenPNM, let’s illustrate the process by hand. This requires the following steps:</p>
+<ol class="arabic simple">
+<li><p>Identify all the throats that can be invaded at a given applied capillary pressure</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">scipy.sparse.csgraph.connected_components</span></code> to label each cluster</p></li>
+<li><p>Trim clusters that are not connected to the inlets</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csgraph</span> <span class="k">as</span> <span class="n">csg</span>
+<span class="n">Pc</span> <span class="o">=</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="p">(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.8</span><span class="o">*</span><span class="n">Pc</span><span class="p">)</span>
+<span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">clusters</span> <span class="o">=</span> <span class="n">csg</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">am</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">clusters</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[  0   1   2   3   3   3   3   3   4   5   6   3   3   7   3   8   9  10
+  11  11  11  12  13  14  15  16  17   3   3  18  19  20   3   3  21   3
+  22   3   3   3  23  11  11  11  24  11  11  25  26  26  27  27  28  29
+  30  31   3   3   3   3   3   3   3   3   3  32  33  34  11  11  35  36
+  37  38  26  39  27  27  27  27  27  40   3  41  42  43   3   3  44  45
+  11  46  11  11  11  11  11  47  11  48  27  27  49  50  27  27  51  52
+  53  53  54   3  55  56  11  11  11  11  11  11  11  11  11  11  57  58
+  59  60  61  27  62  63  63  64  65  66  67  11  68  69  11  11  11  11
+  70  11  11  71  11  11  72  73  27  27  27  74  75  63  76  11  11  77
+  11  11  11  11  11  78  11  11  11  11  79  80  81  82  83  27  27  84
+  85  86  87  88  11  11  11  11  11  11  11  11  11  11  89  11  11  90
+  91  92  93  94  95  96  97  98  11  11  11  99  11  11  11  11  11 100
+  11  11  11 101 102  11  11  11  11 103 104 105 106 107 108  11 109  11
+  11  11  11  11 110  11 111  11 112  11 113 114  11 115 116  11 117 118
+  11  11  11  11  11 119 120  11  11  11 121  11  11 122 123 124  11  11
+  11  11  11  11 125 126 127 128 129 130  11 131 132 133 134  11  11  11
+  11 135 136 137 138  11  11  11 139 140  11  11 127 127 141  11  11 142
+ 143 144 145 146  11  11 147  11  11 148 149  11 150 151 152 153 153 154
+  11 127 127 155  11  11  11  11  11  11  11  11  11 156 157  11 158  11
+  11 159 153 153 153 160  11  11 161 162 163  11 164  11 165  11 166  11
+  11  11  11 167  11 168  11  11 169 170 171 172 173  11  11 174 175  11
+  11  11 176  11  11  11  11  11  11 177 178  11 179  11  11  11  11  11
+  11  11 180  11 181  11  11  11  11 182 183 184 185 186  11 187 188  11
+  11  11  11  11 189 190 191  11  11 192  11  11  11 193 194 195 196 197
+ 198 199 200 201 202 203 204  11 205 206  11 207 208  11  11  11 209 210
+  11 211  11  11  11 212 213 214 215 216 217 218 219  11  11 220  11  11
+ 221 222  11 223 224 225 226  11 227  11  11  11  11 228 229 230 231 232
+  11  11  11  11  11  11  11  11 233  11  11 234 235 236  11  11  11  11
+  11 237  11  11  11  11 238  11  11 239  11 240  11  11 241 242 243  11
+ 244  11 245 246 247  11 248 249 250 251 252  11  11  11 253  11 254 255
+  11  11  11  11 256 257  11  11  11  11 258 259  11  11 260 261 262 263
+ 264  11  11  11  11 265 266 267 268  11  11  11  11  11  11  11 269 258
+ 270  11 271 272 273 274  11  11  11  11 275  11  11  11  11 276 277  11
+ 278 279 280 281 282 283 284 285 286 287 288 273 289  11 290  11 291  11
+  11  11  11  11  11 292 293 294 295 295 295 295 296]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">clusters</span></code> array is a list of which cluster number each node (i.e. pore) belongs to. We can see this more clearly by plotting the pores and coloring by their cluster number:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="n">clusters</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">nipy_spectral</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d6446f901226a9352a3b66d550c7afa2e968d2c46c4fd909f6630ecfeae6373c.png" src="../../_images/d6446f901226a9352a3b66d550c7afa2e968d2c46c4fd909f6630ecfeae6373c.png" />
+</div>
+</div>
+<p>The ‘black’ cluster extends from the left edge thoughout the domain, while the other colors are not connected to the left edge.  Physically speaking only a pores that are connected to the left edge can be filled, so all the other cluster numbers should be set to uninvaded. This is illustrated in the following block where the yellow pores are invaded:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">invaded_pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">clusters</span><span class="p">,</span> <span class="n">clusters</span><span class="p">[</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)])</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="n">invaded_pores</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">viridis</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d51d255107a08e25cd82bee37469bb830c9a82839705b784bd22763297c945e3.png" src="../../_images/d51d255107a08e25cd82bee37469bb830c9a82839705b784bd22763297c945e3.png" />
+</div>
+</div>
+<p>The above process can yeild a capillary pressure or drainage curve be repeating for increaingly high values of ‘throat.entry_pressure’ until the entire domain is invaded. This is the process that is used in the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm.</p>
+</section>
+<section id="using-the-drainage-algorithm">
+<h3>Using the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> Algorithm<a class="headerlink" href="#using-the-drainage-algorithm" title="Permalink to this heading">#</a></h3>
+<p>To simulate drainage in OpenPNM, we must create a <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> object, which requires specifying the non-wetting, or invading phase. The invading phase object (<code class="docutils literal notranslate"><span class="pre">air</span></code>) contains the information about the capillary pressure required for it to invade a throat (and subsequently the pore beyond it). We also must tell the algorithm where the invasion starts from.  Finally we can run it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">drn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">drn</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
+<span class="n">drn</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 1234.81it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The result of running the algorithm is that several new arrays are added to the <code class="docutils literal notranslate"><span class="pre">drn</span></code> object. Specifically, there are arrays containing the pressure at which each pore and throat was invaded, as well as the sequence.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">drn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7f712ac76040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.invasion_pressure                                          625 / 625
+  2  pore.invasion_sequence                                          625 / 625
+  3  throat.invasion_pressure                                      1200 / 1200
+  4  throat.invasion_sequence                                      1200 / 1200
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.all                                                              625
+  2  pore.bc.inlet                                                          25
+  3  pore.bc.outlet                                                          0
+  4  pore.invaded                                                          625
+  5  pore.trapped                                                            0
+  6  throat.all                                                           1200
+  7  throat.invaded                                                       1200
+  8  throat.trapped                                                          0
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'invasion_pressure'</span></code> and <code class="docutils literal notranslate"><span class="pre">'invasion_sequence'</span></code> arrays are quite useful because the actaully contain the entire invasion history in a single array.  We can obtain the invasion pattern at any applied pressure by doing:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inv_pattern</span> <span class="o">=</span> <span class="n">drn</span><span class="p">[</span><span class="s1">&#39;throat.invasion_pressure&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">9000</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can plot only the invaded throats:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">inv_pattern</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7cdb8acde5e11d1eaed48de8325709da64b3fe5c1912f3f2b0ecf2c79b365a74.png" src="../../_images/7cdb8acde5e11d1eaed48de8325709da64b3fe5c1912f3f2b0ecf2c79b365a74.png" />
+</div>
+</div>
+<p>We can also apply trapping, which is done as a post processing step. This requires first specifying the outlet pores through which the wetting phase can escape, then running the <code class="docutils literal notranslate"><span class="pre">apply_trapping</span></code> method, which alters the <code class="docutils literal notranslate"><span class="pre">'invasion_pressure'</span></code> and <code class="docutils literal notranslate"><span class="pre">'invasion_sequence'</span></code> arrays. It sets <code class="docutils literal notranslate"><span class="pre">'invasion_pressure'</span></code> and <code class="docutils literal notranslate"><span class="pre">'invasion_sequence'</span></code> to <code class="docutils literal notranslate"><span class="pre">inf</span></code> to indicated trapped by pores/throats, so that they are not found when doing <code class="docutils literal notranslate"><span class="pre">drn['throat.invasion_pressure']</span> <span class="pre">&lt;</span> <span class="pre">p</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">drn</span><span class="o">.</span><span class="n">set_outlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">)</span>
+<span class="n">drn</span><span class="o">.</span><span class="n">apply_trapping</span><span class="p">()</span>
+<span class="n">inv_pattern</span> <span class="o">=</span> <span class="n">drn</span><span class="p">[</span><span class="s1">&#39;throat.invasion_pressure&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">9000</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">inv_pattern</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/a0eea49e5a184d7260068100ec1132889d2cbe14479aba2df882d6bdbe775fcd.png" src="../../_images/a0eea49e5a184d7260068100ec1132889d2cbe14479aba2df882d6bdbe775fcd.png" />
+</div>
+</div>
+<p>One of the main uses of the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm is to simulate capillary pressure curves, and specifical mercury intrusion porosimetry. One of the main ways to calibrate a PNM is to ensure that the simulated MIP curve matches experimental data. Let’s simulate this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+<span class="n">hg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Mercury</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">capillary_pressure</span><span class="o">.</span><span class="n">washburn</span>
+<span class="n">hg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> 
+             <span class="n">surface_tension</span><span class="o">=</span><span class="s1">&#39;throat.surface_tension&#39;</span><span class="p">,</span>
+             <span class="n">contact_angle</span><span class="o">=</span><span class="s1">&#39;throat.contact_angle&#39;</span><span class="p">,</span>
+             <span class="n">diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,)</span>
+<span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">))</span>  <span class="c1"># mercury invades froma all sides</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 1204.30it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> class has a <code class="docutils literal notranslate"><span class="pre">pc_curve</span></code> method, which returns a <a class="reference external" href="https://stackoverflow.com/questions/2970608/what-are-named-tuples-in-python">namedtuple</a> with <code class="docutils literal notranslate"><span class="pre">pc</span></code> and <code class="docutils literal notranslate"><span class="pre">snwp</span></code> data attributes that can be directly plotted:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">snwp</span><span class="p">,</span> <span class="s1">&#39;b-o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary Pressure [Pa]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/20bfa7e760025ad0c58cef6f1ce29bbaf11a88bca939ed97b0c2a6c7e8a0af3c.png" src="../../_images/20bfa7e760025ad0c58cef6f1ce29bbaf11a88bca939ed97b0c2a6c7e8a0af3c.png" />
+</div>
+</div>
+<p>Trapping does not occur in an MIP experiment since the wetting phase (air) is evacuated prior to mercury injection, but we can still apply trapping to the simulations just for demonstration purposes:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span><span class="o">.</span><span class="n">set_outlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">apply_trapping</span><span class="p">()</span>
+<span class="n">data2</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">snwp</span><span class="p">,</span> <span class="s1">&#39;b-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;without trapping&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data2</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">data2</span><span class="o">.</span><span class="n">snwp</span><span class="p">,</span> <span class="s1">&#39;r-o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;with trapping&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary Pressure [Pa]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/39de8ec24e70b9f727a50758fa757ccedbfc9bdfc544c459566856efaa4167aa.png" src="../../_images/39de8ec24e70b9f727a50758fa757ccedbfc9bdfc544c459566856efaa4167aa.png" />
+</div>
+</div>
+<p>The impact of trapping is that the non-wetting phase saturations does not reach 1.0, but plateaus at some lower value.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Inlet pores start invaded
+The curve shown above starts at a non-wetting phase saturation slightly above 0.  This is because the inlet pores are set to invaded to begin the algorithm. If the domain is large this is not really noticable. To be fully rigorous, one should actually add “boundary pores” to the domain, which are fictitious pores that have no volume. Another solution is to set the pore volume of the inlet pores to 0, with <code class="docutils literal notranslate"><span class="pre">pn['pore.volume&#64;left']</span> <span class="pre">=</span> <span class="pre">0</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="invasion-percolation">
+<h2>Invasion Percolation<a class="headerlink" href="#invasion-percolation" title="Permalink to this heading">#</a></h2>
+<p>Invasion percolation is performed by invading individual throats based on the next most easily invadedable option, rather than applying a fixed pressure like the drainage algorithm does (which is based on ordinary percoaltion, with access limitations). IP therefore provides a lot more information since each individual invasion event is tracked. IP can be thought of as a volume-controlled injection where drainage is a pressure-based process.  In other words, in drainage the pressure is increased in steps and all invaded locations are found.  In invasion percolation, some incremental amount of volume is injected, corresponding to the volume required to invaded the next available throat and the pore beyond it.</p>
+<section id="manual-implementation-of-the-invasion-percolation-process">
+<h3>Manual Implementation of the Invasion Percolation Process<a class="headerlink" href="#manual-implementation-of-the-invasion-percolation-process" title="Permalink to this heading">#</a></h3>
+<p>Invasion percolation is more computationally involved than drainage, mainly because there is not a dedicated function for this in <code class="docutils literal notranslate"><span class="pre">scipy.sparse.csgraph</span></code>. OpenPNM uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Binary_heap">binary heap</a>, which is available in python’s standard library. It is a <code class="docutils literal notranslate"><span class="pre">list</span></code> where the elements are sorted in special way, such that the first element always has the smallest value, which is convenient if the list is sorted by ‘throat.entry_pressure’. It is then trivial to determine which throat should be invaded next.  The process works by the following steps:</p>
+<ol class="arabic simple">
+<li><p>Identify the next most easily invadable throat</p></li>
+<li><p>Set this throat to invaded and remove it from the the queue</p></li>
+<li><p>Identify which pore is now accessbible via this newly invaded throat</p></li>
+<li><p>If it is not already invaded then:</p></li>
+<li><p>Set it to invaded</p></li>
+<li><p>Find all of its neighboring throats and add them to the queue</p></li>
+<li><p>Return to step 1 and repeat</p></li>
+</ol>
+<p>Let’s start by invading from pore 1, which has 3 throats:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pinv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">Tinv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">Pinv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">q</span> <span class="o">=</span> <span class="p">[(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Ts</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(9260.551831957262, 0), (9493.684102948075, 1), (5453.772363059359, 381)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we use a <code class="docutils literal notranslate"><span class="pre">tuple</span></code> containing the entry pressure and the throat index. The queue will be sorted by the first element of the <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, and we can use the 2nd element to know which actual throat should be set to invaded. The first step is to convert <code class="docutils literal notranslate"><span class="pre">q</span></code> into a heap:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">heapq</span> <span class="k">as</span> <span class="nn">hq</span>
+<span class="n">hq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(5453.772363059359, 381), (9493.684102948075, 1), (9260.551831957262, 0)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Printing the queue shows that the first element is indeed the most easiliy invaded one. Note that the rest of the elements are NOT in sequential order but are in a special order dictated by the <code class="docutils literal notranslate"><span class="pre">binary</span> <span class="pre">heap</span></code> data structure. We only care about the first entry. We can ‘invade’ this throat by “popping” the first entry off the queue using <code class="docutils literal notranslate"><span class="pre">heappop</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="n">hq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(5453.772363059359, 381)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can (a) set this throat to invaded in the <code class="docutils literal notranslate"><span class="pre">Tinv</span></code> list and (b) find the newly invaded pore and add its throats to the queue (if they are not already invaded OR on the queue already):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Tinv</span><span class="p">[</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">P_new</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">P_new</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 1 21]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we must reduce this to a list of pore that are not already invaded:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P_next</span> <span class="o">=</span> <span class="n">P_new</span><span class="p">[</span><span class="o">~</span><span class="n">Pinv</span><span class="p">[</span><span class="n">P_new</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">P_next</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[21]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we find all the neighboring throats of this pore and add them to the queue…if they are not already invaded.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T_new</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">P_next</span><span class="p">)</span>
+<span class="n">T_next</span> <span class="o">=</span> <span class="n">T_new</span><span class="p">[</span><span class="o">~</span><span class="n">Tinv</span><span class="p">[</span><span class="n">T_new</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">T_next</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 19  20 401]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We should probably also make sure that these throat are not already in the queue. However, inserting them into the queue will not break anything, it just means that we will waste time handling throats that are already invaded.</p>
+</div>
+<p>These throats should be added to the queue.  The power of the <code class="docutils literal notranslate"><span class="pre">heap</span></code> data structure is that the sorting of the list is maintained when new elements are added. This is accomplished as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">T_next</span><span class="p">:</span>
+    <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(5878.523914979102, 19), (8650.998219036319, 20), (9260.551831957262, 0), (9493.684102948075, 1), (9187.961176612249, 401)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that the new throats have been added to the queue. We can also confirm that the entry in the first element of the queue has the lowest entry pressure. The above steps can be repeated in a for-loop as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">hq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">Tinv</span><span class="p">[</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">P_new</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">P_next</span> <span class="o">=</span> <span class="n">P_new</span><span class="p">[</span><span class="o">~</span><span class="n">Pinv</span><span class="p">[</span><span class="n">P_new</span><span class="p">]]</span>
+    <span class="n">T_new</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">P_next</span><span class="p">)</span>
+    <span class="n">T_next</span> <span class="o">=</span> <span class="n">T_new</span><span class="p">[</span><span class="o">~</span><span class="n">Tinv</span><span class="p">[</span><span class="n">T_new</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">T_next</span><span class="p">:</span>
+        <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">(</span><span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Tinv</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/94dee4ac7538ed079b0461b7d16d96db0f435ec21c4e96a03b9251442faa29b2.png" src="../../_images/94dee4ac7538ed079b0461b7d16d96db0f435ec21c4e96a03b9251442faa29b2.png" />
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The OpenPNM implementation uses ‘just-in-time’ compiliation offer by the <code class="docutils literal notranslate"><span class="pre">numba</span></code> package to accelerate the for-loop so the process demonstrated abovec is actually quite fast</p>
+</div>
+</section>
+<section id="using-the-invasionpercolation-algorithm">
+<h3>Using the <code class="docutils literal notranslate"><span class="pre">InvasionPercolation</span></code> Algorithm<a class="headerlink" href="#using-the-invasionpercolation-algorithm" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">InvasionPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume@left&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Like drainage, the <code class="docutils literal notranslate"><span class="pre">'pore.invasion_sequence'</span></code> and <code class="docutils literal notranslate"><span class="pre">'throat.invasion_sequence'</span></code> are added to the algorithm dictionary after calling <code class="docutils literal notranslate"><span class="pre">run</span></code>.  This enables a similar plotting of invasion patterns:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inv_pattern</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">200</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">inv_pattern</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f80c90dd3762de1e286c19856ac43f7ffad495bf18067755d721eba8ce294131.png" src="../../_images/f80c90dd3762de1e286c19856ac43f7ffad495bf18067755d721eba8ce294131.png" />
+</div>
+</div>
+<p>We can also apply trapping as a post processing step.  Like the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm, this sets the invasion sequence number for any trapped pores to <code class="docutils literal notranslate"><span class="pre">inf</span></code> so that invasion patterns can be found using boolean query (e.g. &lt; N).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ip</span><span class="o">.</span><span class="n">set_outlet_BC</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;overwrite&#39;</span><span class="p">)</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">apply_trapping</span><span class="p">()</span>
+<span class="n">inv_pattern</span> <span class="o">=</span> <span class="p">(</span><span class="n">ip</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">inv_pattern</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5af858b203a00ee301e2149c9c6bbc4b30d7c7e57ca6a09c81d2f4cbebd97129.png" src="../../_images/5af858b203a00ee301e2149c9c6bbc4b30d7c7e57ca6a09c81d2f4cbebd97129.png" />
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Invasion sequence is not contiguous after trapping
+When <code class="docutils literal notranslate"><span class="pre">ip.run()</span></code> is called the invasion sequence is a contiguous series of numbers from 0 to Nt; however, after trapping is applied the invasion sequence of trapped throats/pores is set to <code class="docutils literal notranslate"><span class="pre">inf</span></code> while the untrapped throats/pores retain their original numbers.</p>
+</div>
+<p>Because IP is a volume-based approach, the actually applied pressure varies up and down depending on the size of the throat being invaded.  The <code class="docutils literal notranslate"><span class="pre">ip</span></code> algorithm also has a <code class="docutils literal notranslate"><span class="pre">pc_curve</span></code> function, which computes the capillary pressure at each saturation and outputs data similar to the drainage algorithm. In fact, it is quite interesting to overlay these curves:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume@left&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">drn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">drn</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
+<span class="n">drn</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">drn</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+
+<span class="n">ip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">InvasionPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
+<span class="n">ip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">data_ip</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">snwp</span><span class="p">,</span> <span class="s1">&#39;b--&#39;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_ip</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="n">data_ip</span><span class="o">.</span><span class="n">snwp</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Capillary Pressure&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Non-Wetting Phase Saturation&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 1168.26it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<img alt="../../_images/583577c958a8ebbc24605ee061154668336c8cabd97fe936694067394a6ffd3a.png" src="../../_images/583577c958a8ebbc24605ee061154668336c8cabd97fe936694067394a6ffd3a.png" />
+</div>
+</div>
+<p>In the above cell we first set the volume of the inlet pores to 0, this ensures that both algorithms start with 0 invaded volume. Next we run both the algorithms with the ‘left’ pores as inlets, and neglect trapping, which assumes that the wetting phase remains connected via small films in corners and cracks. Plotting these results together reveals a few things.</p>
+<ol class="arabic simple">
+<li><p>The drainage curve is plotted as steps, where each jump in saturation is caused by application of a higher pressure step.</p></li>
+<li><p>The invasion percolation curve displays the rising and falling capillary pressure indicating that after a small throat is invaded (a spike) a series of larger throats a then accessed (the valleys).</p></li>
+<li><p>The invasion percolation curve never exceeds the drainage curve and in fact the drainage curve represents the envelop of peak pressures observed by the invasion percolation process.</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

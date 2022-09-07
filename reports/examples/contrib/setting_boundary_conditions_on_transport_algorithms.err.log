@@ -1,0 +1,57 @@
+Traceback (most recent call last):
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 1204, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 663, in async_execute
+    await self.async_execute_cell(
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 862, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+vals = np.random.rand(pn.num_pores('front'))*10.0
+fd.set_value_BC(pores=pn.pores('front'), values=vals, mode='add')
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mException[0m                                 Traceback (most recent call last)
+Cell [0;32mIn [9], line 2[0m
+[1;32m      1[0m vals [38;5;241m=[39m np[38;5;241m.[39mrandom[38;5;241m.[39mrand(pn[38;5;241m.[39mnum_pores([38;5;124m'[39m[38;5;124mfront[39m[38;5;124m'[39m))[38;5;241m*[39m[38;5;241m10.0[39m
+[0;32m----> 2[0m [43mfd[49m[38;5;241;43m.[39;49m[43mset_value_BC[49m[43m([49m[43mpores[49m[38;5;241;43m=[39;49m[43mpn[49m[38;5;241;43m.[39;49m[43mpores[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43mfront[39;49m[38;5;124;43m'[39;49m[43m)[49m[43m,[49m[43m [49m[43mvalues[49m[38;5;241;43m=[39;49m[43mvals[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43madd[39;49m[38;5;124;43m'[39;49m[43m)[49m
+
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_transport.py:437[0m, in [0;36mTransport.set_value_BC[0;34m(self, pores, values, mode)[0m
+[1;32m    417[0m [38;5;28;01mdef[39;00m [38;5;21mset_value_BC[39m([38;5;28mself[39m, pores[38;5;241m=[39m[38;5;28;01mNone[39;00m, values[38;5;241m=[39m[], mode[38;5;241m=[39m[38;5;124m'[39m[38;5;124madd[39m[38;5;124m'[39m):
+[1;32m    418[0m     [38;5;124mr[39m[38;5;124;03m"""[39;00m
+[1;32m    419[0m [38;5;124;03m    Applies constant value boundary conditons to the specified pores.[39;00m
+[1;32m    420[0m 
+[0;32m   (...)[0m
+[1;32m    435[0m 
+[1;32m    436[0m [38;5;124;03m    """[39;00m
+[0;32m--> 437[0m     [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mset_BC[49m[43m([49m[43mpores[49m[38;5;241;43m=[39;49m[43mpores[49m[43m,[49m[43m [49m[43mbctype[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mvalue[39;49m[38;5;124;43m'[39;49m[43m,[49m[43m [49m[43mbcvalues[49m[38;5;241;43m=[39;49m[43mvalues[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m)[49m
+
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_reactive_transport.py:253[0m, in [0;36mReactiveTransport.set_BC[0;34m(self, pores, bctype, bcvalues, mode)[0m
+[1;32m    251[0m     [38;5;28;01mpass[39;00m
+[1;32m    252[0m [38;5;66;03m# Assign BCs if above check passes[39;00m
+[0;32m--> 253[0m [38;5;28;43msuper[39;49m[43m([49m[43m)[49m[38;5;241;43m.[39;49m[43mset_BC[49m[43m([49m[43mpores[49m[38;5;241;43m=[39;49m[43mpores[49m[43m,[49m[43m [49m[43mbctype[49m[38;5;241;43m=[39;49m[43mbctype[49m[43m,[49m[43m [49m[43mbcvalues[49m[38;5;241;43m=[39;49m[43mbcvalues[49m[43m,[49m[43m [49m[43mmode[49m[38;5;241;43m=[39;49m[43mmode[49m[43m)[49m
+
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/algorithms/_algorithm.py:212[0m, in [0;36mAlgorithm.set_BC[0;34m(self, pores, bctype, bcvalues, mode)[0m
+[1;32m    208[0m     [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m np[38;5;241m.[39mall(mask):  [38;5;66;03m# Raise exception if some conflicts found[39;00m
+[1;32m    209[0m         msg [38;5;241m=[39m [38;5;124m"[39m[38;5;124mSome of the given locations already have BCs, [39m[38;5;124m"[39m \
+[1;32m    210[0m             [38;5;241m+[39m [38;5;124m"[39m[38;5;124meither use mode=[39m[38;5;124m'[39m[38;5;124mremove[39m[38;5;124m'[39m[38;5;124m first or [39m[38;5;124m"[39m \
+[1;32m    211[0m             [38;5;241m+[39m [38;5;124m"[39m[38;5;124muse mode=[39m[38;5;124m'[39m[38;5;124moverwrite[39m[38;5;124m'[39m[38;5;124m instead[39m[38;5;124m"[39m
+[0;32m--> 212[0m         [38;5;28;01mraise[39;00m [38;5;167;01mException[39;00m(msg)
+[1;32m    213[0m     [38;5;28mself[39m[[38;5;124mf[39m[38;5;124m"[39m[38;5;124mpore.bc.[39m[38;5;132;01m{[39;00mbctype[38;5;132;01m}[39;00m[38;5;124m"[39m][pores[mask]] [38;5;241m=[39m values[mask]
+[1;32m    214[0m [38;5;28;01melif[39;00m mode [38;5;241m==[39m [38;5;124m'[39m[38;5;124moverwrite[39m[38;5;124m'[39m:
+[1;32m    215[0m     [38;5;66;03m# Put given values in specified BC, sort out conflicts below[39;00m
+
+[0;31mException[0m: Some of the given locations already have BCs, either use mode='remove' first or use mode='overwrite' instead
+Exception: Some of the given locations already have BCs, either use mode='remove' first or use mode='overwrite' instead
+

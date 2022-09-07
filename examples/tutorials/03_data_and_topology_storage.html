@@ -1,0 +1,1002 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Storage of Network Data and Topology &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Network Representation, Queries, and Manipulation" href="04_graph_queries_and_manipulation.html" />
+    <link rel="prev" title="Generating Networks and Quick Visualization" href="02_network_generation_and_visualization.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../_examples/tutorials.html">
+   10 Steps to Learn OpenPNM
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01_numerical_python_primer.html">
+     Numerical Python Primer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02_network_generation_and_visualization.html">
+     Generating Networks and Quick Visualization
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Storage of Network Data and Topology
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="04_graph_queries_and_manipulation.html">
+     Network Representation, Queries, and Manipulation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="05_defining_geometry.html">
+     Assigning Geometric Properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="06_labels_and_domains.html">
+     Using Labels and Defining Domains
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="07_phases_and_mixtures.html">
+     Creating Phases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="08_simulating_transport.html">
+     Simulating Single Phase Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="09_simulating_invasion.html">
+     Simulating Invasion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="10_visualization_options.html">
+     Visualization options
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/applications.html">
+   Applications
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/reference.html">
+   Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/pore_scale_models.html">
+     Pore-Scale Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
+     The Workspace and Projects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">
+     Available Matrix Solvers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/basic_transport.html">
+     Steady State Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/reactive_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
+     Size Factors and Transport Conductance
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/transient_transport.html">
+     Basic Transport
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#spreadsheet-analogy">
+   Spreadsheet Analogy
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#rules-to-maintain-data-integrity">
+     Rules to Maintain Data Integrity
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#all-values-are-converted-to-numpy-arrays">
+       All Values are Converted to Numpy Arrays
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#dictionary-keys-must-start-with-pore-or-throat">
+       Dictionary Keys Must Start With ‘pore’ or ‘throat’
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#any-scalars-are-expanded-to-a-full-length-vector">
+       Any Scalars are Expanded to a Full-Length Vector
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#nested-dictionary-names-are-allowed">
+       Nested Dictionary Names are Allowed
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#boolean-arrays-are-treated-as-labels-numerical-arrays-are-treated-as-properties">
+       Boolean Arrays are Treated as Labels, Numerical Arrays are Treated as Properties
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#dictionary-keys-with-a-leading-underscore-are-hidden">
+       Dictionary Keys with a Leading Underscore are Hidden
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-param-prefix">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     param
+    </span>
+   </code>
+   prefix
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#representing-topology">
+   Representing Topology
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#sparse-adjacency-matrices">
+     Sparse Adjacency Matrices
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#additional-thoughts-on-sparse-storage">
+       Additional Thoughts on Sparse Storage
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#topology-rules">
+     Topology Rules
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="storage-of-network-data-and-topology">
+<h1>Storage of Network Data and Topology<a class="headerlink" href="#storage-of-network-data-and-topology" title="Permalink to this heading">#</a></h1>
+<p>As discussed in the first tutorial, OpenPNM uses Numpy <code class="docutils literal notranslate"><span class="pre">ndarrays</span></code> to store all data, and these arrays store all stored in <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, because all OpenPNM objects are subclassed python dictionaries. In this tutorial will take a deper dive into the details of the OpenPNM data storage scheme. The sections to be covered are:</p>
+<ul class="simple">
+<li><p>The Spreadsheet Analogy</p></li>
+<li><p>Maintaining Data Integrity</p></li>
+<li><p>Representing Topology</p></li>
+</ul>
+<section id="spreadsheet-analogy">
+<h2>Spreadsheet Analogy<a class="headerlink" href="#spreadsheet-analogy" title="Permalink to this heading">#</a></h2>
+<p>The best analogy for explaining data storage in OpenPNM is the humble spreadsheet.  According to this analogy you can imagine all data is stored in a table; two tables actually, one for pore data and one for throat data.  Each pore (or throat) corresponds to a row and each property corresponds to a column.  Consider the following network with 4 pores, 3 throats:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s use <a class="reference external" href="https://pandas.pydata.org/">pandas</a> to express the geometric properties as a ‘spreadsheet’ and pull out all pore properties that are are a single column wide</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">pore_data_sheet</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">pn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pn</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">pn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can now view this ‘spreadsheet’:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pore_data_sheet</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pore.coordination_number</th>
+      <th>pore.diameter</th>
+      <th>pore.max_size</th>
+      <th>pore.seed</th>
+      <th>pore.volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1.0</td>
+      <td>0.474407</td>
+      <td>1.0</td>
+      <td>0.474407</td>
+      <td>0.055905</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2.0</td>
+      <td>0.557595</td>
+      <td>1.0</td>
+      <td>0.557595</td>
+      <td>0.090773</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2.0</td>
+      <td>0.501382</td>
+      <td>1.0</td>
+      <td>0.501382</td>
+      <td>0.065994</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1.0</td>
+      <td>0.472442</td>
+      <td>1.0</td>
+      <td>0.472442</td>
+      <td>0.055213</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>The column names are the properties such as <strong>pore.volume</strong>, and the rows correspond to the pore index, so pore <code class="docutils literal notranslate"><span class="pre">0</span></code> has a volume of 0.055905.</p>
+<p>One could also extract an entire column using:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">column</span> <span class="o">=</span> <span class="n">pore_data_sheet</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0    0.055905
+1    0.090773
+2    0.065994
+3    0.055213
+Name: pore.volume, dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+<p>Or access individual elements:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pore_data_sheet</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.05590507143096387
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The spreadsheet analogy is very apt, but it breaks down slightly when one considers data that is multiple colums wide such as <strong>‘pore.coords’</strong>.  The is stored as an Np-by-3 array in the network dictionary, but spreadsheets usually require that all data is only a single column wide.</p>
+</div>
+<section id="rules-to-maintain-data-integrity">
+<h3>Rules to Maintain Data Integrity<a class="headerlink" href="#rules-to-maintain-data-integrity" title="Permalink to this heading">#</a></h3>
+<p>Several rules have been implemented to control the integrity of the data. This is implemented by subclassing the <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> method of the the <code class="docutils literal notranslate"><span class="pre">dict</span></code>. Each time data is assigned to a dictionary key, OpenPNM first checks the data type and dictionary key to ensure the rules are followed.  Each of these checks are explored below.</p>
+<section id="all-values-are-converted-to-numpy-arrays">
+<h4>All Values are Converted to Numpy Arrays<a class="headerlink" href="#all-values-are-converted-to-numpy-arrays" title="Permalink to this heading">#</a></h4>
+<p>Only Numpy arrays can be stored in an OpenPNM object, and any data that is written to an OpenPNM object (i.e. dictionary) will be converted to a Numpy array.  This is done to ensure that all mathematical operations throughout the code can be consistently done using vectorization.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.list&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>This illustrates that the basic python list-type has been converted to a Numpy array when stored in the dictionary</p>
+</section>
+<section id="dictionary-keys-must-start-with-pore-or-throat">
+<h4>Dictionary Keys Must Start With ‘pore’ or ‘throat’<a class="headerlink" href="#dictionary-keys-must-start-with-pore-or-throat" title="Permalink to this heading">#</a></h4>
+<p>All array names must begin with either <em>‘pore.’</em> or <em>‘throat.’</em> which serves to identify the type of information they contain.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;foo.bar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This will throw an exception since the dict name cannot start with foo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This will throw an exception since the dict name cannot start with foo
+</pre></div>
+</div>
+</div>
+</div>
+<p>The pore or throat prefix is enforced so that OpenPNM knows how long an array should be. Attempting to write an array of the wrong length will result in a error:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This will throw an exception since there are 4 pores, hence all pore arrays should be 4 elements long&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This will throw an exception since there are 4 pores, hence all pore arrays should be 4 elements long
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="any-scalars-are-expanded-to-a-full-length-vector">
+<h4>Any Scalars are Expanded to a Full-Length Vector<a class="headerlink" href="#any-scalars-are-expanded-to-a-full-length-vector" title="Permalink to this heading">#</a></h4>
+<p>For the sake of consistency only arrays of length <em>Np</em> or <em>Nt</em> are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either <em>Np</em> or <em>Nt</em> long, depending on the name of the array. This effectively applies the scalar value to all locations in the network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 0 0 0]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note how the scalar value has been cast to an array of 4 elements long, one for each pore in the network.</p>
+</section>
+<section id="nested-dictionary-names-are-allowed">
+<h4>Nested Dictionary Names are Allowed<a class="headerlink" href="#nested-dictionary-names-are-allowed" title="Permalink to this heading">#</a></h4>
+<p>It’s possible to create nested properties by assigning a dictionary containing numpy arrays</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;species_A&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;species_B&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;species_A&#39;: array([0, 0, 0, 0]), &#39;species_B&#39;: array([1, 1, 1, 1])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above rule about expanding the scalar values to a numpy array have been applied.</p>
+<p>Requesting the top level of dictionary key returns both concentrations, but they can accessed directly too:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration.species_A&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 0 0 0]
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also retreive a dictionary by requesting only the element (‘pore’ or ‘throat’) and the propname (‘concentration’):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;species_A&#39;: array([0, 0, 0, 0]), &#39;species_B&#39;: array([1, 1, 1, 1])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above retuns a ‘subdictionary’ which can be indexed into:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="s1">&#39;species_A&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([0, 0, 0, 0])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="boolean-arrays-are-treated-as-labels-numerical-arrays-are-treated-as-properties">
+<h4>Boolean Arrays are Treated as Labels, Numerical Arrays are Treated as Properties<a class="headerlink" href="#boolean-arrays-are-treated-as-labels-numerical-arrays-are-treated-as-properties" title="Permalink to this heading">#</a></h4>
+<p>Any Boolean data will be treated as a <em>label</em> while all other numerical data is treated as a <em>property</em>. OpenPNM uses <em>labels</em> extensively as will be illustrated in a later tutorial. For this tutorial, we’ll just introduce the idea.  We can create a new label by assigning <code class="docutils literal notranslate"><span class="pre">False</span></code> to a new key. This will expand the single <code class="docutils literal notranslate"><span class="pre">False</span></code> value into every pore, which means that NO pores have that label (yet):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;pore.domain_1&#39;, &#39;pore.label&#39;, &#39;pore.left&#39;, &#39;pore.right&#39;, &#39;pore.surface&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can see that <code class="docutils literal notranslate"><span class="pre">'pore.label'</span></code> shows up in this list automatically since it is of Boolean type. However, if you ask the network which pores have that label, the answer is none:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([], dtype=int64)
+</pre></div>
+</div>
+</div>
+</div>
+<p>If we then set some locations to <code class="docutils literal notranslate"><span class="pre">True</span></code>, this will change:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 2]
+</pre></div>
+</div>
+</div>
+</div>
+<p>OpenPNM objects include a method for creating a label and applying it to locations all in one step using the <code class="docutils literal notranslate"><span class="pre">set_label</span></code> method.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;another&#39;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;another&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2 3]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="dictionary-keys-with-a-leading-underscore-are-hidden">
+<h4>Dictionary Keys with a Leading Underscore are Hidden<a class="headerlink" href="#dictionary-keys-with-a-leading-underscore-are-hidden" title="Permalink to this heading">#</a></h4>
+<p>Following the Python convention, if a piece of data is not really meant to be seen or used by the user, it can be pre-pended with an underscore and it will no appear in any output.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore._hidden&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">props</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+1     : pore.concentration.species_A
+2     : pore.concentration.species_B
+3     : pore.coordination_number
+4     : pore.coords
+5     : pore.diameter
+6     : pore.max_size
+7     : pore.seed
+8     : pore.test
+9     : pore.volume
+10    : throat.conns
+11    : throat.cross_sectional_area
+12    : throat.diameter
+13    : throat.diffusive_size_factors
+14    : throat.hydraulic_size_factors
+15    : throat.length
+16    : throat.lens_volume
+17    : throat.list
+18    : throat.max_size
+19    : throat.spacing
+20    : throat.total_volume
+21    : throat.volume
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'pore._hidden'</span></code> key does not show up in this list, though it is present:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore._hidden&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1, 1, 1, 1])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;pore._hidden&#39;</span> <span class="ow">in</span> <span class="n">pn</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="the-param-prefix">
+<h2>The <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix<a class="headerlink" href="#the-param-prefix" title="Permalink to this heading">#</a></h2>
+<p>Expanding all scalar values to arrays that are either Np or Nt long is done as a convenience or shorthand to mean “place this value of X in all pores”. This them means that you can later ask “what is the value of X in pore Y” and get an answer. This implies that X might take on different values in each pore/throat. However, there are properties which we know are constant, such as the molecular weight or critical temperature of a pure species. In V3 we have introduced the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute to all object, such that <code class="docutils literal notranslate"><span class="pre">pn.params</span></code> is a dictionary containing such scalar values. For convenience we have also added the ability to read and write to the <code class="docutils literal notranslate"><span class="pre">params</span></code> dictionary via the main get/set method. This is illustrated below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;lattice_connectivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Parameters                          Value
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+lattice_connectivity                6
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the “param” prefix
+It is possible use the <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix when reading and writing to the object’s dictionary. This intercepts the given key and dispatches the request to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute. This feature is particularly useful when passing arguments to pore-scale models (to be discussed in a later tutorial) since you can pass either <code class="docutils literal notranslate"><span class="pre">arg='param.value'</span></code> or <code class="docutils literal notranslate"><span class="pre">arg='pore.value'</span></code> and OpenPNM will be able to fetch the requested data by doing <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">pn[arg]</span></code> and both options will work.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;param.test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Parameters                          Value
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+lattice_connectivity                6
+test                                2
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="representing-topology">
+<h2>Representing Topology<a class="headerlink" href="#representing-topology" title="Permalink to this heading">#</a></h2>
+<p>Topology was introduced in the last tutorial, but not discussed to</p>
+<p>Consider the following simple random network:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7e2b08fbe88909d6c34c460f09f81479d9787846e531636478fe447a313f926a.png" src="../../_images/7e2b08fbe88909d6c34c460f09f81479d9787846e531636478fe447a313f926a.png" />
+</div>
+</div>
+<p>The basic premise of how OpenPNM stores topology can be stated in 1 sentence:</p>
+<p><strong>The pores on either end of a throat are just another property to be stored, along with diameter, length, etc.</strong></p>
+<p>In other words, referring to the above diagram, throat No. 5 has pores 1 and 4 on it’s ends.  Using the spreadsheet analogy, this implies a new colunm that stores the pair of pores connected by each throat.  OpenPNM calls this property <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1]
+ [0 2]
+ [0 3]
+ [1 3]
+ [2 3]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Inspection of this <em>Nt-by-2</em> array shows that each row contains the pore indices corresponding to that throat.</p>
+<section id="sparse-adjacency-matrices">
+<h3>Sparse Adjacency Matrices<a class="headerlink" href="#sparse-adjacency-matrices" title="Permalink to this heading">#</a></h3>
+<p>The topology storage scheme described above is actually an <a class="reference external" href="http://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a>, in a <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">sparse storage format</a> known as IJV or COO.</p>
+<p>An adjacency matrix is a <em>Np</em>-by-<em>Np</em> matrix with non-zero values at location (<em>i</em>, <em>j</em>) indicating that pores <em>i</em> and <em>j</em> are connected.</p>
+<p>An important feature of the adjacency matrix is that it is highly sparse (mostly zeros) and can be stored with a variety of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/sparse.html">sparse storage schemes</a> offered by Scipy.  OpenPNM stores the adjacency matrix in the ‘COO’ format, which essentially stores the coordinates (I,J) of the nonzero elements in an two-colume wide array.</p>
+<p>Thus the throat property called <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> is an <em>Nt</em>-by-2 array that gives the index of the two pores on either end of a given throat.</p>
+<section id="additional-thoughts-on-sparse-storage">
+<h4>Additional Thoughts on Sparse Storage<a class="headerlink" href="#additional-thoughts-on-sparse-storage" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>In pore networks there is (usually) no difference between traversing from pore <em>i</em> to pore <em>j</em> or from pore <em>j</em> to pore <em>i</em>, so a 1 is also found at location (<em>j</em>, <em>i</em>) and the matrix is symmetrical.</p></li>
+<li><p>Since the adjacency matrix is symmetric, it is redundant to store the entire matrix when only the upper triangular part is necessary.  The <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array only stores the upper triangular information, and <em>i</em> is always less than <em>j</em>.</p></li>
+<li><p>Although this storage scheme is widely known as <em>IJV</em>, the <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> module calls this the Coordinate or <em>COO</em> storage scheme.</p></li>
+<li><p>Some tasks are best performed on other types of storages scheme, such as <em>CSR</em> or <em>LIL</em>.  OpenPNM converts between these internally as necessary, but users can generate a desired format using the <code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code> method which accepts the storage type as an argument (i.e. <code class="docutils literal notranslate"><span class="pre">'csr'</span></code>, <code class="docutils literal notranslate"><span class="pre">'lil'</span></code>, etc).  For a discussion of sparse storage schemes and the respective merits, see this <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">Wikipedia article</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="topology-rules">
+<h3>Topology Rules<a class="headerlink" href="#topology-rules" title="Permalink to this heading">#</a></h3>
+<p>OpenPNM requires that the following be true about the network:</p>
+<ol class="arabic simple">
+<li><p>A throat is a connection between exactly two pores, no more and no less</p></li>
+<li><p>Throats are non-directional, meaning that flow in either direction is equal</p></li>
+</ol>
+<p>Other general, but non-essential rules are:</p>
+<ol class="arabic simple" start="3">
+<li><p>Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.</p></li>
+<li><p>Two pores are generally connected by no more than one throat.  It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise.</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

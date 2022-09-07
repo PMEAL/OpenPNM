@@ -1,0 +1,1396 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 2.8.2.dev111140 documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Assigning Geometric Properties" href="05_defining_geometry.html" />
+    <link rel="prev" title="Storage of Network Data and Topology" href="03_data_and_topology_storage.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../modules/index.html">
+  Module Reference
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../../_examples/tutorials.html">
+   10 Steps to Learn OpenPNM
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="01_numerical_python_primer.html">
+     Numerical Python Primer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="02_network_generation_and_visualization.html">
+     Generating Networks and Quick Visualization
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="03_data_and_topology_storage.html">
+     Storage of Network Data and Topology
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     Network Representation, Queries, and Manipulation
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="05_defining_geometry.html">
+     Assigning Geometric Properties
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="06_labels_and_domains.html">
+     Using Labels and Defining Domains
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="07_phases_and_mixtures.html">
+     Creating Phases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="08_simulating_transport.html">
+     Simulating Single Phase Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="09_simulating_invasion.html">
+     Simulating Invasion
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="10_visualization_options.html">
+     Visualization options
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/applications.html">
+   Applications
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/absolute_permeability.html">
+     Predicting absolute permeability
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
+     Adjusting Pore Size Distributions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/dispersion_coefficient.html">
+     Predicting dispersion coefficient
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
+     Finding Effective Diffusivity and Tortuosity of a Network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/formation_factor.html">
+     Predicting Formation Factor
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/mercury_intrusion.html">
+     Simulating Mercury Intrusion Porosimetry Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/porosity.html">
+     Predicting Porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_diffusivity.html">
+     Obtaining Relative Diffusivity Curves
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../applications/relative_permeability.html">
+     Predicting relative permeability
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../../_examples/reference.html">
+   Reference
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/pore_scale_models.html">
+     Pore-Scale Models
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
+     Settings Attribute Machinery
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
+     The Workspace and Projects
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">
+     Available Matrix Solvers
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/basic_transport.html">
+     Steady State Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/reactive_transport.html">
+     Basic Transport
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
+     Size Factors and Transport Conductance
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/transient_transport.html">
+     Basic Transport
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-adjacency-matrix">
+   The Adjacency Matrix
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#coo-sparse-format">
+     COO Sparse Format
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#other-sparse-formats">
+     Other Sparse Formats
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-incidence-matrix">
+   The Incidence Matrix
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#using-openpnm-methods-query-methods">
+   Using OpenPNM Methods Query Methods
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#find-neighoring-pores">
+     Find Neighoring Pores
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#find-neighboring-throats">
+     Find Neighboring Throats
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#find-connecting-throats">
+     Find Connecting Throats
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#find-connected-pores">
+     Find Connected Pores
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#removing-throats">
+   Removing Throats
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#removing-pores">
+   Removing Pores
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#adding-pores-and-throats">
+   Adding Pores and Throats
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="network-representation-queries-and-manipulation">
+<h1>Network Representation, Queries, and Manipulation<a class="headerlink" href="#network-representation-queries-and-manipulation" title="Permalink to this heading">#</a></h1>
+<p>To understand the how to query and manipulate the network, we’ll first cover the various forms of network represenation. Specifically, OpenPNM uses adjacency matrix to represent topology, but occassionally invokes the incidence matrix since this makes it easier for some queries.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="the-adjacency-matrix">
+<h2>The Adjacency Matrix<a class="headerlink" href="#the-adjacency-matrix" title="Permalink to this heading">#</a></h2>
+<p>The basic adjacency matrix is an Np-by-Np array of 1’s and 0’s, where a 1 in location <code class="docutils literal notranslate"><span class="pre">[i,</span> <span class="pre">j]</span></code> indicates that pores <code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code> are connected. Consider a simple network:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It’s adjacency matrix can be generated as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">am</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1 1 1 0 0]
+ [1 0 1 1 0 0]
+ [1 1 0 1 1 1]
+ [1 1 1 0 1 1]
+ [0 0 1 1 0 1]
+ [0 0 1 1 1 0]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The adjacency matrix can also be plotted as a image for a helpful visualization:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">am</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d29fe53edad59b8e0b6e72f55061a54b37354d9c0e94457e0e4146fe8745f5cd.png" src="../../_images/d29fe53edad59b8e0b6e72f55061a54b37354d9c0e94457e0e4146fe8745f5cd.png" />
+</div>
+</div>
+<p>There are a few notable features to point out:</p>
+<ul class="simple">
+<li><p>The matrix is symmetrical, since pore <code class="docutils literal notranslate"><span class="pre">i</span></code> connects to <code class="docutils literal notranslate"><span class="pre">j</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code> connects to <code class="docutils literal notranslate"><span class="pre">i</span></code></p></li>
+<li><p>Each row contains only a few entries since a given pores only has a few neighbors.  It may not be obvious above since the network is small, but as the network grows to millions of pores, each pore only has on the order of 10 neighbors.</p></li>
+<li><p>You can find which pores are neighbors of pore <code class="docutils literal notranslate"><span class="pre">i</span></code> by finding the locations on non-zeros in row <code class="docutils literal notranslate"><span class="pre">i</span></code> of the adjacency matrix</p></li>
+<li><p>No entries are found in the diagonal since this would indicate that a pore connects with itself which is not very likely</p></li>
+<li><p>Since each pair of pores is connected by a single throat then each nonzero entry in the matrix corresponds to a throat</p></li>
+</ul>
+<section id="coo-sparse-format">
+<h3>COO Sparse Format<a class="headerlink" href="#coo-sparse-format" title="Permalink to this heading">#</a></h3>
+<p>The fact that each row contains very few entries suggests that the matrix should be represented with a sparse format. This is especially important when we start to consider networks with millions of pores which would require a very large amount of memory to store an array of mostly 0’s. The most intuitive sparse storage scheme is the COOrdinate format. Since the matrix is symmetrical, we only need to store the upper (or lower) triangular part.  This gives:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">triu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">am</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  (0, 1)	1
+  (2, 3)	1
+  (4, 5)	1
+  (0, 2)	1
+  (1, 3)	1
+  (2, 4)	1
+  (3, 5)	1
+  (0, 3)	1
+  (2, 5)	1
+  (1, 2)	1
+  (3, 4)	1
+</pre></div>
+</div>
+</div>
+</div>
+<p>The first two columns are the pore indices of the connected pores.  The third column is the value stored in the matrix, which in the standard adjacency matrix is 1.  However, it is convenient to note throat indices are <em>defined</em> by this list, meaning that pores 0 and 1 are connected by throat 0, pores 2 and 3 are connected by throat 1, and so on. Putting the throat indices into the adjacency matrix gives:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">am</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  (0, 1)	0
+  (2, 3)	1
+  (4, 5)	2
+  (0, 2)	3
+  (1, 3)	4
+  (2, 4)	5
+  (3, 5)	6
+  (0, 3)	7
+  (2, 5)	8
+  (1, 2)	9
+  (3, 4)	10
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="other-sparse-formats">
+<h3>Other Sparse Formats<a class="headerlink" href="#other-sparse-formats" title="Permalink to this heading">#</a></h3>
+<p>The COO format described above is the basis for OpenPNMs data storage; however, it is not very suitable for performing “queries” such as which pores are neighbors to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>?  In fact, the only query that can be performed directly with the COO format is to find which pores are connected by throat <code class="docutils literal notranslate"><span class="pre">k</span></code>, which is just the <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j)</span></code> values on row <code class="docutils literal notranslate"><span class="pre">k</span></code>. Luckily, there are several other sparse formats we can use. The “List of Lists” format is quite useful.</p>
+<p>We can look for the locations of nonzeros, which tells us which pores are connected to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;lil&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">locations_of_nonzeros</span> <span class="ow">in</span> <span class="n">am</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">locations_of_nonzeros</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1, 2, 3]
+[0, 2, 3]
+[0, 1, 3, 4, 5]
+[0, 1, 2, 4, 5]
+[2, 3, 5]
+[2, 3, 4]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we are looking at the symmetrical version of this array since we want to see all connections for each pore.</p>
+<p>Or we can look at the values of the nonzeros, which tells us which throats are connected to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">values_of_nonzeros</span> <span class="ow">in</span> <span class="n">am</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">values_of_nonzeros</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0, 3, 7]
+[0, 9, 4]
+[3, 9, 1, 5, 8]
+[7, 4, 1, 10, 6]
+[5, 10, 2]
+[8, 6, 2]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Another query we might wish to do is determine which throat connects which pair of pores. The “Dictionary of Keys” format is useful for this.  It is basically the COO format, but the <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j)</span></code> values are used as the dictionary keys.  This is helpful since dicionary lookups are actually quite fast thanks to some sophisticated data strutures used by python. Consider the following:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;dok&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;pores (0, 1):&#39;</span><span class="p">,</span> <span class="n">am</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pores (0, 1): 0
+</pre></div>
+</div>
+</div>
+</div>
+<p>One <em>gotcha</em> with this approach is that if you request the throat that connects two pores which are not connected, then it returns 0, which makes sense if the adjacency matrix is filled with 1’s and 0’s, but when throat indices are used as the weights, then 0 is a valid throat number, so receiving a 0 back from a query does not indicate lack of connection. This can be remedied by adding 1 to the throat indices when generating the adjacency matrix, then subtracting 1 again to return the actual throat number:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;dok&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;pores (5, 5):&#39;</span><span class="p">,</span> <span class="n">am</span><span class="p">[(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pores (5, 5): -1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="the-incidence-matrix">
+<h2>The Incidence Matrix<a class="headerlink" href="#the-incidence-matrix" title="Permalink to this heading">#</a></h2>
+<p>The incidence matrix is a slight variation on the adjacency matrix, but is it tells us which pore is connected to which throat.  In other words, it is an Np-by-Nt array, with a nonzero value at location <code class="docutils literal notranslate"><span class="pre">[i,</span> <span class="pre">k]</span></code> indicating that pore <code class="docutils literal notranslate"><span class="pre">i</span></code> is connected to throat <code class="docutils literal notranslate"><span class="pre">k</span></code>.  It looks like:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_incidence_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[1 0 0 1 0 0 0 1 0 0 0]
+ [1 0 0 0 1 0 0 0 0 1 0]
+ [0 1 0 1 0 1 0 0 1 1 0]
+ [0 1 0 0 1 0 1 1 0 0 1]
+ [0 0 1 0 0 1 0 0 0 0 1]
+ [0 0 1 0 0 0 1 0 1 0 0]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that finding the locations of nonzeros values in row <code class="docutils literal notranslate"><span class="pre">i</span></code> tells us which throats are connected to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>. This is the same information we can get from the COO format of the adjacency matrix. The incidence matrix is thus not really helpful.</p>
+</section>
+<section id="using-openpnm-methods-query-methods">
+<h2>Using OpenPNM Methods Query Methods<a class="headerlink" href="#using-openpnm-methods-query-methods" title="Permalink to this heading">#</a></h2>
+<p>The above introduction was meant to provide some background on how neighbor queries are performed “behind the scenes”, but it is not very convenient to use those approaches directly. Instead, you can use the methods included in OpenPNM, specifically, the methods attached to the <em>Network</em> class:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s start by finding all pores on the ‘left’ and ‘bottom’.  These labels are predefined on <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> networks, and we we cn use the <code class="docutils literal notranslate"><span class="pre">pores</span></code> method to find all pores with these labels:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P_left</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="n">P_bottom</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">P_left</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">P_bottom</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 2 3]
+[ 3  7 11 15]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="find-neighoring-pores">
+<h3>Find Neighoring Pores<a class="headerlink" href="#find-neighoring-pores" title="Permalink to this heading">#</a></h3>
+<p>We now have two sets of pores that actually overlap each other, as illustrated below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f9f5a3c91960bb1255084981fd95acbfa6152e16f5a9c9ca8511ae51e5a71d27.png" src="../../_images/f9f5a3c91960bb1255084981fd95acbfa6152e16f5a9c9ca8511ae51e5a71d27.png" />
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mode='or'</span></code> finds all pores with one or more connections to the input pores</p>
+<p>Given a set of pores, find the pores that are neighbors to one or more of the inputs.  This is called <strong>OR</strong> since it gives the neighbors of either the bottom pores <em>or</em> the left pores, <em>or</em> both.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 0  1  2  3  7 11 15]
+[ 4  5  6 10 14]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/2aa2a1d8e25576f2ab1d0a9e56295e03e5e28353b92eeecda4c1aa072aebced0.png" src="../../_images/2aa2a1d8e25576f2ab1d0a9e56295e03e5e28353b92eeecda4c1aa072aebced0.png" />
+</div>
+</div>
+<p>`mode=’xor’ finds all pores with exactly one connection to the input pores</p>
+<p>Given a set of pores find the pores that are neighbors of one and only one of the input pores.  This is called <strong>XOR</strong>, or ‘exclusve_or’ because it finds the pores that are neigbhors to the ‘bottom’ <em>or</em> the ‘left’, but <em>not</em> both.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span> <span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xor&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 0  1  2  3  7 11 15]
+[ 4  5 10 14]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span>
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/8dc6bf920e2a4754261b36aea3710108e934da55e9410d6a60f50f6eb8947cfc.png" src="../../_images/8dc6bf920e2a4754261b36aea3710108e934da55e9410d6a60f50f6eb8947cfc.png" />
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mode='xnor'</span></code> finds all the pores with 2 or more connections to the input pores</p>
+<p>This finds pores that are common to both ‘left’ and ‘bottom’ pores.  It is called <strong>XNOR</strong> since it is the opposite of <strong>XOR</strong> , incidated by the <em>N for not</em> .   Note that <strong>XNOR</strong> and <strong>NXOR</strong> are interchangable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+<span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 0  1  2  3  7 11 15]
+[6]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c667a27267198ad8624d4997622f398a24c04bb458525350c6723347f9155ed4.png" src="../../_images/c667a27267198ad8624d4997622f398a24c04bb458525350c6723347f9155ed4.png" />
+</div>
+</div>
+</section>
+<section id="find-neighboring-throats">
+<h3>Find Neighboring Throats<a class="headerlink" href="#find-neighboring-throats" title="Permalink to this heading">#</a></h3>
+<p>Neighbor throat queries follow essentially the same logic as the neighboring queries outlined above.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mode='or'</span></code> finds all throats connected to any of the input pores:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/09f5926d3708a6e0b0c5ca860f206d562a9ba428be974939dfb1543a17bd4eea.png" src="../../_images/09f5926d3708a6e0b0c5ca860f206d562a9ba428be974939dfb1543a17bd4eea.png" />
+</div>
+</div>
+<p>`mode=’xnor’ finds throats shared by input pores only</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/c21c301b77b493a3560756d37d0ba26387a6e1d838c9eac340cad0479bf2bad1.png" src="../../_images/c21c301b77b493a3560756d37d0ba26387a6e1d838c9eac340cad0479bf2bad1.png" />
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mode=xor</span></code> finds throats that are only connected to one input pore</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xor&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_left</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P_bottom</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b895da50982792af908cd5a78acfc734db064ffab0c3385c36c273e52d77a106.png" src="../../_images/b895da50982792af908cd5a78acfc734db064ffab0c3385c36c273e52d77a106.png" />
+</div>
+</div>
+</section>
+<section id="find-connecting-throats">
+<h3>Find Connecting Throats<a class="headerlink" href="#find-connecting-throats" title="Permalink to this heading">#</a></h3>
+<p>Given two sets of pores, it is possible to find which throats connects them using the <code class="docutils literal notranslate"><span class="pre">find_connecting_throats</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">P2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connecting_throat</span><span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[12 13 14 15]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">Ts</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">P2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/39849255c5abddfa33d3adda69c684b3e5a6d5845d732c6a76a2486933edf1d1.png" src="../../_images/39849255c5abddfa33d3adda69c684b3e5a6d5845d732c6a76a2486933edf1d1.png" />
+</div>
+</div>
+<p>This function assumes that <code class="docutils literal notranslate"><span class="pre">P1</span></code> and <code class="docutils literal notranslate"><span class="pre">P2</span></code> are lined up, so that finds the connections between each pore <code class="docutils literal notranslate"><span class="pre">i</span></code>.  If there are no connections, then <code class="docutils literal notranslate"><span class="pre">nans</span></code> are returned (which also means that any valid connections are converted to <code class="docutils literal notranslate"><span class="pre">float</span></code>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">P2</span> <span class="o">=</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connecting_throat</span><span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[nan nan nan 15.]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="find-connected-pores">
+<h3>Find Connected Pores<a class="headerlink" href="#find-connected-pores" title="Permalink to this heading">#</a></h3>
+<p>Given a list of throats, finding which pores are on either end can be done using the <code class="docutils literal notranslate"><span class="pre">find_connected_pores</span></code> method <em>or</em> by looking at <code class="docutils literal notranslate"><span class="pre">pn['throat.conns']</span></code> directly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1]
+ [1 2]
+ [2 3]]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1]
+ [1 2]
+ [2 3]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is often desired to have a single column of pore indices and to remove duplications.  This can be done with <code class="docutils literal notranslate"><span class="pre">np.unique</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Ps</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 2 3]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">find_connected_pores</span></code> method has a <code class="docutils literal notranslate"><span class="pre">flatten</span></code> argument which does the same thing:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 2 3]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="removing-throats">
+<h2>Removing Throats<a class="headerlink" href="#removing-throats" title="Permalink to this heading">#</a></h2>
+<p>Removing throats may be useful for a number of reasons such as making a cubic network more heterogeneous, or to study the effect of blockages on flow.  Throat deletion is actualy trivial and requires simply removing the row(s) corresponding to the to-be deleted throats from all throat arrays.  For instance, let’s manually delete throats <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">3</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7f0e10d7c040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coords                                                         6 / 6
+  2  throat.conns                                                        7 / 7
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               3
+  2  pore.front                                                              3
+  3  pore.left                                                               2
+  4  pore.right                                                              2
+  5  pore.surface                                                            6
+  6  throat.surface                                                          7
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that there are only two arrays which contain throat data, so we need to remove rows 0 and 3 from these. The easiest way to this this actually to “keep” the rows we want:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">mask</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.surface&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7f0e10d7c040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coords                                                         6 / 6
+  2  throat.conns                                                        5 / 5
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               3
+  2  pore.front                                                              3
+  3  pore.left                                                               2
+  4  pore.right                                                              2
+  5  pore.surface                                                            6
+  6  throat.surface                                                          5
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>If any phases have been defined then they need to be handled as well. OpenPNM includes a function to <code class="docutils literal notranslate"><span class="pre">trim</span></code> throats from networks, which handles any complications:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7f0e10d7c040&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coords                                                         6 / 6
+  2  throat.conns                                                        3 / 3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               3
+  2  pore.front                                                              3
+  3  pore.left                                                               2
+  4  pore.right                                                              2
+  5  pore.surface                                                            6
+  6  throat.surface                                                          3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualizing the network shows that throats are indeed missing, and also that some pores are now isolated which is a problem for numerical computations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/6731b6b300c2e2fae9f15f90a9f94f271208ecc8b244150a7a8dd537335eda6f.png" src="../../_images/6731b6b300c2e2fae9f15f90a9f94f271208ecc8b244150a7a8dd537335eda6f.png" />
+</div>
+</div>
+</section>
+<section id="removing-pores">
+<h2>Removing Pores<a class="headerlink" href="#removing-pores" title="Permalink to this heading">#</a></h2>
+<p>Removing pores is <em>almost</em> as easy as removing throats, with <strong>two significant complications</strong>.</p>
+<ol class="arabic simple">
+<li><p>When a pore is removed, the values in the <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array must be updated. If pore 2 is removed, the pore 3 becomes the new pore 2.  This means that any throats which were pointing to pore 3 (i.e. [1, 3]) must now be updated to point to pore 2 instead (i.e. [1, 2]). This can be done manually as shown below, but OpenPNM’s <code class="docutils literal notranslate"><span class="pre">trim</span></code> function should be used.</p></li>
+<li><p>A throat cannot point to nothing, so when a pore is deleted, all of it’s neighboring throats must also be deleted.</p></li>
+</ol>
+<p>First we’ll see how to do this manually, then we’ll demonstrate the <code class="docutils literal notranslate"><span class="pre">trim</span></code> function, this time for pores.</p>
+<p>The first step is to create an array of 0’s with 1’s in the locations to be trimmed:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">totrim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">totrim</span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">totrim</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 0 1 0 1 0]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now compute the cumulative sum of this array which will then contain values indicating by how much each index should be adjusted</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">totrim</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 0 1 1 2 2]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lastly we create an array that can be used to remap the throat connections:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remap</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">Ps</span> <span class="o">-</span> <span class="n">offset</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">remap</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 1 2 2 3]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Before we proceed with deleting the pores we must first delete the throats. Luckily this is easy, we just need to identify the neighboring throats, the use <code class="docutils literal notranslate"><span class="pre">trim</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ts</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can delete pores 2 and 4 as we did with throats above:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="n">mask</span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pn</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="p">):</span>
+        <span class="n">pn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7f0e10cfb5e0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coords                                                         4 / 4
+  2  throat.conns                                                        3 / 3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               3
+  2  pore.front                                                              1
+  3  pore.left                                                               2
+  4  pore.right                                                              1
+  5  pore.surface                                                            4
+  6  throat.surface                                                          3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lastly we must remap the throat conns:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remap</span><span class="p">[</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/20fa22ff85ceb111192a098915687eaf908e400a344f7829a6b627e9e3e1a895.png" src="../../_images/20fa22ff85ceb111192a098915687eaf908e400a344f7829a6b627e9e3e1a895.png" />
+</div>
+</div>
+<p>Of course, the easy way is just to use <code class="docutils literal notranslate"><span class="pre">trim</span></code> directly:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/20fa22ff85ceb111192a098915687eaf908e400a344f7829a6b627e9e3e1a895.png" src="../../_images/20fa22ff85ceb111192a098915687eaf908e400a344f7829a6b627e9e3e1a895.png" />
+</div>
+</div>
+</section>
+<section id="adding-pores-and-throats">
+<h2>Adding Pores and Throats<a class="headerlink" href="#adding-pores-and-throats" title="Permalink to this heading">#</a></h2>
+<p>Adding pores and throats can also be done by hand, but there is one significant complication: when you add a pore or throat, a decision must be made about what values to put into these new locations for all the arrays that already exist.</p>
+<p>This can be done manually as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">new_pores</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">],</span> <span class="n">new_pores</span><span class="p">))</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7f0e10d05090&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.coords                                                         8 / 8
+  2  throat.conns                                                        7 / 7
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  1  pore.back                                                               3
+  2  pore.front                                                              3
+  3  pore.left                                                               2
+  4  pore.right                                                              2
+  5  pore.surface                                                            6
+  6  throat.surface                                                          7
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>We must now extend the length of all the pore arrays as well. We are lucky in this case that only labels are present.  This means we know the shape of of the arrays (i.e. Np-by-1) and we know that <code class="docutils literal notranslate"><span class="pre">False</span></code> is probably the correct value to put into the new locations:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pn</span><span class="o">.</span><span class="n">labels</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore.&#39;</span><span class="p">):</span>
+        <span class="n">pn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">pn</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7b143a8817216d82e09b29f4f02516e75dfd2f0d1b5c1ea31c90afd937c55202.png" src="../../_images/7b143a8817216d82e09b29f4f02516e75dfd2f0d1b5c1ea31c90afd937c55202.png" />
+</div>
+</div>
+<p>Now let’s add throats to these new pores:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_conns</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]]</span>
+<span class="n">conns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">],</span> <span class="n">new_conns</span><span class="p">))</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conns</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1835830e66d790a256c585ef56162b84afa2e17b30b01b886e83671e9aa69f9c.png" src="../../_images/1835830e66d790a256c585ef56162b84afa2e17b30b01b886e83671e9aa69f9c.png" />
+</div>
+</div>
+<p>Obviously, in practice we’d like to use OpenPNM’s <code class="docutils literal notranslate"><span class="pre">extend</span></code> method instead:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">new_pores</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
+<span class="n">new_conns</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]]</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">new_pores</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="n">new_conns</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgrey&#39;</span><span class="p">,</span> 
+                                  <span class="n">markersize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1835830e66d790a256c585ef56162b84afa2e17b30b01b886e83671e9aa69f9c.png" src="../../_images/1835830e66d790a256c585ef56162b84afa2e17b30b01b886e83671e9aa69f9c.png" />
+</div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2022, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

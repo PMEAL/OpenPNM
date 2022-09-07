@@ -93,4 +93,4 @@ later.
 Now you can run ``geo.show_hist(['pore.old_diameter', 'pore.diameter'])``
 to get a quick glance at the histograms of the two distributions.
 
-More complex tasks are explained in the :doc:`examples <../examples/index>` page.
+More complex tasks are explained in the :doc:`examples <../_examples/index>` page.
