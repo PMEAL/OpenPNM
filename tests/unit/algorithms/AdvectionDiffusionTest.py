@@ -62,8 +62,8 @@ class AdvectionDiffusionTest:
         self.sf.set_value_BC(pores=self.net.pores('right'), values=1.5,
                              mode='overwrite')
         # Running the next line should update "throat.ad_dif_conductance"
-        P = self.sf.run()
-        self.phase.update(P)
+        self.sf.run()
+        self.phase.update(self.sf.soln)
         self.ad.settings["conductance"] = "throat.ad_dif_conductance"
         _ = self.ad.run()
         self.phase.regenerate_models()

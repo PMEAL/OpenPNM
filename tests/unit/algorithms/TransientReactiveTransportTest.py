@@ -38,11 +38,9 @@ class TransientReactiveTransportTest:
         nt.assert_allclose(actual, desired, rtol=1e-5)
 
     def test_transient_solution(self):
-        out = self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
-        # Test datatype
+        self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
         from openpnm.algorithms._solution import TransientSolution
         quantity = self.alg.settings['quantity']
-        assert isinstance(out[quantity], TransientSolution)
         # Ensure solution object is attached to the algorithm
         assert isinstance(self.alg.soln[quantity], TransientSolution)
         # Test shape
@@ -50,20 +48,22 @@ class TransientReactiveTransportTest:
         # Test stored time points
         nt.assert_array_equal(self.alg.soln[quantity].t, np.arange(0, 1.1, 0.1))
         # Ensure solution is callable (i.e., interpolates intermediate times)
-        assert hasattr(out[quantity], "__call__")
+        assert hasattr(self.alg.soln[quantity], "__call__")
         # Test solution interpolation
-        f = interp1d(out[quantity].t, out[quantity])
-        nt.assert_allclose(f(0.05), out[quantity](0.05))
+        f = interp1d(self.alg.soln[quantity].t, self.alg.soln[quantity])
+        nt.assert_allclose(f(0.05), self.alg.soln[quantity](0.05))
         # Ensure no extrapolation
         with nt.assert_raises(Exception):
-            out(1.01)
+            self.alg.soln(1.01)
 
     def test_consecutive_runs_preserves_solution(self):
         # Integrate from 0 to 0.3 in two steps
         self.alg.run(x0=0, tspan=(0, 0.1))
-        out1 = self.alg.run(x0=self.alg.x, tspan=(0.1, 0.3))
+        self.alg.run(x0=self.alg.x, tspan=(0.1, 0.3))
+        out1 = self.alg.soln
         # Integrate from 0 to 0.3 in one go
-        out2 = self.alg.run(x0=0, tspan=(0, 0.3))
+        self.alg.run(x0=0, tspan=(0, 0.3))
+        out2 = self.alg.soln
         # Ensure the results match
         quantity = self.alg.settings['quantity']
         nt.assert_allclose(out1[quantity](0.3), out2[quantity](0.3), rtol=1e-5)
