@@ -6,6 +6,7 @@ import openpnm as op
 from openpnm.models.misc import from_neighbor_pores
 
 
+@pytest.mark.skipif(os.name == 'nt', reason="Skipping on Windows")
 class STLTest:
 
     def setup_class(self):
