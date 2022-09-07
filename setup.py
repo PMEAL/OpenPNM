@@ -65,6 +65,7 @@ setup(
         'scipy',
         'sympy',
         'terminaltables',
+        'thermo',
         'tqdm',
         'traits',
         'transforms3d',
