@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-throat\_surface\_area
+Throat\_surface\_area
 =====================
 
 .. automodule:: openpnm.models.geometry.throat_surface_area

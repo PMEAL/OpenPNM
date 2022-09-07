@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-throat\_seed
+Throat\_seed
 ============
 
 .. automodule:: openpnm.models.geometry.throat_seed

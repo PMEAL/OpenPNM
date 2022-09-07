@@ -1,8 +1,0 @@
-:orphan:
-
-set_label
-===========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: FaceCenteredCubic.set_label

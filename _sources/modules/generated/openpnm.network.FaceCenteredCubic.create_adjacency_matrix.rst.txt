@@ -1,8 +1,0 @@
-:orphan:
-
-create_adjacency_matrix
-=========================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: FaceCenteredCubic.create_adjacency_matrix

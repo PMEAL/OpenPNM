@@ -1,8 +1,0 @@
-:orphan:
-
-clear
-=======================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: FaceCenteredCubic.clear

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-hydraulic\_size\_factors
+Hydraulic\_size\_factors
 ========================
 
 .. automodule:: openpnm.models.geometry.hydraulic_size_factors

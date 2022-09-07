@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-throat\_length
+Throat\_length
 ==============
 
 .. automodule:: openpnm.models.geometry.throat_length

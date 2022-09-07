@@ -1,0 +1,56 @@
+Bravais
+=======================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: Bravais
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Bravais.add_boundary_pores
+            Bravais.add_model
+            Bravais.add_model_collection
+            Bravais.clear
+            Bravais.copy
+            Bravais.create_adjacency_matrix
+            Bravais.create_incidence_matrix
+            Bravais.filter_by_label
+            Bravais.find_connected_pores
+            Bravais.find_connecting_throat
+            Bravais.find_nearby_pores
+            Bravais.find_neighbor_pores
+            Bravais.find_neighbor_throats
+            Bravais.fromkeys
+            Bravais.get
+            Bravais.get_adjacency_matrix
+            Bravais.get_conduit_data
+            Bravais.get_incidence_matrix
+            Bravais.interpolate_data
+            Bravais.items
+            Bravais.keys
+            Bravais.labels
+            Bravais.num_neighbors
+            Bravais.num_pores
+            Bravais.num_throats
+            Bravais.pop
+            Bravais.popitem
+            Bravais.pores
+            Bravais.props
+            Bravais.regenerate_models
+            Bravais.run_model
+            Bravais.set_label
+            Bravais.setdefault
+            Bravais.throats
+            Bravais.to_indices
+            Bravais.to_mask
+            Bravais.update
+            Bravais.values
+   
+   

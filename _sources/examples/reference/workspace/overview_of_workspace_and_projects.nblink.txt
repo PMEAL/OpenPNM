@@ -1,0 +1,3 @@
+{    
+    "path": "../../../../examples/reference/workspace/overview_of_workspace_and_projects.ipynb"
+}

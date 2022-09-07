@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-topotools
+Topotools
 =========
 
 .. automodule:: openpnm.topotools
@@ -56,7 +56,6 @@ topotools
       label_faces
       merge_networks
       merge_pores
-      reduce_coordination
       reflect_base_points
       remove_isolated_clusters
       rotate_coords

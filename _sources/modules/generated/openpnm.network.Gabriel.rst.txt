@@ -1,0 +1,55 @@
+Gabriel
+=======================
+
+.. currentmodule:: openpnm.network
+
+.. autoclass:: Gabriel
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            Gabriel.add_model
+            Gabriel.add_model_collection
+            Gabriel.clear
+            Gabriel.copy
+            Gabriel.create_adjacency_matrix
+            Gabriel.create_incidence_matrix
+            Gabriel.filter_by_label
+            Gabriel.find_connected_pores
+            Gabriel.find_connecting_throat
+            Gabriel.find_nearby_pores
+            Gabriel.find_neighbor_pores
+            Gabriel.find_neighbor_throats
+            Gabriel.fromkeys
+            Gabriel.get
+            Gabriel.get_adjacency_matrix
+            Gabriel.get_conduit_data
+            Gabriel.get_incidence_matrix
+            Gabriel.interpolate_data
+            Gabriel.items
+            Gabriel.keys
+            Gabriel.labels
+            Gabriel.num_neighbors
+            Gabriel.num_pores
+            Gabriel.num_throats
+            Gabriel.pop
+            Gabriel.popitem
+            Gabriel.pores
+            Gabriel.props
+            Gabriel.regenerate_models
+            Gabriel.run_model
+            Gabriel.set_label
+            Gabriel.setdefault
+            Gabriel.throats
+            Gabriel.to_indices
+            Gabriel.to_mask
+            Gabriel.update
+            Gabriel.values
+   
+   

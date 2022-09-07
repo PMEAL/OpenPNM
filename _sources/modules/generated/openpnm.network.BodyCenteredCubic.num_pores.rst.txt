@@ -1,8 +1,0 @@
-:orphan:
-
-num_pores
-===========================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: BodyCenteredCubic.num_pores

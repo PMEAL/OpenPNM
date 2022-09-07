@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-ionic\_conductance
+Ionic\_conductance
 ==================
 
 .. automodule:: openpnm.models.physics.ionic_conductance

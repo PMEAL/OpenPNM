@@ -1,6 +1,0 @@
-spheres\_and\_cylinders
-=======================
-
-.. currentmodule:: openpnm.models.geometry.throat_endpoints
-
-.. autofunction:: spheres_and_cylinders

@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-throat\_vector
+Throat\_vector
 ==============
 
 .. automodule:: openpnm.models.geometry.throat_vector

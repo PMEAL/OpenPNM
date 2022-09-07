@@ -1,0 +1,3 @@
+{    
+    "path": "../../../examples/getting_started/concise_overview_of_openpnm.ipynb"
+}

@@ -1,8 +1,0 @@
-:orphan:
-
-run_model
-===================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: ModelsMixin2.run_model

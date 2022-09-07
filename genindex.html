@@ -1,69 +1,83 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Index &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
-<script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
-</script>
-
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
 
-
+  
   <link rel="stylesheet"
-    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    href="_static/vendor/fontawesome/6.1.2/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
-
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
-    <script src="_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <script src="_static/js/custom.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-    <div class="bd-header-announcement container-fluid" id="banner">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
       
-
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
     </div>
+  </div>
 
-    
-    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
-
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
   <div id="navbar-start">
     
     
@@ -71,70 +85,94 @@
 
 
 <a class="navbar-brand logo" href="index.html">
+
   
   
   
   
-    <img src="_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
-    <img src="_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+  
+
+  
+    <img src="_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
   
   
 </a>
     
   </div>
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="fas fa-bars"></span>
-  </button>
-
   
-  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+  <div class=" navbar-header-items">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="installation.html">
-  Installation
- </a>
-</li>
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="basic_usage.html">
-  Basic Usage
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="modules/index.html">
-  Module Reference
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="_examples/index.html">
-  Examples
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
 
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-</ul>
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
       </div>
       
     </div>
 
     <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
       
       <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -144,52 +182,180 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
       
     </div>
   </div>
-</div>
-    </nav>
-    
-
-    <div class="bd-container container-xl">
-      <div class="bd-container__inner row">
-          
-
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    
-  </div>
-</nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
 
 
-          
-
-
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
   
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
 </div>
+  </nav>
+  
 
-
-          
-          
-          <div class="bd-content col-12 col-md-9 col-xl-7">
-              
-              <article class="bd-article" role="main">
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
                 
+
+                <li class="nav-item">
+                    <a class="nav-link" href="user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
 
 <h1 id="index">Index</h1>
 
@@ -229,8 +395,6 @@
       <ul>
         <li><a href="modules/generated/openpnm.core.ModelWrapper.__call__.html#openpnm.core.ModelWrapper.__call__">(ModelWrapper method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.models.phase.phasedocs.Substitution.__call__.html#openpnm.models.phase.phasedocs.Substitution.__call__">(Substitution method)</a>
-</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -244,7 +408,7 @@
 </li>
       <li><a href="modules/generated/openpnm.utils.TypedSet.add.html#openpnm.utils.TypedSet.add">add() (TypedSet method)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.add_boundary_pores.html#openpnm.network.BodyCenteredCubic.add_boundary_pores">add_boundary_pores() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.add_boundary_pores.html#openpnm.network.Bravais.add_boundary_pores">add_boundary_pores() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.add_boundary_pores.html#openpnm.network.Cubic.add_boundary_pores">(Cubic method)</a>
@@ -252,8 +416,6 @@
         <li><a href="modules/generated/openpnm.network.DelaunayVoronoiDual.add_boundary_pores.html#openpnm.network.DelaunayVoronoiDual.add_boundary_pores">(DelaunayVoronoiDual method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.add_boundary_pores.html#openpnm.network.Demo.add_boundary_pores">(Demo method)</a>
-</li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.add_boundary_pores.html#openpnm.network.FaceCenteredCubic.add_boundary_pores">(FaceCenteredCubic method)</a>
 </li>
         <li><a href="modules/generated/openpnm.topotools.add_boundary_pores.html#openpnm.topotools.add_boundary_pores">(in module openpnm.topotools)</a>
 </li>
@@ -277,7 +439,7 @@
       <ul>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.add_model.html#openpnm.phase.BinaryGas.add_model">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.add_model.html#openpnm.network.BodyCenteredCubic.add_model">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.add_model.html#openpnm.network.Bravais.add_model">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.add_model.html#openpnm.network.Cubic.add_model">(Cubic method)</a>
 </li>
@@ -291,7 +453,7 @@
 </li>
         <li><a href="modules/generated/openpnm.core.Domain.add_model.html#openpnm.core.Domain.add_model">(Domain method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.add_model.html#openpnm.network.FaceCenteredCubic.add_model">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.add_model.html#openpnm.network.Gabriel.add_model">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.add_model.html#openpnm.phase.GasMixture.add_model">(GasMixture method)</a>
 </li>
@@ -301,7 +463,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.Mixture.add_model.html#openpnm.phase.Mixture.add_model">(Mixture method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.core.ModelsMixin2.add_model.html#openpnm.core.ModelsMixin2.add_model">(ModelsMixin2 method)</a>
+        <li><a href="modules/generated/openpnm.core.ModelMixin2.add_model.html#openpnm.core.ModelMixin2.add_model">(ModelMixin2 method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.add_model.html#openpnm.network.Network.add_model">(Network method)</a>
 </li>
@@ -329,7 +491,7 @@
       <ul>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.add_model_collection.html#openpnm.phase.BinaryGas.add_model_collection">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.add_model_collection.html#openpnm.network.BodyCenteredCubic.add_model_collection">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.add_model_collection.html#openpnm.network.Bravais.add_model_collection">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.add_model_collection.html#openpnm.network.Cubic.add_model_collection">(Cubic method)</a>
 </li>
@@ -343,7 +505,7 @@
 </li>
         <li><a href="modules/generated/openpnm.core.Domain.add_model_collection.html#openpnm.core.Domain.add_model_collection">(Domain method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.add_model_collection.html#openpnm.network.FaceCenteredCubic.add_model_collection">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.add_model_collection.html#openpnm.network.Gabriel.add_model_collection">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.add_model_collection.html#openpnm.phase.GasMixture.add_model_collection">(GasMixture method)</a>
 </li>
@@ -353,7 +515,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.Mixture.add_model_collection.html#openpnm.phase.Mixture.add_model_collection">(Mixture method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.core.ModelsMixin2.add_model_collection.html#openpnm.core.ModelsMixin2.add_model_collection">(ModelsMixin2 method)</a>
+        <li><a href="modules/generated/openpnm.core.ModelMixin2.add_model_collection.html#openpnm.core.ModelMixin2.add_model_collection">(ModelMixin2 method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.add_model_collection.html#openpnm.network.Network.add_model_collection">(Network method)</a>
 </li>
@@ -420,9 +582,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/generated/openpnm.models.misc.blank.html#openpnm.models.misc.blank">blank() (in module openpnm.models.misc)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.html#openpnm.network.BodyCenteredCubic">BodyCenteredCubic (class in openpnm.network)</a>
-</li>
       <li><a href="modules/generated/openpnm.topotools.bond_percolation.html#openpnm.topotools.bond_percolation">bond_percolation() (in module openpnm.topotools)</a>
+</li>
+      <li><a href="modules/generated/openpnm.network.Bravais.html#openpnm.network.Bravais">Bravais (class in openpnm.network)</a>
 </li>
       <li><a href="modules/generated/openpnm.models.physics.source_terms.butler_volmer_conc.html#openpnm.models.physics.source_terms.butler_volmer_conc">butler_volmer_conc() (in module openpnm.models.physics.source_terms)</a>
 </li>
@@ -487,7 +649,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.clear.html#openpnm.phase.BinaryGas.clear">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.clear.html#openpnm.network.BodyCenteredCubic.clear">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.clear.html#openpnm.network.Bravais.clear">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.clear.html#openpnm.network.Cubic.clear">(Cubic method)</a>
 </li>
@@ -503,11 +665,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.clear.html#openpnm.algorithms.Drainage.clear">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.clear.html#openpnm.network.FaceCenteredCubic.clear">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.clear.html#openpnm.algorithms.FickianDiffusion.clear">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.clear.html#openpnm.algorithms.FourierConduction.clear">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.clear.html#openpnm.network.Gabriel.clear">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.clear.html#openpnm.phase.GasMixture.clear">(GasMixture method)</a>
 </li>
@@ -707,7 +869,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.copy.html#openpnm.phase.BinaryGas.copy">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.copy.html#openpnm.network.BodyCenteredCubic.copy">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.copy.html#openpnm.network.Bravais.copy">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.copy.html#openpnm.network.Cubic.copy">(Cubic method)</a>
 </li>
@@ -723,11 +885,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.copy.html#openpnm.algorithms.Drainage.copy">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.copy.html#openpnm.network.FaceCenteredCubic.copy">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.copy.html#openpnm.algorithms.FickianDiffusion.copy">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.copy.html#openpnm.algorithms.FourierConduction.copy">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.copy.html#openpnm.network.Gabriel.copy">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.copy.html#openpnm.phase.GasMixture.copy">(GasMixture method)</a>
 </li>
@@ -806,7 +968,7 @@
       </ul></li>
       <li><a href="modules/generated/openpnm.models.network.count_coincident_pores.html#openpnm.models.network.count_coincident_pores">count_coincident_pores() (in module openpnm.models.network)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.create_adjacency_matrix.html#openpnm.network.BodyCenteredCubic.create_adjacency_matrix">create_adjacency_matrix() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.create_adjacency_matrix.html#openpnm.network.Bravais.create_adjacency_matrix">create_adjacency_matrix() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.create_adjacency_matrix.html#openpnm.network.Cubic.create_adjacency_matrix">(Cubic method)</a>
@@ -819,14 +981,14 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.create_adjacency_matrix.html#openpnm.network.Demo.create_adjacency_matrix">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.create_adjacency_matrix.html#openpnm.network.FaceCenteredCubic.create_adjacency_matrix">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.create_adjacency_matrix.html#openpnm.network.Gabriel.create_adjacency_matrix">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.create_adjacency_matrix.html#openpnm.network.Network.create_adjacency_matrix">(Network method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Voronoi.create_adjacency_matrix.html#openpnm.network.Voronoi.create_adjacency_matrix">(Voronoi method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.create_incidence_matrix.html#openpnm.network.BodyCenteredCubic.create_incidence_matrix">create_incidence_matrix() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.create_incidence_matrix.html#openpnm.network.Bravais.create_incidence_matrix">create_incidence_matrix() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.create_incidence_matrix.html#openpnm.network.Cubic.create_incidence_matrix">(Cubic method)</a>
@@ -839,7 +1001,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.create_incidence_matrix.html#openpnm.network.Demo.create_incidence_matrix">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.create_incidence_matrix.html#openpnm.network.FaceCenteredCubic.create_incidence_matrix">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.create_incidence_matrix.html#openpnm.network.Gabriel.create_incidence_matrix">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.create_incidence_matrix.html#openpnm.network.Network.create_incidence_matrix">(Network method)</a>
 </li>
@@ -928,12 +1090,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/generated/openpnm.utils.dict_to_struct.html#openpnm.utils.dict_to_struct">dict_to_struct() (in module openpnm.utils)</a>
 </li>
-      <li><a href="modules/generated/openpnm.models.misc.difference.html#openpnm.models.misc.difference">difference() (in module openpnm.models.misc)</a>
-
-      <ul>
-        <li><a href="modules/generated/openpnm.utils.TypedSet.difference.html#openpnm.utils.TypedSet.difference">(TypedSet method)</a>
+      <li><a href="modules/generated/openpnm.utils.TypedSet.difference.html#openpnm.utils.TypedSet.difference">difference() (TypedSet method)</a>
 </li>
-      </ul></li>
       <li><a href="modules/generated/openpnm.utils.TypedSet.difference_update.html#openpnm.utils.TypedSet.difference_update">difference_update() (TypedSet method)</a>
 </li>
       <li><a href="modules/generated/openpnm.topotools.dimensionality.html#openpnm.topotools.dimensionality">dimensionality() (in module openpnm.topotools)</a>
@@ -998,8 +1156,6 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.html#openpnm.network.FaceCenteredCubic">FaceCenteredCubic (class in openpnm.network)</a>
-</li>
       <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.html#openpnm.algorithms.FickianDiffusion">FickianDiffusion (class in openpnm.algorithms)</a>
 </li>
       <li><a href="modules/generated/openpnm.algorithms.AdvectionDiffusion.filter_by_label.html#openpnm.algorithms.AdvectionDiffusion.filter_by_label">filter_by_label() (AdvectionDiffusion method)</a>
@@ -1011,7 +1167,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.filter_by_label.html#openpnm.phase.BinaryGas.filter_by_label">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.filter_by_label.html#openpnm.network.BodyCenteredCubic.filter_by_label">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.filter_by_label.html#openpnm.network.Bravais.filter_by_label">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.filter_by_label.html#openpnm.network.Cubic.filter_by_label">(Cubic method)</a>
 </li>
@@ -1027,11 +1183,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.filter_by_label.html#openpnm.algorithms.Drainage.filter_by_label">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.filter_by_label.html#openpnm.network.FaceCenteredCubic.filter_by_label">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.filter_by_label.html#openpnm.algorithms.FickianDiffusion.filter_by_label">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.filter_by_label.html#openpnm.algorithms.FourierConduction.filter_by_label">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.filter_by_label.html#openpnm.network.Gabriel.filter_by_label">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.filter_by_label.html#openpnm.phase.GasMixture.filter_by_label">(GasMixture method)</a>
 </li>
@@ -1088,7 +1244,7 @@
 </li>
       <li><a href="modules/generated/openpnm.models.network.find_coincident_pores.html#openpnm.models.network.find_coincident_pores">find_coincident_pores() (in module openpnm.models.network)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.find_connected_pores.html#openpnm.network.BodyCenteredCubic.find_connected_pores">find_connected_pores() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.find_connected_pores.html#openpnm.network.Bravais.find_connected_pores">find_connected_pores() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.find_connected_pores.html#openpnm.network.Cubic.find_connected_pores">(Cubic method)</a>
@@ -1101,7 +1257,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.find_connected_pores.html#openpnm.network.Demo.find_connected_pores">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.find_connected_pores.html#openpnm.network.FaceCenteredCubic.find_connected_pores">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.find_connected_pores.html#openpnm.network.Gabriel.find_connected_pores">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.find_connected_pores.html#openpnm.network.Network.find_connected_pores">(Network method)</a>
 </li>
@@ -1112,7 +1268,7 @@
 </li>
       <li><a href="modules/generated/openpnm.topotools.find_connecting_bonds.html#openpnm.topotools.find_connecting_bonds">find_connecting_bonds() (in module openpnm.topotools)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.find_connecting_throat.html#openpnm.network.BodyCenteredCubic.find_connecting_throat">find_connecting_throat() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.find_connecting_throat.html#openpnm.network.Bravais.find_connecting_throat">find_connecting_throat() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.find_connecting_throat.html#openpnm.network.Cubic.find_connecting_throat">(Cubic method)</a>
@@ -1125,7 +1281,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.find_connecting_throat.html#openpnm.network.Demo.find_connecting_throat">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.find_connecting_throat.html#openpnm.network.FaceCenteredCubic.find_connecting_throat">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.find_connecting_throat.html#openpnm.network.Gabriel.find_connecting_throat">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.find_connecting_throat.html#openpnm.network.Network.find_connecting_throat">(Network method)</a>
 </li>
@@ -1134,7 +1290,7 @@
       </ul></li>
       <li><a href="modules/generated/openpnm.topotools.find_interface_throats.html#openpnm.topotools.find_interface_throats">find_interface_throats() (in module openpnm.topotools)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.find_nearby_pores.html#openpnm.network.BodyCenteredCubic.find_nearby_pores">find_nearby_pores() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.find_nearby_pores.html#openpnm.network.Bravais.find_nearby_pores">find_nearby_pores() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.find_nearby_pores.html#openpnm.network.Cubic.find_nearby_pores">(Cubic method)</a>
@@ -1147,7 +1303,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.find_nearby_pores.html#openpnm.network.Demo.find_nearby_pores">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.find_nearby_pores.html#openpnm.network.FaceCenteredCubic.find_nearby_pores">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.find_nearby_pores.html#openpnm.network.Gabriel.find_nearby_pores">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.find_nearby_pores.html#openpnm.network.Network.find_nearby_pores">(Network method)</a>
 </li>
@@ -1156,7 +1312,7 @@
       </ul></li>
       <li><a href="modules/generated/openpnm.topotools.find_neighbor_bonds.html#openpnm.topotools.find_neighbor_bonds">find_neighbor_bonds() (in module openpnm.topotools)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.find_neighbor_pores.html#openpnm.network.BodyCenteredCubic.find_neighbor_pores">find_neighbor_pores() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.find_neighbor_pores.html#openpnm.network.Bravais.find_neighbor_pores">find_neighbor_pores() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.find_neighbor_pores.html#openpnm.network.Cubic.find_neighbor_pores">(Cubic method)</a>
@@ -1169,7 +1325,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.find_neighbor_pores.html#openpnm.network.Demo.find_neighbor_pores">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.find_neighbor_pores.html#openpnm.network.FaceCenteredCubic.find_neighbor_pores">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.find_neighbor_pores.html#openpnm.network.Gabriel.find_neighbor_pores">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.find_neighbor_pores.html#openpnm.network.Network.find_neighbor_pores">(Network method)</a>
 </li>
@@ -1180,7 +1336,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/generated/openpnm.topotools.find_neighbor_sites.html#openpnm.topotools.find_neighbor_sites">find_neighbor_sites() (in module openpnm.topotools)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.find_neighbor_throats.html#openpnm.network.BodyCenteredCubic.find_neighbor_throats">find_neighbor_throats() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.find_neighbor_throats.html#openpnm.network.Bravais.find_neighbor_throats">find_neighbor_throats() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.find_neighbor_throats.html#openpnm.network.Cubic.find_neighbor_throats">(Cubic method)</a>
@@ -1193,7 +1349,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.find_neighbor_throats.html#openpnm.network.Demo.find_neighbor_throats">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.find_neighbor_throats.html#openpnm.network.FaceCenteredCubic.find_neighbor_throats">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.find_neighbor_throats.html#openpnm.network.Gabriel.find_neighbor_throats">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.find_neighbor_throats.html#openpnm.network.Network.find_neighbor_throats">(Network method)</a>
 </li>
@@ -1218,6 +1374,12 @@
 </li>
       <li><a href="modules/generated/openpnm.models.phase.mixtures.from_component.html#openpnm.models.phase.mixtures.from_component">from_component() (in module openpnm.models.phase.mixtures)</a>
 </li>
+      <li><a href="modules/generated/openpnm.network.from_csv.html#openpnm.network.from_csv">from_csv() (in module openpnm.network)</a>
+</li>
+      <li><a href="modules/generated/openpnm.network.from_jsongraph.html#openpnm.network.from_jsongraph">from_jsongraph() (in module openpnm.network)</a>
+</li>
+      <li><a href="modules/generated/openpnm.network.from_marock.html#openpnm.network.from_marock">from_marock() (in module openpnm.network)</a>
+</li>
       <li><a href="modules/generated/openpnm.models.geometry.throat_seed.from_neighbor_pores.html#openpnm.models.geometry.throat_seed.from_neighbor_pores">from_neighbor_pores() (in module openpnm.models.geometry.throat_seed)</a>
 
       <ul>
@@ -1232,6 +1394,12 @@
         <li><a href="modules/generated/openpnm.models.misc.from_neighbor_throats.html#openpnm.models.misc.from_neighbor_throats">(in module openpnm.models.misc)</a>
 </li>
       </ul></li>
+      <li><a href="modules/generated/openpnm.network.from_networkx.html#openpnm.network.from_networkx">from_networkx() (in module openpnm.network)</a>
+</li>
+      <li><a href="modules/generated/openpnm.network.from_pergeos.html#openpnm.network.from_pergeos">from_pergeos() (in module openpnm.network)</a>
+</li>
+      <li><a href="modules/generated/openpnm.network.from_porespy.html#openpnm.network.from_porespy">from_porespy() (in module openpnm.network)</a>
+</li>
       <li><a href="modules/generated/openpnm.algorithms.AdvectionDiffusion.fromkeys.html#openpnm.algorithms.AdvectionDiffusion.fromkeys">fromkeys() (AdvectionDiffusion method)</a>
 
       <ul>
@@ -1243,7 +1411,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.fromkeys.html#openpnm.phase.BinaryGas.fromkeys">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.fromkeys.html#openpnm.network.BodyCenteredCubic.fromkeys">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.fromkeys.html#openpnm.network.Bravais.fromkeys">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.fromkeys.html#openpnm.network.Cubic.fromkeys">(Cubic method)</a>
 </li>
@@ -1259,11 +1427,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.fromkeys.html#openpnm.algorithms.Drainage.fromkeys">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.fromkeys.html#openpnm.network.FaceCenteredCubic.fromkeys">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.fromkeys.html#openpnm.algorithms.FickianDiffusion.fromkeys">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.fromkeys.html#openpnm.algorithms.FourierConduction.fromkeys">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.fromkeys.html#openpnm.network.Gabriel.fromkeys">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.fromkeys.html#openpnm.phase.GasMixture.fromkeys">(GasMixture method)</a>
 </li>
@@ -1330,6 +1498,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/generated/openpnm.network.Gabriel.html#openpnm.network.Gabriel">Gabriel (class in openpnm.network)</a>
+</li>
       <li><a href="modules/generated/openpnm.models.phase.diffusivity.gas_mixture_ce.html#openpnm.models.phase.diffusivity.gas_mixture_ce">gas_mixture_ce() (in module openpnm.models.phase.diffusivity)</a>
 </li>
       <li><a href="modules/generated/openpnm.models.phase.diffusivity.gas_mixture_fesg.html#openpnm.models.phase.diffusivity.gas_mixture_fesg">gas_mixture_fesg() (in module openpnm.models.phase.diffusivity)</a>
@@ -1389,7 +1559,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.get.html#openpnm.phase.BinaryGas.get">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.get.html#openpnm.network.BodyCenteredCubic.get">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.get.html#openpnm.network.Bravais.get">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.get.html#openpnm.network.Cubic.get">(Cubic method)</a>
 </li>
@@ -1405,11 +1575,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.get.html#openpnm.algorithms.Drainage.get">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.get.html#openpnm.network.FaceCenteredCubic.get">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.get.html#openpnm.algorithms.FickianDiffusion.get">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.get.html#openpnm.algorithms.FourierConduction.get">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.get.html#openpnm.network.Gabriel.get">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.get.html#openpnm.phase.GasMixture.get">(GasMixture method)</a>
 </li>
@@ -1470,7 +1640,7 @@
         <li><a href="modules/generated/openpnm.utils.Workspace.get.html#openpnm.utils.Workspace.get">(Workspace method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.get_adjacency_matrix.html#openpnm.network.BodyCenteredCubic.get_adjacency_matrix">get_adjacency_matrix() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.get_adjacency_matrix.html#openpnm.network.Bravais.get_adjacency_matrix">get_adjacency_matrix() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.get_adjacency_matrix.html#openpnm.network.Cubic.get_adjacency_matrix">(Cubic method)</a>
@@ -1483,7 +1653,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.get_adjacency_matrix.html#openpnm.network.Demo.get_adjacency_matrix">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.get_adjacency_matrix.html#openpnm.network.FaceCenteredCubic.get_adjacency_matrix">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.get_adjacency_matrix.html#openpnm.network.Gabriel.get_adjacency_matrix">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.get_adjacency_matrix.html#openpnm.network.Network.get_adjacency_matrix">(Network method)</a>
 </li>
@@ -1517,7 +1687,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.get_conduit_data.html#openpnm.phase.BinaryGas.get_conduit_data">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.get_conduit_data.html#openpnm.network.BodyCenteredCubic.get_conduit_data">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.get_conduit_data.html#openpnm.network.Bravais.get_conduit_data">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.get_conduit_data.html#openpnm.network.Cubic.get_conduit_data">(Cubic method)</a>
 </li>
@@ -1533,11 +1703,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.get_conduit_data.html#openpnm.algorithms.Drainage.get_conduit_data">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.get_conduit_data.html#openpnm.network.FaceCenteredCubic.get_conduit_data">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.get_conduit_data.html#openpnm.algorithms.FickianDiffusion.get_conduit_data">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.get_conduit_data.html#openpnm.algorithms.FourierConduction.get_conduit_data">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.get_conduit_data.html#openpnm.network.Gabriel.get_conduit_data">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.get_conduit_data.html#openpnm.phase.GasMixture.get_conduit_data">(GasMixture method)</a>
 </li>
@@ -1600,7 +1770,7 @@
 </li>
       <li><a href="modules/generated/openpnm.utils.Docorator.get_full_descriptionf.html#openpnm.utils.Docorator.get_full_descriptionf">get_full_descriptionf() (Docorator method)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.get_incidence_matrix.html#openpnm.network.BodyCenteredCubic.get_incidence_matrix">get_incidence_matrix() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.get_incidence_matrix.html#openpnm.network.Bravais.get_incidence_matrix">get_incidence_matrix() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.get_incidence_matrix.html#openpnm.network.Cubic.get_incidence_matrix">(Cubic method)</a>
@@ -1613,7 +1783,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.get_incidence_matrix.html#openpnm.network.Demo.get_incidence_matrix">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.get_incidence_matrix.html#openpnm.network.FaceCenteredCubic.get_incidence_matrix">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.get_incidence_matrix.html#openpnm.network.Gabriel.get_incidence_matrix">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.get_incidence_matrix.html#openpnm.network.Network.get_incidence_matrix">(Network method)</a>
 </li>
@@ -1735,7 +1905,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.interpolate_data.html#openpnm.phase.BinaryGas.interpolate_data">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.interpolate_data.html#openpnm.network.BodyCenteredCubic.interpolate_data">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.interpolate_data.html#openpnm.network.Bravais.interpolate_data">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.interpolate_data.html#openpnm.network.Cubic.interpolate_data">(Cubic method)</a>
 </li>
@@ -1751,11 +1921,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.interpolate_data.html#openpnm.algorithms.Drainage.interpolate_data">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.interpolate_data.html#openpnm.network.FaceCenteredCubic.interpolate_data">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.interpolate_data.html#openpnm.algorithms.FickianDiffusion.interpolate_data">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.interpolate_data.html#openpnm.algorithms.FourierConduction.interpolate_data">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.interpolate_data.html#openpnm.network.Gabriel.interpolate_data">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.interpolate_data.html#openpnm.phase.GasMixture.interpolate_data">(GasMixture method)</a>
 </li>
@@ -1887,7 +2057,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.items.html#openpnm.phase.BinaryGas.items">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.items.html#openpnm.network.BodyCenteredCubic.items">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.items.html#openpnm.network.Bravais.items">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.items.html#openpnm.network.Cubic.items">(Cubic method)</a>
 </li>
@@ -1903,11 +2073,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.items.html#openpnm.algorithms.Drainage.items">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.items.html#openpnm.network.FaceCenteredCubic.items">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.items.html#openpnm.algorithms.FickianDiffusion.items">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.items.html#openpnm.algorithms.FourierConduction.items">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.items.html#openpnm.network.Gabriel.items">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.items.html#openpnm.phase.GasMixture.items">(GasMixture method)</a>
 </li>
@@ -2003,7 +2173,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.keys.html#openpnm.phase.BinaryGas.keys">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.keys.html#openpnm.network.BodyCenteredCubic.keys">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.keys.html#openpnm.network.Bravais.keys">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.keys.html#openpnm.network.Cubic.keys">(Cubic method)</a>
 </li>
@@ -2019,11 +2189,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.keys.html#openpnm.algorithms.Drainage.keys">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.keys.html#openpnm.network.FaceCenteredCubic.keys">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.keys.html#openpnm.algorithms.FickianDiffusion.keys">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.keys.html#openpnm.algorithms.FourierConduction.keys">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.keys.html#openpnm.network.Gabriel.keys">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.keys.html#openpnm.phase.GasMixture.keys">(GasMixture method)</a>
 </li>
@@ -2103,7 +2273,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.labels.html#openpnm.phase.BinaryGas.labels">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.labels.html#openpnm.network.BodyCenteredCubic.labels">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.labels.html#openpnm.network.Bravais.labels">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.labels.html#openpnm.network.Cubic.labels">(Cubic method)</a>
 </li>
@@ -2119,11 +2289,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.labels.html#openpnm.algorithms.Drainage.labels">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.labels.html#openpnm.network.FaceCenteredCubic.labels">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.labels.html#openpnm.algorithms.FickianDiffusion.labels">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.labels.html#openpnm.algorithms.FourierConduction.labels">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.labels.html#openpnm.network.Gabriel.labels">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.labels.html#openpnm.phase.GasMixture.labels">(GasMixture method)</a>
 </li>
@@ -2256,11 +2426,11 @@
 </li>
       <li><a href="modules/generated/openpnm.phase.Mixture.html#openpnm.phase.Mixture">Mixture (class in openpnm.phase)</a>
 </li>
+      <li><a href="modules/generated/openpnm.core.ModelMixin2.html#openpnm.core.ModelMixin2">ModelMixin2 (class in openpnm.core)</a>
+</li>
       <li><a href="modules/generated/openpnm.utils.models_to_table.html#openpnm.utils.models_to_table">models_to_table() (in module openpnm.utils)</a>
 </li>
       <li><a href="modules/generated/openpnm.core.ModelsDict.html#openpnm.core.ModelsDict">ModelsDict (class in openpnm.core)</a>
-</li>
-      <li><a href="modules/generated/openpnm.core.ModelsMixin2.html#openpnm.core.ModelsMixin2">ModelsMixin2 (class in openpnm.core)</a>
 </li>
       <li><a href="modules/generated/openpnm.core.ModelWrapper.html#openpnm.core.ModelWrapper">ModelWrapper (class in openpnm.core)</a>
 </li>
@@ -2318,8 +2488,6 @@
 </li>
         <li><a href="modules/generated/openpnm.models.geometry.throat_cross_sectional_area.html#module-openpnm.models.geometry.throat_cross_sectional_area">openpnm.models.geometry.throat_cross_sectional_area</a>
 </li>
-        <li><a href="modules/generated/openpnm.models.geometry.throat_endpoints.html#module-openpnm.models.geometry.throat_endpoints">openpnm.models.geometry.throat_endpoints</a>
-</li>
         <li><a href="modules/generated/openpnm.models.geometry.throat_length.html#module-openpnm.models.geometry.throat_length">openpnm.models.geometry.throat_length</a>
 </li>
         <li><a href="modules/generated/openpnm.models.geometry.throat_perimeter.html#module-openpnm.models.geometry.throat_perimeter">openpnm.models.geometry.throat_perimeter</a>
@@ -2353,8 +2521,6 @@
         <li><a href="modules/generated/openpnm.models.phase.mixtures.html#module-openpnm.models.phase.mixtures">openpnm.models.phase.mixtures</a>
 </li>
         <li><a href="modules/generated/openpnm.models.phase.partition_coefficient.html#module-openpnm.models.phase.partition_coefficient">openpnm.models.phase.partition_coefficient</a>
-</li>
-        <li><a href="modules/generated/openpnm.models.phase.phasedocs.html#module-openpnm.models.phase.phasedocs">openpnm.models.phase.phasedocs</a>
 </li>
         <li><a href="modules/generated/openpnm.models.phase.surface_tension.html#module-openpnm.models.phase.surface_tension">openpnm.models.phase.surface_tension</a>
 </li>
@@ -2405,6 +2571,14 @@
 </li>
       <li><a href="modules/generated/openpnm.models.phase.misc.mole_to_mass_fraction.html#openpnm.models.phase.misc.mole_to_mass_fraction">mole_to_mass_fraction() (in module openpnm.models.phase.misc)</a>
 </li>
+      <li><a href="modules/generated/openpnm.utils.HealthDict.move_to_end.html#openpnm.utils.HealthDict.move_to_end">move_to_end() (HealthDict method)</a>
+
+      <ul>
+        <li><a href="modules/generated/openpnm.core.ModelsDict.move_to_end.html#openpnm.core.ModelsDict.move_to_end">(ModelsDict method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.utils.PrintableDict.move_to_end.html#openpnm.utils.PrintableDict.move_to_end">(PrintableDict method)</a>
+</li>
+      </ul></li>
       <li><a href="modules/generated/openpnm.models.physics.diffusive_conductance.multiphase_diffusion.html#openpnm.models.physics.diffusive_conductance.multiphase_diffusion">multiphase_diffusion() (in module openpnm.models.physics.diffusive_conductance)</a>
 </li>
   </ul></td>
@@ -2469,7 +2643,7 @@
       </ul></li>
       <li><a href="modules/generated/openpnm.models.misc.normalize.html#openpnm.models.misc.normalize">normalize() (in module openpnm.models.misc)</a>
 </li>
-      <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.num_neighbors.html#openpnm.network.BodyCenteredCubic.num_neighbors">num_neighbors() (BodyCenteredCubic method)</a>
+      <li><a href="modules/generated/openpnm.network.Bravais.num_neighbors.html#openpnm.network.Bravais.num_neighbors">num_neighbors() (Bravais method)</a>
 
       <ul>
         <li><a href="modules/generated/openpnm.network.Cubic.num_neighbors.html#openpnm.network.Cubic.num_neighbors">(Cubic method)</a>
@@ -2482,7 +2656,7 @@
 </li>
         <li><a href="modules/generated/openpnm.network.Demo.num_neighbors.html#openpnm.network.Demo.num_neighbors">(Demo method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.num_neighbors.html#openpnm.network.FaceCenteredCubic.num_neighbors">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.num_neighbors.html#openpnm.network.Gabriel.num_neighbors">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.num_neighbors.html#openpnm.network.Network.num_neighbors">(Network method)</a>
 </li>
@@ -2498,7 +2672,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.num_pores.html#openpnm.phase.BinaryGas.num_pores">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.num_pores.html#openpnm.network.BodyCenteredCubic.num_pores">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.num_pores.html#openpnm.network.Bravais.num_pores">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.num_pores.html#openpnm.network.Cubic.num_pores">(Cubic method)</a>
 </li>
@@ -2514,11 +2688,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.num_pores.html#openpnm.algorithms.Drainage.num_pores">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.num_pores.html#openpnm.network.FaceCenteredCubic.num_pores">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.num_pores.html#openpnm.algorithms.FickianDiffusion.num_pores">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.num_pores.html#openpnm.algorithms.FourierConduction.num_pores">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.num_pores.html#openpnm.network.Gabriel.num_pores">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.num_pores.html#openpnm.phase.GasMixture.num_pores">(GasMixture method)</a>
 </li>
@@ -2580,7 +2754,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.num_throats.html#openpnm.phase.BinaryGas.num_throats">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.num_throats.html#openpnm.network.BodyCenteredCubic.num_throats">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.num_throats.html#openpnm.network.Bravais.num_throats">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.num_throats.html#openpnm.network.Cubic.num_throats">(Cubic method)</a>
 </li>
@@ -2596,11 +2770,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.num_throats.html#openpnm.algorithms.Drainage.num_throats">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.num_throats.html#openpnm.network.FaceCenteredCubic.num_throats">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.num_throats.html#openpnm.algorithms.FickianDiffusion.num_throats">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.num_throats.html#openpnm.algorithms.FourierConduction.num_throats">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.num_throats.html#openpnm.network.Gabriel.num_throats">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.num_throats.html#openpnm.phase.GasMixture.num_throats">(GasMixture method)</a>
 </li>
@@ -2835,13 +3009,6 @@
 </li>
       </ul></li>
       <li>
-    openpnm.models.geometry.throat_endpoints
-
-      <ul>
-        <li><a href="modules/generated/openpnm.models.geometry.throat_endpoints.html#module-openpnm.models.geometry.throat_endpoints">module</a>
-</li>
-      </ul></li>
-      <li>
     openpnm.models.geometry.throat_length
 
       <ul>
@@ -2960,13 +3127,6 @@
 
       <ul>
         <li><a href="modules/generated/openpnm.models.phase.partition_coefficient.html#module-openpnm.models.phase.partition_coefficient">module</a>
-</li>
-      </ul></li>
-      <li>
-    openpnm.models.phase.phasedocs
-
-      <ul>
-        <li><a href="modules/generated/openpnm.models.phase.phasedocs.html#module-openpnm.models.phase.phasedocs">module</a>
 </li>
       </ul></li>
       <li>
@@ -3155,7 +3315,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.pop.html#openpnm.phase.BinaryGas.pop">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.pop.html#openpnm.network.BodyCenteredCubic.pop">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.pop.html#openpnm.network.Bravais.pop">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.pop.html#openpnm.network.Cubic.pop">(Cubic method)</a>
 </li>
@@ -3171,11 +3331,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.pop.html#openpnm.algorithms.Drainage.pop">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.pop.html#openpnm.network.FaceCenteredCubic.pop">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.pop.html#openpnm.algorithms.FickianDiffusion.pop">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.pop.html#openpnm.algorithms.FourierConduction.pop">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.pop.html#openpnm.network.Gabriel.pop">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.pop.html#openpnm.phase.GasMixture.pop">(GasMixture method)</a>
 </li>
@@ -3253,7 +3413,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.popitem.html#openpnm.phase.BinaryGas.popitem">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.popitem.html#openpnm.network.BodyCenteredCubic.popitem">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.popitem.html#openpnm.network.Bravais.popitem">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.popitem.html#openpnm.network.Cubic.popitem">(Cubic method)</a>
 </li>
@@ -3269,11 +3429,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.popitem.html#openpnm.algorithms.Drainage.popitem">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.popitem.html#openpnm.network.FaceCenteredCubic.popitem">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.popitem.html#openpnm.algorithms.FickianDiffusion.popitem">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.popitem.html#openpnm.algorithms.FourierConduction.popitem">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.popitem.html#openpnm.network.Gabriel.popitem">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.popitem.html#openpnm.phase.GasMixture.popitem">(GasMixture method)</a>
 </li>
@@ -3351,7 +3511,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.pores.html#openpnm.phase.BinaryGas.pores">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.pores.html#openpnm.network.BodyCenteredCubic.pores">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.pores.html#openpnm.network.Bravais.pores">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.pores.html#openpnm.network.Cubic.pores">(Cubic method)</a>
 </li>
@@ -3367,11 +3527,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.pores.html#openpnm.algorithms.Drainage.pores">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.pores.html#openpnm.network.FaceCenteredCubic.pores">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.pores.html#openpnm.algorithms.FickianDiffusion.pores">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.pores.html#openpnm.algorithms.FourierConduction.pores">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.pores.html#openpnm.network.Gabriel.pores">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.pores.html#openpnm.phase.GasMixture.pores">(GasMixture method)</a>
 </li>
@@ -3461,7 +3621,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.props.html#openpnm.phase.BinaryGas.props">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.props.html#openpnm.network.BodyCenteredCubic.props">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.props.html#openpnm.network.Bravais.props">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.props.html#openpnm.network.Cubic.props">(Cubic method)</a>
 </li>
@@ -3477,11 +3637,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.props.html#openpnm.algorithms.Drainage.props">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.props.html#openpnm.network.FaceCenteredCubic.props">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.props.html#openpnm.algorithms.FickianDiffusion.props">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.props.html#openpnm.algorithms.FourierConduction.props">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.props.html#openpnm.network.Gabriel.props">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.props.html#openpnm.phase.GasMixture.props">(GasMixture method)</a>
 </li>
@@ -3608,7 +3768,7 @@
         <li><a href="modules/generated/openpnm.models.geometry.throat_volume.rectangle.html#openpnm.models.geometry.throat_volume.rectangle">(in module openpnm.models.geometry.throat_volume)</a>
 </li>
       </ul></li>
-      <li><a href="modules/generated/openpnm.topotools.reduce_coordination.html#openpnm.topotools.reduce_coordination">reduce_coordination() (in module openpnm.topotools)</a>
+      <li><a href="modules/generated/openpnm.models.network.reduce_coordination.html#openpnm.models.network.reduce_coordination">reduce_coordination() (in module openpnm.models.network)</a>
 </li>
       <li><a href="modules/generated/openpnm.topotools.reflect_base_points.html#openpnm.topotools.reflect_base_points">reflect_base_points() (in module openpnm.topotools)</a>
 </li>
@@ -3617,7 +3777,7 @@
       <ul>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.regenerate_models.html#openpnm.phase.BinaryGas.regenerate_models">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.regenerate_models.html#openpnm.network.BodyCenteredCubic.regenerate_models">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.regenerate_models.html#openpnm.network.Bravais.regenerate_models">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.regenerate_models.html#openpnm.network.Cubic.regenerate_models">(Cubic method)</a>
 </li>
@@ -3631,7 +3791,7 @@
 </li>
         <li><a href="modules/generated/openpnm.core.Domain.regenerate_models.html#openpnm.core.Domain.regenerate_models">(Domain method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.regenerate_models.html#openpnm.network.FaceCenteredCubic.regenerate_models">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.regenerate_models.html#openpnm.network.Gabriel.regenerate_models">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.regenerate_models.html#openpnm.phase.GasMixture.regenerate_models">(GasMixture method)</a>
 </li>
@@ -3641,7 +3801,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.Mixture.regenerate_models.html#openpnm.phase.Mixture.regenerate_models">(Mixture method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.core.ModelsMixin2.regenerate_models.html#openpnm.core.ModelsMixin2.regenerate_models">(ModelsMixin2 method)</a>
+        <li><a href="modules/generated/openpnm.core.ModelMixin2.regenerate_models.html#openpnm.core.ModelMixin2.regenerate_models">(ModelMixin2 method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.regenerate_models.html#openpnm.network.Network.regenerate_models">(Network method)</a>
 </li>
@@ -3739,7 +3899,7 @@
       <ul>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.run_model.html#openpnm.phase.BinaryGas.run_model">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.run_model.html#openpnm.network.BodyCenteredCubic.run_model">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.run_model.html#openpnm.network.Bravais.run_model">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.run_model.html#openpnm.network.Cubic.run_model">(Cubic method)</a>
 </li>
@@ -3753,7 +3913,7 @@
 </li>
         <li><a href="modules/generated/openpnm.core.Domain.run_model.html#openpnm.core.Domain.run_model">(Domain method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.run_model.html#openpnm.network.FaceCenteredCubic.run_model">(FaceCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Gabriel.run_model.html#openpnm.network.Gabriel.run_model">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.run_model.html#openpnm.phase.GasMixture.run_model">(GasMixture method)</a>
 </li>
@@ -3763,7 +3923,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.Mixture.run_model.html#openpnm.phase.Mixture.run_model">(Mixture method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.core.ModelsMixin2.run_model.html#openpnm.core.ModelsMixin2.run_model">(ModelsMixin2 method)</a>
+        <li><a href="modules/generated/openpnm.core.ModelMixin2.run_model.html#openpnm.core.ModelMixin2.run_model">(ModelMixin2 method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Network.run_model.html#openpnm.network.Network.run_model">(Network method)</a>
 </li>
@@ -3861,7 +4021,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.set_label.html#openpnm.phase.BinaryGas.set_label">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.set_label.html#openpnm.network.BodyCenteredCubic.set_label">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.set_label.html#openpnm.network.Bravais.set_label">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.set_label.html#openpnm.network.Cubic.set_label">(Cubic method)</a>
 </li>
@@ -3877,11 +4037,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.set_label.html#openpnm.algorithms.Drainage.set_label">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.set_label.html#openpnm.network.FaceCenteredCubic.set_label">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.set_label.html#openpnm.algorithms.FickianDiffusion.set_label">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.set_label.html#openpnm.algorithms.FourierConduction.set_label">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.set_label.html#openpnm.network.Gabriel.set_label">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.set_label.html#openpnm.phase.GasMixture.set_label">(GasMixture method)</a>
 </li>
@@ -4033,7 +4193,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.setdefault.html#openpnm.phase.BinaryGas.setdefault">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.setdefault.html#openpnm.network.BodyCenteredCubic.setdefault">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.setdefault.html#openpnm.network.Bravais.setdefault">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.setdefault.html#openpnm.network.Cubic.setdefault">(Cubic method)</a>
 </li>
@@ -4049,11 +4209,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.setdefault.html#openpnm.algorithms.Drainage.setdefault">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.setdefault.html#openpnm.network.FaceCenteredCubic.setdefault">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.setdefault.html#openpnm.algorithms.FickianDiffusion.setdefault">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.setdefault.html#openpnm.algorithms.FourierConduction.setdefault">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.setdefault.html#openpnm.network.Gabriel.setdefault">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.setdefault.html#openpnm.phase.GasMixture.setdefault">(GasMixture method)</a>
 </li>
@@ -4171,8 +4331,6 @@
 </li>
         <li><a href="modules/generated/openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders">(in module openpnm.models.geometry.hydraulic_size_factors)</a>
 </li>
-        <li><a href="modules/generated/openpnm.models.geometry.throat_endpoints.spheres_and_cylinders.html#openpnm.models.geometry.throat_endpoints.spheres_and_cylinders">(in module openpnm.models.geometry.throat_endpoints)</a>
-</li>
         <li><a href="modules/generated/openpnm.models.geometry.throat_length.spheres_and_cylinders.html#openpnm.models.geometry.throat_length.spheres_and_cylinders">(in module openpnm.models.geometry.throat_length)</a>
 </li>
       </ul></li>
@@ -4216,8 +4374,6 @@
 </li>
       <li><a href="modules/generated/openpnm.utils.struct_to_dict.html#openpnm.utils.struct_to_dict">struct_to_dict() (in module openpnm.utils)</a>
 </li>
-      <li><a href="modules/generated/openpnm.models.phase.phasedocs.Substitution.html#openpnm.models.phase.phasedocs.Substitution">Substitution (class in openpnm.models.phase.phasedocs)</a>
-</li>
       <li><a href="modules/generated/openpnm.models.misc.summation.html#openpnm.models.misc.summation">summation() (in module openpnm.models.misc)</a>
 </li>
       <li><a href="modules/generated/openpnm.utils.TypedSet.symmetric_difference.html#openpnm.utils.TypedSet.symmetric_difference">symmetric_difference() (TypedSet method)</a>
@@ -4245,7 +4401,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.throats.html#openpnm.phase.BinaryGas.throats">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.throats.html#openpnm.network.BodyCenteredCubic.throats">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.throats.html#openpnm.network.Bravais.throats">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.throats.html#openpnm.network.Cubic.throats">(Cubic method)</a>
 </li>
@@ -4261,11 +4417,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.throats.html#openpnm.algorithms.Drainage.throats">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.throats.html#openpnm.network.FaceCenteredCubic.throats">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.throats.html#openpnm.algorithms.FickianDiffusion.throats">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.throats.html#openpnm.algorithms.FourierConduction.throats">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.throats.html#openpnm.network.Gabriel.throats">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.throats.html#openpnm.phase.GasMixture.throats">(GasMixture method)</a>
 </li>
@@ -4329,7 +4485,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.to_indices.html#openpnm.phase.BinaryGas.to_indices">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.to_indices.html#openpnm.network.BodyCenteredCubic.to_indices">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.to_indices.html#openpnm.network.Bravais.to_indices">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.to_indices.html#openpnm.network.Cubic.to_indices">(Cubic method)</a>
 </li>
@@ -4345,11 +4501,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.to_indices.html#openpnm.algorithms.Drainage.to_indices">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.to_indices.html#openpnm.network.FaceCenteredCubic.to_indices">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.to_indices.html#openpnm.algorithms.FickianDiffusion.to_indices">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.to_indices.html#openpnm.algorithms.FourierConduction.to_indices">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.to_indices.html#openpnm.network.Gabriel.to_indices">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.to_indices.html#openpnm.phase.GasMixture.to_indices">(GasMixture method)</a>
 </li>
@@ -4411,7 +4567,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.to_mask.html#openpnm.phase.BinaryGas.to_mask">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.to_mask.html#openpnm.network.BodyCenteredCubic.to_mask">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.to_mask.html#openpnm.network.Bravais.to_mask">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.to_mask.html#openpnm.network.Cubic.to_mask">(Cubic method)</a>
 </li>
@@ -4427,11 +4583,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.to_mask.html#openpnm.algorithms.Drainage.to_mask">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.to_mask.html#openpnm.network.FaceCenteredCubic.to_mask">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.to_mask.html#openpnm.algorithms.FickianDiffusion.to_mask">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.to_mask.html#openpnm.algorithms.FourierConduction.to_mask">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.to_mask.html#openpnm.network.Gabriel.to_mask">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.to_mask.html#openpnm.phase.GasMixture.to_mask">(GasMixture method)</a>
 </li>
@@ -4533,7 +4689,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.update.html#openpnm.phase.BinaryGas.update">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.update.html#openpnm.network.BodyCenteredCubic.update">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.update.html#openpnm.network.Bravais.update">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.update.html#openpnm.network.Cubic.update">(Cubic method)</a>
 </li>
@@ -4549,11 +4705,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.update.html#openpnm.algorithms.Drainage.update">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.update.html#openpnm.network.FaceCenteredCubic.update">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.update.html#openpnm.algorithms.FickianDiffusion.update">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.update.html#openpnm.algorithms.FourierConduction.update">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.update.html#openpnm.network.Gabriel.update">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.update.html#openpnm.phase.GasMixture.update">(GasMixture method)</a>
 </li>
@@ -4597,8 +4753,6 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.StokesFlow.update.html#openpnm.algorithms.StokesFlow.update">(StokesFlow method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.models.phase.phasedocs.Substitution.update.html#openpnm.models.phase.phasedocs.Substitution.update">(Substitution method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.TransientAdvectionDiffusion.update.html#openpnm.algorithms.TransientAdvectionDiffusion.update">(TransientAdvectionDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.TransientFickianDiffusion.update.html#openpnm.algorithms.TransientFickianDiffusion.update">(TransientFickianDiffusion method)</a>
@@ -4635,7 +4789,7 @@
 </li>
         <li><a href="modules/generated/openpnm.phase.BinaryGas.values.html#openpnm.phase.BinaryGas.values">(BinaryGas method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.BodyCenteredCubic.values.html#openpnm.network.BodyCenteredCubic.values">(BodyCenteredCubic method)</a>
+        <li><a href="modules/generated/openpnm.network.Bravais.values.html#openpnm.network.Bravais.values">(Bravais method)</a>
 </li>
         <li><a href="modules/generated/openpnm.network.Cubic.values.html#openpnm.network.Cubic.values">(Cubic method)</a>
 </li>
@@ -4651,11 +4805,11 @@
 </li>
         <li><a href="modules/generated/openpnm.algorithms.Drainage.values.html#openpnm.algorithms.Drainage.values">(Drainage method)</a>
 </li>
-        <li><a href="modules/generated/openpnm.network.FaceCenteredCubic.values.html#openpnm.network.FaceCenteredCubic.values">(FaceCenteredCubic method)</a>
-</li>
         <li><a href="modules/generated/openpnm.algorithms.FickianDiffusion.values.html#openpnm.algorithms.FickianDiffusion.values">(FickianDiffusion method)</a>
 </li>
         <li><a href="modules/generated/openpnm.algorithms.FourierConduction.values.html#openpnm.algorithms.FourierConduction.values">(FourierConduction method)</a>
+</li>
+        <li><a href="modules/generated/openpnm.network.Gabriel.values.html#openpnm.network.Gabriel.values">(Gabriel method)</a>
 </li>
         <li><a href="modules/generated/openpnm.phase.GasMixture.values.html#openpnm.phase.GasMixture.values">(GasMixture method)</a>
 </li>
@@ -4795,35 +4949,60 @@
 
 
 
-              </article>
-              
-
-              
+            </article>
+            
+            
+            
           </div>
           
-      </div>
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
     </div>
+  </div>
 
   
-  
+    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
 
-<footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    <p class="copyright">
+    
+<p class="copyright">
+
     &copy; Copyright 2022, PMEAL.<br>
+
 </p>
+
   </div>
   
   <div class="footer-item">
-    <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
-</p>
+    
   </div>
   
 </div>
-</footer>
+  </footer>
   </body>
 </html>

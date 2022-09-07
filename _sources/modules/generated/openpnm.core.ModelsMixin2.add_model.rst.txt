@@ -1,8 +1,0 @@
-:orphan:
-
-add_model
-===================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: ModelsMixin2.add_model

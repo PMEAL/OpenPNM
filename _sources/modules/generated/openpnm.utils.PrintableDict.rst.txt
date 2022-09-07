@@ -20,6 +20,7 @@ PrintableDict
             PrintableDict.get
             PrintableDict.items
             PrintableDict.keys
+            PrintableDict.move_to_end
             PrintableDict.pop
             PrintableDict.popitem
             PrintableDict.setdefault

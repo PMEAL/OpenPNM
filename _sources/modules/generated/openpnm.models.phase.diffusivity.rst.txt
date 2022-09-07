@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-diffusivity
+Diffusivity
 ===========
 
 .. automodule:: openpnm.models.phase.diffusivity

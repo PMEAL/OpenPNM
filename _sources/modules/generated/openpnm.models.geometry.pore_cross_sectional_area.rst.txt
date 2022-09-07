@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-pore\_cross\_sectional\_area
+Pore\_cross\_sectional\_area
 ============================
 
 .. automodule:: openpnm.models.geometry.pore_cross_sectional_area

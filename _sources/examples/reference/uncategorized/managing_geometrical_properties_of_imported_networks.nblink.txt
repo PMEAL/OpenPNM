@@ -1,0 +1,3 @@
+{    
+    "path": "../../../../examples/reference/uncategorized/managing_geometrical_properties_of_imported_networks.ipynb"
+}

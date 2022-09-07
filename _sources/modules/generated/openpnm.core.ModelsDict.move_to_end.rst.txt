@@ -1,0 +1,8 @@
+:orphan:
+
+move_to_end
+===================================
+
+.. currentmodule:: openpnm.core
+
+.. automethod:: ModelsDict.move_to_end

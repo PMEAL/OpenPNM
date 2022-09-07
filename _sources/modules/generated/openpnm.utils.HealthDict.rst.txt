@@ -20,6 +20,7 @@ HealthDict
             HealthDict.get
             HealthDict.items
             HealthDict.keys
+            HealthDict.move_to_end
             HealthDict.pop
             HealthDict.popitem
             HealthDict.setdefault

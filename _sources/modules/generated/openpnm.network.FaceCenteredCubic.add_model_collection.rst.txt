@@ -1,8 +1,0 @@
-:orphan:
-
-add_model_collection
-======================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: FaceCenteredCubic.add_model_collection

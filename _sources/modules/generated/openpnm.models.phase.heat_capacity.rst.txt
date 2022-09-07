@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-heat\_capacity
+Heat\_capacity
 ==============
 
 .. automodule:: openpnm.models.phase.heat_capacity

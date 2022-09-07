@@ -1,0 +1,3 @@
+{    
+    "path": "../../../../examples/tutorials/network/adding_boundary_pores.ipynb"
+}

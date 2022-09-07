@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-pore\_seed
+Pore\_seed
 ==========
 
 .. automodule:: openpnm.models.geometry.pore_seed

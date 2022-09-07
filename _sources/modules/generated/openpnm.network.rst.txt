@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-network
+Network
 =======
 
 .. automodule:: openpnm.network
@@ -14,6 +14,18 @@ network
    
 
    
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      from_csv
+      from_jsongraph
+      from_marock
+      from_networkx
+      from_pergeos
+      from_porespy
    
    
 
@@ -26,13 +38,13 @@ network
       :toctree:
 
    
-      BodyCenteredCubic
+      Bravais
       Cubic
       CubicTemplate
       Delaunay
       DelaunayVoronoiDual
       Demo
-      FaceCenteredCubic
+      Gabriel
       Network
       Voronoi
    

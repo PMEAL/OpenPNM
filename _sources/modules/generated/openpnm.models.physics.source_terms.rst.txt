@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-source\_terms
+Source\_terms
 =============
 
 .. automodule:: openpnm.models.physics.source_terms

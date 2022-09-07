@@ -1,8 +1,0 @@
-:orphan:
-
-regenerate_models
-===========================================
-
-.. currentmodule:: openpnm.core
-
-.. automethod:: ModelsMixin2.regenerate_models

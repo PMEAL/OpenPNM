@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-liquid
+Liquid
 ======
 
 .. automodule:: openpnm.models.collections.phase.liquid

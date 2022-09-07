@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-phase
+Phase
 =====
 
 .. automodule:: openpnm.models.collections.phase

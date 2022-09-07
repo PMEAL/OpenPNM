@@ -1,69 +1,83 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>openpnm.phase._mixture &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
-<script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
-</script>
-
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
 
-
+  
   <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
-
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/openpnm/phase/_mixture';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-    <div class="bd-header-announcement container-fluid" id="banner">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
       
-
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
     </div>
+  </div>
 
-    
-    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
-
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
   <div id="navbar-start">
     
     
@@ -71,70 +85,94 @@
 
 
 <a class="navbar-brand logo" href="../../../index.html">
+
   
   
   
   
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+  
+  
+  
+
+  
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
   
   
 </a>
     
   </div>
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="fas fa-bars"></span>
-  </button>
-
   
-  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+  <div class=" navbar-header-items">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../installation.html">
-  Installation
- </a>
-</li>
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../modules/index.html">
-  Module Reference
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../_examples/index.html">
-  Examples
- </a>
-</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
 
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-</ul>
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
       </div>
       
     </div>
 
     <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
       
       <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -144,52 +182,180 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
       </div>
       
     </div>
   </div>
-</div>
-    </nav>
-    
-
-    <div class="bd-container container-xl">
-      <div class="bd-container__inner row">
-          
-
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    
-  </div>
-</nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
 
 
-          
-
-
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
   
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
 </div>
+  </nav>
+  
 
-
-          
-          
-          <div class="bd-content col-12 col-md-9 col-xl-7">
-              
-              <article class="bd-article" role="main">
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
                 
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
   <h1>Source code for openpnm.phase._mixture</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -197,7 +363,6 @@
 <span class="kn">from</span> <span class="nn">openpnm.models.phase.mixtures</span> <span class="kn">import</span> <span class="n">mole_summation</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">standard_liquid_mixture</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">standard_gas_mixture</span>
-<span class="kn">from</span> <span class="nn">openpnm.models.collections.phase</span> <span class="kn">import</span> <span class="n">binary_gas_mixture</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">HealthDict</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">Workspace</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">get_printable_props</span><span class="p">,</span> <span class="n">get_printable_labels</span>
@@ -226,15 +391,14 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Mixture</span><span class="p">(</span><span class="n">Phase</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates ``Phase`` object that represents a multicomponent mixture</span>
-<span class="sd">    consisting of a given list of individual ``Species`` objects as</span>
-<span class="sd">    components.</span>
+<span class="sd">    Creates Phase object that represents a multicomponent mixture</span>
+<span class="sd">    consisting of a given list of individual phase objects as components.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(Phase.parameters)s</span>
-<span class="sd">    components : list of ``Species`` objects</span>
-<span class="sd">        A list of all components that constitute the mixture</span>
+<span class="sd">    components : list</span>
+<span class="sd">        A list of all components that constitute this mixture</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -409,42 +573,9 @@
     <span class="n">components</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_comps</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_comps</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Mixture.add_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.add_comp.html#openpnm.phase.Mixture.add_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method to add a component</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        component : Species object</span>
-<span class="sd">            The pure ``Species`` object to add</span>
-<span class="sd">        mole_fraction : float or array_like</span>
-<span class="sd">            The mole fraction of the given component in each pore. Can either</span>
-<span class="sd">            be a scalar which is applied to every pore, or an Np-long</span>
-<span class="sd">            ``ndarray`` with values for each pore.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This method just adds `&#39;pore.mole_fraction.&lt;component.name&gt;&#39;`</span>
-<span class="sd">        to the `Mixture` dictionary, and assigns the given `mole_fraction`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction.&#39;</span> <span class="o">+</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">mole_fraction</span></div>
 
 <div class="viewcode-block" id="Mixture.remove_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.remove_comp.html#openpnm.phase.Mixture.remove_comp">[docs]</a>    <span class="k">def</span> <span class="nf">remove_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method to remove a component from the mixture</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        component : Species object or str name</span>
-<span class="sd">            The `Species` to remove from the mixture. Can either be a handle to</span>
-<span class="sd">            the object, or the object&#39;s `name`.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This method just calls</span>
-<span class="sd">        `del mixture[&#39;pore.mole_fraction.&lt;component.name&gt;&#39;]` to remove the</span>
-<span class="sd">        given component.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">):</span>
             <span class="n">component</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span>
         <span class="k">try</span><span class="p">:</span>
@@ -454,18 +585,17 @@
 
 <div class="viewcode-block" id="Mixture.check_mixture_health"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.check_mixture_health.html#openpnm.phase.Mixture.check_mixture_health">[docs]</a>    <span class="k">def</span> <span class="nf">check_mixture_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks the state of health of the mixture</span>
+<span class="sd">        Checks the &quot;health&quot; of the mixture</span>
 
 <span class="sd">        Calculates the mole fraction of all species in each pore and returns</span>
-<span class="sd">        an list of where values are too low or too high,</span>
+<span class="sd">        an list of where values are too low or too high</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        health : dict</span>
 <span class="sd">            A HealthDict object containing lists of locations where the mole</span>
 <span class="sd">            fractions are not unity. One value indicates locations that are</span>
-<span class="sd">            too high, and another where they are too low. This `dict` evaluates</span>
-<span class="sd">            to `True` if all items are healthy.</span>
+<span class="sd">            too high, and another where they are too low.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">HealthDict</span><span class="p">()</span>
@@ -482,12 +612,6 @@
 
 
 <div class="viewcode-block" id="LiquidMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.LiquidMixture.html#openpnm.phase.LiquidMixture">[docs]</a><span class="k">class</span> <span class="nc">LiquidMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper class for creating a liquid mixture.</span>
-
-<span class="sd">    This class has a helper method `x` which allows for setting and getting</span>
-<span class="sd">    of compositions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="LiquidMixture.x"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.LiquidMixture.x.html#openpnm.phase.LiquidMixture.x">[docs]</a>    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -524,12 +648,6 @@
 
 
 <div class="viewcode-block" id="GasMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.GasMixture.html#openpnm.phase.GasMixture">[docs]</a><span class="k">class</span> <span class="nc">GasMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrapper class for creating a gas mixture.</span>
-
-<span class="sd">    This class has a helper method `y` which allows for setting and getting</span>
-<span class="sd">    of compositions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GasMixture.y"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.GasMixture.y.html#openpnm.phase.GasMixture.y">[docs]</a>    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -566,43 +684,15 @@
 
 
 <div class="viewcode-block" id="BinaryGas"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.BinaryGas.html#openpnm.phase.BinaryGas">[docs]</a><span class="k">class</span> <span class="nc">BinaryGas</span><span class="p">(</span><span class="n">GasMixture</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A `GasMixture` class that has a predefined set of models for computing the</span>
-<span class="sd">    properties of the mixture as a function of composition.</span>
 
-<span class="sd">    The number of components is capped at 2 (i.e. binary) since the calculation</span>
-<span class="sd">    of diffusion coefficients using the Lennard-Jones method in the `chemicals`</span>
-<span class="sd">    package only works for binary mixtures.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">binary_gas_mixture</span><span class="p">)</span>
-        <span class="c1"># Running models doesn&#39;t make sense as compositions are not set yet</span>
-        <span class="c1"># self.regenerate_models()</span>
-
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Binary mixtures cannot have more than&quot;</span> \
-                            <span class="s2">&quot; 2 components, remove one first&quot;</span>
-                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="k">pass</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+<div class="viewcode-block" id="BinaryGas.add_comp"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.BinaryGas.add_comp.html#openpnm.phase.BinaryGas.add_comp">[docs]</a>    <span class="k">def</span> <span class="nf">add_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Binary mixtures cannot have more than 2 components&quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;, remove one first&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_comp</span><span class="p">(</span><span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">mole_fraction</span><span class="o">=</span><span class="n">mole_fraction</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="StandardLiquidMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.StandardLiquidMixture.html#openpnm.phase.StandardLiquidMixture">[docs]</a><span class="k">class</span> <span class="nc">StandardLiquidMixture</span><span class="p">(</span><span class="n">LiquidMixture</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A `LiquidMixture` class that also has a predefined suite of models for</span>
-<span class="sd">    computing the properties of the mixture as a function of composition.</span>
-
-<span class="sd">    The models are taken from the `chemicals` package and can be viewed with</span>
-<span class="sd">    `print(liq_mix.models)`, where `liq_mix` is an instance of this class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -612,13 +702,6 @@
 
 
 <div class="viewcode-block" id="StandardGasMixture"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.StandardGasMixture.html#openpnm.phase.StandardGasMixture">[docs]</a><span class="k">class</span> <span class="nc">StandardGasMixture</span><span class="p">(</span><span class="n">GasMixture</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A `GasMixture` class that also has a predefined suite of models for</span>
-<span class="sd">    computing the properties of the mixture as a function of composition.</span>
-
-<span class="sd">    The models are taken from the `chemicals` package and can be viewed with</span>
-<span class="sd">    `print(gas_mix.models)`, where `gas_mix` is an instance of this class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -627,35 +710,60 @@
         <span class="c1"># self.regenerate_models()</span>
 </pre></div>
 
-              </article>
-              
-
-              
+            </article>
+            
+            
+            
           </div>
           
-      </div>
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
     </div>
+  </div>
 
   
-  
+    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
 
-<footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    <p class="copyright">
+    
+<p class="copyright">
+
     &copy; Copyright 2022, PMEAL.<br>
+
 </p>
+
   </div>
   
   <div class="footer-item">
-    <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
-</p>
+    
   </div>
   
 </div>
-</footer>
+  </footer>
   </body>
 </html>

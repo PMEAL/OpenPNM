@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-surface\_tension
+Surface\_tension
 ================
 
 .. automodule:: openpnm.models.phase.surface_tension

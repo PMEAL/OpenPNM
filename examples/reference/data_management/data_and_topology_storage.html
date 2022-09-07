@@ -1,0 +1,1711 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Storage of Network Data and Topology &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/data_management/data_and_topology_storage';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Data Exchange Between Objects" href="data_exchange_between_objects.html" />
+    <link rel="prev" title="Overview of Inheritance" href="../class_inheritance/overview_of_inheritance.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/concise_overview_of_openpnm.html">
+   Concise Overview of OpenPNM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/intro_to_openpnm_basic.html">
+   Tutorial 1 - Basic
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/intro_to_openpnm_intermediate.html">
+   Tutorial 2 - Intermediate
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/quick_plotting_networks.html">
+   Quick Plotting Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/adding_boundary_pores.html">
+   Adding Boundary Pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/coupling_continuum_regions_with_pore_networks.html">
+   Stitch Two Networks with Different Spacing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/cubic_networks.html">
+   Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/cubic_templates.html">
+   Cubic Template
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/dual_cubic_lattices.html">
+   Dual Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/finding_neighbor_pores_and_throats.html">
+   Querying the Topology to Find Neighbors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/manually_adding_pores_and_throats.html">
+   Manually Adding and Removing Pores and Throats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/random_networks_based_on_delaunay_and_voronoi_tessellations.html">
+   Delaunay and Voronoi Tessalation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/stitching_and_merging_networks_together.html">
+   Stitching and Merging Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/geometry/adjusting_pore_size_distributions.html">
+   Adjusting Pore Size Distributions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/geometry/stick_and_ball.html">
+   The Stick and Ball Geometry
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/phase/empty_example.html">
+   Empty example!
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/physics/pore_scale_models.html">
+   Pore Scale Models
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/A_ordinary_percolation.html">
+   Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/B_invasion_percolation.html">
+   Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/C_mixed_invasion_percolation.html">
+   Mixed Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/D_meniscus_model_comparison.html">
+   Meniscus Model Comparison
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/capillary_pressure_curves.html">
+   Mercury Intrusion Porosimetry
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/relative_diffusivity.html">
+   Relative Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/relative_permeability_metrics.html">
+   Relative Permeability
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/continuum_heat_transfer.html">
+   Fourier Conduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/deep_dive_into_conductance_models.html">
+   Deep Dive into Conductance Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/diffusion_with_concentration_dependent_diffusivity.html">
+   Fickian Diffusion with Variable Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/fickian_diffusion_and_tortuosity.html">
+   Fickian Diffusion and Tortuosity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/stokes_flow_and_permeability_tensor.html">
+   Stokes Flow and Permeability Tensor
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/reactive/diffusion_with_source_and_sink_terms.html">
+   Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_advection_diffusion.html">
+   Transient Advection-Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_fickian_diffusion.html">
+   Transient Fickian Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_fickian_diffusion_with_reaction.html">
+   Transient Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/multiphysics/advection_diffusion.html">
+   Advection-Diffusion
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/fibrous_media_based_on_voronoi_tessellation.html">
+   Fibrous Media with Voronoi Tessellations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/loading_statoil_finding_permeability.html">
+   Part 1: Import Networks from Statoil Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/maze_solver.html">
+   Maze Solver
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/ordinary_percolation.html">
+   Simulating Drainage with Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/predicting_effective_permeability_of_berea.html">
+   Predicting Permeability of Berea
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../class_inheritance/creating_a_custom_phase.html">
+   Creating a Custom Phase
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../class_inheritance/overview_of_inheritance.html">
+   Overview of Inheritance
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Storage of Network Data and Topology
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="data_exchange_between_objects.html">
+   Data Exchange Between Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="interleaving_data.html">
+   Interleaving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="using_and_creating_labels.html">
+   Using and Creating Labels
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../settings/deep_dive_into_the_settings_attribute.html">
+   Overview of the Settings Attribute
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../settings/understanding_basic_transport_settings.html">
+   Understanding Basic Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../settings/understanding_reactive_transport_settings.html">
+   Understanding Reactive Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../settings/understanding_transient_transport_settings.html">
+   Understanding Transient Transport Settings
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../solvers/available_matrix_solvers.html">
+   Available Matrix Solvers
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../workspace/overview_of_subdomains.html">
+   Overview of Subdomains
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../workspace/overview_of_workspace_and_projects.html">
+   The Workspace and Projects
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/intro_to_openpnm_advanced.html">
+   Tutorial 3 - Advanced
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/managing_geometrical_properties_of_imported_networks.html">
+   Geometry of Imported Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/overview_of_domain_syntax.html">
+   OpenPNM Version 3: The new @domain syntax
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/overview_of_shape_factors.html">
+   Overview of Shape Factors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/the_problem_with_domain_length_and_area.html">
+   Problem with Domain Area and Length
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/working_with_extracted_networks.html">
+   Working with Extracted Networks
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 0;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Storage-of-Network-Data-and-Topology">
+<h1>Storage of Network Data and Topology<a class="headerlink" href="#Storage-of-Network-Data-and-Topology" title="Permalink to this headline">#</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Spreadsheet-Analogy">
+<h2>Spreadsheet Analogy<a class="headerlink" href="#Spreadsheet-Analogy" title="Permalink to this headline">#</a></h2>
+<p>The best analogy for explaining data storage in OpenPNM is the humble spreadsheet. According to this analogy, each pore (or throat) corresponds to a row and each property corresponds to a column.</p>
+<p>Consider the following network with 4 pores, 3 throats:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [2], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> pn <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>network<span style="color: rgb(98,98,98)">.</span>Cubic(shape<span style="color: rgb(98,98,98)">=</span>[<span style="color: rgb(98,98,98)">4</span>, <span style="color: rgb(98,98,98)">1</span>, <span style="color: rgb(98,98,98)">1</span>])
+<span class="ansi-green-fg">----&gt; 2</span> geo <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">geometry</span><span style="color: rgb(98,98,98)">.</span>SpheresAndCylinders(network<span style="color: rgb(98,98,98)">=</span>pn, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>Ps, throats<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>Ts)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;geometry&#39;
+</pre></div></div>
+</div>
+<p>Let’s use <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to express the geometric properties as a ‘spreadsheet’:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="c1"># Let&#39;s pull out only the pore properties from the geometry</span>
+<span class="n">pore_data_sheet</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">i</span><span class="p">:</span> <span class="n">geo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">geo</span><span class="o">.</span><span class="n">props</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">)})</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [3], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> <span class="ansi-bold" style="color: rgb(0,0,255)">pandas</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> <span class="ansi-bold" style="color: rgb(0,0,255)">pd</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(95,135,135)"># Let&#39;s pull out only the pore properties from the geometry</span>
+<span class="ansi-green-fg">----&gt; 3</span> pore_data_sheet <span style="color: rgb(98,98,98)">=</span> pd<span style="color: rgb(98,98,98)">.</span>DataFrame({i: geo[i] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> i <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span class="ansi-yellow-bg">geo</span><span style="color: rgb(98,98,98)">.</span>props(element<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore</span><span style="color: rgb(175,0,0)">&#39;</span>)})
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geo&#39; is not defined
+</pre></div></div>
+</div>
+<p>We can now view this ‘spreadsheet’:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pore_data_sheet</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [4], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">pore_data_sheet</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;pore_data_sheet&#39; is not defined
+</pre></div></div>
+</div>
+<p>The properties are the ‘column’ names, such as ‘pore.area’, and the rows correspond to the pore index, so ‘pore 0’ has an area of 0.176763.</p>
+<p>One could also extract an entire column using:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pore_area_column</span> <span class="o">=</span> <span class="n">pore_data_sheet</span><span class="p">[</span><span class="s1">&#39;pore.cross_sectional_area&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pore_area_column</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [5], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> pore_area_column <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">pore_data_sheet</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.cross_sectional_area</span><span style="color: rgb(175,0,0)">&#39;</span>]
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(pore_area_column)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;pore_data_sheet&#39; is not defined
+</pre></div></div>
+</div>
+<p>And then access individual elements:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pore_area_column</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [6], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">pore_area_column</span>[<span style="color: rgb(98,98,98)">0</span>])
+
+<span class="ansi-red-fg">NameError</span>: name &#39;pore_area_column&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+<section id="Numpy-Arrays-Stored-in-Dictionaries">
+<h2>Numpy Arrays Stored in Dictionaries<a class="headerlink" href="#Numpy-Arrays-Stored-in-Dictionaries" title="Permalink to this headline">#</a></h2>
+<p>Although the spreadsheet analogy described above is very close to reality, OpenPNM does not actually use <code class="docutils literal notranslate"><span class="pre">pandas</span></code> DataFrames, or any other spreadsheet data structure. Instead, it uses the basic Python <em>dictionary</em>, filled with Numpy arrays to accomplish a nearly identical behavior, but with a bit more flexibility.</p>
+<p>Each OpenPNM object (e.g. networks, algorithms, etc) is actually a customized (a.k.a. <a class="reference external" href="https://realpython.com/python-data-classes/#inheritance">subclassed</a>) Python <a class="reference external" href="https://realpython.com/python-dicts/">dictionary</a> which allows data to be stored and accessed by name, with a syntax like <code class="docutils literal notranslate"><span class="pre">network['pore.diameter']</span></code>. This is analogous (actually indistinguishable) to extracting a column from a spreadsheet as outlined above. Once the data array is retrieved from the dictionary, it is then a
+simple matter of working with a Numpy array, which use familiar array indexing, so the diameter of pore 0 is found be accessing element 0 of the array stored under the ‘pore.diameter’ key. This is elaborated upon below.</p>
+<section id="Quick-Overview-of-Dictionaries">
+<h3>Quick Overview of Dictionaries<a class="headerlink" href="#Quick-Overview-of-Dictionaries" title="Permalink to this headline">#</a></h3>
+<p>The internet contains many <a class="reference external" href="https://realpython.com/python-dicts/">tutorials</a> on Python “dicts”. To summarize, they are general purpose data contains where <em>items</em> can be stored by name, as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Create an empty dict</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">&#39;item 1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;a string&#39;</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">&#39;item 2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># a number</span>
+<span class="n">a</span><span class="p">[</span><span class="s1">&#39;another item&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Even other dicts!</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;item 1&#39;: &#39;a string&#39;, &#39;item 2&#39;: 4, &#39;another item&#39;: {}}
+</pre></div></div>
+</div>
+<p>Data can be accessed by name, which is called a “key”:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">&#39;item 2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+4
+</pre></div></div>
+</div>
+<p>And all keys on a given dictionary can be retrieved as a list:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;item 1&#39;, &#39;item 2&#39;, &#39;another item&#39;])
+</pre></div></div>
+</div>
+<blockquote>
+<div><p>Following the spreadsheet analogy, the dictionary is the sheet and the keys are the column names.</p>
+</div></blockquote>
+</section>
+<section id="Quick-Overview-of-Numpy-Arrays">
+<h3>Quick Overview of Numpy Arrays<a class="headerlink" href="#Quick-Overview-of-Numpy-Arrays" title="Permalink to this headline">#</a></h3>
+<p>OpenPNM uses <em>dictionaries</em> or <code class="docutils literal notranslate"><span class="pre">dict</span></code>’s to store an assortment of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/">Numpy arrays</a> that each contain a specific type of pore or throat data.</p>
+<p>There are many <a class="reference external" href="https://realpython.com/numpy-array-programming/">tutorials</a> on the internet explaining the various features and benefits of Numpy arrays. To summarize, they are familiar to numerical arrays in any other language.</p>
+<p>Let’s extract a Numpy array from the <code class="docutils literal notranslate"><span class="pre">geo</span></code> object and play with it:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">geo</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [10], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> a <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">geo</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>]
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(a)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geo&#39; is not defined
+</pre></div></div>
+</div>
+<p>It’s possible to extract several elements at once:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [11], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">a</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">1</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">3</span><span class="ansi-yellow-bg">]</span>
+
+<span class="ansi-red-fg">TypeError</span>: unhashable type: &#39;slice&#39;
+</pre></div></div>
+</div>
+<p>And easy to multiply all values in the array by a scalar or by another array of the same size, which defaults to element-wise multiplication:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [12], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">a</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">2</span>)
+
+<span class="ansi-red-fg">TypeError</span>: unsupported operand type(s) for *: &#39;dict&#39; and &#39;int&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [13], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">a</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">a</span>)
+
+<span class="ansi-red-fg">TypeError</span>: unsupported operand type(s) for *: &#39;dict&#39; and &#39;dict&#39;
+</pre></div></div>
+</div>
+<blockquote>
+<div><p>Referring back to the spreadsheet analogy, the Numpy arrays represent the actual cells of the sheet, with the array index corresponding to the row number.</p>
+</div></blockquote>
+</section>
+<section id="Rules-to-Maintain-Data-Integrity">
+<h3>Rules to Maintain Data Integrity<a class="headerlink" href="#Rules-to-Maintain-Data-Integrity" title="Permalink to this headline">#</a></h3>
+<p>Several rules have been implemented to control the integrity of the data:</p>
+<section id="All-Values-are-Converted-to-Numpy-Arrays">
+<h4>All Values are Converted to Numpy Arrays<a class="headerlink" href="#All-Values-are-Converted-to-Numpy-Arrays" title="Permalink to this headline">#</a></h4>
+<p>Only Numpy arrays can be stored in an OpenPNM object, and any data that is written into one of the OpenPNM object dicionaries will be converted to a Numpy array. This is done to ensure that all mathematically operations throughout the code can be consistently done using vectorization. Note that any subclasses of Numpy arrays, such as Dask arrays or Unyt arrays are also acceptable.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.list&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div></div>
+</div>
+<p>This illustrates that the basic python list-type has been converted to a Numpy array when stored in the dictionary</p>
+</section>
+<section id="Any-Scalars-are-Expanded-to-a-Full-Length-Vector">
+<h4>Any Scalars are Expanded to a Full-Length Vector<a class="headerlink" href="#Any-Scalars-are-Expanded-to-a-Full-Length-Vector" title="Permalink to this headline">#</a></h4>
+<p>For the sake of consistency only arrays of length <em>Np</em> or <em>Nt</em> are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either <em>Np</em> or <em>Nt</em> long, depending on the name of the array.. This effectively applies the scalar value to all locations in the network.**</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0 0 0 0]
+</pre></div></div>
+</div>
+<p>Note how the scalar value has been cast to an array of 4 elements long, one for each pore in the network.</p>
+</section>
+<section id="Dictionary-Keys-Must-Start-With-‘pore’-or-‘throat’">
+<h4>Dictionary Keys Must Start With ‘pore’ or ‘throat’<a class="headerlink" href="#Dictionary-Keys-Must-Start-With-‘pore’-or-‘throat’" title="Permalink to this headline">#</a></h4>
+<p>All array names must begin with either <em>‘pore.’</em> or <em>‘throat.’</em> which serves to identify the type of information they contain.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;foo.bar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This will throw an exception since the dict name cannot start with foo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+This will throw an exception since the dict name cannot start with foo
+</pre></div></div>
+</div>
+</section>
+<section id="Nesting-Dictionary-Names-are-Allowed">
+<h4>Nesting Dictionary Names are Allowed<a class="headerlink" href="#Nesting-Dictionary-Names-are-Allowed" title="Permalink to this headline">#</a></h4>
+<p>It’s possible to create nested properties by assigning a dictionary containing numpy arrays</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;species_A&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;species_B&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;species_A&#39;: array([0, 0, 0, 0]), &#39;species_B&#39;: array([1, 1, 1, 1])}
+</pre></div></div>
+</div>
+<p>The above rule about expanding the scalar values to a numpy array have been applied.</p>
+<p>Requesting the top level of dictionary key returns both concentrations, but they can accessed directly too:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration.species_A&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0 0 0 0]
+</pre></div></div>
+</div>
+<p>Unfortunately, the following does not work:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="s1">&#39;species_A&#39;</span><span class="p">]</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The request for pore.concentration returns a dictionary with both arrays, &#39;</span>
+    <span class="o">+</span> <span class="s1">&#39;but the entire property name is still used as the key. &#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Boolean-Arrays-are-Treated-as-Labels">
+<h4>Boolean Arrays are Treated as Labels<a class="headerlink" href="#Boolean-Arrays-are-Treated-as-Labels" title="Permalink to this headline">#</a></h4>
+<p>Any Boolean data will be treated as a <em>label</em> while all other numerical data is treated as a <em>property</em>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;pore.label&#39;, &#39;pore.left&#39;, &#39;pore.right&#39;, &#39;pore.surface&#39;]
+</pre></div></div>
+</div>
+<p>You can see that <code class="docutils literal notranslate"><span class="pre">'pore.label'</span></code> shows up in this list automatically since it is of Boolean type. For more information on using labels see <a class="reference internal" href="using_and_creating_labels.html"><span class="doc">the tutorial on Using and Creating Labels</span></a>.</p>
+</section>
+<section id="Dictionary-Keys-with-a-Leading-Underscore-are-Hidden">
+<h4>Dictionary Keys with a Leading Underscore are Hidden<a class="headerlink" href="#Dictionary-Keys-with-a-Leading-Underscore-are-Hidden" title="Permalink to this headline">#</a></h4>
+<p>Following the Python convention, if a piece of data is not really meant to be seen or used by the user, it can be pre-pended with an underscore and it will no appear in any output.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore._hidden&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">props</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+1     : pore.concentration.species_A
+2     : pore.concentration.species_B
+3     : pore.coords
+4     : pore.test
+5     : throat.conns
+6     : throat.list
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'pore._hidden'</span></code> key does not show up in this list.</p>
+</section>
+</section>
+</section>
+<section id="Representing-Topology">
+<h2>Representing Topology<a class="headerlink" href="#Representing-Topology" title="Permalink to this headline">#</a></h2>
+<p>Consider the following simple random network:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="mf">1.5</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">pts</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [22], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> np<span style="color: rgb(98,98,98)">.</span>random<span style="color: rgb(98,98,98)">.</span>seed(<span style="color: rgb(98,98,98)">10</span>)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> pts <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>random<span style="color: rgb(98,98,98)">.</span>rand(<span style="color: rgb(98,98,98)">5</span>, <span style="color: rgb(98,98,98)">2</span>)<span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">1.5</span>
+<span class="ansi-green-fg">----&gt; 3</span> pn <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">network</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">Delaunay</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">points</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">pts</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">shape</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">1</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">1</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">0</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">~/work/OpenPNM/OpenPNM/openpnm/network/_delaunay.py:57</span>, in <span class="ansi-cyan-fg">Delaunay.__init__</span><span class="ansi-blue-fg">(self, shape, points, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">     54</span> points <span style="color: rgb(98,98,98)">=</span> tools<span style="color: rgb(98,98,98)">.</span>parse_points(shape<span style="color: rgb(98,98,98)">=</span>shape, points<span style="color: rgb(98,98,98)">=</span>points)
+<span class="ansi-green-intense-fg ansi-bold">     55</span> net, tri <span style="color: rgb(98,98,98)">=</span> delaunay(points<span style="color: rgb(98,98,98)">=</span>points, shape<span style="color: rgb(98,98,98)">=</span>shape,
+<span class="ansi-green-intense-fg ansi-bold">     56</span>                     node_prefix<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore</span><span style="color: rgb(175,0,0)">&#39;</span>, edge_prefix<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">---&gt; 57</span> Ps <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">isoutside</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">net</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">shape</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">shape</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     58</span> net <span style="color: rgb(98,98,98)">=</span> trim_nodes(g<span style="color: rgb(98,98,98)">=</span>net, inds<span style="color: rgb(98,98,98)">=</span>Ps)
+<span class="ansi-green-intense-fg ansi-bold">     59</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>update(net)
+
+File <span class="ansi-green-fg">~/work/OpenPNM/OpenPNM/openpnm/_skgraph/tools/_funcs.py:196</span>, in <span class="ansi-cyan-fg">isoutside</span><span class="ansi-blue-fg">(g, shape, rtol)</span>
+<span class="ansi-green-intense-fg ansi-bold">    194</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> <span style="color: rgb(0,135,0)">len</span>(shape) <span style="color: rgb(98,98,98)">==</span> <span style="color: rgb(98,98,98)">3</span>:  <span style="color: rgb(95,135,135)"># Rectilinear</span>
+<span class="ansi-green-intense-fg ansi-bold">    195</span>     thresh <span style="color: rgb(98,98,98)">=</span> tolerance<span style="color: rgb(98,98,98)">*</span>shape
+<span class="ansi-green-fg">--&gt; 196</span>     Ps1 <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>any(<span class="ansi-yellow-bg">coords</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">&gt;</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">shape</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">+</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">thresh</span><span class="ansi-yellow-bg">)</span>, axis<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1</span>)
+<span class="ansi-green-intense-fg ansi-bold">    197</span>     Ps2 <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>any(coords <span style="color: rgb(98,98,98)">&lt;</span> (<span style="color: rgb(98,98,98)">0</span> <span style="color: rgb(98,98,98)">-</span> thresh), axis<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1</span>)
+<span class="ansi-green-intense-fg ansi-bold">    198</span>     Ps <span style="color: rgb(98,98,98)">=</span> Ps1 <span style="color: rgb(98,98,98)">+</span> Ps2
+
+<span class="ansi-red-fg">ValueError</span>: operands could not be broadcast together with shapes (5,2) (3,)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [23], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">topotools</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">plot_tutorial</span>(pn)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_tutorial&#39;
+</pre></div></div>
+</div>
+<p>The basic premise of how OpenPNM stores topology can be stated in 1 sentence:</p>
+<p><strong>The pores on either end of a throat are just another property to be stored, along with diameter, length, etc.</strong></p>
+<p>In other words, referring to the above diagram, throat No. 5 has pores 3 and 4 on it’s ends. Using the spreadsheet analogy, this implies a new colunm that stores the pair of pores connected by each throat. OpenPNM calls this property <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[0 1]
+ [1 2]
+ [2 3]]
+</pre></div></div>
+</div>
+<p>Inspection of this <em>Nt-by-2</em> array shows that each row contains the pore indices corresponding to that throat.</p>
+<section id="Sparse-Adjacency-Matrices">
+<h3>Sparse Adjacency Matrices<a class="headerlink" href="#Sparse-Adjacency-Matrices" title="Permalink to this headline">#</a></h3>
+<p>The topology storage scheme described above is actually an <a class="reference external" href="http://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a>, in a <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">sparse storage format</a> known as IJV or COO.</p>
+<p>An adjacency matrix is a <em>Np</em>-by-<em>Np</em> matrix with non-zero values at location (<em>i</em>, <em>j</em>) indicating that pores <em>i</em> and <em>j</em> are connected.</p>
+<p>An important feature of the adjacency matrix is that it is highly sparse (mostly zeros) and can be stored with a variety of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/sparse.html">sparse storage schemes</a> offered by Scipy. OpenPNM stores the adjacency matrix in the ‘COO’ format, which essentially stores the coordinates (I,J) of the nonzero elements in an two-colume wide array.</p>
+<p>Thus the throat property called <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> is an <em>Nt</em>-by-2 array that gives the index of the two pores on either end of a given throat.</p>
+<section id="Additional-Thoughts-on-Sparse-Storage">
+<h4>Additional Thoughts on Sparse Storage<a class="headerlink" href="#Additional-Thoughts-on-Sparse-Storage" title="Permalink to this headline">#</a></h4>
+<ul class="simple">
+<li><p>In pore networks there is (usually) no difference between traversing from pore <em>i</em> to pore <em>j</em> or from pore <em>j</em> to pore <em>i</em>, so a 1 is also found at location (<em>j</em>, <em>i</em>) and the matrix is symmetrical.</p></li>
+<li><p>Since the adjacency matrix is symmetric, it is redundant to store the entire matrix when only the upper triangular part is necessary. The <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array only stores the upper triangular information, and <em>i</em> is always less than <em>j</em>.</p></li>
+<li><p>Although this storage scheme is widely known as <em>IJV</em>, the <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> module calls this the Coordinate or <em>COO</em> storage scheme.</p></li>
+<li><p>Some tasks are best performed on other types of storages scheme, such as <em>CSR</em> or <em>LIL</em>. OpenPNM converts between these internally as necessary, but users can generate a desired format using the <code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code> method which accepts the storage type as an argument (i.e. <code class="docutils literal notranslate"><span class="pre">'csr'</span></code>, <code class="docutils literal notranslate"><span class="pre">'lil'</span></code>, etc). For a discussion of sparse storage schemes and the respective merits, see this <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">Wikipedia article</a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="Topology-Rules">
+<h3>Topology Rules<a class="headerlink" href="#Topology-Rules" title="Permalink to this headline">#</a></h3>
+<p>The only topology definitions required by OpenPNM are:</p>
+<ol class="arabic simple">
+<li><p>A throat connects exactly two pores, no more and no less</p></li>
+<li><p>Throats are non-directional, meaning that flow in either direction is equal</p></li>
+</ol>
+<p>Other general, but non-essential rules are:</p>
+<ol class="arabic simple" start="3">
+<li><p>Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.</p></li>
+<li><p>Two pores are generally connected by no more than one throat. It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise.</p></li>
+</ol>
+</section>
+<section id="Historical-Aside">
+<h3>Historical Aside<a class="headerlink" href="#Historical-Aside" title="Permalink to this headline">#</a></h3>
+<p>During the development of OpenPNM, it was debated whether existing Python graph theory packages (such as <a class="reference external" href="http://graph-tool.skewed.de/">graph-tool</a> or <a class="reference external" href="http://networkx.github.io/">NetworkX</a>) should be used to store the network topology. It was decided that network property data should be simply stored as <a class="reference external" href="http://www.numpy.org/">Numpy ND-arrays</a> as discussed above for the primary reason that this format makes the data storage very transparent and familiar since all engineers are used to
+working with arrays (i.e. vectors), and also very efficiently since this allows code vectorization. Fortuitously, around the same time as this discussion, Scipy introduced the <a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/sparse.csgraph.html">compressed sparse graph library</a>, which contains numerous graph theory algorithms that take Numpy arrays as arguments. Therefore, OpenPNM’s topology model is implemented using Numpy arrays, leveraging the <code class="docutils literal notranslate"><span class="pre">scipy.sparse.csgraph</span></code> library. Most importantly,
+this approach is perfectly in tune with the ‘spreadsheet’ model of data storage.</p>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Spreadsheet-Analogy">
+   Spreadsheet Analogy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Numpy-Arrays-Stored-in-Dictionaries">
+   Numpy Arrays Stored in Dictionaries
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Quick-Overview-of-Dictionaries">
+     Quick Overview of Dictionaries
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Quick-Overview-of-Numpy-Arrays">
+     Quick Overview of Numpy Arrays
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Rules-to-Maintain-Data-Integrity">
+     Rules to Maintain Data Integrity
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#All-Values-are-Converted-to-Numpy-Arrays">
+       All Values are Converted to Numpy Arrays
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#Any-Scalars-are-Expanded-to-a-Full-Length-Vector">
+       Any Scalars are Expanded to a Full-Length Vector
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#Dictionary-Keys-Must-Start-With-‘pore’-or-‘throat’">
+       Dictionary Keys Must Start With ‘pore’ or ‘throat’
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#Nesting-Dictionary-Names-are-Allowed">
+       Nesting Dictionary Names are Allowed
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#Boolean-Arrays-are-Treated-as-Labels">
+       Boolean Arrays are Treated as Labels
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#Dictionary-Keys-with-a-Leading-Underscore-are-Hidden">
+       Dictionary Keys with a Leading Underscore are Hidden
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Representing-Topology">
+   Representing Topology
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Sparse-Adjacency-Matrices">
+     Sparse Adjacency Matrices
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#Additional-Thoughts-on-Sparse-Storage">
+       Additional Thoughts on Sparse Storage
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Topology-Rules">
+     Topology Rules
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Historical-Aside">
+     Historical Aside
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, PMEAL.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

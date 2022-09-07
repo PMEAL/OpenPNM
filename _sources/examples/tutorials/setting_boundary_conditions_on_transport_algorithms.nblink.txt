@@ -1,0 +1,3 @@
+{    
+    "path": "../../../examples/tutorials/setting_boundary_conditions_on_transport_algorithms.ipynb"
+}

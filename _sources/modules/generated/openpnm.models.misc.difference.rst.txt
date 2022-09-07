@@ -1,6 +1,0 @@
-difference
-==========
-
-.. currentmodule:: openpnm.models.misc
-
-.. autofunction:: difference

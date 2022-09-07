@@ -4,7 +4,7 @@
 
    <p hidden>This is a module</p>
 
-hydraulic\_conductance
+Hydraulic\_conductance
 ======================
 
 .. automodule:: openpnm.models.physics.hydraulic_conductance

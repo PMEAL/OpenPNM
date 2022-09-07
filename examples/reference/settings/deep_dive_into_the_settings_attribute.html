@@ -1,0 +1,1934 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Overview of the Settings Attribute &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/settings/deep_dive_into_the_settings_attribute';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Understanding Basic Transport Settings" href="understanding_basic_transport_settings.html" />
+    <link rel="prev" title="Using and Creating Labels" href="../data_management/using_and_creating_labels.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/concise_overview_of_openpnm.html">
+   Concise Overview of OpenPNM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/intro_to_openpnm_basic.html">
+   Tutorial 1 - Basic
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/intro_to_openpnm_intermediate.html">
+   Tutorial 2 - Intermediate
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/quick_plotting_networks.html">
+   Quick Plotting Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/adding_boundary_pores.html">
+   Adding Boundary Pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/coupling_continuum_regions_with_pore_networks.html">
+   Stitch Two Networks with Different Spacing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/cubic_networks.html">
+   Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/cubic_templates.html">
+   Cubic Template
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/dual_cubic_lattices.html">
+   Dual Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/finding_neighbor_pores_and_throats.html">
+   Querying the Topology to Find Neighbors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/manually_adding_pores_and_throats.html">
+   Manually Adding and Removing Pores and Throats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/random_networks_based_on_delaunay_and_voronoi_tessellations.html">
+   Delaunay and Voronoi Tessalation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/network/stitching_and_merging_networks_together.html">
+   Stitching and Merging Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/geometry/adjusting_pore_size_distributions.html">
+   Adjusting Pore Size Distributions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/geometry/stick_and_ball.html">
+   The Stick and Ball Geometry
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/phase/empty_example.html">
+   Empty example!
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../tutorials/physics/pore_scale_models.html">
+   Pore Scale Models
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/A_ordinary_percolation.html">
+   Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/B_invasion_percolation.html">
+   Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/C_mixed_invasion_percolation.html">
+   Mixed Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/D_meniscus_model_comparison.html">
+   Meniscus Model Comparison
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/capillary_pressure_curves.html">
+   Mercury Intrusion Porosimetry
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/relative_diffusivity.html">
+   Relative Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/relative_permeability_metrics.html">
+   Relative Permeability
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/continuum_heat_transfer.html">
+   Fourier Conduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/deep_dive_into_conductance_models.html">
+   Deep Dive into Conductance Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/diffusion_with_concentration_dependent_diffusivity.html">
+   Fickian Diffusion with Variable Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/fickian_diffusion_and_tortuosity.html">
+   Fickian Diffusion and Tortuosity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/stokes_flow_and_permeability_tensor.html">
+   Stokes Flow and Permeability Tensor
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/reactive/diffusion_with_source_and_sink_terms.html">
+   Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_advection_diffusion.html">
+   Transient Advection-Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_fickian_diffusion.html">
+   Transient Fickian Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_fickian_diffusion_with_reaction.html">
+   Transient Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/multiphysics/advection_diffusion.html">
+   Advection-Diffusion
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/fibrous_media_based_on_voronoi_tessellation.html">
+   Fibrous Media with Voronoi Tessellations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/loading_statoil_finding_permeability.html">
+   Part 1: Import Networks from Statoil Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/maze_solver.html">
+   Maze Solver
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/ordinary_percolation.html">
+   Simulating Drainage with Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/predicting_effective_permeability_of_berea.html">
+   Predicting Permeability of Berea
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../class_inheritance/creating_a_custom_phase.html">
+   Creating a Custom Phase
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../class_inheritance/overview_of_inheritance.html">
+   Overview of Inheritance
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../data_management/data_and_topology_storage.html">
+   Storage of Network Data and Topology
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../data_management/data_exchange_between_objects.html">
+   Data Exchange Between Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../data_management/interleaving_data.html">
+   Interleaving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../data_management/using_and_creating_labels.html">
+   Using and Creating Labels
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Overview of the Settings Attribute
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="understanding_basic_transport_settings.html">
+   Understanding Basic Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="understanding_reactive_transport_settings.html">
+   Understanding Reactive Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="understanding_transient_transport_settings.html">
+   Understanding Transient Transport Settings
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../solvers/available_matrix_solvers.html">
+   Available Matrix Solvers
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../workspace/overview_of_subdomains.html">
+   Overview of Subdomains
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../workspace/overview_of_workspace_and_projects.html">
+   The Workspace and Projects
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/intro_to_openpnm_advanced.html">
+   Tutorial 3 - Advanced
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/managing_geometrical_properties_of_imported_networks.html">
+   Geometry of Imported Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/overview_of_domain_syntax.html">
+   OpenPNM Version 3: The new @domain syntax
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/overview_of_shape_factors.html">
+   Overview of Shape Factors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/the_problem_with_domain_length_and_area.html">
+   Problem with Domain Area and Length
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../uncategorized/working_with_extracted_networks.html">
+   Working with Extracted Networks
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 0;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Overview-of-the-Settings-Attribute">
+<h1>Overview of the Settings Attribute<a class="headerlink" href="#Overview-of-the-Settings-Attribute" title="Permalink to this headline">#</a></h1>
+<p>OpenPNM objects all include a <code class="docutils literal notranslate"><span class="pre">settings</span></code> attribute which contains certain information used by OpenPNM. The best example is the <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> classes, which often require numerous settings such as number of iterations and tolerance for iterative calculations. This tutorial will provide an overview of how these settings work, both from the user perspective as well as for developers.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,])</span>
+<span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">SpheresAndCylinders</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">)</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">phys</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">Basic</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geo</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [1], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> <span class="ansi-bold" style="color: rgb(0,0,255)">openpnm</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> <span class="ansi-bold" style="color: rgb(0,0,255)">op</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> pn <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>network<span style="color: rgb(98,98,98)">.</span>Cubic([<span style="color: rgb(98,98,98)">4</span>, <span style="color: rgb(98,98,98)">4</span>,])
+<span class="ansi-green-fg">----&gt; 3</span> geo <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">geometry</span><span style="color: rgb(98,98,98)">.</span>SpheresAndCylinders(network<span style="color: rgb(98,98,98)">=</span>pn, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>Ps, throats<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>Ts)
+<span class="ansi-green-intense-fg ansi-bold">      4</span> air <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>phases<span style="color: rgb(98,98,98)">.</span>Air(network<span style="color: rgb(98,98,98)">=</span>pn)
+<span class="ansi-green-intense-fg ansi-bold">      5</span> phys <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>physics<span style="color: rgb(98,98,98)">.</span>Basic(network<span style="color: rgb(98,98,98)">=</span>pn, phase<span style="color: rgb(98,98,98)">=</span>air, geometry<span style="color: rgb(98,98,98)">=</span>geo)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;geometry&#39;
+</pre></div></div>
+</div>
+<section id="Normal-Usage">
+<h2>Normal Usage<a class="headerlink" href="#Normal-Usage" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>This section is relevant to users of OpenPNM, while the next section is more relevant to developers</p>
+</div></blockquote>
+<p>Let’s look an algorithm that has numerous settings:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">ReactiveTransport</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [2], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> alg <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>algorithms<span style="color: rgb(98,98,98)">.</span>ReactiveTransport(network<span style="color: rgb(98,98,98)">=</span>pn, phase<span style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">air</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;air&#39; is not defined
+</pre></div></div>
+</div>
+<p>We can see that many default settings are already present by printing the <code class="docutils literal notranslate"><span class="pre">settings</span></code> attribute:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sets</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [3], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>sets)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>We can override these settings manually:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;rxn&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sets</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [4], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>sets<span style="color: rgb(98,98,98)">.</span>prefix <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">rxn</span><span style="color: rgb(175,0,0)">&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(alg<span style="color: rgb(98,98,98)">.</span>sets)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>We could also have updated these settings when creating the algorithm object by passing in a set of arguments. This can be in the form of a dictionary:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;prefix&quot;</span><span class="p">:</span> <span class="s2">&quot;rxn&quot;</span><span class="p">}</span>
+<span class="n">alg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">ReactiveTransport</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">air</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sets</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [5], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> s <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">prefix</span><span style="color: rgb(175,0,0)">&#34;</span>: <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">rxn</span><span style="color: rgb(175,0,0)">&#34;</span>}
+<span class="ansi-green-fg">----&gt; 2</span> alg <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>algorithms<span style="color: rgb(98,98,98)">.</span>ReactiveTransport(network<span style="color: rgb(98,98,98)">=</span>pn, phase<span style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">air</span>, settings<span style="color: rgb(98,98,98)">=</span>s)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span style="color: rgb(0,135,0)">print</span>(alg<span style="color: rgb(98,98,98)">.</span>sets)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;air&#39; is not defined
+</pre></div></div>
+</div>
+<p>Or as a ‘dataclass’ style, which is how things are done behind the scenes in OpenPNM as described in the section:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySettings</span><span class="p">:</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;rxn&#39;</span>
+<span class="c1"># alg = op.algorithms.ReactiveTransport(network=pn, phase=air, settings=MySettings())</span>
+<span class="c1"># print(alg.sets)</span>
+</pre></div>
+</div>
+</div>
+<p>One new feature on OpenPNM V3 is that the datatype of some settings is enforced. For instance the <code class="docutils literal notranslate"><span class="pre">'prefix'</span></code> setting must be a <code class="docutils literal notranslate"><span class="pre">str</span></code>, otherwise an error is raised:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">TraitError</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">alg</span><span class="o">.</span><span class="n">sets</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [7], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">traits</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">api</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TraitError
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">----&gt; 3</span>     <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>sets<span style="color: rgb(98,98,98)">.</span>phase <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">1</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> TraitError <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
+<span class="ansi-green-intense-fg ansi-bold">      5</span>     <span style="color: rgb(0,135,0)">print</span>(e)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>OpenPNM uses the <a class="reference external" href="https://docs.enthought.com/traits/traits_user_manual/index.html">traits package</a> to control this behavior, which will be explained in more detail in the next section.</p>
+</section>
+<section id="Advanced-Usage">
+<h2>Advanced Usage<a class="headerlink" href="#Advanced-Usage" title="Permalink to this headline">#</a></h2>
+<blockquote>
+<div><p>The following sections are probably only relevant if you plan to do some development in OpenPN</p>
+</div></blockquote>
+<p>In the previous section we saw how to define settings, as well as the data-type protections of some settings. In this section we’ll demonstrate this mechanism in more detail.</p>
+<p>OpenPNM has two settings related classes: <code class="docutils literal notranslate"><span class="pre">SettingsData</span></code> and <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code>. The first is a subclass of the <code class="docutils literal notranslate"><span class="pre">HasTraits</span></code> class from the <a class="reference external" href="https://docs.enthought.com/traits/traits_user_manual/index.html">traits package</a>. It preceeded the <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">Python dataclass</a> by many years and offers far more functionality. For our purposes the main difference is that <code class="docutils literal notranslate"><span class="pre">dataclasses</span></code> allow developers to specify the type of attributes (i.e. <code class="docutils literal notranslate"><span class="pre">obj.a</span></code> must
+be an <code class="docutils literal notranslate"><span class="pre">int</span></code>), but these are only enforced during object creation. Once the object is made, any value can be assigned to <code class="docutils literal notranslate"><span class="pre">a</span></code>. The <code class="docutils literal notranslate"><span class="pre">traits</span></code> package offers the same functionality but also enforces the type of <code class="docutils literal notranslate"><span class="pre">a</span></code> for all subsequent assignments. We saw this in action in the previous section when we tried to assign an integer to <code class="docutils literal notranslate"><span class="pre">alg.sets.prefix</span></code>.</p>
+<section id="The-SettingsData-and-HasTraits-Classes">
+<h3>The SettingsData and HasTraits Classes<a class="headerlink" href="#The-SettingsData-and-HasTraits-Classes" title="Permalink to this headline">#</a></h3>
+<p>Let’s dissect this process:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">SettingsData</span><span class="p">,</span> <span class="n">SettingsAttr</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [8], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">openpnm</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">utils</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> SettingsData, SettingsAttr
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span> <span class="ansi-bold" style="color: rgb(0,0,255)">traits</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">api</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Int, Str, Float, List, Set
+
+<span class="ansi-red-fg">ImportError</span>: cannot import name &#39;SettingsData&#39; from &#39;openpnm.utils&#39; (/home/runner/work/OpenPNM/OpenPNM/openpnm/utils/__init__.py)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomSettings</span><span class="p">(</span><span class="n">SettingsData</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Int</span><span class="p">()</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">4.4</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Set</span><span class="p">()</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">List</span><span class="p">(</span><span class="n">Str</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">CustomSettings</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [9], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span> <span class="ansi-bold" style="color: rgb(0,0,255)">CustomSettings</span>(<span class="ansi-yellow-bg">SettingsData</span>):
+<span class="ansi-green-intense-fg ansi-bold">      2</span>     a <span style="color: rgb(98,98,98)">=</span> Int()
+<span class="ansi-green-intense-fg ansi-bold">      3</span>     b <span style="color: rgb(98,98,98)">=</span> Float(<span style="color: rgb(98,98,98)">4.4</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsData&#39; is not defined
+</pre></div></div>
+</div>
+<p>Now we can print <code class="docutils literal notranslate"><span class="pre">s</span></code> to inspect the settings. We’ll see some default values for things that were not initialized like <code class="docutils literal notranslate"><span class="pre">a</span></code>, while <code class="docutils literal notranslate"><span class="pre">b</span></code> is the specified value.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;prefix&#39;: &#39;rxn&#39;}
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">traits</span></code> package enforces the datatype of each of these attributes:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">s</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mf">5.5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [11], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">s</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">a</span> <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">2</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> s<span style="color: rgb(98,98,98)">.</span>b <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">5.5</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span style="color: rgb(0,135,0)">print</span>(s)
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;dict&#39; object has no attribute &#39;a&#39;
+</pre></div></div>
+</div>
+<p>Let’s look at the attribute protection in action again:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mf">1.1</span>
+<span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [12], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">----&gt; 2</span>     <span class="ansi-yellow-bg">s</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">a</span> <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">1.1</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> TraitError <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
+<span class="ansi-green-intense-fg ansi-bold">      4</span>     <span style="color: rgb(0,135,0)">print</span>(e)
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;dict&#39; object has no attribute &#39;a&#39;
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">traits</span></code> package also enforces the type of values we can put into the list stored in <code class="docutils literal notranslate"><span class="pre">d</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;item&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [13], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">s</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">d</span><span style="color: rgb(98,98,98)">.</span>append(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">item</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-intense-fg ansi-bold">      3</span>     s<span style="color: rgb(98,98,98)">.</span>d<span style="color: rgb(98,98,98)">.</span>append(<span style="color: rgb(98,98,98)">100</span>)
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;dict&#39; object has no attribute &#39;d&#39;
+</pre></div></div>
+</div>
+<p>The first one works because we specified a list of strings, while the second fails because it is attempting to write an integer.</p>
+<p>Also, we can’t accidentally overwrite an attribute that is supposed to be a list with a scalar:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [14], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">----&gt; 2</span>     <span class="ansi-yellow-bg">s</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">d</span> <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">5</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> TraitError <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
+<span class="ansi-green-intense-fg ansi-bold">      4</span>     <span style="color: rgb(0,135,0)">print</span>(e)
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;dict&#39; object has no attribute &#39;d&#39;
+</pre></div></div>
+</div>
+</section>
+<section id="Gotcha-With-the-HasTraits-Class">
+<h3>Gotcha With the HasTraits Class<a class="headerlink" href="#Gotcha-With-the-HasTraits-Class" title="Permalink to this headline">#</a></h3>
+<p>When defining a set of custom settings using the <code class="docutils literal notranslate"><span class="pre">HasTraits</span></code> or <code class="docutils literal notranslate"><span class="pre">SettingsData</span></code> class, you <em>MUST</em> specify a type for each attribute value. If not then it is essentially ignored.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySettings</span><span class="p">(</span><span class="n">SettingsData</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">mysets</span> <span class="o">=</span> <span class="n">MySettings</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mysets</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [15], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span> <span class="ansi-bold" style="color: rgb(0,0,255)">MySettings</span>(<span class="ansi-yellow-bg">SettingsData</span>):
+<span class="ansi-green-intense-fg ansi-bold">      2</span>     a <span style="color: rgb(98,98,98)">=</span> Int(<span style="color: rgb(98,98,98)">1</span>)
+<span class="ansi-green-intense-fg ansi-bold">      3</span>     b <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">2</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsData&#39; is not defined
+</pre></div></div>
+</div>
+<p>However, if you create a custom class from a basic python object it will work:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySettings</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">mysets</span> <span class="o">=</span> <span class="n">MySettings</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mysets</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="n">mysets</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1 2
+</pre></div></div>
+</div>
+</section>
+<section id="The-SettingsAttr-Class">
+<h3>The SettingsAttr Class<a class="headerlink" href="#The-SettingsAttr-Class" title="Permalink to this headline">#</a></h3>
+<p>The problem with the <code class="docutils literal notranslate"><span class="pre">HasTraits</span></code> class is that there is are lot of helper methods attached to it. This means that when we use the autocomplete functionality of our favorite IDEs (spyder and jupyter), we will have a hard time finding the attributes we set amongst the noise. For this reason we have created a wrapper class called <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> which works as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [17], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> S <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">SettingsAttr</span>(s)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(S)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsAttr&#39; is not defined
+</pre></div></div>
+</div>
+<p>Importantly only the the user-created attributes show up, which can be test using the <code class="docutils literal notranslate"><span class="pre">dir()</span></code> command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">dir</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [18], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">dir</span>(<span class="ansi-yellow-bg">S</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;S&#39; is not defined
+</pre></div></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> has as few additional features. You can add a new batch of settings after instantiation as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s_new</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">}</span>
+<span class="n">S</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">s_new</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [19], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> s_new <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">a</span><span style="color: rgb(175,0,0)">&#39;</span>: <span style="color: rgb(98,98,98)">5</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">e</span><span style="color: rgb(175,0,0)">&#39;</span>: <span style="color: rgb(98,98,98)">6</span>}
+<span class="ansi-green-fg">----&gt; 2</span> <span class="ansi-yellow-bg">S</span><span style="color: rgb(98,98,98)">.</span>_update(s_new)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span style="color: rgb(0,135,0)">print</span>(S)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;S&#39; is not defined
+</pre></div></div>
+</div>
+<p>We can see the updated value of <code class="docutils literal notranslate"><span class="pre">a</span></code>, as well as the newly added <code class="docutils literal notranslate"><span class="pre">e</span></code>. Because <code class="docutils literal notranslate"><span class="pre">e</span></code> contained an integer (6), the datatype of <code class="docutils literal notranslate"><span class="pre">e</span></code> will be forced to remain an integer:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">S</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="mf">5.5</span>
+<span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [20], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">----&gt; 2</span>     <span class="ansi-yellow-bg">S</span><span style="color: rgb(98,98,98)">.</span>e <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">5.5</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> TraitError <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
+<span class="ansi-green-intense-fg ansi-bold">      4</span>     <span style="color: rgb(0,135,0)">print</span>(e)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;S&#39; is not defined
+</pre></div></div>
+</div>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">_update</span></code> method begins with an underscore. This prevents it from appearing in the autocomplete menu to ensure it stays clean.</p>
+<p>For the sake of completeness, it should also be mentioned that the <code class="docutils literal notranslate"><span class="pre">CustomSettings</span></code> object which was passed to the <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> constructor was stored under <code class="docutils literal notranslate"><span class="pre">_settings</span></code>. The <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> class has overloaded <code class="docutils literal notranslate"><span class="pre">__getattr__</span></code> and <code class="docutils literal notranslate"><span class="pre">__setattr__</span></code> methods which dispatch the values to the <code class="docutils literal notranslate"><span class="pre">_settings</span></code> attribute:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">d</span> <span class="ow">is</span> <span class="n">S</span><span class="o">.</span><span class="n">_settings</span><span class="o">.</span><span class="n">d</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [21], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">S</span><span style="color: rgb(98,98,98)">.</span>d <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> S<span style="color: rgb(98,98,98)">.</span>_settings<span style="color: rgb(98,98,98)">.</span>d
+
+<span class="ansi-red-fg">NameError</span>: name &#39;S&#39; is not defined
+</pre></div></div>
+</div>
+<p>Another aspect to keep in mind is that the <code class="docutils literal notranslate"><span class="pre">_settings</span></code> attribute is a <code class="docutils literal notranslate"><span class="pre">HasTraits</span></code> object. This means that all values added to the settings must have an enforced datatype. This is done on the fly, based on the type of value received. For instance, once you set an attribute to string for instance, its type is set:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">S</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="s1">&#39;a string&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">S</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="k">except</span> <span class="n">TraitError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [22], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">S</span><span style="color: rgb(98,98,98)">.</span>f <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">a string</span><span style="color: rgb(175,0,0)">&#39;</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-intense-fg ansi-bold">      3</span>     S<span style="color: rgb(98,98,98)">.</span>f <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">1.0</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;S&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Adding-Documentation-to-a-SettingsData-and-SettingsAttr-Class">
+<h2>Adding Documentation to a SettingsData and SettingsAttr Class<a class="headerlink" href="#Adding-Documentation-to-a-SettingsData-and-SettingsAttr-Class" title="Permalink to this headline">#</a></h2>
+<p>One the main reasons for using a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> style object for holding settings is so that docstrings for each attribute can be defined and explained:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DocumentedSettingsData</span><span class="p">(</span><span class="n">SettingsData</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that holds the following settings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the object</span>
+<span class="sd">    id_num : int</span>
+<span class="sd">        The id number of the object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+    <span class="n">id_num</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">DocumentedSettingsData</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [23], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span> <span class="ansi-bold" style="color: rgb(0,0,255)">DocumentedSettingsData</span>(<span class="ansi-yellow-bg">SettingsData</span>):
+<span class="ansi-green-intense-fg ansi-bold">      2</span>     <span style="color: rgb(175,0,0)">r</span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span style="color: rgb(175,0,0)">    A class that holds the following settings.</span>
+<span class="ansi-green-intense-fg ansi-bold">      4</span> <span style="color: rgb(175,0,0)">    </span>
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">     10</span> <span style="color: rgb(175,0,0)">        The id number of the object</span>
+<span class="ansi-green-intense-fg ansi-bold">     11</span> <span style="color: rgb(175,0,0)">    &#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">     12</span>     name <span style="color: rgb(98,98,98)">=</span> Str(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">foo</span><span style="color: rgb(175,0,0)">&#39;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsData&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [24], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">d</span><span style="color: rgb(98,98,98)">.</span><span style="color: rgb(0,0,135)">__doc__</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;d&#39; is not defined
+</pre></div></div>
+</div>
+<p>Note that this docstring was written when we defined <code class="docutils literal notranslate"><span class="pre">DocumentedSettingsData</span></code> subclass and it attached to it, but we’ll be interacting with the <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> class. When a <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> is created is adopts the docstring of the received <code class="docutils literal notranslate"><span class="pre">settings</span></code> object. This can be either a proper <code class="docutils literal notranslate"><span class="pre">SettingsData/HasTraits</span></code> class or a basic <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> style object. The docstring can only be set on initialization though, so any new attributes that are created by adding values to the object
+(i.e. <code class="docutils literal notranslate"><span class="pre">D.zz_top</span> <span class="pre">=</span> <span class="pre">'awesome'</span></code>) will not be documented.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [25], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> D <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">SettingsAttr</span>(d)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(D<span style="color: rgb(98,98,98)">.</span><span style="color: rgb(0,0,135)">__doc__</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsAttr&#39; is not defined
+</pre></div></div>
+</div>
+<p>This machinery was designed with the idea of inheriting docstrings using the <code class="docutils literal notranslate"><span class="pre">docrep</span></code> package. The following illustrates not only how the <code class="docutils literal notranslate"><span class="pre">SettingsData</span></code> class can be subclassed to add new settings (e.g. from <code class="docutils literal notranslate"><span class="pre">GenericTransport</span></code> to <code class="docutils literal notranslate"><span class="pre">ReactiveTransport</span></code>), but also how to use the hightly under-rated <code class="docutils literal notranslate"><span class="pre">docrep</span></code> package to also inherit the docstrings:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">docrep</span>
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">docrep</span><span class="o">.</span><span class="n">DocstringProcessor</span><span class="p">()</span>
+
+
+<span class="c1"># This docorator tells docrep to fetch the docstring from this class and make it available elsewhere:</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;DocumentSettingsData&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="k">class</span> <span class="nc">DocumentedSettingsData</span><span class="p">(</span><span class="n">SettingsData</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class that holds the following settings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the object</span>
+<span class="sd">    id_num : int</span>
+<span class="sd">        The id number of the object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Str</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+    <span class="n">id_num</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="c1"># This tells docrep to parse this docstring and insert text at the %</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<span class="k">class</span> <span class="nc">ChildSettingsData</span><span class="p">(</span><span class="n">DocumentedSettingsData</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A subclass of DocumentedSettingsData that holds some addtional settings</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(DocumentSettingsData.parameters)s</span>
+<span class="sd">    max_iter : int</span>
+<span class="sd">        The maximum number of iterations to do</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_iter</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+<span class="n">E</span> <span class="o">=</span> <span class="n">ChildSettingsData</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">E</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [26], line 7</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> docstr <span style="color: rgb(98,98,98)">=</span> docrep<span style="color: rgb(98,98,98)">.</span>DocstringProcessor()
+<span class="ansi-green-intense-fg ansi-bold">      5</span> <span style="color: rgb(95,135,135)"># This docorator tells docrep to fetch the docstring from this class and make it available elsewhere:</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span> <span style="color: rgb(175,0,255)">@docstr</span><span style="color: rgb(98,98,98)">.</span>get_sections(base<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">DocumentSettingsData</span><span style="color: rgb(175,0,0)">&#39;</span>, sections<span style="color: rgb(98,98,98)">=</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">Parameters</span><span style="color: rgb(175,0,0)">&#39;</span>])
+<span class="ansi-green-fg">----&gt; 7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span> <span class="ansi-bold" style="color: rgb(0,0,255)">DocumentedSettingsData</span>(<span class="ansi-yellow-bg">SettingsData</span>):
+<span class="ansi-green-intense-fg ansi-bold">      8</span>     <span style="color: rgb(175,0,0)">r</span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">      9</span> <span style="color: rgb(175,0,0)">    A class that holds the following settings.</span>
+<span class="ansi-green-intense-fg ansi-bold">     10</span> <span style="color: rgb(175,0,0)">    </span>
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-intense-fg ansi-bold">     16</span> <span style="color: rgb(175,0,0)">        The id number of the object</span>
+<span class="ansi-green-intense-fg ansi-bold">     17</span> <span style="color: rgb(175,0,0)">    &#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">     18</span>     name <span style="color: rgb(98,98,98)">=</span> Str(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">foo</span><span style="color: rgb(175,0,0)">&#39;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsData&#39; is not defined
+</pre></div></div>
+</div>
+<p>And we can also see that <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> was added to the values of <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">id_num</span></code> on the parent class:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">E</span><span class="o">.</span><span class="n">visible_traits</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [27], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">E</span><span style="color: rgb(98,98,98)">.</span>visible_traits()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;E&#39; is not defined
+</pre></div></div>
+</div>
+<p>Again, as mentioned above, this inherited docstring is adopted by the <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">S</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [28], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> S <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">SettingsAttr</span>(E)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(S<span style="color: rgb(98,98,98)">.</span><span style="color: rgb(0,0,135)">__doc__</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsAttr&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+<section id="Attaching-to-an-OpenPNM-Object">
+<h2>Attaching to an OpenPNM Object<a class="headerlink" href="#Attaching-to-an-OpenPNM-Object" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">SettingsAttr</span></code> wrapper class is so named because it is meant to be an attribute (i.e. attr) on OpenPNM objects. These attached to the <code class="docutils literal notranslate"><span class="pre">settings</span></code> attribute:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">isinstance</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">sets</span><span class="p">,</span> <span class="n">SettingsAttr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [29], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">isinstance</span>(<span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>sets, SettingsAttr)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>OpenPNM declares <code class="docutils literal notranslate"><span class="pre">SettingsData</span></code> classes with each file where class is defined, then this is attached upon initialization. This is illustrated below:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SpecificSettings</span><span class="p">(</span><span class="n">SettingsData</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SomeAlg</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">SettingsAttr</span><span class="p">(</span><span class="n">SpecificSettings</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+
+<span class="n">alg</span> <span class="o">=</span> <span class="n">SomeAlg</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">alg</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [30], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span> <span class="ansi-bold" style="color: rgb(0,0,255)">SpecificSettings</span>(<span class="ansi-yellow-bg">SettingsData</span>):
+<span class="ansi-green-intense-fg ansi-bold">      2</span>     a <span style="color: rgb(98,98,98)">=</span> Int(<span style="color: rgb(98,98,98)">4</span>)
+<span class="ansi-green-intense-fg ansi-bold">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span> <span class="ansi-bold" style="color: rgb(0,0,255)">SomeAlg</span>:
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SettingsData&#39; is not defined
+</pre></div></div>
+</div>
+<p>Or with some additional user-defined settings and overrides:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bob&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">alg2</span> <span class="o">=</span> <span class="n">SomeAlg</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">alg2</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [31], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> s <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">name</span><span style="color: rgb(175,0,0)">&#39;</span>: <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">bob</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">a</span><span style="color: rgb(175,0,0)">&#39;</span>: <span style="color: rgb(98,98,98)">3</span>}
+<span class="ansi-green-fg">----&gt; 2</span> alg2 <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">SomeAlg</span>(settings<span style="color: rgb(98,98,98)">=</span>s)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> <span style="color: rgb(0,135,0)">print</span>(alg2<span style="color: rgb(98,98,98)">.</span>settings)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SomeAlg&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Normal-Usage">
+   Normal Usage
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Advanced-Usage">
+   Advanced Usage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#The-SettingsData-and-HasTraits-Classes">
+     The SettingsData and HasTraits Classes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Gotcha-With-the-HasTraits-Class">
+     Gotcha With the HasTraits Class
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#The-SettingsAttr-Class">
+     The SettingsAttr Class
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Adding-Documentation-to-a-SettingsData-and-SettingsAttr-Class">
+   Adding Documentation to a SettingsData and SettingsAttr Class
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Attaching-to-an-OpenPNM-Object">
+   Attaching to an OpenPNM Object
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, PMEAL.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

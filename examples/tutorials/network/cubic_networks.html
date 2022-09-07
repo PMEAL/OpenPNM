@@ -1,0 +1,1244 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Cubic Lattice &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/network/cubic_networks';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Cubic Template" href="cubic_templates.html" />
+    <link rel="prev" title="Stitch Two Networks with Different Spacing" href="coupling_continuum_regions_with_pore_networks.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/concise_overview_of_openpnm.html">
+   Concise Overview of OpenPNM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/intro_to_openpnm_basic.html">
+   Tutorial 1 - Basic
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/intro_to_openpnm_intermediate.html">
+   Tutorial 2 - Intermediate
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../getting_started/quick_plotting_networks.html">
+   Quick Plotting Networks
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="adding_boundary_pores.html">
+   Adding Boundary Pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="coupling_continuum_regions_with_pore_networks.html">
+   Stitch Two Networks with Different Spacing
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="cubic_templates.html">
+   Cubic Template
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="dual_cubic_lattices.html">
+   Dual Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="finding_neighbor_pores_and_throats.html">
+   Querying the Topology to Find Neighbors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="manually_adding_pores_and_throats.html">
+   Manually Adding and Removing Pores and Throats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="random_networks_based_on_delaunay_and_voronoi_tessellations.html">
+   Delaunay and Voronoi Tessalation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="stitching_and_merging_networks_together.html">
+   Stitching and Merging Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../geometry/adjusting_pore_size_distributions.html">
+   Adjusting Pore Size Distributions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../geometry/stick_and_ball.html">
+   The Stick and Ball Geometry
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../phase/empty_example.html">
+   Empty example!
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../physics/pore_scale_models.html">
+   Pore Scale Models
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/A_ordinary_percolation.html">
+   Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/B_invasion_percolation.html">
+   Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/C_mixed_invasion_percolation.html">
+   Mixed Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/D_meniscus_model_comparison.html">
+   Meniscus Model Comparison
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/capillary_pressure_curves.html">
+   Mercury Intrusion Porosimetry
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/relative_diffusivity.html">
+   Relative Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/percolation/relative_permeability_metrics.html">
+   Relative Permeability
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/continuum_heat_transfer.html">
+   Fourier Conduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/deep_dive_into_conductance_models.html">
+   Deep Dive into Conductance Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/diffusion_with_concentration_dependent_diffusivity.html">
+   Fickian Diffusion with Variable Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/fickian_diffusion_and_tortuosity.html">
+   Fickian Diffusion and Tortuosity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/steady_state/stokes_flow_and_permeability_tensor.html">
+   Stokes Flow and Permeability Tensor
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/reactive/diffusion_with_source_and_sink_terms.html">
+   Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_advection_diffusion.html">
+   Transient Advection-Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_fickian_diffusion.html">
+   Transient Fickian Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/transient/transient_fickian_diffusion_with_reaction.html">
+   Transient Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/multiphysics/advection_diffusion.html">
+   Advection-Diffusion
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/fibrous_media_based_on_voronoi_tessellation.html">
+   Fibrous Media with Voronoi Tessellations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/loading_statoil_finding_permeability.html">
+   Part 1: Import Networks from Statoil Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/maze_solver.html">
+   Maze Solver
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/ordinary_percolation.html">
+   Simulating Drainage with Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../contrib/predicting_effective_permeability_of_berea.html">
+   Predicting Permeability of Berea
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/class_inheritance/creating_a_custom_phase.html">
+   Creating a Custom Phase
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/class_inheritance/overview_of_inheritance.html">
+   Overview of Inheritance
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/data_management/data_and_topology_storage.html">
+   Storage of Network Data and Topology
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/data_management/data_exchange_between_objects.html">
+   Data Exchange Between Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/data_management/interleaving_data.html">
+   Interleaving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/data_management/using_and_creating_labels.html">
+   Using and Creating Labels
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/settings/deep_dive_into_the_settings_attribute.html">
+   Overview of the Settings Attribute
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/settings/understanding_basic_transport_settings.html">
+   Understanding Basic Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/settings/understanding_reactive_transport_settings.html">
+   Understanding Reactive Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/settings/understanding_transient_transport_settings.html">
+   Understanding Transient Transport Settings
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/solvers/available_matrix_solvers.html">
+   Available Matrix Solvers
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/workspace/overview_of_subdomains.html">
+   Overview of Subdomains
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/workspace/overview_of_workspace_and_projects.html">
+   The Workspace and Projects
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/uncategorized/intro_to_openpnm_advanced.html">
+   Tutorial 3 - Advanced
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/uncategorized/managing_geometrical_properties_of_imported_networks.html">
+   Geometry of Imported Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/uncategorized/overview_of_domain_syntax.html">
+   OpenPNM Version 3: The new @domain syntax
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/uncategorized/overview_of_shape_factors.html">
+   Overview of Shape Factors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/uncategorized/the_problem_with_domain_length_and_area.html">
+   Problem with Domain Area and Length
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../reference/uncategorized/working_with_extracted_networks.html">
+   Working with Extracted Networks
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 0;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Cubic-Lattice">
+<h1>Cubic Lattice<a class="headerlink" href="#Cubic-Lattice" title="Permalink to this headline">#</a></h1>
+<section id="Generate-Cubic-Lattices-of-Various-Shape,-Sizes-and-Topologies">
+<h2>Generate Cubic Lattices of Various Shape, Sizes and Topologies<a class="headerlink" href="#Generate-Cubic-Lattices-of-Various-Shape,-Sizes-and-Topologies" title="Permalink to this headline">#</a></h2>
+<p>The Cubic lattice network is the most commonly used pore network topology by far. When people first learn about pore network modeling they often insist on creating networks that are topologically equivalent or representative of the real network (i.e. random networks extracted from tomography images). In reality, however, a simple cubic network provides a very passable representation of more complex topologies, and provides several additional benefits as well; namely they are much easier to
+visualize, and applying boundary conditions is easier since the faces of the network are flat.</p>
+<p>The examples below will demonstrate how to create various cubic lattice networks in OpenPNM using the Cubic class, as well as illustrating a few topological manipulations that can be performed, such as adding boundary pores, and trimming throats to create a more random-like topology.</p>
+</section>
+<section id="Basic-Cubic-Lattice-with-Different-Connectivity">
+<h2>Basic Cubic Lattice with Different Connectivity<a class="headerlink" href="#Basic-Cubic-Lattice-with-Different-Connectivity" title="Permalink to this headline">#</a></h2>
+<p>Let’s start with the most basic cubic lattice:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;loglevel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>In this case <code class="docutils literal notranslate"><span class="pre">pn</span></code> will be a 10 x 10 x 10 <em>cube</em> with each pore spaced 1 <em>unit</em> away from it’s neighbors in all directions. Each pore is connected to the 6 neighbors adjacent to each <em>face</em> of the cubic lattice site in which it sits. The image below illustrates the resulting network with pores shown as white spheres, along with a zoomed in view of the internals, showing the connectivity of the pores.</p>
+<p><img alt="95bb171f83704a02a01585d2e0d5535f" src="http://i.imgur.com/JTUodGy.png" /></p>
+<p>The <strong>Cubic</strong> network generator applies 6-connectivity by default, but different values can be specified. In a cubic lattice, each pore can have up to 26 neighbors: 6 on each face, 8 on each corner, and 12 on each edge. This is illustrated in the image below.</p>
+<p><img alt="b411033be9834650b996866ceb51ed4f" src="http://i.imgur.com/ACiQFtJ.png" /></p>
+<p>Cubic networks can have any combination of corners, edges, and faces, which is controlled with the <code class="docutils literal notranslate"><span class="pre">connectivity</span></code> argument by specifying the total number of neighbors (6, 14, 18, 20, or 26). Note that 8 and 12 are not permitted since these lead to disconnected networks.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This yields the following network, which clearly has a LOT of connections!</p>
+<p><img alt="872dfa62af264350b9846cd3171377cc" src="http://i.imgur.com/PS6d7CO.png" /></p>
+</section>
+<section id="Trimming-Random-Throats-to-Adjust-Coordination-Number">
+<h2>Trimming Random Throats to Adjust Coordination Number<a class="headerlink" href="#Trimming-Random-Throats-to-Adjust-Coordination-Number" title="Permalink to this headline">#</a></h2>
+<p>Often it is desired to create a distribution of coordination numbers on each pore, such that some pores have 2 neighbors and other have 8, while the overall average may be around 5. It is computationally very challenging to specify a specific distribution, but OpenPNM does allow you to create a network with a specific <em>average</em> connectivity. This is done by creating a network with far more connections than needed (say 26), then trimming some fraction of throats from the network to reduce the
+coordination.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">num_throats</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+10476
+</pre></div></div>
+</div>
+<p>The most basic way to do this is to just trim arbitrary throats as shown below, but this can lead to problems of accidentally creating isolated and disconnected clusters.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">throats_to_trim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">openpnm</span> <span class="kn">import</span> <span class="n">topotools</span> <span class="k">as</span> <span class="n">tt</span>
+<span class="n">tt</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">throats_to_trim</span><span class="p">)</span>
+<span class="c1"># randint returns some duplicate numbers so actual number of trimmed throats varies</span>
+<span class="k">assert</span> <span class="n">pn</span><span class="o">.</span><span class="n">num_throats</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">10476</span>
+</pre></div>
+</div>
+</div>
+<p>The following image shows histogram of the pore connectivity before and after trimming. Before trimming the coordination numbers fall into 4 distinct bins depending on where the pores lies (internal, face, edge or corner), while after trimming the coordination numbers show some distribution around their original values. If the trimming is too aggressive, OpenPNM might report an error message saying that isolated pores exist, which means that some regions of the network are now disconnected from
+the main network due to a lack of connected throats.</p>
+<p><img alt="6cd25690b1d04f2faf440a226a4536a7" src="http://i.imgur.com/Z4HgMYC.png" /></p>
+<p>In order to allow more aggressive trimming without creating topological problems, OpenPNM offers a tool in the <code class="docutils literal notranslate"><span class="pre">topotools</span></code> module called <code class="docutils literal notranslate"><span class="pre">reduce_coordination</span></code>, which accepts an average coordination number. This function works by first computing the minimum-spanning tree of the network (which is a set of connections that ensures every pore is connected), then deletes throats that are NOT part of the spanning tree to ensure that connection is maintained.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">26</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">reduce_coordination</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [5], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> pn <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>network<span style="color: rgb(98,98,98)">.</span>Cubic(shape<span style="color: rgb(98,98,98)">=</span>[<span style="color: rgb(98,98,98)">10</span>, <span style="color: rgb(98,98,98)">10</span>, <span style="color: rgb(98,98,98)">10</span>], spacing<span style="color: rgb(98,98,98)">=</span>[<span style="color: rgb(98,98,98)">1</span>, <span style="color: rgb(98,98,98)">1</span>, <span style="color: rgb(98,98,98)">1</span>], connectivity<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">26</span>)
+<span class="ansi-green-fg">----&gt; 2</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">topotools</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">reduce_coordination</span>(network<span style="color: rgb(98,98,98)">=</span>pn, z<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">5</span>)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;reduce_coordination&#39;
+</pre></div></div>
+</div>
+<p>Now plotting the histogram we can see that indeed the average coordination was obtained. Note, however, that the distribution is skewed and has a long tail. The <code class="docutils literal notranslate"><span class="pre">reduce_coordination</span></code> function does not (yet) control the shapre of the distribution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">),</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tutorials_network_cubic_networks_23_0.svg" src="../../../_images/examples_tutorials_network_cubic_networks_23_0.svg" /></div>
+</div>
+</section>
+<section id="Creating-Domains-with-More-Interesting-Shapes">
+<h2>Creating Domains with More Interesting Shapes<a class="headerlink" href="#Creating-Domains-with-More-Interesting-Shapes" title="Permalink to this headline">#</a></h2>
+<section id="Rectangular-Domains-with-Non-Uniform-Spacing">
+<h3>Rectangular Domains with Non-Uniform Spacing<a class="headerlink" href="#Rectangular-Domains-with-Non-Uniform-Spacing" title="Permalink to this headline">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">spacing</span></code> arguments can of course be adjusted to create domains other than simple cubes:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="p">[</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>This results in the following network with is squished in the x-direction. Note that this can also be accomplished after the fact by simple scaling the coords (e.g. <code class="docutils literal notranslate"><span class="pre">pn['pore.coords']</span> <span class="pre">=*</span> <span class="pre">[0.001,</span> <span class="pre">0.03,</span> <span class="pre">0.02]</span></code>).</p>
+<p><img alt="dc25018476cd41f69f332d37bdb34cee" src="http://i.imgur.com/ICEAO7p.png" /></p>
+</section>
+<section id="Spherical-and-Other-Arbitrary-Domains">
+<h3>Spherical and Other Arbitrary Domains<a class="headerlink" href="#Spherical-and-Other-Arbitrary-Domains" title="Permalink to this headline">#</a></h3>
+<p>It’s also possible to obtain cubic networks of arbitrary shapes (i.e. spheres), but still with <em>cubic</em> connectivity. This is accomplished using the <code class="docutils literal notranslate"><span class="pre">CubicTemplate</span></code> class, which accepts a binary image of 1’s and 0’s. The network will have pores where the 1’s are and 0’s elsewhere. For instance, to make a spherical domain for a catalyst pellet, generate an image of a sphere using Scipy’s NDimage module, the pass this image to <strong>Cubic</strong> as follows:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">21</span><span class="p">])</span>
+<span class="n">im</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_bf</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+<span class="n">sphere</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="mi">10</span>
+<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">sphere</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This results in the following:</p>
+<p><img alt="66bcb060c9c14a5491bf5bca6b19356b" src="http://i.imgur.com/eyFHqNx.png" /></p>
+<p>All images of networks were made with paraview by exporting a VTK file with the following command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">VTK</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Does &#39;network.vtk&#39; exist? </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;network.vtp&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [9], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">io</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">VTK</span><span style="color: rgb(98,98,98)">.</span>export_data(network<span style="color: rgb(98,98,98)">=</span>pn, filename<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">network</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Does </span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">network.vtk</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)"> exist? </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>os<span style="color: rgb(98,98,98)">.</span>path<span style="color: rgb(98,98,98)">.</span>isfile(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">network.vtp</span><span style="color: rgb(175,0,0)">&#39;</span>)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm.io&#39; has no attribute &#39;VTK&#39;
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Generate-Cubic-Lattices-of-Various-Shape,-Sizes-and-Topologies">
+   Generate Cubic Lattices of Various Shape, Sizes and Topologies
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Basic-Cubic-Lattice-with-Different-Connectivity">
+   Basic Cubic Lattice with Different Connectivity
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Trimming-Random-Throats-to-Adjust-Coordination-Number">
+   Trimming Random Throats to Adjust Coordination Number
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Creating-Domains-with-More-Interesting-Shapes">
+   Creating Domains with More Interesting Shapes
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Rectangular-Domains-with-Non-Uniform-Spacing">
+     Rectangular Domains with Non-Uniform Spacing
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Spherical-and-Other-Arbitrary-Domains">
+     Spherical and Other Arbitrary Domains
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, PMEAL.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

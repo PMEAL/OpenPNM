@@ -1,0 +1,2088 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tutorial 2 - Intermediate &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/getting_started/intro_to_openpnm_intermediate';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Quick Plotting Networks" href="quick_plotting_networks.html" />
+    <link rel="prev" title="Tutorial 1 - Basic" href="intro_to_openpnm_basic.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="None">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../_static/openpnm_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../_static/openpnm_logo.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class=" navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../user_guide/installation.html">
+                        Installation
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../user_guide/index.html">
+                        User Guide
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../modules/index.html">
+                        Module Reference
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../../examples_index.html">
+                        Examples
+                    </a>
+                </li>
+                
+
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+            </li>
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+            <li class="nav-item">
+                <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+            </li>
+                </div>
+            </div>
+            
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/OpenPNM" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="concise_overview_of_openpnm.html">
+   Concise Overview of OpenPNM
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="intro_to_openpnm_basic.html">
+   Tutorial 1 - Basic
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Tutorial 2 - Intermediate
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="quick_plotting_networks.html">
+   Quick Plotting Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/adding_boundary_pores.html">
+   Adding Boundary Pores
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/coupling_continuum_regions_with_pore_networks.html">
+   Stitch Two Networks with Different Spacing
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/cubic_networks.html">
+   Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/cubic_templates.html">
+   Cubic Template
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/dual_cubic_lattices.html">
+   Dual Cubic Lattice
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/finding_neighbor_pores_and_throats.html">
+   Querying the Topology to Find Neighbors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/manually_adding_pores_and_throats.html">
+   Manually Adding and Removing Pores and Throats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/random_networks_based_on_delaunay_and_voronoi_tessellations.html">
+   Delaunay and Voronoi Tessalation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/network/stitching_and_merging_networks_together.html">
+   Stitching and Merging Networks
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/geometry/adjusting_pore_size_distributions.html">
+   Adjusting Pore Size Distributions
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/geometry/stick_and_ball.html">
+   The Stick and Ball Geometry
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/phase/empty_example.html">
+   Empty example!
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/physics/pore_scale_models.html">
+   Pore Scale Models
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/A_ordinary_percolation.html">
+   Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/B_invasion_percolation.html">
+   Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/C_mixed_invasion_percolation.html">
+   Mixed Invasion Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/D_meniscus_model_comparison.html">
+   Meniscus Model Comparison
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/capillary_pressure_curves.html">
+   Mercury Intrusion Porosimetry
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/relative_diffusivity.html">
+   Relative Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/percolation/relative_permeability_metrics.html">
+   Relative Permeability
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/steady_state/continuum_heat_transfer.html">
+   Fourier Conduction
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/steady_state/deep_dive_into_conductance_models.html">
+   Deep Dive into Conductance Models
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/steady_state/diffusion_with_concentration_dependent_diffusivity.html">
+   Fickian Diffusion with Variable Diffusivity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/steady_state/fickian_diffusion_and_tortuosity.html">
+   Fickian Diffusion and Tortuosity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/steady_state/stokes_flow_and_permeability_tensor.html">
+   Stokes Flow and Permeability Tensor
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/reactive/diffusion_with_source_and_sink_terms.html">
+   Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/transient/transient_advection_diffusion.html">
+   Transient Advection-Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/transient/transient_fickian_diffusion.html">
+   Transient Fickian Diffusion
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/transient/transient_fickian_diffusion_with_reaction.html">
+   Transient Fickian Diffusion with Reaction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../simulations/multiphysics/advection_diffusion.html">
+   Advection-Diffusion
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contrib/fibrous_media_based_on_voronoi_tessellation.html">
+   Fibrous Media with Voronoi Tessellations
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contrib/loading_statoil_finding_permeability.html">
+   Part 1: Import Networks from Statoil Files
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contrib/maze_solver.html">
+   Maze Solver
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contrib/ordinary_percolation.html">
+   Simulating Drainage with Ordinary Percolation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../contrib/predicting_effective_permeability_of_berea.html">
+   Predicting Permeability of Berea
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/class_inheritance/creating_a_custom_phase.html">
+   Creating a Custom Phase
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/class_inheritance/overview_of_inheritance.html">
+   Overview of Inheritance
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/data_management/data_and_topology_storage.html">
+   Storage of Network Data and Topology
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/data_management/data_exchange_between_objects.html">
+   Data Exchange Between Objects
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/data_management/interleaving_data.html">
+   Interleaving Data
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/data_management/using_and_creating_labels.html">
+   Using and Creating Labels
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/settings/deep_dive_into_the_settings_attribute.html">
+   Overview of the Settings Attribute
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/settings/understanding_basic_transport_settings.html">
+   Understanding Basic Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/settings/understanding_reactive_transport_settings.html">
+   Understanding Reactive Transport Settings
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/settings/understanding_transient_transport_settings.html">
+   Understanding Transient Transport Settings
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/solvers/available_matrix_solvers.html">
+   Available Matrix Solvers
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/workspace/overview_of_subdomains.html">
+   Overview of Subdomains
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/workspace/overview_of_workspace_and_projects.html">
+   The Workspace and Projects
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/uncategorized/intro_to_openpnm_advanced.html">
+   Tutorial 3 - Advanced
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/uncategorized/managing_geometrical_properties_of_imported_networks.html">
+   Geometry of Imported Networks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/uncategorized/overview_of_domain_syntax.html">
+   OpenPNM Version 3: The new @domain syntax
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/uncategorized/overview_of_shape_factors.html">
+   Overview of Shape Factors
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/uncategorized/the_problem_with_domain_length_and_area.html">
+   Problem with Domain Area and Length
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../reference/uncategorized/working_with_extracted_networks.html">
+   Working with Extracted Networks
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 0;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.jp-RenderedHTMLCommon thead,
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+.jp-RenderedHTMLCommon th,
+div.rendered_html th {
+  font-weight: bold;
+}
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.jp-RenderedHTMLCommon tbody tr:hover,
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<section id="Tutorial-2---Intermediate">
+<h1>Tutorial 2 - Intermediate<a class="headerlink" href="#Tutorial-2---Intermediate" title="Permalink to this headline">#</a></h1>
+<section id="Tutorial-2-of-3:-Digging-Deeper-into-OpenPNM">
+<h2>Tutorial 2 of 3: Digging Deeper into OpenPNM<a class="headerlink" href="#Tutorial-2-of-3:-Digging-Deeper-into-OpenPNM" title="Permalink to this headline">#</a></h2>
+<p>This tutorial will follow the same outline as <strong>Getting Started</strong>, but will dig a little bit deeper at each step to reveal the important features of OpenPNM that were glossed over previously.</p>
+<p><strong>Learning Objectives</strong></p>
+<ul class="simple">
+<li><p>Explore different network topologies, and learn some handy topological query methods</p></li>
+<li><p>Create a <em>heterogeneous</em> domain with different geometrical properties in different regions</p></li>
+<li><p>Learn about data exchange between objects</p></li>
+<li><p>Utilize pore-scale models for calculating properties of all types</p></li>
+<li><p>Propagate changing geometrical and thermo-physical properties to all dependent properties</p></li>
+<li><p>Calculate the permeability tensor for the stratified media</p></li>
+<li><p>Use the Workspace Manager to save and load a simulation</p></li>
+</ul>
+</section>
+<section id="Building-a-Cubic-Network">
+<h2>Building a Cubic Network<a class="headerlink" href="#Building-a-Cubic-Network" title="Permalink to this headline">#</a></h2>
+<p>As usual, start by importing the OpenPNM and Scipy packages:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;loglevel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">40</span>
+</pre></div>
+</div>
+</div>
+<p>Let’s generate a cubic network again, but with a different connectivity:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">connectivity</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>This <strong>Network</strong> has pores distributed in a cubic lattice, but connected to diagonal neighbors due to the <code class="docutils literal notranslate"><span class="pre">connectivity</span></code> being set to 14 (the default is 6 which is orthogonal neighbors). The various options are outlined in the <strong>Cubic</strong> class’s documentation which can be viewed with the Object Inspector in Spyder.</p></li>
+<li><p>OpenPNM includes several other classes for generating networks including random topology based on Delaunay tessellations (<strong>Delaunay</strong>).</p></li>
+<li><p>It is also possible to <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">networks</span> <span class="pre">&lt;data_io&gt;</span></code>_ from external sources, such as networks extracted from tomographic images, or that networks generated by external code.</p></li>
+</ul>
+</section>
+<section id="Initialize-and-Build-Multiple-Geometry-Objects">
+<h2>Initialize and Build <em>Multiple</em> Geometry Objects<a class="headerlink" href="#Initialize-and-Build-Multiple-Geometry-Objects" title="Permalink to this headline">#</a></h2>
+<p>One of the main functionalities of OpenPNM is the ability to assign drastically different geometrical properties to different regions of the domain to create heterogeneous materials, such as layered structures. To demonstrate the motivation behind this feature, this tutorial will make a material that has different geometrical properties on the top and bottom surfaces compared to the internal pores. We need to create one <strong>Geometry</strong> object to manage the top and bottom pores, and a second to
+manage the remaining internal pores:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps1</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">])</span>
+<span class="n">Ts1</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">)</span>
+<span class="n">geom1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps1</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;boundaries&#39;</span><span class="p">)</span>
+<span class="n">Ps2</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;not&#39;</span><span class="p">)</span>
+<span class="n">Ts2</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_neighbor_throats</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;xnor&#39;</span><span class="p">)</span>
+<span class="n">geom2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">GenericGeometry</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps2</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="n">Ts2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;core&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [3], line 3</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> Ps1 <span style="color: rgb(98,98,98)">=</span> pn<span style="color: rgb(98,98,98)">.</span>pores([<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">top</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">bottom</span><span style="color: rgb(175,0,0)">&#39;</span>])
+<span class="ansi-green-intense-fg ansi-bold">      2</span> Ts1 <span style="color: rgb(98,98,98)">=</span> pn<span style="color: rgb(98,98,98)">.</span>find_neighbor_throats(pores<span style="color: rgb(98,98,98)">=</span>Ps1, mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">union</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">----&gt; 3</span> geom1 <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">geometry</span><span style="color: rgb(98,98,98)">.</span>GenericGeometry(network<span style="color: rgb(98,98,98)">=</span>pn, pores<span style="color: rgb(98,98,98)">=</span>Ps1, throats<span style="color: rgb(98,98,98)">=</span>Ts1, name<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">boundaries</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">      4</span> Ps2 <span style="color: rgb(98,98,98)">=</span> pn<span style="color: rgb(98,98,98)">.</span>pores([<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">top</span><span style="color: rgb(175,0,0)">&#39;</span>, <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">bottom</span><span style="color: rgb(175,0,0)">&#39;</span>], mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">not</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">      5</span> Ts2 <span style="color: rgb(98,98,98)">=</span> pn<span style="color: rgb(98,98,98)">.</span>find_neighbor_throats(pores<span style="color: rgb(98,98,98)">=</span>Ps2, mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">xnor</span><span style="color: rgb(175,0,0)">&#39;</span>)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;geometry&#39;
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>The above statements result in two distinct <strong>Geometry</strong> objects, each applying to different regions of the domain. <code class="docutils literal notranslate"><span class="pre">geom1</span></code> applies to only the pores on the top and bottom surfaces (automatically labeled ‘top’ and ‘bottom’ during the network generation step), while <code class="docutils literal notranslate"><span class="pre">geom2</span></code> applies to the pores ‘not’ on the top and bottom surfaces.</p></li>
+<li><p>The assignment of throats is more complicated and illustrates the <code class="docutils literal notranslate"><span class="pre">find_neighbor_throats</span></code> method, which is one of the more useful <code class="docutils literal notranslate"><span class="pre">topological</span> <span class="pre">query</span> <span class="pre">methods</span> <span class="pre">&lt;topology&gt;</span></code>_ on the <strong>Network</strong> class. In both of these calls, all throats connected to the given set of pores (<code class="docutils literal notranslate"><span class="pre">Ps1</span></code> or <code class="docutils literal notranslate"><span class="pre">Ps2</span></code>) are found; however, the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument alters which throats are returned. The terms <code class="docutils literal notranslate"><span class="pre">'union'</span></code> and <code class="docutils literal notranslate"><span class="pre">'intersection'</span></code> are used in the “set theory” sense, such that <code class="docutils literal notranslate"><span class="pre">'union'</span></code> returns <em>all</em> throats
+connected to the pores in the supplied list, while <code class="docutils literal notranslate"><span class="pre">'intersection'</span></code> returns the throats that are <em>only</em> connected to the supplied pores. More specifically, if pores 1 and 2 have throats [1, 2] and [2, 3] as neighbors, respectively, then the <code class="docutils literal notranslate"><span class="pre">'union'</span></code> mode returns [1, 2, 3] and the <code class="docutils literal notranslate"><span class="pre">'intersection'</span></code> mode returns [2]. A detailed description of this behavior is given in :ref:<code class="docutils literal notranslate"><span class="pre">topology</span></code>.</p></li>
+</ul>
+<section id="Assign-Static-Seed-values-to-Each-Geometry">
+<h3>Assign Static Seed values to <em>Each</em> Geometry<a class="headerlink" href="#Assign-Static-Seed-values-to-Each-Geometry" title="Permalink to this headline">#</a></h3>
+<p>In :ref:<code class="docutils literal notranslate"><span class="pre">getting_started</span></code> we only assigned ‘static’ values to the <strong>Geometry</strong> object, which we calculated explicitly. In this tutorial we will use the <em>pore-scale models</em> that are provided with OpenPNM. To get started, however, we’ll assign static random seed values between 0 and 1 to each pore on both <strong>Geometry</strong> objects, by assigning random numbers to each Geometry’s <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> property:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">geom1</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.2</span>
+<span class="n">geom2</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">geom2</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.2</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [4], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> geom1[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>random<span style="color: rgb(98,98,98)">.</span>rand(<span class="ansi-yellow-bg">geom1</span><span style="color: rgb(98,98,98)">.</span>Np)<span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">0.5</span> <span style="color: rgb(98,98,98)">+</span> <span style="color: rgb(98,98,98)">0.2</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> geom2[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>random<span style="color: rgb(98,98,98)">.</span>rand(geom2<span style="color: rgb(98,98,98)">.</span>Np)<span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">0.5</span> <span style="color: rgb(98,98,98)">+</span> <span style="color: rgb(98,98,98)">0.2</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>Each of the above lines produced an array of different length, corresponding to the number of pores assigned to each <strong>Geometry</strong> object. This is accomplished by the calls to <code class="docutils literal notranslate"><span class="pre">geom1.Np</span></code> and <code class="docutils literal notranslate"><span class="pre">geom2.Np</span></code>, which return the number of pores on each object.</p></li>
+<li><p>Every Core object in OpenPNM possesses the same set of methods for managing their data, such as counting the number of pore and throat values they represent; thus, <code class="docutils literal notranslate"><span class="pre">pn.Np</span></code> returns 1000 while <code class="docutils literal notranslate"><span class="pre">geom1.Np</span></code> and <code class="docutils literal notranslate"><span class="pre">geom2.Np</span></code> return 200 and 800 respectively.</p></li>
+</ul>
+</section>
+<section id="Accessing-Data-Distributed-Between-Geometries">
+<h3>Accessing Data Distributed Between Geometries<a class="headerlink" href="#Accessing-Data-Distributed-Between-Geometries" title="Permalink to this headline">#</a></h3>
+<p>The segmentation of the data between separate Geometry objects is essential to the management of pore-scale models, although it does create a complication: it’s not easy to obtain a single array containing <em>all</em> the values of a given property for the whole network. It is technically possible to piece this data together manually since we know the locations where each <strong>Geometry</strong> object applies, but this is tedious so OpenPNM provides a shortcut. First, let’s illustrate the manual approach using
+the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values we have defined:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">seeds</span><span class="p">[</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">geom1</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">geom1</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span>
+<span class="n">seeds</span><span class="p">[</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">geom2</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">geom2</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">seeds</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># Ensure all zeros are overwritten</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [5], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> seeds <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>zeros_like(pn<span style="color: rgb(98,98,98)">.</span>Ps, dtype<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(0,135,0)">float</span>)
+<span class="ansi-green-fg">----&gt; 2</span> seeds[pn<span style="color: rgb(98,98,98)">.</span>pores(geom1<span style="color: rgb(98,98,98)">.</span>name)] <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">geom1</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>]
+<span class="ansi-green-intense-fg ansi-bold">      3</span> seeds[pn<span style="color: rgb(98,98,98)">.</span>pores(geom2<span style="color: rgb(98,98,98)">.</span>name)] <span style="color: rgb(98,98,98)">=</span> geom2[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>]
+<span class="ansi-green-intense-fg ansi-bold">      4</span> <span style="color: rgb(0,135,0)">print</span>(np<span style="color: rgb(98,98,98)">.</span>all(seeds <span style="color: rgb(98,98,98)">&gt;</span> <span style="color: rgb(98,98,98)">0</span>))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+<p>The following code illustrates the shortcut approach, which accomplishes the same result as above in a single line:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seeds</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+File <span class="ansi-green-fg">~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:203</span>, in <span class="ansi-cyan-fg">Base2.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">    202</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">--&gt; 203</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg" style="color: rgb(0,0,255)">__getitem__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    204</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>:
+<span class="ansi-green-intense-fg ansi-bold">    205</span>     <span style="color: rgb(95,135,135)"># If key is object&#39;s name or all, return ones</span>
+
+<span class="ansi-red-fg">KeyError</span>: &#39;pore.seed&#39;
+
+During handling of the above exception, another exception occurred:
+
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [6], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> seeds <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">pn</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">pore.seed</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span>
+
+File <span class="ansi-green-fg">~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:219</span>, in <span class="ansi-cyan-fg">Base2.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">    217</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> vals
+<span class="ansi-green-intense-fg ansi-bold">    218</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">--&gt; 219</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(key)
+
+<span class="ansi-red-fg">KeyError</span>: &#39;pore.seed&#39;
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>This shortcut works because the <code class="docutils literal notranslate"><span class="pre">pn</span></code> dictionary does not contain an array called <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code>, so all associated <strong>Geometry</strong> objects are then checked for the requested array(s). If it is found, then OpenPNM essentially performs the <em>interleaving</em> of the data as demonstrated by the manual approach and returns all the values together in a single full-size array. If it is not found, then a standard <em>KeyError</em> message is received.</p></li>
+<li><p>This exchange of data between <strong>Network</strong> and <strong>Geometry</strong> makes sense if you consider that <strong>Network</strong> objects act as a sort of master object relative <strong>Geometry</strong> objects. <strong>Networks</strong> apply to <em>all</em> pores and throats in the domain, while <strong>Geometries</strong> apply to subsets of the domain, so if the <strong>Network</strong> needs some values from all pores it has direct access.</p></li>
+</ul>
+</section>
+<section id="Add-Pore-Size-Distribution-Models-to-Each-Geometry">
+<h3>Add Pore Size Distribution Models to Each Geometry<a class="headerlink" href="#Add-Pore-Size-Distribution-Models-to-Each-Geometry" title="Permalink to this headline">#</a></h3>
+<p>Pore-scale models are mathematical functions that are applied to each pore (or throat) in the network to produce some local property value. Each of the modules in OpenPNM (Network, Geometry, Phase and Physics) have a “library” of pre-written models located under “models” (i.e. <em>Geometry.models</em>). Below this level, the models are further categorized according to what property they calculate, and there are typical 2-3 models for each. For instance, under <code class="docutils literal notranslate"><span class="pre">Geometry.models.pore_diameter</span></code> you will
+see <code class="docutils literal notranslate"><span class="pre">random</span></code>, <code class="docutils literal notranslate"><span class="pre">normal</span></code> and <code class="docutils literal notranslate"><span class="pre">weibull</span></code> among others.</p>
+<p>Pore size distribution models are assigned to each Geometry object as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
+                <span class="n">scale</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.00005</span><span class="p">,</span>
+                <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
+<span class="n">geom2</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">weibull</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.00005</span><span class="p">,</span>
+                <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [7], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">geom1</span><span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      2</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>geometry<span style="color: rgb(98,98,98)">.</span>pore_size<span style="color: rgb(98,98,98)">.</span>normal,
+<span class="ansi-green-intense-fg ansi-bold">      3</span>                 scale<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">0.00001</span>, loc<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">0.00005</span>,
+<span class="ansi-green-intense-fg ansi-bold">      4</span>                 seeds<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">      5</span> geom2<span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      6</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>geometry<span style="color: rgb(98,98,98)">.</span>pore_size<span style="color: rgb(98,98,98)">.</span>weibull,
+<span class="ansi-green-intense-fg ansi-bold">      7</span>                 shape<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1.2</span>, scale<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">0.00001</span>, loc<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">0.00005</span>,
+<span class="ansi-green-intense-fg ansi-bold">      8</span>                 seeds<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+<p>Pore-scale models tend to be the most complex (i.e. confusing) aspects of OpenPNM, so it’s worth dwelling on the important points of the above two commands:</p>
+<ul class="simple">
+<li><p>Both <code class="docutils literal notranslate"><span class="pre">geom1</span></code> and <code class="docutils literal notranslate"><span class="pre">geom2</span></code> have a <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute where the parameters specified in the <code class="docutils literal notranslate"><span class="pre">add</span></code> command are stored for future use if/when needed. The <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute actually contains a <strong>ModelsDict</strong> object which is a customized dictionary for storing and managing this type of information.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">propname</span></code> argument specifies which property the model calculates. This means that the numerical results of the model calculation will be saved in their respective <strong>Geometry</strong> objects as <code class="docutils literal notranslate"><span class="pre">geom1['pore.diameter']</span></code> and <code class="docutils literal notranslate"><span class="pre">geom2['pore.diameter']</span></code>.</p></li>
+<li><p>Each model stores it’s result under the same <code class="docutils literal notranslate"><span class="pre">propname</span></code> but these values do not conflict since each <strong>Geometry</strong> object presides over a unique subset of pores and throats.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">model</span></code> argument contains a <em>handle</em> to the desired function, which is extracted from the <em>models</em> library of the relevant <em>Module</em> (<strong>Geometry</strong> in this case). Each <strong>Geometry</strong> object has been assigned a different statistical model, <em>normal</em> and <em>weibull</em>. This ability to apply different models to different regions of the domain is reason multiple <strong>Geometry</strong> objects are permitted. The added complexity is well worth the added flexibility.</p></li>
+<li><p>The remaining arguments are those required by the chosen <em>model</em>. In the above cases, these are the parameters that define the statistical distribution. Note that the mean pore size for <code class="docutils literal notranslate"><span class="pre">geom1</span></code> will be 20 um (set by <code class="docutils literal notranslate"><span class="pre">scale</span></code>) while for <code class="docutils literal notranslate"><span class="pre">geom2</span></code> it will be 50 um, thus creating the smaller surface pores as intended. The pore-scale models are well documented regarding what arguments are required and their meaning; as usual these can be viewed with Object Inspector in Spyder.</p></li>
+</ul>
+<p>Now that we’ve added pore diameter models the each <strong>Geometry</strong> we can visualize the network in Paraview to confirm that distinctly different pore sizes on the surface regions:</p>
+<p><img alt="943f9dc4d17346d8b702102bbfdd5ca2" src="http://i.imgur.com/5F70ens.png" /></p>
+</section>
+<section id="Add-Additional-Pore-Scale-Models-to-Each-Geometry">
+<h3>Add Additional Pore-Scale Models to Each Geometry<a class="headerlink" href="#Add-Additional-Pore-Scale-Models-to-Each-Geometry" title="Permalink to this headline">#</a></h3>
+<p>In addition to pore diameter, there are several other geometrical properties needed to perform a permeability simulation. Let’s start with throat diameter:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+                <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
+<span class="n">geom2</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+                <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [8], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">geom1</span><span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      2</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>misc<span style="color: rgb(98,98,98)">.</span>from_neighbor_pores,
+<span class="ansi-green-intense-fg ansi-bold">      3</span>                 prop<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      4</span>                 mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">min</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">      5</span> geom2<span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      6</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>misc<span style="color: rgb(98,98,98)">.</span>from_neighbor_pores,
+<span class="ansi-green-intense-fg ansi-bold">      7</span>                 prop<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.diameter</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      8</span>                 mode<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">min</span><span style="color: rgb(175,0,0)">&#39;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">][</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+File <span class="ansi-green-fg">~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:203</span>, in <span class="ansi-cyan-fg">Base2.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">    202</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">--&gt; 203</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg" style="color: rgb(0,0,255)">__getitem__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">key</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    204</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>:
+<span class="ansi-green-intense-fg ansi-bold">    205</span>     <span style="color: rgb(95,135,135)"># If key is object&#39;s name or all, return ones</span>
+
+<span class="ansi-red-fg">KeyError</span>: &#39;pore.diameter&#39;
+
+During handling of the above exception, another exception occurred:
+
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [9], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">pn</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">pore.diameter</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span>[pn[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.conns</span><span style="color: rgb(175,0,0)">&#39;</span>]]
+
+File <span class="ansi-green-fg">~/work/OpenPNM/OpenPNM/openpnm/core/_base2.py:219</span>, in <span class="ansi-cyan-fg">Base2.__getitem__</span><span class="ansi-blue-fg">(self, key)</span>
+<span class="ansi-green-intense-fg ansi-bold">    217</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> vals
+<span class="ansi-green-intense-fg ansi-bold">    218</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">--&gt; 219</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(key)
+
+<span class="ansi-red-fg">KeyError</span>: &#39;pore.diameter&#39;
+</pre></div></div>
+</div>
+<p>Instead of using statistical distribution functions, the above lines use the <code class="docutils literal notranslate"><span class="pre">neighbor</span></code> model which determines each throat value based on the values found <code class="docutils literal notranslate"><span class="pre">'pore_prop'</span></code> from it’s neighboring pores. In this case, each throat is assigned the minimum pore diameter of it’s two neighboring pores. Other options for <code class="docutils literal notranslate"><span class="pre">mode</span></code> include <code class="docutils literal notranslate"><span class="pre">'max'</span></code> and <code class="docutils literal notranslate"><span class="pre">'mean'</span></code>.</p>
+<p>We’ll also need throat length as well as the cross-sectional area of pores and throats, for calculating the hydraulic conductance model later.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_size_factors&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">hydraulic_size_factors</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+<span class="n">geom2</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_size_factors&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">hydraulic_size_factors</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [10], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">geom1</span><span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_size_factors</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      2</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>geometry<span style="color: rgb(98,98,98)">.</span>hydraulic_size_factors<span style="color: rgb(98,98,98)">.</span>spheres_and_cylinders)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> geom2<span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_size_factors</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      4</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>geometry<span style="color: rgb(98,98,98)">.</span>hydraulic_size_factors<span style="color: rgb(98,98,98)">.</span>spheres_and_cylinders)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Create-a-Phase-Object-and-Assign-Thermophysical-Property-Models">
+<h2>Create a Phase Object and Assign Thermophysical Property Models<a class="headerlink" href="#Create-a-Phase-Object-and-Assign-Thermophysical-Property-Models" title="Permalink to this headline">#</a></h2>
+<p>For this tutorial, we will create a generic <strong>Phase</strong> object for water, then assign some pore-scale models for calculating their properties. Alternatively, we could use the prewritten <strong>Water</strong> class included in OpenPNM, which comes complete with the necessary pore-scale models, but this would defeat the purpose of the tutorial.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [11], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> water <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">phases</span><span style="color: rgb(98,98,98)">.</span>GenericPhase(network<span style="color: rgb(98,98,98)">=</span>pn)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> air <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>phases<span style="color: rgb(98,98,98)">.</span>GenericPhase(network<span style="color: rgb(98,98,98)">=</span>pn)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;phases&#39;
+</pre></div></div>
+</div>
+<p>Note that all <strong>Phase</strong> objects are automatically assigned standard temperature and pressure conditions when created. This can be adjusted:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">353</span>  <span class="c1"># K</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [12], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">water</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.temperature</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">353</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;water&#39; is not defined
+</pre></div></div>
+</div>
+<p>A variety of pore-scale models are available for calculating <strong>Phase</strong> properties, generally taken from correlations in the literature. An empirical correlation specifically for the viscosity of water is available:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">viscosity</span><span class="o">.</span><span class="n">water</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [13], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">water</span><span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.viscosity</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">      2</span>                 model<span style="color: rgb(98,98,98)">=</span>op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>phases<span style="color: rgb(98,98,98)">.</span>viscosity<span style="color: rgb(98,98,98)">.</span>water)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;water&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+<section id="Create-Physics-Objects-for-Each-Geometry">
+<h2>Create Physics Objects for Each Geometry<a class="headerlink" href="#Create-Physics-Objects-for-Each-Geometry" title="Permalink to this headline">#</a></h2>
+<p><strong>Physics</strong> objects are where geometric information and thermophysical properties are combined to produce the pore and throat scale transport parameters. Thus we need to create one <strong>Physics</strong> object for <em>EACH</em> <strong>Phase</strong> and <em>EACH</em> <strong>Geometry</strong>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">GenericPhysics</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geom1</span><span class="p">)</span>
+<span class="n">phys2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">GenericPhysics</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geom2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [14], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> phys1 <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">op</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">physics</span><span style="color: rgb(98,98,98)">.</span>GenericPhysics(network<span style="color: rgb(98,98,98)">=</span>pn, phase<span style="color: rgb(98,98,98)">=</span>water, geometry<span style="color: rgb(98,98,98)">=</span>geom1)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> phys2 <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>physics<span style="color: rgb(98,98,98)">.</span>GenericPhysics(network<span style="color: rgb(98,98,98)">=</span>pn, phase<span style="color: rgb(98,98,98)">=</span>water, geometry<span style="color: rgb(98,98,98)">=</span>geom2)
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;openpnm&#39; has no attribute &#39;physics&#39;
+</pre></div></div>
+</div>
+<p>Next add the Hagan-Poiseuille model to both:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mod</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">hydraulic_conductance</span><span class="o">.</span><span class="n">hagen_poiseuille</span>
+<span class="n">phys1</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
+<span class="n">phys2</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">mod</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [15], line 2</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mod <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>models<span style="color: rgb(98,98,98)">.</span>physics<span style="color: rgb(98,98,98)">.</span>hydraulic_conductance<span style="color: rgb(98,98,98)">.</span>hagen_poiseuille
+<span class="ansi-green-fg">----&gt; 2</span> <span class="ansi-yellow-bg">phys1</span><span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>, model<span style="color: rgb(98,98,98)">=</span>mod)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> phys2<span style="color: rgb(98,98,98)">.</span>add_model(propname<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>, model<span style="color: rgb(98,98,98)">=</span>mod)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys1&#39; is not defined
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>The same function (<code class="docutils literal notranslate"><span class="pre">mod</span></code>) was passed as the <code class="docutils literal notranslate"><span class="pre">model</span></code> argument to both <strong>Physics</strong> objects. This means that both objects will calculate the hydraulic conductance using the same function. A model <em>must</em> be assigned to both objects in order for the <code class="docutils literal notranslate"><span class="pre">'throat.hydraulic_conductance'</span></code> property be defined everywhere in the domain since each <strong>Physics</strong> applies to a unique selection of pores and throats.</p></li>
+<li><p>The “pore-scale model” mechanism was specifically designed to allow for users to easily create their own custom models. Creating custom models is outlined in :ref:<code class="docutils literal notranslate"><span class="pre">advanced_usage</span></code>.</p></li>
+</ul>
+<section id="Accessing-Data-Distributed-Between-Multiple-Physics-Objects">
+<h3>Accessing Data Distributed Between Multiple Physics Objects<a class="headerlink" href="#Accessing-Data-Distributed-Between-Multiple-Physics-Objects" title="Permalink to this headline">#</a></h3>
+<p>Just as <strong>Network</strong> objects can retrieve data from separate <strong>Geometries</strong> as a single array with values in the correct locations, <strong>Phase</strong> objects can retrieve data from <strong>Physics</strong> objects as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [16], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> g <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">water</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>]
+
+<span class="ansi-red-fg">NameError</span>: name &#39;water&#39; is not defined
+</pre></div></div>
+</div>
+<ul class="simple">
+<li><p>Each <strong>Physics</strong> applies to the same subset for pores and throats as the <strong>Geometries</strong> so its values are distributed spatially, but each <strong>Physics</strong> is also associated with a single <strong>Phase</strong> object. Consequently, only a <strong>Phase</strong> object can to request all of the values within the domain pertaining to itself.</p></li>
+<li><p>In other words, a <strong>Network</strong> object cannot aggregate the <strong>Physics</strong> data because it doesn’t know which <strong>Phase</strong> is referred to. For instance, when asking for <code class="docutils literal notranslate"><span class="pre">'throat.hydraulic_conductance'</span></code> it could refer to water or air conductivity, so it can only be requested by water or air.</p></li>
+</ul>
+</section>
+</section>
+<section id="Pore-Scale-Models:-The-Big-Picture">
+<h2>Pore-Scale Models: The Big Picture<a class="headerlink" href="#Pore-Scale-Models:-The-Big-Picture" title="Permalink to this headline">#</a></h2>
+<p>Having created all the necessary objects with pore-scale models, it is now time to demonstrate why the OpenPNM pore-scale model approach is so powerful. First, let’s inspect the current value of hydraulic conductance in throat 1 on <code class="docutils literal notranslate"><span class="pre">phys1</span></code> and <code class="docutils literal notranslate"><span class="pre">phys2</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">g1</span> <span class="o">=</span> <span class="n">phys1</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span>  <span class="c1"># Save this for later</span>
+<span class="n">g2</span> <span class="o">=</span> <span class="n">phys2</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span>  <span class="c1"># Save this for later</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [17], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> g1 <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">phys1</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>]  <span style="color: rgb(95,135,135)"># Save this for later</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> g2 <span style="color: rgb(98,98,98)">=</span> phys2[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>]
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys1&#39; is not defined
+</pre></div></div>
+</div>
+<p>Now, let’s alter the <strong>Geometry</strong> objects by assigning new random seeds, and adjust the temperature of <code class="docutils literal notranslate"><span class="pre">water</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">geom1</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+<span class="n">geom2</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">geom2</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+<span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">370</span>  <span class="c1"># K</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [18], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> geom1[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>random<span style="color: rgb(98,98,98)">.</span>rand(<span class="ansi-yellow-bg">geom1</span><span style="color: rgb(98,98,98)">.</span>Np)
+<span class="ansi-green-intense-fg ansi-bold">      2</span> geom2[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.seed</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>random<span style="color: rgb(98,98,98)">.</span>rand(geom2<span style="color: rgb(98,98,98)">.</span>Np)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> water[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.temperature</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">370</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+<p>So far we have not run the <code class="docutils literal notranslate"><span class="pre">regenerate</span></code> command on any of these objects, which means that the above changes have not yet been applied to all the dependent properties. Let’s do this and examine what occurs at each step:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geom1</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">geom2</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [19], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">geom1</span><span style="color: rgb(98,98,98)">.</span>regenerate_models()
+<span class="ansi-green-intense-fg ansi-bold">      2</span> geom2<span style="color: rgb(98,98,98)">.</span>regenerate_models()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;geom1&#39; is not defined
+</pre></div></div>
+</div>
+<p>These two lines trigger the re-calculation of all the size related models on each <strong>Geometry</strong> object.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">water</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [20], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">water</span><span style="color: rgb(98,98,98)">.</span>regenerate_models()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;water&#39; is not defined
+</pre></div></div>
+</div>
+<p>This line causes the viscosity to be recalculated at the new temperature. Let’s confirm that the hydraulic conductance has NOT yet changed since we have not yet regenerated the <strong>Physics</strong> objects’ models:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">phys1</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">g1</span><span class="p">))</span>  <span class="c1"># g1 was saved above</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [21], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(np<span style="color: rgb(98,98,98)">.</span>all(<span class="ansi-yellow-bg">phys1</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">==</span> g1))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys1&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">phys2</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">g2</span><span class="p">)</span> <span class="p">)</span> <span class="c1"># g2 was saved above</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [22], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(np<span style="color: rgb(98,98,98)">.</span>all(<span class="ansi-yellow-bg">phys2</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">==</span> g2) )
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys2&#39; is not defined
+</pre></div></div>
+</div>
+<p>Finally, if we regenerate <code class="docutils literal notranslate"><span class="pre">phys1</span></code> and <code class="docutils literal notranslate"><span class="pre">phys2</span></code> we can see that the hydraulic conductance will be updated to reflect the new sizes on the <strong>Geometries</strong> <em>and</em> the new temperature on the <strong>Phase</strong>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys1</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">phys2</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [23], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">phys1</span><span style="color: rgb(98,98,98)">.</span>regenerate_models()
+<span class="ansi-green-intense-fg ansi-bold">      2</span> phys2<span style="color: rgb(98,98,98)">.</span>regenerate_models()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys1&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">phys1</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">g1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [24], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(np<span style="color: rgb(98,98,98)">.</span>all(<span class="ansi-yellow-bg">phys1</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">!=</span> g1))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys1&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">phys2</span><span class="p">[</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">g2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [25], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(np<span style="color: rgb(98,98,98)">.</span>all(<span class="ansi-yellow-bg">phys2</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">throat.hydraulic_conductance</span><span style="color: rgb(175,0,0)">&#39;</span>] <span style="color: rgb(98,98,98)">!=</span> g2))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;phys2&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+<section id="Determine-Permeability-Tensor-by-Changing-Inlet-and-Outlet-Boundary-Conditions">
+<h2>Determine Permeability Tensor by Changing Inlet and Outlet Boundary Conditions<a class="headerlink" href="#Determine-Permeability-Tensor-by-Changing-Inlet-and-Outlet-Boundary-Conditions" title="Permalink to this headline">#</a></h2>
+<p>The <a class="reference internal" href="intro_to_openpnm_basic.html"><span class="doc">Getting started Tutorial</span></a> already demonstrated the process of performing a basic permeability simulation. In this tutorial, we’ll perform the simulation in all three perpendicular dimensions to obtain the permeability tensor of our heterogeneous anisotropic material.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [26], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> alg <span style="color: rgb(98,98,98)">=</span> op<span style="color: rgb(98,98,98)">.</span>algorithms<span style="color: rgb(98,98,98)">.</span>StokesFlow(network<span style="color: rgb(98,98,98)">=</span>pn, phase<span style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">water</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;water&#39; is not defined
+</pre></div></div>
+</div>
+<p>Set boundary conditions for flow in the X-direction:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="mi">202650</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">))</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="mi">101325</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [27], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>set_value_BC(values<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">202650</span>, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">back</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      2</span> alg<span style="color: rgb(98,98,98)">.</span>set_value_BC(values<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">101325</span>, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">front</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      3</span> alg<span style="color: rgb(98,98,98)">.</span>run()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>The resulting pressure field can be seen using Paraview:</p>
+<p><img alt="f729ef1e721f44518a1bc3fc64b87a1b" src="http://i.imgur.com/ugX0LFG.png" /></p>
+<p>To determine the permeability coefficient we must find the flow rate through the network to use in Darcy’s law. The <strong>StokesFlow</strong> class (and all analogous transport algorithms) possess a <code class="docutils literal notranslate"><span class="pre">rate</span></code> method that calculates the net transport through a given set of pores:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [28], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> Q <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>rate(pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">back</span><span style="color: rgb(175,0,0)">&#39;</span>))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>To find K, we need to solve Darcy’s law: Q = KA/(mu*L)(P_in - P_out). This requires knowing the viscosity and macroscopic network dimensions:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [29], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> mu <span style="color: rgb(98,98,98)">=</span> np<span style="color: rgb(98,98,98)">.</span>mean(<span class="ansi-yellow-bg">water</span>[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pore.viscosity</span><span style="color: rgb(175,0,0)">&#39;</span>])
+
+<span class="ansi-red-fg">NameError</span>: name &#39;water&#39; is not defined
+</pre></div></div>
+</div>
+<p>The dimensions of the network can be determined manually from the <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">spacing</span></code> specified during its generation:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="mf">0.0001</span>
+<span class="n">A</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.0001</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The pressure drop was specified as 1 atm when setting boundary conditions, so <code class="docutils literal notranslate"><span class="pre">Kxx</span></code> can be found as:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Kxx</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="mi">101325</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [31], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> Kxx <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">Q</span> <span style="color: rgb(98,98,98)">*</span> mu <span style="color: rgb(98,98,98)">*</span> L <span style="color: rgb(98,98,98)">/</span> (A <span style="color: rgb(98,98,98)">*</span> <span style="color: rgb(98,98,98)">101325</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;Q&#39; is not defined
+</pre></div></div>
+</div>
+<p>We can either create 2 new <strong>Algorithm</strong> objects to perform the simulations in the other two directions, or reuse <code class="docutils literal notranslate"><span class="pre">alg</span></code> by adjusting the boundary conditions and re-running it.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="mi">202650</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="mi">101325</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [32], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>set_value_BC(values<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">202650</span>, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">left</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      2</span> alg<span style="color: rgb(98,98,98)">.</span>set_value_BC(values<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">101325</span>, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">right</span><span style="color: rgb(175,0,0)">&#39;</span>))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [33], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>run()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>The first call to <code class="docutils literal notranslate"><span class="pre">set_boundary_conditions</span></code> used the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> mode, which replaces all existing boundary conditions on the <code class="docutils literal notranslate"><span class="pre">alg</span></code> object with the specified values. The second call uses the <code class="docutils literal notranslate"><span class="pre">merge</span></code> mode which adds new boundary conditions to any already present, which is the default behavior.</p>
+<p>A new value for the flow rate must be recalculated, but all other parameters are equal to the X-direction:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">))</span>
+<span class="n">Kyy</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="mi">101325</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [34], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> Q <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>rate(pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">left</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      2</span> Kyy <span style="color: rgb(98,98,98)">=</span> Q <span style="color: rgb(98,98,98)">*</span> mu <span style="color: rgb(98,98,98)">*</span> L <span style="color: rgb(98,98,98)">/</span> (A <span style="color: rgb(98,98,98)">*</span> <span style="color: rgb(98,98,98)">101325</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>The values of <code class="docutils literal notranslate"><span class="pre">Kxx</span></code> and <code class="docutils literal notranslate"><span class="pre">Kyy</span></code> should be nearly identical since both these two directions are parallel to the small surface pores. For the Z-direction:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="mi">202650</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">))</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="mi">101325</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">))</span>
+<span class="n">alg</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [35], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>set_value_BC(values<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">202650</span>, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">top</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      2</span> alg<span style="color: rgb(98,98,98)">.</span>set_value_BC(values<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">101325</span>, pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">bottom</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      3</span> alg<span style="color: rgb(98,98,98)">.</span>run()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">))</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mf">0.0001</span>
+<span class="n">A</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.0001</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Kzz</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="mi">101325</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [36], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> Q <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">alg</span><span style="color: rgb(98,98,98)">.</span>rate(pores<span style="color: rgb(98,98,98)">=</span>pn<span style="color: rgb(98,98,98)">.</span>pores(<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">top</span><span style="color: rgb(175,0,0)">&#39;</span>))
+<span class="ansi-green-intense-fg ansi-bold">      2</span> L <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">10</span> <span style="color: rgb(98,98,98)">*</span> <span style="color: rgb(98,98,98)">0.0001</span>
+<span class="ansi-green-intense-fg ansi-bold">      3</span> A <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">20</span> <span style="color: rgb(98,98,98)">*</span> <span style="color: rgb(98,98,98)">20</span> <span style="color: rgb(98,98,98)">*</span> (<span style="color: rgb(98,98,98)">0.0001</span><span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">2</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;alg&#39; is not defined
+</pre></div></div>
+</div>
+<p>The permeability in the Z-direction is about half that in the other two directions due to the constrictions caused by the small surface pores.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[37]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">Kxx</span><span class="p">,</span> <span class="n">Kyy</span><span class="p">,</span> <span class="n">Kzz</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In [37], line 1</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">Kxx</span>, Kyy, Kzz)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;Kxx&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Tutorial-2-of-3:-Digging-Deeper-into-OpenPNM">
+   Tutorial 2 of 3: Digging Deeper into OpenPNM
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Building-a-Cubic-Network">
+   Building a Cubic Network
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Initialize-and-Build-Multiple-Geometry-Objects">
+   Initialize and Build
+   <em>
+    Multiple
+   </em>
+   Geometry Objects
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Assign-Static-Seed-values-to-Each-Geometry">
+     Assign Static Seed values to
+     <em>
+      Each
+     </em>
+     Geometry
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Accessing-Data-Distributed-Between-Geometries">
+     Accessing Data Distributed Between Geometries
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Add-Pore-Size-Distribution-Models-to-Each-Geometry">
+     Add Pore Size Distribution Models to Each Geometry
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Add-Additional-Pore-Scale-Models-to-Each-Geometry">
+     Add Additional Pore-Scale Models to Each Geometry
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Create-a-Phase-Object-and-Assign-Thermophysical-Property-Models">
+   Create a Phase Object and Assign Thermophysical Property Models
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Create-Physics-Objects-for-Each-Geometry">
+   Create Physics Objects for Each Geometry
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Accessing-Data-Distributed-Between-Multiple-Physics-Objects">
+     Accessing Data Distributed Between Multiple Physics Objects
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Pore-Scale-Models:-The-Big-Picture">
+   Pore-Scale Models: The Big Picture
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Determine-Permeability-Tensor-by-Changing-Inlet-and-Outlet-Boundary-Conditions">
+   Determine Permeability Tensor by Changing Inlet and Outlet Boundary Conditions
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, PMEAL.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

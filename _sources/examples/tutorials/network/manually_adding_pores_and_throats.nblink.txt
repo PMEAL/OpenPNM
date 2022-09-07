@@ -1,0 +1,3 @@
+{    
+    "path": "../../../../examples/tutorials/network/manually_adding_pores_and_throats.ipynb"
+}

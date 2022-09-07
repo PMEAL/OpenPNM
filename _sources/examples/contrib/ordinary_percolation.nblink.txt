@@ -1,0 +1,3 @@
+{    
+    "path": "../../../examples/contrib/ordinary_percolation.ipynb"
+}

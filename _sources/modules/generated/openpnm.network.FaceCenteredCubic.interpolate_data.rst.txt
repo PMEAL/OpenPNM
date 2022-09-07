@@ -1,8 +1,0 @@
-:orphan:
-
-interpolate_data
-==================================================
-
-.. currentmodule:: openpnm.network
-
-.. automethod:: FaceCenteredCubic.interpolate_data
