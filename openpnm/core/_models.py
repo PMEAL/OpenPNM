@@ -494,8 +494,8 @@ class ModelsMixin2:
         Runs the requested model and places the result into the correct
         locations.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         propname : str
             The name of the model to run. If a domain is included in the
             propname (i.e. '@domain') or ``domain`` is specified, then it

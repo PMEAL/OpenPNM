@@ -77,7 +77,7 @@ def water_correlation(
     References
     ----------
     [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
-    Water Treatment, 2010.
+        Water Treatment, 2010.
 
     """
     T = phase[T]
@@ -124,7 +124,6 @@ def liquid_mixture_COSTALD(
     %(Tcs)s
     %(Vcs)s
     %(omegas)s
-
 
     Returns
     -------
