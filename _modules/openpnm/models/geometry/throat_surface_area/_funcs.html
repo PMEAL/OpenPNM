@@ -192,31 +192,29 @@
                 
   <h1>Source code for openpnm.models.geometry.throat_surface_area._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span>
            <span class="s2">&quot;cuboid&quot;</span><span class="p">,</span>
            <span class="s2">&quot;extrusion&quot;</span><span class="p">,</span>
            <span class="s2">&quot;rectangle&quot;</span><span class="p">]</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.cylinder.html#openpnm.models.geometry.throat_surface_area.cylinder">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.throat_surface_area&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-             <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.cylinder.html#openpnm.models.geometry.throat_surface_area.cylinder">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate surface area for a cylindrical throat</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tlen)s</span>
-<span class="sd">    thorat_area : str</span>
-<span class="sd">        Name of the dictionary key on ``network`` where the array containing</span>
-<span class="sd">        throat area values is stored</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -227,47 +225,56 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.cuboid.html#openpnm.models.geometry.throat_surface_area.cuboid">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-           <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.cuboid.html#openpnm.models.geometry.throat_surface_area.cuboid">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate surface area for a cuboid throat</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_surface_area.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_surface_area.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="extrusion"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.extrusion.html#openpnm.models.geometry.throat_surface_area.extrusion">[docs]</a><span class="k">def</span> <span class="nf">extrusion</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
-              <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="extrusion"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.extrusion.html#openpnm.models.geometry.throat_surface_area.extrusion">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">extrusion</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate surface area for an arbitrary shaped throat give the perimeter</span>
 <span class="sd">    and length.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tlen)s</span>
-<span class="sd">    throat_perimeter : str</span>
-<span class="sd">        Dictionary key to the throat perimeter array.  Default is</span>
-<span class="sd">        &#39;throat.perimeter&#39;.</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Pt)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_surface_area.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_perimeter</span><span class="p">]</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.rectangle.html#openpnm.models.geometry.throat_surface_area.rectangle">[docs]</a><span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_surface_area.rectangle.html#openpnm.models.geometry.throat_surface_area.rectangle">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate surface area for a rectangular throat</span>
 
@@ -275,12 +282,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tlen)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_surface_area.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span></div>

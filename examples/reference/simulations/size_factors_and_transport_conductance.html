@@ -369,8 +369,23 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conductance-in-pore-network-models">
+   Conductance in pore network models
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conductance-of-a-single-conduit">
+   Conductance of a single conduit
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#size-factors-vs-shape-factors">
    Size factors vs. shape factors
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#built-in-size-factor-models-in-openpnm">
+   Built-in size factor models in OpenPNM
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -416,6 +431,8 @@
                 
   <section class="tex2jax_ignore mathjax_ignore" id="size-factors-and-transport-conductance">
 <h1>Size Factors and Transport Conductance<a class="headerlink" href="#size-factors-and-transport-conductance" title="Permalink to this heading">#</a></h1>
+<section id="conductance-in-pore-network-models">
+<h2>Conductance in pore network models<a class="headerlink" href="#conductance-in-pore-network-models" title="Permalink to this heading">#</a></h2>
 <p>Consider an arbitrary pore network model such as the one shown below:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png"><img alt="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" src="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" style="width: 400px;" /></a>
 <p>For simulating transport in this network, we need to know lots of parameters such as pore sizes, physical properties, etc, but ultimately it comes down to knowing the conductance of the “conduits” in the network. For example, consider simulating Fickian diffusion in a pore network model under steady state conditions. Writing a mass balance around an arbitrary pore <span class="math notranslate nohighlight">\(i\)</span>, we have:</p>
@@ -424,8 +441,9 @@
 \sum_k^{Nb^i} m_{ik} = \sum_k^{Nb^i} g_{ik} (c_i - c_k) = 0
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(Nb^i\)</span> is the number of neighboring pores to pore <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(m_{ik}\)</span> is the mass flow rate from pore <span class="math notranslate nohighlight">\(i\)</span> to pore <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the overall conductance of the conduit containing pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and the connecting throat <span class="math notranslate nohighlight">\(ik\)</span>. In simple terms, it means that any mass that enters/exits pore <span class="math notranslate nohighlight">\(i\)</span> must balance such that the net rate is 0. Writing the mass balance for each pore, we get a linear system of <span class="math notranslate nohighlight">\(N_p\)</span> equations (where <span class="math notranslate nohighlight">\(N_p\)</span> is the total number of pores in the network), which can be solved for the pore concentrations using a linear solver.</p>
-<section id="size-factors-vs-shape-factors">
-<h2>Size factors vs. shape factors<a class="headerlink" href="#size-factors-vs-shape-factors" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="conductance-of-a-single-conduit">
+<h2>Conductance of a single conduit<a class="headerlink" href="#conductance-of-a-single-conduit" title="Permalink to this heading">#</a></h2>
 <p>Consider a conduit in a pore network model, as shown by the following figure (we assumed spherical pores and cylindrical throats, but this is not necessary):</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
 <p>where L is length, A is the cross-sectional area, and the subscripts <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(ik\)</span> denote pore <span class="math notranslate nohighlight">\(i\)</span>, pore <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>. Now, consider the diffusional mass transfer between pore <span class="math notranslate nohighlight">\(i\)</span> and pore <span class="math notranslate nohighlight">\(k\)</span> with a mass flow rate of <span class="math notranslate nohighlight">\(m_{ik}\)</span>, which can be described by the following equation:</p>
@@ -455,6 +473,9 @@ R_{ik} = R_i^p + R_k^p + R_{ik}^t
 <span class="eqno">(3)<a class="headerlink" href="#equation-diffusive-size-factors-cylindrical" title="Permalink to this equation">#</a></span>\[
 g_i^p = D \frac{\pi d_i^2/4}{\ell_i} \quad , \quad g_k^p = D \frac{\pi d_k^2/4}{\ell_k} \quad , \quad g_{ik}^t = D \frac{\pi d_{ik}^2/4}{\ell_{ik}}
 \]</div>
+</section>
+<section id="size-factors-vs-shape-factors">
+<h2>Size factors vs. shape factors<a class="headerlink" href="#size-factors-vs-shape-factors" title="Permalink to this heading">#</a></h2>
 <p>In reality, however, pores/throats are not cylindrical, and the diffusive conductance needs to be <strong>corrected</strong>. This correction factor is called the <strong>shape factor</strong> in the network modeling literature, as defined by the following equation:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -480,10 +501,14 @@ g = \mathcal{S} \cdot D
 g = \mathcal{S} \cdot \frac{1}{\mu}
 \]</div>
 <p>for fluid flow, where <span class="math notranslate nohighlight">\(\mu\)</span> is the viscosity.</p>
-<p>OpenPNM has a number of built-in functions to calculate the size factor, which can be found under <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry</span></code>, and <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry</span></code>. Let’s inspect the available diffusive size factor models:</p>
+</section>
+<section id="built-in-size-factor-models-in-openpnm">
+<h2>Built-in size factor models in OpenPNM<a class="headerlink" href="#built-in-size-factor-models-in-openpnm" title="Permalink to this heading">#</a></h2>
+<p>OpenPNM has a number of built-in functions to calculate the size factor, which can be found under <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry</span></code>. Let’s inspect the available diffusive and hydraulic size factor models:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">loglevel</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">diffusive_size_factors</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">diffusive_size_factors</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diffusive_size_factors</span><span class="o">.</span><span class="n">_funcs</span><span class="o">.</span><span class="n">__all__</span><span class="p">))</span>
 </pre></div>
@@ -509,9 +534,36 @@ ncylinders_in_series
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="n">hydraulic_size_factors</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">hydraulic_size_factors</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">hydraulic_size_factors</span><span class="o">.</span><span class="n">_funcs</span><span class="o">.</span><span class="n">__all__</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>spheres_and_cylinders
+circles_and_rectangles
+cones_and_cylinders
+intersecting_cones
+hybrid_cones_and_cylinders
+trapezoids_and_rectangles
+intersecting_trapezoids
+hybrid_trapezoids_and_rectangles
+pyramids_and_cuboids
+intersecting_pyramids
+hybrid_pyramids_and_cuboids
+cubes_and_cuboids
+squares_and_rectangles
+ncylinders_in_series
+</pre></div>
+</div>
+</div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Note that the diffusive size factor models can be used for any physics that involves molecular diffusion such as heat conduction, electron transport, etc, and therefore, it is not limited to the <em>diffusive <strong>mass</strong> transport</em>. The hydraulic size factor models, however, are only applicable to fluid flow algorithms such as <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code>.</p>
+<p>The diffusive size factor models can be used for any physics that involves molecular diffusion such as heat conduction, electron transport, etc, and therefore, it is not limited to the diffusive <strong>mass</strong> transport. The hydraulic size factor models, however, are only applicable to fluid flow algorithms such as <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code>.</p>
 </div>
 </section>
 <section id="deriving-the-size-factor-for-arbitrary-shaped-pores-and-throats">
@@ -573,7 +625,7 @@ A_i = \pi d_i^2/4 \quad , \quad A_k = \pi d_k^2/4 \quad , \quad A_{ik} = \pi d_{
 \[
 \mathcal{S}_{i}^p = \frac{\pi d_i^2}{4 \cdot \ell_i} \quad , \quad \mathcal{S}_{ik}^t = \frac{\pi d_{ik}^2}{4 \cdot \ell_{ik}} \quad , \quad \mathcal{S}_{k}^p = \frac{\pi d_k^2}{4 \cdot \ell_k}
 \]</div>
-<p>which confirms what we have seen in the previous section in equation <a class="reference internal" href="#equation-diffusive-size-factors-cylindrical">(3)</a>.</p>
+<p>which matches what we declared earlier in equation <a class="reference internal" href="#equation-diffusive-size-factors-cylindrical">(3)</a>.</p>
 </section>
 <section id="hydraulic-size-factor">
 <h3>Hydraulic size factor<a class="headerlink" href="#hydraulic-size-factor" title="Permalink to this heading">#</a></h3>
@@ -638,7 +690,7 @@ I_p^* = \frac{1}{4 \pi}
 \[
 \mathcal{S}_{i}^p = \frac{\pi d_i^4}{128} \quad , \quad \mathcal{S}_{ik}^t = \frac{\pi d_{ik}^4}{128} \quad , \quad \mathcal{S}_{k}^p = \frac{\pi d_k^4}{128}
 \]</div>
-<p>To confirm the above results, we can inspect the Hagen-Poiseuille equation for a cylindrical conduit <a class="footnote-reference brackets" href="#hagen-poiseuille-wikipedia" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>:</p>
+<p>To verify the above results, we can inspect the Hagen-Poiseuille equation for a cylindrical conduit <a class="footnote-reference brackets" href="#hagen-poiseuille-wikipedia" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>:</p>
 <div class="math notranslate nohighlight">
 \[
 \Delta p = \frac{8 \pi \mu \ell Q}{A^2} \Rightarrow \frac{Q}{\Delta p} = \frac{A^2}{8 \pi \mu \ell} = \frac{\pi d^4}{128 \mu \ell}
@@ -648,14 +700,14 @@ I_p^* = \frac{1}{4 \pi}
 \[
 \mathcal{S} = \frac{\pi d^4}{128 \ell}
 \]</div>
-<p>which confirms our derivation.</p>
+<p>which matches our derivation.</p>
 </section>
 </section>
 <section id="conduit-vs-element-size-factor">
 <h2>Conduit vs. element size factor<a class="headerlink" href="#conduit-vs-element-size-factor" title="Permalink to this heading">#</a></h2>
 <p>So far, we have derived individual equations for the size factor of each conduit element as well the entire conduit (based on resistors in series model). Note that eventually, only the size factor of the entire conduit is used by the algorithms, although as we discussed, it is directly calculated from the size factors of the individual elements.</p>
-<p>Almost all of the built-in size factor models in OpenPNM return an <code class="docutils literal notranslate"><span class="pre">Nt</span></code> by 3 array, where <code class="docutils literal notranslate"><span class="pre">Nt</span></code> is the number of conduits (same as the number of throats!). The first column is the size factor of the pore on the left side of the conduit, the second column is the size factor of the throat, and the third column is the size factor of the pore on the right side of the conduit.</p>
-<p>However, we do have one model (at the time of writing this notebook) that uses a machine learning method <a class="footnote-reference brackets" href="#misghaian-2022" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> to predict the diffusive size factor of the <strong>entire conduit</strong> directly from a voxel image of the porous medium. For this reason, it only returns an <code class="docutils literal notranslate"><span class="pre">Nt</span></code> by 1 vector. Our built-in conductance models (which take in the size factor and physical properties as input and return the conductance) are designed to work with both types of size factor models.</p>
+<p>Almost all of the built-in size factor models in OpenPNM return an Nt by 3 array, where Nt is the number of conduits (same as the number of throats!). The first column is the size factor of the pore on the left side of the conduit, the second column is the size factor of the throat, and the third column is the size factor of the pore on the right side of the conduit.</p>
+<p>However, we do have one model (at the time of writing this notebook) that uses a machine learning method <a class="footnote-reference brackets" href="#misghaian-2022" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> to predict the diffusive size factor of the <strong>entire conduit</strong> directly from a voxel image of the porous medium. For this reason, it only returns an Nt by 1 vector. Our built-in conductance models (which take in the size factor and physical properties as input and return the conductance) are designed to work with both types of size factor models.</p>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="akbari-2011" role="note">

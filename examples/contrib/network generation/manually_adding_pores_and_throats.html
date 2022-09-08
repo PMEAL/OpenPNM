@@ -244,12 +244,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
-  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
-</pre></div>
-</div>
-</div>
 </div>
 <p>We’ll start with something simple, by adding a single pore and throat to a 2D network:</p>
 <div class="cell docutils container">
@@ -284,7 +278,7 @@
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_coordinates&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/42c4dd7ce819811065dd4c358a1873567e73f73462ba44587aa16ae2005cac30.svg" src="../../../_images/42c4dd7ce819811065dd4c358a1873567e73f73462ba44587aa16ae2005cac30.svg" /></div>
+<img alt="../../../_images/06b6d59bd1a24982f8e001b53849fab6344794a58e3b323ff6aed26cb5197d53.svg" src="../../../_images/06b6d59bd1a24982f8e001b53849fab6344794a58e3b323ff6aed26cb5197d53.svg" /></div>
 </div>
 <p>Note that we’ve only added a pore, but not specified any connections to other pores.  This requires quite a bit more thought than adding pore coords.  The original network had 25 pores, number 0 to 24 (due to python’s 0 indexing), so this new pore is number 25.  Specifying connections requires explicitly stating which pores are connected to which according to the pore index.</p>
 </section>

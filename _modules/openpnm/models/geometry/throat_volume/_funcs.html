@@ -192,7 +192,7 @@
                 
   <h1>Source code for openpnm.models.geometry.throat_volume._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span>
@@ -201,22 +201,22 @@
            <span class="s2">&quot;extrusion&quot;</span><span class="p">,</span>
            <span class="s2">&quot;lens&quot;</span><span class="p">,</span>
            <span class="s2">&quot;pendular_ring&quot;</span><span class="p">]</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.cylinder.html#openpnm.models.geometry.throat_volume.cylinder">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.throat_volume&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
-             <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cylinder"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.cylinder.html#openpnm.models.geometry.throat_volume.cylinder">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">cylinder</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat volume assuing a cylindrical shape</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tlen)s</span>
-<span class="sd">    %(models.geometry.tdia)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -237,19 +237,23 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.cuboid.html#openpnm.models.geometry.throat_volume.cuboid">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
-           <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cuboid"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.cuboid.html#openpnm.models.geometry.throat_volume.cuboid">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">cuboid</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat volume assuing a square cross-section</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_volume.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_volume.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -263,19 +267,23 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.rectangle.html#openpnm.models.geometry.throat_volume.rectangle">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
-              <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="rectangle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.rectangle.html#openpnm.models.geometry.throat_volume.rectangle">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">rectangle</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat volume assuing a rectangular shape</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.throat_volume.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Lt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_volume.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -285,23 +293,24 @@
     <span class="k">return</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_length</span><span class="p">]</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_diameter</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="extrusion"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.extrusion.html#openpnm.models.geometry.throat_volume.extrusion">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">extrusion</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
-              <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="extrusion"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.extrusion.html#openpnm.models.geometry.throat_volume.extrusion">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">extrusion</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_length</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+    <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat volume from the throat area and the throat length. This</span>
 <span class="sd">    method is useful for abnormal shaped throats.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tlen)s</span>
-<span class="sd">    %(models.geometry.tarea)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Lt)s</span>
+<span class="sd">    %(At)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_volume.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -315,9 +324,12 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="lens"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.lens.html#openpnm.models.geometry.throat_volume.lens">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">lens</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-         <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="lens"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.lens.html#openpnm.models.geometry.throat_volume.lens">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">lens</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the volume residing the hemispherical caps formed by the</span>
 <span class="sd">    intersection between cylindrical throats and spherical pores.</span>
@@ -327,13 +339,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tdia)s</span>
-<span class="sd">    %(models.geometry.pdia)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Dp)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_volume.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -356,9 +367,12 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="pendular_ring"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.pendular_ring.html#openpnm.models.geometry.throat_volume.pendular_ring">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">pendular_ring</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
-                  <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="pendular_ring"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_volume.pendular_ring.html#openpnm.models.geometry.throat_volume.pendular_ring">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">pendular_ring</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the volume of the pendular rings residing between the end of</span>
 <span class="sd">    a cylindrical throat and spherical pores that are in contact but not</span>
@@ -369,13 +383,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.tdia)s</span>
-<span class="sd">    %(models.geometry.pdia)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dt)s</span>
+<span class="sd">    %(Dp)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.throat_volume.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

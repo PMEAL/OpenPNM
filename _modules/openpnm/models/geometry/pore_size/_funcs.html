@@ -193,8 +193,9 @@
   <h1>Source code for openpnm.models.geometry.pore_size._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
 <span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">misc</span> <span class="k">as</span> <span class="n">_misc</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;weibull&quot;</span><span class="p">,</span>
@@ -206,8 +207,8 @@
     <span class="s2">&quot;equivalent_diameter&quot;</span>
 <span class="p">]</span>
 
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="weibull"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.weibull.html#openpnm.models.geometry.pore_size.weibull">[docs]</a><span class="k">def</span> <span class="nf">weibull</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">):</span>
@@ -250,15 +251,19 @@
 <span class="n">from_neighbor_throats</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_misc</span><span class="o">.</span><span class="n">from_neighbor_throats</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
-<div class="viewcode-block" id="largest_sphere"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.largest_sphere.html#openpnm.models.geometry.pore_size.largest_sphere">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">largest_sphere</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">fixed_diameter</span><span class="o">=</span><span class="s1">&#39;pore.fixed_diameter&#39;</span><span class="p">,</span> <span class="n">iters</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="largest_sphere"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.largest_sphere.html#openpnm.models.geometry.pore_size.largest_sphere">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">largest_sphere</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">fixed_diameter</span><span class="o">=</span><span class="s1">&#39;pore.fixed_diameter&#39;</span><span class="p">,</span>
+    <span class="n">iters</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the maximum diameter pore that can be placed in each location without</span>
 <span class="sd">    overlapping any neighbors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(network)s</span>
 <span class="sd">    fixed_diameter : str</span>
 <span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
 <span class="sd">        pore diameter values is stored, if any. If not provided a starting</span>
@@ -280,8 +285,7 @@
 <span class="sd">    encompass half of the distance to the nearest neighbor.  If the neighbor</span>
 <span class="sd">    is not growing because it&#39;s already touching a different neighbor, then</span>
 <span class="sd">    the given pore will never quite touch this neighbor.  Increasing the value</span>
-<span class="sd">    of ``iters`` will get it closer, but it&#39;s case of</span>
-<span class="sd">    `Zeno&#39;s paradox &lt;https://en.wikipedia.org/wiki/Zeno%27s_paradoxes&gt;`_ with</span>
+<span class="sd">    of ``iters`` will get it closer, but it&#39;s case of Zeno&#39;s paradox with</span>
 <span class="sd">    each step cutting the remaining distance in half.</span>
 
 <span class="sd">    This model looks into all pores in the network when finding the diameter.</span>
@@ -321,19 +325,20 @@
     <span class="k">return</span> <span class="n">D</span></div>
 
 
-<div class="viewcode-block" id="equivalent_diameter"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.equivalent_diameter.html#openpnm.models.geometry.pore_size.equivalent_diameter">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">equivalent_diameter</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
-                        <span class="n">pore_shape</span><span class="o">=</span><span class="s1">&#39;sphere&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="equivalent_diameter"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.equivalent_diameter.html#openpnm.models.geometry.pore_size.equivalent_diameter">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">equivalent_diameter</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+    <span class="n">pore_shape</span><span class="o">=</span><span class="s1">&#39;sphere&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the diameter of a sphere or edge-length of a cube with same</span>
 <span class="sd">    volume as the pore.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    pore_volume : str</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
-<span class="sd">        pore volume values is stored</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Vp)s</span>
 <span class="sd">    pore_shape : str</span>
 <span class="sd">        The shape of the pore body to assume when back-calculating from</span>
 <span class="sd">        volume.  Options are &#39;sphere&#39; (default) or &#39;cube&#39;.</span>

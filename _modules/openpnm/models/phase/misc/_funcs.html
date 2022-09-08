@@ -192,10 +192,7 @@
                 
   <h1>Source code for openpnm.models.phase.misc._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
-
-
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -204,15 +201,20 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="mix_and_match"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.misc.mix_and_match.html#openpnm.models.phase.misc.mix_and_match">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">mix_and_match</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">occupancy</span><span class="p">):</span>
+<div class="viewcode-block" id="mix_and_match"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.misc.mix_and_match.html#openpnm.models.phase.misc.mix_and_match">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">mix_and_match</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">prop</span><span class="p">,</span>
+    <span class="n">phases</span><span class="p">,</span>
+    <span class="n">occupancy</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the given property by looking it up from a list of given phases</span>
 <span class="sd">    based on occupancy.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    prop : str</span>
 <span class="sd">        The dictionary key to the array containing the pore/throat property to</span>
 <span class="sd">        be used in the calculation.</span>
@@ -239,10 +241,23 @@
     <span class="k">return</span> <span class="n">values</span></div>
 
 
-<div class="viewcode-block" id="mole_to_mass_fraction"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.misc.mole_to_mass_fraction.html#openpnm.models.phase.misc.mole_to_mass_fraction">[docs]</a><span class="k">def</span> <span class="nf">mole_to_mass_fraction</span><span class="p">(</span>
+<div class="viewcode-block" id="mole_to_mass_fraction"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.misc.mole_to_mass_fraction.html#openpnm.models.phase.misc.mole_to_mass_fraction">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">mole_to_mass_fraction</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert mole fraction to mass fraction</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(MWs)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">MWs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span>
     <span class="n">xs</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
     <span class="n">ms</span> <span class="o">=</span> <span class="p">{}</span>
@@ -254,25 +269,6 @@
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">xs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">ms</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">ms</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">/</span><span class="n">denom</span>
     <span class="k">return</span> <span class="n">ms</span></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </pre></div>
 
               </article>

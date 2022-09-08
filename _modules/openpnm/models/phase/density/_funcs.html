@@ -191,11 +191,8 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for openpnm.models.phase.density._funcs</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
-<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
+<span></span><span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -219,6 +216,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    %(T)s</span>
 <span class="sd">    %(P)s</span>
 <span class="sd">    %(MW)s</span>
@@ -254,6 +252,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    %(T)s</span>
 <span class="sd">    %(salinity)s</span>
 
@@ -390,6 +389,10 @@
 <span class="sd">    %(Vc)s</span>
 <span class="sd">    %(omega)s</span>
 <span class="sd">    %(MW)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Vc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Vc</span><span class="p">]</span>
     <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>

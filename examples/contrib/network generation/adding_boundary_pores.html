@@ -240,12 +240,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
-  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
-</pre></div>
-</div>
-</div>
 </div>
 <p>Start by creating a Delaunay network.  Because it uses random base points it will better illustrate the process of adding boundary pores to arbitrary networks:</p>
 <div class="cell docutils container">
@@ -257,7 +251,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Delaunay at 0x7f74e49727c0&gt;
+net : &lt;openpnm.network.Delaunay at 0x7f09490c2ae0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -298,7 +292,7 @@ net : &lt;openpnm.network.Delaunay at 0x7f74e49727c0&gt;
 <span class="ne">AttributeError</span>: module &#39;openpnm.topotools&#39; has no attribute &#39;plot_connections&#39;
 </pre></div>
 </div>
-<img alt="../../../_images/d55334f4fffcb082cb511d51668311b08ede171eb770910164375193bfbb25a6.svg" src="../../../_images/d55334f4fffcb082cb511d51668311b08ede171eb770910164375193bfbb25a6.svg" /></div>
+<img alt="../../../_images/cd8270f4ebf70c4b6010f7d332caa09932d71b538ef53e8ddd85d94051950444.svg" src="../../../_images/cd8270f4ebf70c4b6010f7d332caa09932d71b538ef53e8ddd85d94051950444.svg" /></div>
 </div>
 <p>For the purpose of this tutorial, we will trim these boundary pores from the network since we’ll be adding our own.</p>
 <div class="cell docutils container">

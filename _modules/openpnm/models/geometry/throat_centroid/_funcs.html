@@ -192,21 +192,22 @@
                 
   <h1>Source code for openpnm.models.geometry.throat_centroid._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pore_coords&quot;</span><span class="p">]</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="pore_coords"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_centroid.pore_coords.html#openpnm.models.geometry.throat_centroid.pore_coords">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">pore_coords</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<div class="viewcode-block" id="pore_coords"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_centroid.pore_coords.html#openpnm.models.geometry.throat_centroid.pore_coords">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">pore_coords</span><span class="p">(</span>
+    <span class="n">network</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate throat centroid values by averaging adjacent pore coordinates</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
+<span class="sd">    %(network)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -214,11 +215,9 @@
 <span class="sd">        A numpy ndarray containing throat centroid values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-    <span class="n">Ts</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
     <span class="n">coords</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">conns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="n">Ts</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="n">conns</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
               </article>

@@ -192,10 +192,7 @@
                 
   <h1>Source code for openpnm.models.phase.vapor_pressure._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
-
-
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -205,28 +202,28 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="water_correlation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.vapor_pressure.water_correlation.html#openpnm.models.phase.vapor_pressure.water_correlation">[docs]</a><span class="k">def</span> <span class="nf">water_correlation</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="water_correlation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.vapor_pressure.water_correlation.html#openpnm.models.phase.vapor_pressure.water_correlation">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">water_correlation</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span> <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates vapor pressure of pure water or seawater given by [1] based on</span>
 <span class="sd">    Raoult&#39;s law. The pure water vapor pressure is given by [2]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.phase.T)s</span>
-<span class="sd">    salinity : str</span>
-<span class="sd">        The dictionary key containing the phase salinity values</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(salinity)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.phase.vapor_pressure.returns)s</span>
+
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">     T must be in K, and S in g of salt per kg of phase, or ppt (parts per</span>
 <span class="sd">        thousand)</span>
 <span class="sd">    VALIDITY: 273 &lt; T &lt; 473 K; 0 &lt; S &lt; 240 g/kg;</span>
-<span class="sd">    ACCURACY: 0.5 %</span>
+<span class="sd">    ACCURACY: 0.5 percent</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -252,7 +249,8 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="liquid_pure_lk"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.vapor_pressure.liquid_pure_lk.html#openpnm.models.phase.vapor_pressure.liquid_pure_lk">[docs]</a><span class="k">def</span> <span class="nf">liquid_pure_lk</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_pure_lk"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.vapor_pressure.liquid_pure_lk.html#openpnm.models.phase.vapor_pressure.liquid_pure_lk">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_pure_lk</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
@@ -260,8 +258,23 @@
     <span class="n">omega</span><span class="o">=</span><span class="s1">&#39;param.acentric_factor&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the vapor pressure of a pure liquid using the correlation in [1]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(Tc)s</span>
+<span class="sd">    %(Pc)s</span>
+<span class="sd">    %(omega)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Lee and Kesler</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Lee Kesler method</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
     <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span><span class="o">/</span><span class="n">Tc</span>
@@ -274,12 +287,34 @@
     <span class="k">return</span> <span class="n">Pvap</span></div>
 
 
-<div class="viewcode-block" id="liquid_pure_antoine"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.vapor_pressure.liquid_pure_antoine.html#openpnm.models.phase.vapor_pressure.liquid_pure_antoine">[docs]</a><span class="k">def</span> <span class="nf">liquid_pure_antoine</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_pure_antoine"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.vapor_pressure.liquid_pure_antoine.html#openpnm.models.phase.vapor_pressure.liquid_pure_antoine">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_pure_antoine</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the vapor pressure of a pure liquid using Antoine&#39;s equation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(Tc)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] RPP</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Coefficients are looked up from the ``chemicals`` package. If values for</span>
+<span class="sd">    &quot;extended&quot; version are not found then the normal 3-coefficient values are</span>
+<span class="sd">    sought.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># either antoine or extended antoine using constants from RPP</span>
     <span class="n">CAS</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CAS&#39;</span><span class="p">]</span>

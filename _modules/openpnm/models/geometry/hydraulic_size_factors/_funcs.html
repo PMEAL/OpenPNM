@@ -193,7 +193,7 @@
   <h1>Source code for openpnm.models.geometry.hydraulic_size_factors._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 <span class="kn">import</span> <span class="nn">openpnm.models.geometry.conduit_lengths</span> <span class="k">as</span> <span class="nn">_conduit_lengths</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -212,12 +212,9 @@
     <span class="s2">&quot;squares_and_rectangles&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ncylinders_in_series&quot;</span>
 <span class="p">]</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.hydraulic_size_factor&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">,</span> <span class="s1">&#39;Notes&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="spheres_and_cylinders"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.spheres_and_cylinders">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">spheres_and_cylinders</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -229,9 +226,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.pdia)s</span>
-<span class="sd">    %(models.geometry.tdia)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -282,7 +279,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="circles_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="circles_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.circles_and_rectangles">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">circles_and_rectangles</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -294,15 +291,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
@@ -323,7 +320,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="cones_and_cylinders"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="cones_and_cylinders"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.cones_and_cylinders">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">cones_and_cylinders</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -335,18 +332,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="mi">1</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">cones_and_cylinders</span><span class="p">(</span>
         <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
         <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
@@ -369,7 +366,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="intersecting_cones"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_cones.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_cones">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="intersecting_cones"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_cones.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_cones">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">intersecting_cones</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -380,18 +377,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="mi">1</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">intersecting_cones</span><span class="p">(</span>
         <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
         <span class="n">throat_coords</span><span class="o">=</span><span class="n">throat_coords</span>
@@ -412,7 +409,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="hybrid_cones_and_cylinders"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.hybrid_cones_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.hybrid_cones_and_cylinders">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="hybrid_cones_and_cylinders"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.hybrid_cones_and_cylinders.html#openpnm.models.geometry.hydraulic_size_factors.hybrid_cones_and_cylinders">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">hybrid_cones_and_cylinders</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -424,18 +421,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Tcoords)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="mi">1</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
     <span class="n">L1</span><span class="p">,</span> <span class="n">Lt</span><span class="p">,</span> <span class="n">L2</span> <span class="o">=</span> <span class="n">_conduit_lengths</span><span class="o">.</span><span class="n">hybrid_cones_and_cylinders</span><span class="p">(</span>
         <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
         <span class="n">pore_diameter</span><span class="o">=</span><span class="n">pore_diameter</span><span class="p">,</span>
@@ -465,7 +462,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.trapezoids_and_rectangles">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">trapezoids_and_rectangles</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -477,16 +474,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
-
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
@@ -509,7 +505,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="intersecting_trapezoids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="intersecting_trapezoids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_trapezoids">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">intersecting_trapezoids</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -521,16 +517,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Tcoords)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
-
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
@@ -553,7 +548,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="hybrid_trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.hybrid_trapezoids_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.hybrid_trapezoids_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="hybrid_trapezoids_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.hybrid_trapezoids_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.hybrid_trapezoids_and_rectangles">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">hybrid_trapezoids_and_rectangles</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -565,16 +560,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Tcoords)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
-
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
@@ -607,7 +601,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="pyramids_and_cuboids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="pyramids_and_cuboids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.pyramids_and_cuboids">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">pyramids_and_cuboids</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -619,15 +613,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
@@ -653,7 +647,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="intersecting_pyramids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="intersecting_pyramids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids.html#openpnm.models.geometry.hydraulic_size_factors.intersecting_pyramids">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">intersecting_pyramids</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -664,15 +658,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Tcoords)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
@@ -696,7 +690,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="hybrid_pyramids_and_cuboids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.hybrid_pyramids_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.hybrid_pyramids_and_cuboids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="hybrid_pyramids_and_cuboids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.hybrid_pyramids_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.hybrid_pyramids_and_cuboids">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">hybrid_pyramids_and_cuboids</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -708,15 +702,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Tcoords)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
@@ -750,7 +744,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="cubes_and_cuboids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="cubes_and_cuboids"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids.html#openpnm.models.geometry.hydraulic_size_factors.cubes_and_cuboids">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">cubes_and_cuboids</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -764,7 +758,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 <span class="sd">    pore_aspect : list</span>
 <span class="sd">        Aspect ratio of the pores</span>
 <span class="sd">    throat_aspect : list</span>
@@ -772,11 +768,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
@@ -802,7 +796,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="squares_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="squares_and_rectangles"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles.html#openpnm.models.geometry.hydraulic_size_factors.squares_and_rectangles">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">squares_and_rectangles</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -816,7 +810,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 <span class="sd">    pore_aspect : list</span>
 <span class="sd">        Aspect ratio of the pores</span>
 <span class="sd">    throat_aspect : list</span>
@@ -824,12 +820,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
-
 <span class="sd">    This model should only be used for true 2D networks, i.e. with planar</span>
 <span class="sd">    symmetry.</span>
 
@@ -852,7 +845,7 @@
     <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">S1</span><span class="p">,</span> <span class="n">St</span><span class="p">,</span> <span class="n">S2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="ncylinders_in_series"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series.html#openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="ncylinders_in_series"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series.html#openpnm.models.geometry.hydraulic_size_factors.ncylinders_in_series">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">ncylinders_in_series</span><span class="p">(</span>
     <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">,</span>
@@ -865,17 +858,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 <span class="sd">    n : int</span>
 <span class="sd">        Number of cylindrical divisions for each pore</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.returns)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    %(models.geometry.hydraulic_size_factor.notes)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">D1</span><span class="p">,</span> <span class="n">Dt</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="n">pore_diameter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>

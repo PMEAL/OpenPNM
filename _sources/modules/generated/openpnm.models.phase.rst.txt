@@ -47,7 +47,6 @@ phase
       openpnm.models.phase.misc
       openpnm.models.phase.mixtures
       openpnm.models.phase.partition_coefficient
-      openpnm.models.phase.phasedocs
       openpnm.models.phase.surface_tension
       openpnm.models.phase.thermal_conductivity
       openpnm.models.phase.vapor_pressure

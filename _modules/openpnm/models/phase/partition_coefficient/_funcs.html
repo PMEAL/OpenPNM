@@ -195,35 +195,37 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gaseous_species_in_water&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="gaseous_species_in_water"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.partition_coefficient.gaseous_species_in_water.html#openpnm.models.phase.partition_coefficient.gaseous_species_in_water">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
+<div class="viewcode-block" id="gaseous_species_in_water"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.partition_coefficient.gaseous_species_in_water.html#openpnm.models.phase.partition_coefficient.gaseous_species_in_water">[docs]</a><span class="nd">@_phasedocs</span>
 <span class="k">def</span> <span class="nf">gaseous_species_in_water</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
-    <span class="n">chemical_formula</span><span class="p">,</span>
-    <span class="n">T</span><span class="o">=</span><span class="s2">&quot;throat.temperature&quot;</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="s2">&quot;throat.temperature&quot;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate Henry&#39;s law constant for gaseous species dissolved in water.</span>
+<span class="sd">    Calculate Henry&#39;s law constant for gaseous species dissolved in water</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    chemical_formula : str</span>
-<span class="sd">        Chemical formula of the dissolving species.</span>
-<span class="sd">    %(models.phase.T)s</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    H : ndarray</span>
 <span class="sd">        A numpy ndarray containing Henry&#39;s law constant (Kpx) [atm/mol-frac]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The constant for the correlation a lookup using the chemical formula</span>
+<span class="sd">    stored in ``phase.params[&#39;formula&#39;]``.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -238,15 +240,13 @@
     <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;../&quot;</span><span class="p">)</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="n">fname</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="n">row</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Formula</span> <span class="o">==</span> <span class="n">chemical_formula</span><span class="p">]</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Formula</span> <span class="o">==</span> <span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;formula&#39;</span><span class="p">]]</span>
     <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
-
+    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">Tmin</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">Tmax</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;The correlation is only accurate for temperatures in the &quot;</span>
                         <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;range of </span><span class="si">{</span><span class="n">Tmin</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">K and </span><span class="si">{</span><span class="n">Tmax</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">K!&quot;</span><span class="p">)</span>
-
     <span class="n">Hpx_log10</span> <span class="o">=</span> <span class="n">A</span> <span class="o">+</span> <span class="n">B</span><span class="o">/</span><span class="n">T</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">D</span><span class="o">*</span><span class="n">T</span>
     <span class="k">return</span> <span class="mi">10</span><span class="o">**</span><span class="n">Hpx_log10</span></div>
 </pre></div>

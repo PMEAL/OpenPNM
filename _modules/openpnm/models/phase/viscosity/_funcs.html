@@ -193,6 +193,7 @@
   <h1>Source code for openpnm.models.phase.viscosity._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">openpnm.models.phase.mixtures</span> <span class="kn">import</span> <span class="n">mixing_rule</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.phase</span> <span class="kn">import</span> <span class="n">_phasedocs</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -206,27 +207,24 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="water_correlation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.water_correlation.html#openpnm.models.phase.viscosity.water_correlation">[docs]</a><span class="k">def</span> <span class="nf">water_correlation</span><span class="p">(</span>
+<div class="viewcode-block" id="water_correlation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.water_correlation.html#openpnm.models.phase.viscosity.water_correlation">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">water_correlation</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">salinity</span><span class="o">=</span><span class="s1">&#39;pore.salinity&#39;</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates viscosity of pure water or seawater at atmospheric pressure</span>
-<span class="sd">    using Eq. (22) given by Sharqawy et. al [1]. Values at temperature higher</span>
-<span class="sd">    than the normal boiling temperature are calculated at the saturation</span>
-<span class="sd">    pressure.</span>
+<span class="sd">    Calculates viscosity of pure water or seawater at atmospheric pressure.</span>
+
+<span class="sd">    This correlation uses Eq. (22) given by Sharqawy et. al [1]. Values at</span>
+<span class="sd">    temperature higher than the normal boiling temperature are calculated</span>
+<span class="sd">    at the saturation pressure.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phase : Phase</span>
-<span class="sd">        The object for which these values are being calculated.</span>
-<span class="sd">    temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values. Temperature must</span>
-<span class="sd">        be in Kelvin for this emperical equation to work.</span>
-<span class="sd">    salinity : str</span>
-<span class="sd">        The dictionary key containing the salinity values. Salinity must be</span>
-<span class="sd">        expressed in g of salt per kg of solution (ppt).</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(salinity)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -238,7 +236,7 @@
 <span class="sd">     T must be in K, and S in g of salt per kg of phase, or ppt (parts per</span>
 <span class="sd">        thousand)</span>
 <span class="sd">    VALIDITY: 273 &lt; T &lt; 453 K; 0 &lt; S &lt; 150 g/kg;</span>
-<span class="sd">    ACCURACY: 1.5 %</span>
+<span class="sd">    ACCURACY: 1.5 percent</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -271,12 +269,30 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
+<span class="nd">@_phasedocs</span>
 <span class="k">def</span> <span class="nf">air_correlation</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">n_V</span><span class="o">=</span><span class="s1">&#39;pore.molar_density&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the viscosity of air at given conditions</span>
+
+<span class="sd">    This model uses the correlation from [1].</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(n_V)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] I forget</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;This function does not work yet&quot;</span><span class="p">)</span>
     <span class="c1"># Get props from object</span>
@@ -308,13 +324,33 @@
     <span class="k">return</span> <span class="n">mu</span>
 
 
-<div class="viewcode-block" id="gas_pure_st"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_st.html#openpnm.models.phase.viscosity.gas_pure_st">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_st</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_pure_st"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_st.html#openpnm.models.phase.viscosity.gas_pure_st">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_pure_st</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
     <span class="n">Pc</span><span class="o">=</span><span class="s1">&#39;param.critical_pressure&#39;</span><span class="p">,</span>
     <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
 <span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the viscosity of a pure gas using the correlation in [1]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(Tc)s</span>
+<span class="sd">    %(Pc)s</span>
+<span class="sd">    %(MW)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Stiel and Thodos</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#  stiel-thodos</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
@@ -332,7 +368,8 @@
     <span class="k">return</span> <span class="n">mu</span><span class="o">/</span><span class="mi">1000</span></div>
 
 
-<div class="viewcode-block" id="gas_pure_gesmr"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_gesmr.html#openpnm.models.phase.viscosity.gas_pure_gesmr">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_gesmr</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_pure_gesmr"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_gesmr.html#openpnm.models.phase.viscosity.gas_pure_gesmr">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_pure_gesmr</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
@@ -340,8 +377,23 @@
     <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the viscosity of a pure gas using the correlation  [1]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(Tc)s</span>
+<span class="sd">    %(Pc)s</span>
+<span class="sd">    %(MW)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Gharagheizi et al</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Gharagheizi method from chemicals</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
     <span class="n">Pc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Pc</span><span class="p">]</span>
@@ -354,7 +406,8 @@
     <span class="k">return</span> <span class="n">mu</span></div>
 
 
-<div class="viewcode-block" id="gas_pure_cls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_cls.html#openpnm.models.phase.viscosity.gas_pure_cls">[docs]</a><span class="k">def</span> <span class="nf">gas_pure_cls</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_pure_cls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_cls.html#openpnm.models.phase.viscosity.gas_pure_cls">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_pure_cls</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
@@ -362,23 +415,15 @@
     <span class="n">Vc</span><span class="o">=</span><span class="s1">&#39;param.critical_volume&#39;</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses Chung et al. [1] model to estimate viscosity for gases at low</span>
-<span class="sd">    pressure (much less than the critical pressure) at conditions of interest.</span>
+<span class="sd">    Calculates the viscosity of a pure gas using the correlation of [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phase : Phase</span>
-<span class="sd">        The object for which these values are being calculated.  This</span>
-<span class="sd">        controls the length of the calculated array, and also provides</span>
-<span class="sd">        access to other necessary thermofluid properties.</span>
-<span class="sd">    temperatre: str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    critical_temperature : str</span>
-<span class="sd">        The dictionary key containing the temperature values (K)</span>
-<span class="sd">    molecular_weight: str</span>
-<span class="sd">        The dictionary key containing the molecular weight values (kg/mol)</span>
-<span class="sd">    critical_volume : str</span>
-<span class="sd">        The dictionary key containing the critical volume values (m3/kmol)</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(Tc)s</span>
+<span class="sd">    %(Pc)s</span>
+<span class="sd">    %(MW)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -410,31 +455,30 @@
     <span class="k">return</span> <span class="n">value</span></div>
 
 
-<div class="viewcode-block" id="gas_mixture_hz"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_mixture_hz.html#openpnm.models.phase.viscosity.gas_mixture_hz">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_hz</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_mixture_hz"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_mixture_hz.html#openpnm.models.phase.viscosity.gas_mixture_hz">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_mixture_hz</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">mus</span><span class="o">=</span><span class="s1">&#39;pore.viscosity.*&#39;</span><span class="p">,</span>
     <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the viscosity of a gas mixture using a custom written version</span>
-<span class="sd">    of ``chemicals.viscosity.Herning_Zipperer``</span>
+<span class="sd">    Computes the viscosity of a gas mixture using the correlation in [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phase : dict</span>
-<span class="sd">        The openpnm object to which this model applies</span>
-<span class="sd">    molecular_weight : str</span>
-<span class="sd">        The location of the molecular weights of each species. The default is</span>
-<span class="sd">        ``&#39;param.molecular_weight&#39;``</span>
-<span class="sd">    viscosity : str</span>
-<span class="sd">        The locaiton of the viscosities for each individual species.  The</span>
-<span class="sd">        default is ``&#39;pore.viscosity&#39;``.</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(mus)s</span>
+<span class="sd">    %(MWs)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    mu : ndarray</span>
 <span class="sd">        An ndarray of Np length containing the viscosity of the mixture in</span>
 <span class="sd">        each pore</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Herning and Zipperer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">MWs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span>
     <span class="n">mus</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">mus</span><span class="p">)</span>
@@ -448,7 +492,8 @@
     <span class="k">return</span> <span class="n">mu</span></div>
 
 
-<div class="viewcode-block" id="liquid_pure_ls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.liquid_pure_ls.html#openpnm.models.phase.viscosity.liquid_pure_ls">[docs]</a><span class="k">def</span> <span class="nf">liquid_pure_ls</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_pure_ls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.liquid_pure_ls.html#openpnm.models.phase.viscosity.liquid_pure_ls">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_pure_ls</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
@@ -457,8 +502,28 @@
     <span class="n">omega</span><span class="o">=</span><span class="s1">&#39;param.acentric_factor&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the viscosity of a pure liquid using the correlation in [1]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
+<span class="sd">    %(MW)s</span>
+<span class="sd">    %(Tc)s</span>
+<span class="sd">    %(Pc)s</span>
+<span class="sd">    %(omega)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mu : ndarray</span>
+<span class="sd">        An ndarray of Np length containing the viscosity of the mixture in</span>
+<span class="sd">        each pore</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Letsou and Stiel</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Letsou_Stiel</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
     <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>

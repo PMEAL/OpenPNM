@@ -212,9 +212,10 @@
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates thermal conductivity of pure water or seawater at atmospheric</span>
-<span class="sd">    pressure using the correlation given by Jamieson and Tudhope. Values at</span>
-<span class="sd">    temperature higher  the normal boiling temperature are calculated at the</span>
-<span class="sd">    saturation pressure.</span>
+<span class="sd">    pressure using the correlation given [1].</span>
+
+<span class="sd">    Values at temperature higher the normal boiling temperature are calculated</span>
+<span class="sd">    at the saturation pressure.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -235,7 +236,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.</span>
+<span class="sd">    [1] D. T. Jamieson, and J. S. Tudhope, Desalination, 8, 393-401, 1970.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
@@ -268,6 +269,8 @@
     <span class="n">omega</span><span class="o">=</span><span class="s1">&#39;param.acentric_factor&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the thermal conductivty of a pure gas using the correlation in</span>
+<span class="sd">    [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -281,8 +284,11 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] gharagheizi method: doi:10.1002/aic.13938</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># gharagheizi method: doi:10.1002/aic.13938</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
     <span class="n">Tb</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tb</span><span class="p">]</span>
@@ -308,6 +314,8 @@
     <span class="n">omega</span><span class="o">=</span><span class="s1">&#39;param.acentric_factor&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the thermal conductivity of a pure liquid using the correlation</span>
+<span class="sd">    in [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -321,8 +329,11 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] gharagheizi method: doi:10.1002/aic.13938</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># gharagheizi method: doi:10.1002/aic.13938</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
     <span class="n">Tb</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tb</span><span class="p">]</span>
@@ -344,8 +355,8 @@
     <span class="n">Tb</span><span class="o">=</span><span class="s1">&#39;param.boiling_temperature&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Uses Sato et al. model to estimate thermal conductivity for pure liquids</span>
-<span class="sd">    from first principles at conditions of interest</span>
+<span class="sd">    Calculates the thermal conductivity of a pure liquid using the correlation</span>
+<span class="sd">    in [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -359,6 +370,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    value : ndarray</span>
 <span class="sd">        A numpy ndarray containing thermal conductivity values in [W/m.K]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Sato et al</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
@@ -379,6 +394,8 @@
     <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the thermal conductivity of a liquid mixture using the</span>
+<span class="sd">    correlation in [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -389,6 +406,10 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] DIPPR9I</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This function is not ready yet&quot;</span><span class="p">)</span>
@@ -409,12 +430,15 @@
     <span class="k">return</span> <span class="n">kmix</span>
 
 
-<div class="viewcode-block" id="liquid_mixture_DIPPR9H"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.thermal_conductivity.liquid_mixture_DIPPR9H.html#openpnm.models.phase.thermal_conductivity.liquid_mixture_DIPPR9H">[docs]</a><span class="k">def</span> <span class="nf">liquid_mixture_DIPPR9H</span><span class="p">(</span>
+<div class="viewcode-block" id="liquid_mixture_DIPPR9H"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.thermal_conductivity.liquid_mixture_DIPPR9H.html#openpnm.models.phase.thermal_conductivity.liquid_mixture_DIPPR9H">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">liquid_mixture_DIPPR9H</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">ks</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity.*&#39;</span><span class="p">,</span>
     <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the thermal conductivity of a liquid mixture using the</span>
+<span class="sd">    correlation in [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -425,8 +449,11 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] DIPPR9H</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># DIPPR9H</span>
     <span class="n">xs</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
     <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">MWs</span><span class="p">)</span>
     <span class="n">ks</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span>
@@ -437,25 +464,30 @@
     <span class="k">return</span> <span class="n">kmix</span></div>
 
 
-<div class="viewcode-block" id="gas_mixture_whz"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.thermal_conductivity.gas_mixture_whz.html#openpnm.models.phase.thermal_conductivity.gas_mixture_whz">[docs]</a><span class="k">def</span> <span class="nf">gas_mixture_whz</span><span class="p">(</span>
+<div class="viewcode-block" id="gas_mixture_whz"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.thermal_conductivity.gas_mixture_whz.html#openpnm.models.phase.thermal_conductivity.gas_mixture_whz">[docs]</a><span class="nd">@_phasedocs</span>
+<span class="k">def</span> <span class="nf">gas_mixture_whz</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
     <span class="n">ks</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity.*&#39;</span><span class="p">,</span>
     <span class="n">MWs</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight.*&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the viscosity of a gas mixture using the correlation in [1]</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(phase)s</span>
+<span class="sd">    %(T)s</span>
 <span class="sd">    %(ks)s</span>
 <span class="sd">    %(MWs)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Wassiljew, Herning &amp; Zipperer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Wassiljew_Herning_Zipperer</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
     <span class="n">ys</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.mole_fraction&#39;</span><span class="p">]</span>
     <span class="n">kGs</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span>

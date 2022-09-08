@@ -280,12 +280,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/docrep/decorators.py:43: SyntaxWarning: &#39;models.phase.T&#39; is not a valid key!
-  doc = func(self, args[0].__doc__, *args[1:], **kwargs)
-</pre></div>
-</div>
-</div>
 </div>
 <p>Next we instantiate the <code class="docutils literal notranslate"><span class="pre">VoronoiFibers</span></code> classsfrom the <strong>Materials</strong> module, with a few parameters: <code class="docutils literal notranslate"><span class="pre">points</span></code> defines the number of pores in the bulk network but some may be removed if the <code class="docutils literal notranslate"><span class="pre">fiber_rad</span></code> (radius of the fibers in meters) parameter is large compared with the throat diameters as this will lead to occluded throats and possibly isolated pores. The <code class="docutils literal notranslate"><span class="pre">resolution</span></code> parameter sets the size of the voxels in meters used in image generation from which many of the geometry properties derive. The <code class="docutils literal notranslate"><span class="pre">shape</span></code> parameter sets the size of the bounding box at which the boundary edges are located and this is positioned with lowest point at the origin. Finally the <code class="docutils literal notranslate"><span class="pre">name</span></code> parameter is used to subsequently prefix the name of the additional <strong>Geometry</strong> objects that are created in the process.</p>
 <p>In this example we set the random seed in the scipy package to make sure that random points are repeatedly generated with the same values for illustration. This is not necessary, otherwise.</p>

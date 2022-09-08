@@ -193,7 +193,7 @@
   <h1>Source code for openpnm.models.geometry.pore_volume._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">_pi</span>
-<span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span>
+<span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sphere&quot;</span><span class="p">,</span>
            <span class="s2">&quot;cube&quot;</span><span class="p">,</span>
@@ -201,20 +201,20 @@
            <span class="s2">&quot;square&quot;</span><span class="p">,</span>
            <span class="s2">&quot;effective&quot;</span>
            <span class="p">]</span>
-<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.sphere.html#openpnm.models.geometry.pore_volume.sphere">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;models.geometry.pore_volume&#39;</span><span class="p">,</span>
-                     <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.sphere.html#openpnm.models.geometry.pore_volume.sphere">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a spherical pore body</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.target.parameters)s</span>
-<span class="sd">    %(models.geometry.pdia)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -225,57 +225,72 @@
     <span class="k">return</span> <span class="mi">4</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="n">_pi</span><span class="o">*</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span></div>
 
 
-<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.cube.html#openpnm.models.geometry.pore_volume.cube">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
-<span class="k">def</span> <span class="nf">cube</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.cube.html#openpnm.models.geometry.pore_volume.cube">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">cube</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a cubic pore body</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span></div>
 
 
-<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.circle.html#openpnm.models.geometry.pore_volume.circle">[docs]</a><span class="k">def</span> <span class="nf">circle</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.circle.html#openpnm.models.geometry.pore_volume.circle">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a spherical pore body</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
 
 
-<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.square.html#openpnm.models.geometry.pore_volume.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.square.html#openpnm.models.geometry.pore_volume.square">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">square</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate pore volume from diameter assuming a cubic pore body</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span></div>
 
 
-<div class="viewcode-block" id="effective"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.effective.html#openpnm.models.geometry.pore_volume.effective">[docs]</a><span class="k">def</span> <span class="nf">effective</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
-              <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="effective"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_volume.effective.html#openpnm.models.geometry.pore_volume.effective">[docs]</a><span class="nd">@_geodocs</span>
+<span class="k">def</span> <span class="nf">effective</span><span class="p">(</span>
+    <span class="n">network</span><span class="p">,</span>
+    <span class="n">pore_volume</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+    <span class="n">throat_volume</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the effective pore volume for optional use in transient</span>
 <span class="sd">    simulations. The effective pore volume is calculated by adding half</span>
@@ -283,13 +298,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(models.geometry.pore_volume.parameters)s</span>
-<span class="sd">    %(models.geometry.pvol)s</span>
-<span class="sd">    %(models.geometry.tvol)s</span>
+<span class="sd">    %(network)s</span>
+<span class="sd">    %(Dp)s</span>
+<span class="sd">    %(Dt)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    %(models.geometry.pore_volume.returns)s</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
