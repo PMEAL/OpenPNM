@@ -7,7 +7,7 @@ __all__ = ["ad_dif"]
 
 @_doctxt
 def ad_dif(
-    target,
+    phase,
     pore_pressure='pore.pressure',
     throat_hydraulic_conductance='throat.hydraulic_conductance',
     throat_diffusive_conductance='throat.diffusive_conductance',
@@ -18,7 +18,7 @@ def ad_dif(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_pressure : str
         %(dict_blurb)s pore pressure
     throat_hydraulic_conductance : str
@@ -47,8 +47,7 @@ def ad_dif(
     diffusion-like processes and fluid flow need different shape factors.
 
     """
-    network = target.project.network
-    phase = target
+    network = phase.project.network
     cn = network['throat.conns']
     # Find g for half of pore 1, throat, and half of pore 2
     P = phase[pore_pressure]

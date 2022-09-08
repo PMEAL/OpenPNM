@@ -1,10 +1,12 @@
 import numpy as _np
+from openpnm.models import _doctxt
 
 
 __all__ = ["ad_dif_mig"]
 
 
-def ad_dif_mig(target,
+@_doctxt
+def ad_dif_mig(phase,
                pore_pressure="pore.pressure",
                pore_potential="pore.potential",
                throat_hydraulic_conductance="throat.hydraulic_conductance",
@@ -19,7 +21,7 @@ def ad_dif_mig(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_pressure : str
         %(dict_blurb)s pore pressure
     pore_potential : str
@@ -60,8 +62,7 @@ def ad_dif_mig(target,
     throat_diffusive_conductance = throat_diffusive_conductance + "." + ion
     throat_valence = throat_valence + "." + ion
 
-    network = target.project.network
-    phase = target
+    network = phase.project.network
     cn = network["throat.conns"]
     T = phase[throat_temperature]
     # Check if pressure and potential values exist, otherwise, assign zeros

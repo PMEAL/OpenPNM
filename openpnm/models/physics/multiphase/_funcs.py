@@ -16,7 +16,7 @@ def conduit_conductance(phase, throat_conductance,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     throat_conductance : str
         %(dict_blurb)s throat conductance for transport
     pore_occupancy : str

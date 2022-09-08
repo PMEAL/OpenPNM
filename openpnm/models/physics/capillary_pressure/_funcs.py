@@ -8,6 +8,7 @@ from openpnm.models.physics._utils import _get_key_props
 
 logger = logging.getLogger(__name__)
 
+
 __all__ = [
     "washburn",
     "purcell",
@@ -18,7 +19,7 @@ __all__ = [
 
 
 @_doctxt
-def washburn(target,
+def washburn(phase,
              surface_tension="throat.surface_tension",
              contact_angle="throat.contact_angle",
              diameter="throat.diameter"):
@@ -28,7 +29,7 @@ def washburn(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     surface_tension : str
         %(dict_blurb)s surface tension. If a pore property is given, it is
         interpolated to a throat list.
@@ -53,22 +54,21 @@ def washburn(target,
     suitable for highly non-wetting invading phases in most materials.
 
     """
-    network = target.network
-    phase = target
+    network = phase.network
     sigma = phase[surface_tension]
     theta = phase[contact_angle]
     r = network[diameter] / 2
     value = -2 * sigma * _np.cos(_np.radians(theta)) / r
     if diameter.split(".")[0] == "throat":
-        value = value[phase.throats(target.name)]
+        pass
     else:
-        value = value[phase.pores(target.name)]
+        value = value[phase.pores()]
     value[_np.absolute(value) == _np.inf] = 0
     return value
 
 
 @_doctxt
-def purcell(target,
+def purcell(phase,
             r_toroid,
             surface_tension="throat.surface_tension",
             contact_angle="throat.contact_angle",
@@ -79,7 +79,7 @@ def purcell(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     surface_tension : str
@@ -112,10 +112,9 @@ def purcell(target,
            Electrochem. Soc. 160, F731 (2013).
 
     """
-    network = target.project.network
-    phase = target
-    sigma = target[surface_tension]
-    theta = target[contact_angle]
+    network = phase.network
+    sigma = phase[surface_tension]
+    theta = phase[contact_angle]
     r = network[diameter] / 2
     R = r_toroid
     alpha = (
@@ -126,14 +125,14 @@ def purcell(target,
         / (1 + R / r * (1 - _np.cos(_np.radians(alpha))))
     )
     if diameter.split(".")[0] == "throat":
-        value = value[phase.throats(target.name)]
+        pass
     else:
-        value = value[phase.pores(target.name)]
+        value = value[phase.pores()]
     return value
 
 
 @_doctxt
-def ransohoff_snap_off(target,
+def ransohoff_snap_off(phase,
                        shape_factor=2.0,
                        wavelength=5e-6,
                        require_pair=False,
@@ -150,7 +149,7 @@ def ransohoff_snap_off(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     shape_factor : float
         A constant dependent on the shape of throat cross-section
         1.75 - 2.0, see Ref [1]
@@ -179,8 +178,7 @@ def ransohoff_snap_off(target,
     33(5), pp.753-765.
 
     """
-    phase = target
-    geometry = target.project.find_geometry(target)
+    network = phase.network
     element, sigma, theta = _get_key_props(
         phase=phase,
         diameter=diameter,
@@ -188,12 +186,12 @@ def ransohoff_snap_off(target,
         contact_angle=contact_angle,
     )
     try:
-        all_verts = geometry[vertices]
+        all_verts = network[vertices]
         # Work out whether throat geometry can support at least one pair of
         # adjacent arc menisci that can grow and merge to form snap-off
         # Only works if throat vertices are in convex hull order
-        angles_ok = _np.zeros(geometry.Nt, dtype=bool)
-        for T in range(geometry.Nt):
+        angles_ok = _np.zeros(network.Nt, dtype=bool)
+        for T in range(network.Nt):
             verts = all_verts[T]
             x = verts[:, 0]
             y = verts[:, 1]
@@ -220,13 +218,13 @@ def ransohoff_snap_off(target,
                 angles_ok[T] = _np.any(am)
     except Exception:
         logger.warning("Model is designed to work with property: " + vertices)
-        angles_ok = _np.ones(geometry.Nt, dtype=bool)
+        angles_ok = _np.ones(network.Nt, dtype=bool)
 
     # Condition for arc menisci to form in corners
-    rad_Ts = geometry[diameter] / 2
+    rad_Ts = network[diameter] / 2
     # Ransohoff and Radke eq. 4
     C = 1 / rad_Ts - 1 / wavelength
-    value = sigma[phase.throats(target.name)] * C
+    value = sigma[phase.throats()] * C
     # Only throats that can support arc menisci can snap-off
     value[~angles_ok] = _np.nan
     logger.info(
@@ -238,7 +236,7 @@ def ransohoff_snap_off(target,
 
 
 @_doctxt
-def purcell_bidirectional(target,
+def purcell_bidirectional(phase,
                           r_toroid=5e-6,
                           num_points=1000,
                           surface_tension="pore.surface_tension",
@@ -256,7 +254,7 @@ def purcell_bidirectional(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     num_points : float, default 100
@@ -278,13 +276,13 @@ def purcell_bidirectional(target,
     %(return_arr)s capillary entry pressure
 
     """
-    network = target.project.network
+    network = phase.network
     conns = network["throat.conns"]
     values = {}
     for p in range(2):
         network["throat.temp_diameter"] = network[pore_diameter][conns[:, p]]
         key = "throat.touch_pore_" + str(p)
-        target.add_model(
+        phase.add_model(
             propname=key,
             model=pm.meniscus.purcell,
             mode="touch",
@@ -295,14 +293,14 @@ def purcell_bidirectional(target,
             contact_angle=contact_angle,
             touch_length="throat.temp_diameter",
         )
-        values[p] = target[key]
-        target.remove_model(key)
+        values[p] = phase[key]
+        phase.remove_model(key)
     del network["throat.temp_diameter"]
     return _np.vstack((values[0], values[1])).T
 
 
 @_doctxt
-def sinusoidal_bidirectional(target,
+def sinusoidal_bidirectional(phase,
                              r_toroid=5e-6,
                              num_points=1e3,
                              surface_tension="pore.surface_tension",
@@ -321,7 +319,7 @@ def sinusoidal_bidirectional(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     r_toroid : float or array_like
         The radius of the toroid surrounding the pore
     num_points : float, default 100
@@ -343,13 +341,13 @@ def sinusoidal_bidirectional(target,
     %(return_arr)s capillary entry pressure
 
     """
-    network = target.project.network
+    network = phase.network
     conns = network["throat.conns"]
     values = {}
     for p in range(2):
         network["throat.temp_diameter"] = network[pore_diameter][conns[:, p]]
         key = "throat.touch_pore_" + str(p)
-        target.add_model(
+        phase.add_model(
             propname=key,
             model=pm.meniscus.sinusoidal,
             mode="touch",
@@ -360,7 +358,7 @@ def sinusoidal_bidirectional(target,
             throat_diameter=throat_diameter,
             touch_length="throat.temp_diameter",
         )
-        values[p] = target[key]
-        target.remove_model(key)
+        values[p] = phase[key]
+        phase.remove_model(key)
     del network["throat.temp_diameter"]
     return _np.vstack((values[0], values[1])).T

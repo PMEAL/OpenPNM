@@ -19,14 +19,19 @@ __all__ = [
 
 
 @_doctxt
-def charge_conservation(phase, p_alg, e_alg, assumption):
+def charge_conservation(
+    phase,
+    p_alg,
+    e_alg,
+    assumption
+):
     r"""
     Applies the source term on the charge conservation equation when solving
     for ions transport.
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     p_alg : Algorithm
         The algorithm used to enforce charge conservation.
     e_alg : list
@@ -108,7 +113,7 @@ def standard_kinetics(phase, X, prefactor, exponent):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         %(dict_blurb)s quantity of interest
     prefactor : str
@@ -160,7 +165,7 @@ def linear(phase, X, A1=0.0, A2=0.0):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key on the phase object containing the the quantity
         of interest
@@ -207,7 +212,7 @@ def power_law(phase, X, A1=0.0, A2=0.0, A3=0.0):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key on the phase object containing the the quantity
         of interest
@@ -259,7 +264,7 @@ def exponential(phase, X, A1=0.0, A2=1.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key on the phase object containing the the quantity
         of interest
@@ -314,7 +319,7 @@ def natural_exponential(phase, X, A1=0.0, A2=0.0, A3=0.0, A4=0.0, A5=0.0):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key on the phase object containing the the quantity
         of interest
@@ -368,7 +373,7 @@ def logarithm(phase, X, A1=0.0, A2=10.0, A3=1.0, A4=1.0, A5=0.0, A6=0.0):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key on the phase object containing the the quantity
         of interest
@@ -424,7 +429,7 @@ def natural_logarithm(phase, X, A1=0.0, A2=1.0, A3=1.0, A4=0.0, A5=0.0):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key on the phase object containing the the quantity
         of interest
@@ -490,7 +495,7 @@ def general_symbolic(phase, eqn, x, **kwargs):
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     eqn : str
         The str representation of the equation to use.  This will be
         passed to sympy's ``sympify`` function to make a *live* sympy object.
@@ -559,7 +564,7 @@ def butler_volmer_conc(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
         to be solved; in this case, concentration).
@@ -675,6 +680,7 @@ def butler_volmer_conc(
     return values
 
 
+@_doctxt
 def butler_volmer_voltage(
     phase, X, n, i0_ref, c_ref, beta,
     gamma=1,
@@ -690,8 +696,7 @@ def butler_volmer_voltage(
 
     Parameters
     ----------
-    phase : OpenPNM Phase
-        The Phase object where the result will be applied.
+    %(phase)s
     X : str
         The dictionary key of the quantity of interest (i.e. main variable
         to be solved; in this case, electrolyte voltage).

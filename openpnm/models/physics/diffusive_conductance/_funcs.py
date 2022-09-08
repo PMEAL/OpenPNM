@@ -23,7 +23,7 @@ def generic_diffusive(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
@@ -52,7 +52,7 @@ def ordinary_diffusion(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
@@ -70,6 +70,7 @@ def ordinary_diffusion(phase,
                                 throat_conductivity=throat_diffusivity,
                                 size_factors=size_factors)
 
+
 @_doctxt
 def mixed_diffusion(phase,
                     pore_diameter="pore.diameter",
@@ -86,7 +87,7 @@ def mixed_diffusion(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diameter : str
         %(dict_blurb)s pore diameter
     throat_diameter : str
@@ -146,7 +147,7 @@ def taylor_aris_diffusion(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_area : str
         %(dict_blurb)s pore cross-sectional area
     throat_area : str
@@ -207,7 +208,7 @@ def multiphase_diffusion(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
