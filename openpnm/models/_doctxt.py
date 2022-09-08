@@ -18,7 +18,7 @@ _doctxt = Substitution(
             attached). This controls the length of the calculated array(s),
             and also provides access to other necessary properties.""",
     dict_blurb=
-    r"""Name of the dictionary key on ``target`` pointing to the
+    r"""Name of the dictionary key on the target object pointing to the
     array containing values of """,
     return_arr=
     r"""values : ndarray
