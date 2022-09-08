@@ -51,4 +51,8 @@ _geodocs = Substitution(
     r"""throat_centroid : str
 
     """,
+    Act=
+    r"""throat_cross_sectional_area : str
+
+    """,
 )
