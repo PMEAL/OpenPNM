@@ -87,9 +87,9 @@ def gas_mixture_ce(
     except ValueError:
         raise Exception('This function only works on binary mixtures')
     MWAB = 2/(1/MA + 1/MB)
-    omega = phase[omegas].values()
-    Tc = phase[Tcs].values()
-    Pc = phase[Pcs].values()
+    omega = phase.get_comp_vals(omegas).values()
+    Tc = phase.get_comp_vals(Tcs).values()
+    Pc = phase.get_comp_vals(Pcs).values()
     k = 1.380649e-23  # Boltzmann constant
     try:
         eA, eB = phase.get_comp_vals(epsilons).values()
@@ -153,11 +153,11 @@ def gas_mixture_fesg(
     P = phase[P]
     # The following is to accomodate proper mixtures AND normal Phase objects
     try:
-        MA, MB = phase[MWs].values()
+        MA, MB = phase.get_comp_vals(MWs).values()
     except AttributeError:
         MA, MB = phase[MWs]
     try:
-        vA, vB = phase[Vdms].values()
+        vA, vB = phase.get_comp_vals(Vdms).values()
     except AttributeError:
         vA, vB = phase[Vdms]
     MAB = 2/(1/MA + 1/MB)

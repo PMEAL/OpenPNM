@@ -224,7 +224,7 @@ def liquid_mixture_DIPPR9I(
     xs = phase['pore.mole_fraction']
     kLs = phase.get_comp_vals(ks)
     # kL = numba_vectorized.DIPPR9I(xs, kLs)  # Another one that doesn't work
-    Vm = [rho_to_Vm(c[rhos], c[MWs])
+    Vm = [rho_to_Vm(c.get_comp_vals(rhos), c.get_comp_vals(MWs))
           for c in phase.components.keys()]
     denom = np.sum([xs[i]*Vm[i] for i in range(len(xs))], axis=0)
     phis = np.array([xs[i]*Vm[i] for i in range(len(xs))])/denom
