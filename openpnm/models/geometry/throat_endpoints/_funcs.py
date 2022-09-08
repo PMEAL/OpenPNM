@@ -25,7 +25,7 @@ def spheres_and_cylinders(
     %(network)s
     %(Dp)s
     %(Dt)s
-    %(Dcen)s
+    %(Tcen)s
 
     Returns
     -------
