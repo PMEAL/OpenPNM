@@ -23,9 +23,7 @@ def salinity(
     ----------
     %(phase)s
     %(T)s
-    conc : str
-        The dictionary key containing the concentration values, in SI units of
-        mol/m3.
+    %(conc)s
 
     Returns
     -------

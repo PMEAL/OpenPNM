@@ -1,17 +1,15 @@
 import numpy as _np
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
+
 
 __all__ = ["sphere",
            "circle",
            "cube",
            "square"
            ]
-docstr = Docorator()
 
 
-@docstr.get_sections(base='models.geometry.pore_surface_area',
-                     sections=['Parameters', 'Returns', 'Notes'])
-@docstr.dedent
+@_geodocs
 def sphere(
     target,
     pore_diameter='pore.diameter',
@@ -23,11 +21,9 @@ def sphere(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.pdia)s
-    throat_cross_sectional_area : str
-        Name of the dictionary key on ``target`` where the array containing
-        throat cross sectional area values is stored
+    %(network)s
+    %(Dp)s
+    %(Act)s
 
     Returns
     -------
@@ -50,7 +46,7 @@ def sphere(
     return value
 
 
-@docstr.dedent
+@_geodocs
 def circle(
     target,
     pore_diameter='pore.diameter',
@@ -62,15 +58,15 @@ def circle(
 
     Parameters
     ----------
-    %(models.geometry.pore_surface_area.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Act)s
 
     Returns
     -------
-    %(models.geometry.pore_surface_area.returns)s
 
     Notes
     -----
-    %(models.geometry.pore_surface_area.notes)s
 
     """
     network = target.project.network
@@ -92,11 +88,12 @@ def cube(
 
     Parameters
     ----------
-    %(models.geometry.pore_surface_area.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Act)s
 
     Returns
     -------
-    %(models.geometry.pore_surface_area.returns)s
 
     """
     network = target.project.network
@@ -119,11 +116,12 @@ def square(
 
     Parameters
     ----------
-    %(models.geometry.pore_surface_area.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Act)s
 
     Returns
     -------
-    %(models.geometry.pore_surface_area.returns)s
 
     """
     network = target.project.network

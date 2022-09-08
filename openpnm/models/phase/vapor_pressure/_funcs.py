@@ -1,8 +1,5 @@
 import numpy as np
-from openpnm.utils import Docorator
-
-
-docstr = Docorator()
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -12,6 +9,7 @@ __all__ = [
 ]
 
 
+@_phasedocs
 def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
     r"""
     Calculates vapor pressure of pure water or seawater given by [1] based on
@@ -19,21 +17,20 @@ def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    salinity : str
-        The dictionary key containing the phase salinity values
+    %(phase)s
+    %(T)s
+    %(salinity)s
 
     Returns
     -------
-    %(models.phase.vapor_pressure.returns)s
+
 
     Notes
     -----
      T must be in K, and S in g of salt per kg of phase, or ppt (parts per
         thousand)
     VALIDITY: 273 < T < 473 K; 0 < S < 240 g/kg;
-    ACCURACY: 0.5 %
+    ACCURACY: 0.5 percent
 
     References
     ----------
@@ -59,6 +56,7 @@ def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
     return value
 
 
+@_phasedocs
 def liquid_pure_lk(
     phase,
     T='pore.temperature',
@@ -67,8 +65,23 @@ def liquid_pure_lk(
     omega='param.acentric_factor',
 ):
     r"""
+    Calculate the vapor pressure of a pure liquid using the correlation in [1]
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(Pc)s
+    %(omega)s
+
+    Returns
+    -------
+
+    References
+    ----------
+    [1] Lee and Kesler
     """
-    # Lee Kesler method
     T = phase[T]
     Tc = phase[Tc]
     Tr = T/Tc
@@ -81,12 +94,34 @@ def liquid_pure_lk(
     return Pvap
 
 
+@_phasedocs
 def liquid_pure_antoine(
     phase,
     T='pore.temperature',
     Tc='param.critical_temperature',
 ):
     r"""
+    Calculates the vapor pressure of a pure liquid using Antoine's equation
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(Tc)s
+
+    Returns
+    -------
+
+    References
+    ----------
+    [1] RPP
+
+    Notes
+    -----
+    Coefficients are looked up from the ``chemicals`` package. If values for
+    "extended" version are not found then the normal 3-coefficient values are
+    sought.
+
     """
     # either antoine or extended antoine using constants from RPP
     CAS = phase.params['CAS']

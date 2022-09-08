@@ -1,7 +1,8 @@
 import logging
 import numpy as _np
-from openpnm.utils import Docorator
 from openpnm.models import misc as _misc
+from openpnm.models.geometry import _geodocs
+
 
 __all__ = [
     "weibull",
@@ -13,8 +14,8 @@ __all__ = [
     "equivalent_diameter"
 ]
 
+
 logger = logging.getLogger(__name__)
-docstr = Docorator()
 
 
 def weibull(network, shape, scale, loc, seeds='pore.seed'):
@@ -57,15 +58,19 @@ def from_neighbor_throats(network, prop, mode='max'):
 from_neighbor_throats.__doc__ = _misc.from_neighbor_throats.__doc__
 
 
-@docstr.dedent
-def largest_sphere(network, fixed_diameter='pore.fixed_diameter', iters=5):
+@_geodocs
+def largest_sphere(
+    network,
+    fixed_diameter='pore.fixed_diameter',
+    iters=5
+):
     r"""
     Finds the maximum diameter pore that can be placed in each location without
     overlapping any neighbors.
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(network)s
     fixed_diameter : str
         Name of the dictionary key on ``target`` where the array containing
         pore diameter values is stored, if any. If not provided a starting
@@ -87,8 +92,7 @@ def largest_sphere(network, fixed_diameter='pore.fixed_diameter', iters=5):
     encompass half of the distance to the nearest neighbor.  If the neighbor
     is not growing because it's already touching a different neighbor, then
     the given pore will never quite touch this neighbor.  Increasing the value
-    of ``iters`` will get it closer, but it's case of
-    `Zeno's paradox <https://en.wikipedia.org/wiki/Zeno%27s_paradoxes>`_ with
+    of ``iters`` will get it closer, but it's case of Zeno's paradox with
     each step cutting the remaining distance in half.
 
     This model looks into all pores in the network when finding the diameter.
@@ -128,19 +132,20 @@ def largest_sphere(network, fixed_diameter='pore.fixed_diameter', iters=5):
     return D
 
 
-@docstr.dedent
-def equivalent_diameter(network, pore_volume='pore.volume',
-                        pore_shape='sphere'):
+@_geodocs
+def equivalent_diameter(
+    network,
+    pore_volume='pore.volume',
+    pore_shape='sphere'
+):
     r"""
     Calculate the diameter of a sphere or edge-length of a cube with same
     volume as the pore.
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    pore_volume : str
-        Name of the dictionary key on ``target`` where the array containing
-        pore volume values is stored
+    %(network)s
+    %(Vp)s
     pore_shape : str
         The shape of the pore body to assume when back-calculating from
         volume.  Options are 'sphere' (default) or 'cube'.

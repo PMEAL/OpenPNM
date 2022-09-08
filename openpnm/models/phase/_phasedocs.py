@@ -95,12 +95,24 @@ _phasedocs = Substitution(
     r"""
 
     """,
+    Vm=
+    r"""Vm : str (dict key) or scalar
+
+    """,
+    n_V=
+    r"""n_V : str (dict key) or scalar
+
+    """,
     rhos=
     r"""rhos : str
             The dictionary key containing the density in kg/m3""",
     rho=
     r"""rho : str
             The dictionary key containing the density in kg/m3""",
+    mus=
+    r"""mus : str
+
+    """,
     mu=
     r"""mu : str
 
@@ -111,4 +123,9 @@ _phasedocs = Substitution(
     salinity=
     r"""salinity : str
             The dictionary key containing the salinity values in g/kg""",
+    conc=
+    r"""conc : str
+            The dictionary key containing the concentration values, in SI
+            units of mol/m3.""",
+
 )

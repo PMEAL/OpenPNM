@@ -1,5 +1,5 @@
 import numpy as _np
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = ['spheres_and_cylinders',
@@ -15,13 +15,9 @@ __all__ = ['spheres_and_cylinders',
            'hybrid_pyramids_and_cuboids',
            'cubes_and_cuboids',
            'squares_and_rectangles']
-docstr = Docorator()
 
 
-# Fetch this docstring and use it on the other models in this file
-@docstr.get_sections(base='models.geometry.conduit_lengths',
-                     sections=['Parameters', 'Returns'])
-@docstr.dedent
+@_geodocs
 def spheres_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -35,9 +31,9 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.pdia)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
@@ -71,7 +67,7 @@ def spheres_and_cylinders(
     return _np.vstack((L1, Lt, L2)).T
 
 
-@docstr.dedent
+@_geodocs
 def circles_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -85,11 +81,12 @@ def circles_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -104,7 +101,7 @@ def circles_and_rectangles(
     )
 
 
-@docstr.dedent
+@_geodocs
 def cones_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -118,11 +115,12 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     try:
@@ -146,7 +144,7 @@ def cones_and_cylinders(
     return _np.vstack((L1, Lt, L2)).T
 
 
-@docstr.dedent
+@_geodocs
 def intersecting_cones(
     network,
     pore_coords="pore.coords",
@@ -161,11 +159,12 @@ def intersecting_cones(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Pcoords)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     P12 = network['throat.conns']
@@ -179,7 +178,7 @@ def intersecting_cones(
     return _np.vstack((L1, Lt, L2)).T
 
 
-@docstr.dedent
+@_geodocs
 def hybrid_cones_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -193,11 +192,12 @@ def hybrid_cones_and_cylinders(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     try:
@@ -226,7 +226,7 @@ def hybrid_cones_and_cylinders(
     return _np.vstack((L1, Lt, L2)).T
 
 
-@docstr.dedent
+@_geodocs
 def trapezoids_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -238,11 +238,12 @@ def trapezoids_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -255,7 +256,7 @@ def trapezoids_and_rectangles(
                                throat_diameter=throat_diameter)
 
 
-@docstr.dedent
+@_geodocs
 def intersecting_trapezoids(
     network,
     pore_coords="pore.coords",
@@ -267,11 +268,12 @@ def intersecting_trapezoids(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Pcoords)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -284,7 +286,7 @@ def intersecting_trapezoids(
                               throat_coords=throat_coords)
 
 
-@docstr.dedent
+@_geodocs
 def hybrid_trapezoids_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -296,11 +298,12 @@ def hybrid_trapezoids_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -313,7 +316,7 @@ def hybrid_trapezoids_and_rectangles(
                                       throat_coords=throat_coords)
 
 
-@docstr.dedent
+@_geodocs
 def pyramids_and_cuboids(
     network,
     pore_diameter="pore.diameter",
@@ -325,11 +328,12 @@ def pyramids_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     return cones_and_cylinders(network,
@@ -337,7 +341,7 @@ def pyramids_and_cuboids(
                                throat_diameter=throat_diameter)
 
 
-@docstr.dedent
+@_geodocs
 def intersecting_pyramids(
     network,
     pore_coords="pore.coords",
@@ -349,11 +353,12 @@ def intersecting_pyramids(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Pcoords)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     return intersecting_cones(network,
@@ -361,7 +366,7 @@ def intersecting_pyramids(
                               throat_coords=throat_coords)
 
 
-@docstr.dedent
+@_geodocs
 def hybrid_pyramids_and_cuboids(
     network,
     pore_diameter="pore.diameter",
@@ -374,11 +379,12 @@ def hybrid_pyramids_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     return hybrid_cones_and_cylinders(network,
@@ -386,7 +392,7 @@ def hybrid_pyramids_and_cuboids(
                                       throat_coords=throat_coords)
 
 
-@docstr.dedent
+@_geodocs
 def cubes_and_cuboids(
     network,
     pore_diameter="pore.diameter",
@@ -398,11 +404,12 @@ def cubes_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     try:
@@ -427,7 +434,7 @@ def cubes_and_cuboids(
     return _np.vstack((L1, Lt, L2)).T
 
 
-@docstr.dedent
+@_geodocs
 def squares_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -439,11 +446,12 @@ def squares_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.conduit_lengths.parameters)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
