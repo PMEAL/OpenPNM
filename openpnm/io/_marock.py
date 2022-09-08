@@ -35,8 +35,8 @@ def network_from_marock(filename, voxel_size=1):
     They should be stored together in a folder which is referred to by the
     path argument. These files are binary and therefore not human readable.
 
-    Reference
-    ---------
+    References
+    ----------
     3DMA-Rock is a network extraction algorithm developed by Brent Lindquist
     and his group
 
