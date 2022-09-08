@@ -1,7 +1,12 @@
-from matplotlib.docstring import Substitution as _sub
+from matplotlib.docstring import Substitution
 
 
-_geodocs = _sub(
+__all__ = [
+    '_geodocs',
+]
+
+
+_geodocs = Substitution(
     network=
     r"""network : OpenPNM Network object
 
@@ -32,6 +37,18 @@ _geodocs = _sub(
     """,
     Tcoords=
     r"""throat_coords : str
+
+    """,
+    At=
+    r"""throat_area : str
+
+    """,
+    Pt=
+    r"""throat_perimeter : str
+
+    """,
+    Dcen=
+    r"""throat_centroid : str
 
     """,
 )

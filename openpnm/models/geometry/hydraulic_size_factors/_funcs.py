@@ -141,7 +141,7 @@ def cones_and_cylinders(
     ----------
     %(network)s
     %(Dp)s
-    %()Dts
+    %(Dt)s
 
     Returns
     -------
@@ -369,7 +369,7 @@ def hybrid_trapezoids_and_rectangles(
     ----------
     %(network)s
     %(Dp)s
-    %(Tcoord)s
+    %(Tcoords)s
 
     Returns
     -------

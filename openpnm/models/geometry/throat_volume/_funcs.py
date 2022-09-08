@@ -1,5 +1,5 @@
 import numpy as _np
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = ["cylinder",
@@ -8,22 +8,22 @@ __all__ = ["cylinder",
            "extrusion",
            "lens",
            "pendular_ring"]
-docstr = Docorator()
 
 
-@docstr.get_sections(base='models.geometry.throat_volume',
-                     sections=['Parameters', 'Returns'])
-@docstr.dedent
-def cylinder(network, throat_length='throat.length',
-             throat_diameter='throat.diameter'):
+@_geodocs
+def cylinder(
+    network,
+    throat_diameter='throat.diameter',
+    throat_length='throat.length',
+):
     r"""
     Calculate throat volume assuing a cylindrical shape
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.tlen)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Dt)s
+    %(Lt)s
 
     Returns
     -------
@@ -44,19 +44,23 @@ def cylinder(network, throat_length='throat.length',
     return value
 
 
-@docstr.dedent
-def cuboid(network, throat_length='throat.length',
-           throat_diameter='throat.diameter'):
+@_geodocs
+def cuboid(
+    network,
+    throat_diameter='throat.diameter',
+    throat_length='throat.length',
+):
     r"""
     Calculate throat volume assuing a square cross-section
 
     Parameters
     ----------
-    %(models.geometry.throat_volume.parameters)s
+    %(network)s
+    %(Dt)s
+    %(Lt)s
 
     Returns
     -------
-    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
@@ -70,19 +74,23 @@ def cuboid(network, throat_length='throat.length',
     return value
 
 
-@docstr.dedent
-def rectangle(network, throat_length='throat.length',
-              throat_diameter='throat.diameter'):
+@_geodocs
+def rectangle(
+    network,
+    throat_diameter='throat.diameter',
+    throat_length='throat.length',
+):
     r"""
     Calculate throat volume assuing a rectangular shape
 
     Parameters
     ----------
-    %(models.geometry.throat_volume.parameters)s
+    %(network)s
+    %(Dt)s
+    %(Lt)s
 
     Returns
     -------
-    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
@@ -92,23 +100,24 @@ def rectangle(network, throat_length='throat.length',
     return network[throat_length] * network[throat_diameter]
 
 
-@docstr.dedent
-def extrusion(network, throat_length='throat.length',
-              throat_area='throat.cross_sectional_area'):
+@_geodocs
+def extrusion(
+    network,
+    throat_length='throat.length',
+    throat_area='throat.cross_sectional_area',
+):
     r"""
     Calculate throat volume from the throat area and the throat length. This
     method is useful for abnormal shaped throats.
 
     Parameters
     ----------
-    ----------
-    %(models.target.parameters)s
-    %(models.geometry.tlen)s
-    %(models.geometry.tarea)s
+    %(network)s
+    %(Lt)s
+    %(At)s
 
     Returns
     -------
-    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
@@ -122,9 +131,12 @@ def extrusion(network, throat_length='throat.length',
     return value
 
 
-@docstr.dedent
-def lens(network, throat_diameter='throat.diameter',
-         pore_diameter='pore.diameter'):
+@_geodocs
+def lens(
+    network,
+    throat_diameter='throat.diameter',
+    pore_diameter='pore.diameter',
+):
     r"""
     Calculates the volume residing the hemispherical caps formed by the
     intersection between cylindrical throats and spherical pores.
@@ -134,13 +146,12 @@ def lens(network, throat_diameter='throat.diameter',
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.tdia)s
-    %(models.geometry.pdia)s
+    %(network)s
+    %(Dt)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----
@@ -163,9 +174,12 @@ def lens(network, throat_diameter='throat.diameter',
     return _np.sum(V, axis=1)
 
 
-@docstr.dedent
-def pendular_ring(network, throat_diameter='throat.diameter',
-                  pore_diameter='pore.diameter'):
+@_geodocs
+def pendular_ring(
+    network,
+    throat_diameter='throat.diameter',
+    pore_diameter='pore.diameter',
+):
     r"""
     Calculates the volume of the pendular rings residing between the end of
     a cylindrical throat and spherical pores that are in contact but not
@@ -176,13 +190,12 @@ def pendular_ring(network, throat_diameter='throat.diameter',
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.tdia)s
-    %(models.geometry.pdia)s
+    %(network)s
+    %(Dt)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.throat_volume.returns)s
 
     Notes
     -----

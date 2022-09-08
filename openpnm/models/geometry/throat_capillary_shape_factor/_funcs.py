@@ -1,18 +1,18 @@
 import numpy as _np
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = ["compactness",
            "mason_morrow",
            "jenkins_rao"]
-docstr = Docorator()
 
 
-@docstr.get_sections(base='models.geometry.throat_capillary_shape_factor',
-                     sections=['Parameters', 'Returns'])
-@docstr.dedent
-def compactness(network, throat_perimeter='throat.perimeter',
-                throat_area='throat.cross_sectional_area'):
+@_geodocs
+def compactness(
+    network,
+    throat_perimeter='throat.perimeter',
+    throat_area='throat.cross_sectional_area',
+):
     r"""
     Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
     is linearly dependent on the compactness. Defined as perimeter^2/area.
@@ -22,11 +22,9 @@ def compactness(network, throat_perimeter='throat.perimeter',
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    throat_perimeter : str
-        The dictionary key of the array containing the throat perimeter values
-    throat_area : str
-        The dictionary key of the array containing the throat area values
+    %(network)s
+    %(Pt)s
+    %(At)s
 
     Returns
     -------
@@ -67,19 +65,24 @@ def compactness(network, throat_perimeter='throat.perimeter',
     return alpha
 
 
-def mason_morrow(network, throat_perimeter='throat.perimeter',
-                 throat_area='throat.cross_sectional_area'):
+@_geodocs
+def mason_morrow(
+    network,
+    throat_perimeter='throat.perimeter',
+    throat_area='throat.cross_sectional_area',
+):
     r"""
     Mason and Morrow relate the capillary pressure to the shape factor in a
     similar way to Mortensen but for triangles.
 
     Parameters
     ----------
-    %(models.geometry.throat_capillary_shape_factor.parameters)s
+    %(network)s
+    %(Pt)s
+    %(At)s
 
     Returns
     -------
-    %(models.geometry.throat_capillary_shape_factor.returns)s
 
     References
     ----------
@@ -97,21 +100,25 @@ def mason_morrow(network, throat_perimeter='throat.perimeter',
     return value
 
 
-def jenkins_rao(network, throat_perimeter='throat.perimeter',
-                throat_area='throat.cross_sectional_area',
-                throat_diameter='throat.indiameter'):
+def jenkins_rao(
+    network,
+    throat_perimeter='throat.perimeter',
+    throat_area='throat.cross_sectional_area',
+    throat_diameter='throat.indiameter',
+):
     r"""
     Jenkins and Rao relate the capillary pressure in an eliptical throat to
     the aspect ratio
 
     Parameters
     ----------
-    %(models.geometry.throat_capillary_shape_factor.returns)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Pt)s
+    %(At)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_capillary_shape_factor.returns)s
 
     References
     ----------

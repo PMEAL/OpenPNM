@@ -304,7 +304,6 @@ def hybrid_trapezoids_and_rectangles(
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     Notes
     -----
@@ -335,7 +334,6 @@ def pyramids_and_cuboids(
 
     Returns
     -------
-    %(models.geometry.conduit_lengths.returns)s
 
     """
     return cones_and_cylinders(network,

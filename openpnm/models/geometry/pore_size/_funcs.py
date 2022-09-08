@@ -92,8 +92,7 @@ def largest_sphere(
     encompass half of the distance to the nearest neighbor.  If the neighbor
     is not growing because it's already touching a different neighbor, then
     the given pore will never quite touch this neighbor.  Increasing the value
-    of ``iters`` will get it closer, but it's case of
-    `Zeno's paradox <https://en.wikipedia.org/wiki/Zeno%27s_paradoxes>`_ with
+    of ``iters`` will get it closer, but it's case of Zeno's paradox with
     each step cutting the remaining distance in half.
 
     This model looks into all pores in the network when finding the diameter.

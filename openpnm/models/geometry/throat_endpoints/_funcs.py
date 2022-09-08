@@ -1,4 +1,5 @@
 import numpy as _np
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = [
@@ -6,6 +7,7 @@ __all__ = [
 ]
 
 
+@_geodocs
 def spheres_and_cylinders(
     network,
     pore_diameter='pore.diameter',
@@ -20,14 +22,10 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    network : OpenPNM Network
-        The network object
-    pore_diameter : str
-        The dictionary key pointing to the pore diameter values
-    throat_diameter : str
-        The dictionary key pointing to the throat diameter values
-    throat_centroids : str
-        The dictionary key pointing to the throat centroid values
+    %(network)s
+    %(Dp)s
+    %(Dt)s
+    %(Dcen)s
 
     Returns
     -------
