@@ -10,7 +10,7 @@ __all__ = ["random",
 
 
 def random(network, seed=None, num_range=[0, 1]):
-    return _misc.random(target=network,
+    return _misc.random(network,
                         element='pore',
                         seed=seed,
                         num_range=num_range)

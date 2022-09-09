@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def weibull(network, shape, scale, loc, seeds='pore.seed'):
-    return _misc.weibull(target=network, shape=shape, scale=scale, loc=loc,
+    return _misc.weibull(network, shape=shape, scale=scale, loc=loc,
                          seeds=seeds)
 
 
@@ -27,7 +27,7 @@ weibull.__doc__ = _misc.weibull.__doc__
 
 
 def normal(network, scale, loc, seeds='pore.seed'):
-    return _misc.normal(target=network, scale=scale, loc=loc,
+    return _misc.normal(network, scale=scale, loc=loc,
                         seeds=seeds)
 
 
@@ -35,7 +35,7 @@ normal.__doc__ = _misc.normal.__doc__
 
 
 def random(network, seed=None, num_range=[0, 1]):
-    return _misc.random(target=network, element='pore', seed=seed,
+    return _misc.random(network, element='pore', seed=seed,
                         num_range=num_range)
 
 
@@ -43,14 +43,14 @@ random.__doc__ = _misc.random.__doc__
 
 
 def generic_distribution(network, func, seeds='pore.seed'):
-    return _misc.generic_distribution(target=network, func=func, seeds=seeds)
+    return _misc.generic_distribution(network, func=func, seeds=seeds)
 
 
 generic_distribution.__doc__ = _misc.generic_distribution.__doc__
 
 
 def from_neighbor_throats(network, prop, mode='max'):
-    return _misc.from_neighbor_throats(target=network,
+    return _misc.from_neighbor_throats(network,
                                        prop=prop,
                                        mode=mode)
 

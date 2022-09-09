@@ -481,11 +481,11 @@ class Base2(dict):
         if element == 'throat':
             if self['pore.'+prop].dtype == bool:
                 raise Exception('The requested datatype is boolean, cannot interpolate')
-            values = from_neighbor_pores(target=self, prop='pore.'+prop, mode=mode)
+            values = from_neighbor_pores(self, prop='pore.'+prop, mode=mode)
         elif element == 'pore':
             if self['throat.'+prop].dtype == bool:
                 raise Exception('The requested datatype is boolean, cannot interpolate')
-            values = from_neighbor_throats(target=self, prop='throat.'+prop, mode=mode)
+            values = from_neighbor_throats(self, prop='throat.'+prop, mode=mode)
         return values
 
     def get_conduit_data(self, propname):
