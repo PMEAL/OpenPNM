@@ -11,7 +11,7 @@ __all__ = ["sphere",
 
 @_geodocs
 def sphere(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_cross_sectional_area='throat.cross_sectional_area'
 ):
@@ -37,18 +37,16 @@ def sphere(
     thus not accounting for the actual curvature of the intersection.
 
     """
-    network = target.project.network
     R = network[pore_diameter] / 2
     value = 4 * _np.pi * R**2
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
-    value = value[network.pores(target.name)]
     return value
 
 
 @_geodocs
 def circle(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_cross_sectional_area='throat.cross_sectional_area'
 ):
@@ -69,16 +67,14 @@ def circle(
     -----
 
     """
-    network = target.project.network
     value = _np.pi * network[pore_diameter]
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
-    value = value[network.pores(target.name)]
     return value
 
 
 def cube(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_cross_sectional_area='throat.cross_sectional_area'
 ):
@@ -96,17 +92,15 @@ def cube(
     -------
 
     """
-    network = target.project.network
     D = network[pore_diameter]
     value = 6.0 * D**2
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
-    value = value[network.pores(target.name)]
     return value
 
 
 def square(
-    target,
+    network,
     pore_diameter='pore.diameter',
     throat_cross_sectional_area='throat.cross_sectional_area'
 ):
@@ -124,10 +118,8 @@ def square(
     -------
 
     """
-    network = target.project.network
     D = network[pore_diameter]
     value = 4.0 * D
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns.flatten(), _np.repeat(Tca, repeats=2))
-    value = value[network.pores(target.name)]
     return value

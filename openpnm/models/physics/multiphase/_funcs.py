@@ -20,12 +20,12 @@ def conduit_conductance(phase, throat_conductance,
     throat_conductance : str
         %(dict_blurb)s throat conductance for transport
     pore_occupancy : str
-        %(dict_blurb)s pore occupancy of the phase associated with ``target``.
+        %(dict_blurb)s pore occupancy of the phase associated with ``phase``.
         An occupancy of 1 means the pore is completely filled with the phase
         and it fully conducts.
     throat_occupancy : str
         %(dict_blurb)s throat occupancy of the phase associated with
-        ``target``. An occupancy of 1 means the pore is completely filled
+        ``phase``. An occupancy of 1 means the pore is completely filled
         with the phase and it fully conducts.
     mode : str
         How agressive the method should be when determining if a conduit is

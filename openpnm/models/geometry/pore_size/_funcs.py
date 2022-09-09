@@ -72,7 +72,7 @@ def largest_sphere(
     ----------
     %(network)s
     fixed_diameter : str
-        Name of the dictionary key on ``target`` where the array containing
+        Name of the dictionary key on ``network`` where the array containing
         pore diameter values is stored, if any. If not provided a starting
         value is assumed as half-way to the nearest neighbor.
     iters : integer
