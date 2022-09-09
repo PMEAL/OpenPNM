@@ -47,7 +47,7 @@ class TransportTest:
         alg.run()
         from openpnm.algorithms._solution import SteadyStateSolution
         quantity = alg.settings['quantity']
-6        # Ensure solution object is attached to the algorithm
+        # Ensure solution object is attached to the algorithm
         assert isinstance(alg.soln[quantity], SteadyStateSolution)
 
     def test_two_value_conditions(self):
