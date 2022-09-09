@@ -128,8 +128,23 @@ def cones_and_cylinders(
     # Handle throats w/ overlapping pores
     _L1 = (4 * L_ctc**2 + D1**2 - D2**2) / (8 * L_ctc)
     mask = L_ctc - 0.5 * (D1 + D2) < 0
-    L1[mask] = _L1[mask]
-    L2[mask] = (L_ctc - L1)[mask]
+    if mask.any():
+        L1[mask] = _L1[mask]
+        L2[mask] = (L_ctc - L1)[mask]
+
+    # Handle engulfing pores
+    XYp = target.network.coords[target.network.conns][target.throats(to_global=True)]
+    XYt = target["throat.global_peak"]
+    _L1, _L2 = _np.linalg.norm(XYp - XYt[:, None], axis=2).T
+    mask = L_ctc**2 <= (D1/2)**2 - (D2/2)**2
+    if mask.any():
+        L1[mask] = _L1[mask]
+        L2[mask] = _L2[mask]
+    mask = L_ctc**2 <= (D2/2)**2 - (D1/2)**2
+    if mask.any():
+        L1[mask] = _L1[mask]
+        L2[mask] = _L2[mask]
+
     Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
     return _np.vstack((L1, Lt, L2)).T
 

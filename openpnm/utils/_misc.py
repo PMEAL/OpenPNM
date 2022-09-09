@@ -592,8 +592,8 @@ def is_valid_propname(propname):
 def prettify_logger_message(msg):
     """Prettifies logger messages by breaking them up into multi lines"""
     from textwrap import wrap
-    linewidth = 75 - 13
-    indent = "\n" + " " * 13
+    linewidth = 79 - 17
+    indent = "\n" + " " * 17
     temp = wrap(msg, width=linewidth)
     return indent.join(temp)
 
