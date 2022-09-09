@@ -7599,14 +7599,14 @@ values from the distribution for the given seeds</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>%</strong><strong>(</strong><strong>models.target.parameters</strong><strong>)</strong><strong>s</strong> – </p></li>
-<li><p><strong>%</strong><strong>(</strong><strong>models.misc.seeds</strong><strong>)</strong><strong>s</strong> – </p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network object to which this model is associated (i.e.
+attached). This controls the length of the calculated array(s),
+and also provides access to other necessary properties.</p></li>
+<li><p><strong>seeds</strong> (<em>str</em><em> (</em><em>dict key</em><em>)</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of eed</p></li>
 <li><p><strong>func</strong> (<em>object</em>) – A ‘rv_frozen’ object from the scipy.stats library with all of the
 parameters pre-specified.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>%(models.misc.stats.returns)s</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

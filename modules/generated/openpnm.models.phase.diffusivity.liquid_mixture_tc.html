@@ -7597,21 +7597,23 @@
 solution of A in B from first principles at conditions of interest</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>T<span class="classifier">str (dict key) or scalar</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the array of
-temperature values. If a scalar is passed it get used directly.</p>
-</dd>
-</dl>
-<p>mu : str</p>
-<dl class="simple">
-<dt>Vms_at_Tb<span class="classifier">str or list of scalars</span></dt><dd><p>Molar volumes of each component at its boiling temperature (m3/mol).
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>T</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+temperature values, in units of [K].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>mu</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+kinematic viscosity values, in units of [Pa.s].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>Vms_at_Tb</strong> (<em>str</em><em> or </em><em>list of scalars</em>) – Molar volumes of each component at its boiling temperature (m3/mol).
 Can either be a string to a parameter on each component of a list
-of scalar values which are used directly</p>
-</dd>
-<dt>sigmas_at_Tb<span class="classifier">float</span></dt><dd><p>Surface tension of component A at boiling temperature (N/m)</p>
+of scalar values which are used directly</p></li>
+<li><p><strong>sigmas_at_Tb</strong> (<em>float</em>) – Surface tension of component A at boiling temperature (N/m)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

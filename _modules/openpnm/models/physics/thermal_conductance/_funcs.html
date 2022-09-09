@@ -208,7 +208,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    pore_conductivity : str</span>
 <span class="sd">        %(dict_blurb)s thermal conductivity</span>
 <span class="sd">    throat_conductivity : str</span>
@@ -227,16 +227,19 @@
                                 <span class="n">size_factors</span><span class="o">=</span><span class="n">size_factors</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="series_resistors"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.thermal_conductance.series_resistors.html#openpnm.models.physics.thermal_conductance.series_resistors">[docs]</a><span class="k">def</span> <span class="nf">series_resistors</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span>
-                     <span class="n">pore_thermal_conductivity</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity&#39;</span><span class="p">,</span>
-                     <span class="n">throat_thermal_conductivity</span><span class="o">=</span><span class="s1">&#39;throat.thermal_conductivity&#39;</span><span class="p">,</span>
-                     <span class="n">size_factors</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="series_resistors"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.thermal_conductance.series_resistors.html#openpnm.models.physics.thermal_conductance.series_resistors">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">series_resistors</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">pore_thermal_conductivity</span><span class="o">=</span><span class="s1">&#39;pore.thermal_conductivity&#39;</span><span class="p">,</span>
+    <span class="n">throat_thermal_conductivity</span><span class="o">=</span><span class="s1">&#39;throat.thermal_conductivity&#39;</span><span class="p">,</span>
+    <span class="n">size_factors</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the thermal conductance of conduits in network.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    pore_conductivity : str</span>
 <span class="sd">        %(dict_blurb)s thermal conductivity</span>
 <span class="sd">    throat_conductivity : str</span>

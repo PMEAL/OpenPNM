@@ -7597,25 +7597,27 @@
 mixture using the Fuller et al correlation <a class="reference internal" href="#r32007e726e6b-1" id="id1">[1]</a>, <a class="reference internal" href="#r32007e726e6b-2" id="id2">[2]</a>, <a class="reference internal" href="#r32007e726e6b-3" id="id3">[3]</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>T</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+temperature values, in units of [K].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>P</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+pressure values, in units of [Pa].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>MWs</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>dict of numeric values for each species</em>) – </p></li>
+</ul>
 </dd>
-</dl>
-<dl class="simple">
-<dt>T<span class="classifier">str (dict key) or scalar</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the array of
-temperature values. If a scalar is passed it get used directly.</p>
-</dd>
-<dt>P<span class="classifier">str (dict key) or scalar</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the array of
-pressure values. If a scalar is passed it get used directly.</p>
-</dd>
-</dl>
-<p>MWs : dict key (str) or scalar</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Dij</strong> – The dict contains one array for each component, containing the
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Dij</strong> – The dict contains one array for each component, containing the
 diffusion coefficient of that component at each location.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict[ndarray]</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[ndarray]</p>
 </dd>
 </dl>
 <p class="rubric">References</p>

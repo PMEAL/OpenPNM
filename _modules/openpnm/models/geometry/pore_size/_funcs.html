@@ -212,7 +212,7 @@
 
 
 <div class="viewcode-block" id="weibull"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.weibull.html#openpnm.models.geometry.pore_size.weibull">[docs]</a><span class="k">def</span> <span class="nf">weibull</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
                          <span class="n">seeds</span><span class="o">=</span><span class="n">seeds</span><span class="p">)</span></div>
 
 
@@ -220,7 +220,7 @@
 
 
 <div class="viewcode-block" id="normal"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.normal.html#openpnm.models.geometry.pore_size.normal">[docs]</a><span class="k">def</span> <span class="nf">normal</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
                         <span class="n">seeds</span><span class="o">=</span><span class="n">seeds</span><span class="p">)</span></div>
 
 
@@ -228,7 +228,7 @@
 
 
 <div class="viewcode-block" id="random"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.random.html#openpnm.models.geometry.pore_size.random">[docs]</a><span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
-    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
                         <span class="n">num_range</span><span class="o">=</span><span class="n">num_range</span><span class="p">)</span></div>
 
 
@@ -236,14 +236,14 @@
 
 
 <div class="viewcode-block" id="generic_distribution"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.generic_distribution.html#openpnm.models.geometry.pore_size.generic_distribution">[docs]</a><span class="k">def</span> <span class="nf">generic_distribution</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">generic_distribution</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="n">seeds</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">generic_distribution</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">seeds</span><span class="o">=</span><span class="n">seeds</span><span class="p">)</span></div>
 
 
 <span class="n">generic_distribution</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">_misc</span><span class="o">.</span><span class="n">generic_distribution</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
 <div class="viewcode-block" id="from_neighbor_throats"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_size.from_neighbor_throats.html#openpnm.models.geometry.pore_size.from_neighbor_throats">[docs]</a><span class="k">def</span> <span class="nf">from_neighbor_throats</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">from_neighbor_throats</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">from_neighbor_throats</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
                                        <span class="n">prop</span><span class="o">=</span><span class="n">prop</span><span class="p">,</span>
                                        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
@@ -265,7 +265,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    %(network)s</span>
 <span class="sd">    fixed_diameter : str</span>
-<span class="sd">        Name of the dictionary key on ``target`` where the array containing</span>
+<span class="sd">        Name of the dictionary key on ``network`` where the array containing</span>
 <span class="sd">        pore diameter values is stored, if any. If not provided a starting</span>
 <span class="sd">        value is assumed as half-way to the nearest neighbor.</span>
 <span class="sd">    iters : integer</span>

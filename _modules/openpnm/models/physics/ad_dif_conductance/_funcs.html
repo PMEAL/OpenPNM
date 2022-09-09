@@ -200,7 +200,7 @@
 
 <div class="viewcode-block" id="ad_dif"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.ad_dif_conductance.ad_dif.html#openpnm.models.physics.ad_dif_conductance.ad_dif">[docs]</a><span class="nd">@_doctxt</span>
 <span class="k">def</span> <span class="nf">ad_dif</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">,</span>
     <span class="n">pore_pressure</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
     <span class="n">throat_hydraulic_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
     <span class="n">throat_diffusive_conductance</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">,</span>
@@ -211,7 +211,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    pore_pressure : str</span>
 <span class="sd">        %(dict_blurb)s pore pressure</span>
 <span class="sd">    throat_hydraulic_conductance : str</span>
@@ -240,8 +240,7 @@
 <span class="sd">    diffusion-like processes and fluid flow need different shape factors.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-    <span class="n">phase</span> <span class="o">=</span> <span class="n">target</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
     <span class="c1"># Find g for half of pore 1, throat, and half of pore 2</span>
     <span class="n">P</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">pore_pressure</span><span class="p">]</span>

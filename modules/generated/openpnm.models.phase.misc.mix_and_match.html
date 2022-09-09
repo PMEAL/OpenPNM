@@ -7597,26 +7597,23 @@
 based on occupancy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>prop</strong> (<em>str</em>) – The dictionary key to the array containing the pore/throat property to
+be used in the calculation.</p></li>
+<li><p><strong>phases</strong> (<em>list</em>) – List of Phases over which the given <cite>prop</cite> is to be
+averaged out.</p></li>
+<li><p><strong>occupancy</strong> (<em>str</em>) – The dictionary key to the array containing the occupancy associated
+with each of the given <code class="docutils literal notranslate"><span class="pre">phases</span></code>.</p></li>
+</ul>
 </dd>
-</dl>
-<dl class="simple">
-<dt>prop<span class="classifier">str</span></dt><dd><p>The dictionary key to the array containing the pore/throat property to
-be used in the calculation.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>weighted_average</strong> – Weighted average of the given <cite>prop</cite> averaged over <cite>phases</cite>.</p>
 </dd>
-<dt>phases<span class="classifier">list</span></dt><dd><p>List of Phases over which the given <cite>prop</cite> is to be
-averaged out.</p>
-</dd>
-<dt>occupancy<span class="classifier">str</span></dt><dd><p>The dictionary key to the array containing the occupancy associated
-with each of the given <code class="docutils literal notranslate"><span class="pre">phases</span></code>.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>weighted_average</strong> – Weighted average of the given <cite>prop</cite> averaged over <cite>phases</cite>.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>ndarray</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>

@@ -7592,20 +7592,16 @@
 <h1>weibull<a class="headerlink" href="#weibull" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.misc.weibull">
-<span class="sig-name descname"><span class="pre">weibull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/misc/_statistical_distributions.html#weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.misc.weibull" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">weibull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/misc/_statistical_distributions.html#weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.misc.weibull" title="Permalink to this definition">#</a></dt>
 <dd><p>Produces values from a Weibull distribution given a set of random numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
-<li><p><strong>seeds</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> where the array containing
-random seed values (between 0 and 1) is stored. These values are
-used to do a reverse lookup on the cdf of given distribution using
-the <code class="docutils literal notranslate"><span class="pre">ppf</span></code> method on the scipy.stats object.  Truncating the
-range (e.g. from 0.1 to 0.9) is often useful to prevent the
-occurance of extreme values from the long tails.</p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network object to which this model is associated (i.e.
+attached). This controls the length of the calculated array(s),
+and also provides access to other necessary properties.</p></li>
+<li><p><strong>seeds</strong> (<em>str</em><em> (</em><em>dict key</em><em>)</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of eed</p></li>
 <li><p><strong>shape</strong> (<em>float</em>) – Controls the width or skewness of the distribution. For more
 information on the effect of this parameter refer to the
 corresponding <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/stats.html">scipy.stats function</a>.</p></li>

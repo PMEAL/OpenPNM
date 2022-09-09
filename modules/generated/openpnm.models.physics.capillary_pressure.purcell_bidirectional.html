@@ -7592,7 +7592,7 @@
 <h1>purcell_bidirectional<a class="headerlink" href="#purcell-bidirectional" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.physics.capillary_pressure.purcell_bidirectional">
-<span class="sig-name descname"><span class="pre">purcell_bidirectional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_toroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_tension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.surface_tension'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.contact_angle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure/_funcs.html#purcell_bidirectional"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.purcell_bidirectional" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">purcell_bidirectional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_toroid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_tension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.surface_tension'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.contact_angle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/capillary_pressure/_funcs.html#purcell_bidirectional"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.physics.capillary_pressure.purcell_bidirectional" title="Permalink to this definition">#</a></dt>
 <dd><p>Computes the throat capillary entry pressure assuming the throat is a
 toroid. Makes use of the toroidal meniscus model with mode touch.
 This model accounts for mensicus protrusion into adjacent pores and
@@ -7602,21 +7602,21 @@ different sizes and this determines how far the meniscus can protrude.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
 <li><p><strong>r_toroid</strong> (<em>float</em><em> or </em><em>array_like</em>) – The radius of the toroid surrounding the pore</p></li>
 <li><p><strong>num_points</strong> (<em>float</em><em>, </em><em>default 100</em>) – The number of divisions to make along the profile length to assess the
 meniscus properties in order to find the touch length.</p></li>
-<li><p><strong>surface_tension</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>surface_tension</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  surface tension. If a pore property is given, it is
 interpolated to a throat list.</p></li>
-<li><p><strong>contact_angle</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>contact_angle</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  contact angle. If a pore property is given, it is</p></li>
 <li><p><strong>list.</strong> (<em>interpolated to a throat</em>) – </p></li>
-<li><p><strong>throat_diameter</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  throat diameter</p></li>
-<li><p><strong>pore_diameter</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>pore_diameter</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  pore diameter</p></li>
 </ul>
 </dd>

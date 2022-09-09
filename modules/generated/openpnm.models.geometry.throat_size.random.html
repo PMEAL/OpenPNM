@@ -7597,9 +7597,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network object to which this model is associated (i.e.
+attached). This controls the length of the calculated array(s),
+and also provides access to other necessary properties.</p></li>
 <li><p><strong>seed</strong> (<em>int</em>) – The starting seed value to sent to numpy’s random number generator.
 A value of <code class="docutils literal notranslate"><span class="pre">None</span></code> means a different distribution is returned each
 time the model is (re)run.</p></li>
@@ -7608,12 +7608,6 @@ numbers.  The default is <code class="docutils literal notranslate"><span class=
 may be useful if these values are to be used in subsequent
 distributions to prevent generating extreme values in the tails.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>values</strong> – A numpy ndarray containing values following the distribution</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndndarray</p>
 </dd>
 </dl>
 </dd></dl>

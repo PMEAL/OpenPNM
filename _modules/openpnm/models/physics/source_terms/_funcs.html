@@ -212,14 +212,19 @@
 
 
 <div class="viewcode-block" id="charge_conservation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.charge_conservation.html#openpnm.models.physics.source_terms.charge_conservation">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">charge_conservation</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">p_alg</span><span class="p">,</span> <span class="n">e_alg</span><span class="p">,</span> <span class="n">assumption</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">charge_conservation</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">,</span>
+    <span class="n">p_alg</span><span class="p">,</span>
+    <span class="n">e_alg</span><span class="p">,</span>
+    <span class="n">assumption</span>
+<span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies the source term on the charge conservation equation when solving</span>
 <span class="sd">    for ions transport.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    p_alg : Algorithm</span>
 <span class="sd">        The algorithm used to enforce charge conservation.</span>
 <span class="sd">    e_alg : list</span>
@@ -301,7 +306,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        %(dict_blurb)s quantity of interest</span>
 <span class="sd">    prefactor : str</span>
@@ -353,7 +358,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key on the phase object containing the the quantity</span>
 <span class="sd">        of interest</span>
@@ -400,7 +405,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key on the phase object containing the the quantity</span>
 <span class="sd">        of interest</span>
@@ -452,7 +457,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key on the phase object containing the the quantity</span>
 <span class="sd">        of interest</span>
@@ -507,7 +512,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key on the phase object containing the the quantity</span>
 <span class="sd">        of interest</span>
@@ -561,7 +566,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key on the phase object containing the the quantity</span>
 <span class="sd">        of interest</span>
@@ -617,7 +622,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key on the phase object containing the the quantity</span>
 <span class="sd">        of interest</span>
@@ -683,7 +688,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    eqn : str</span>
 <span class="sd">        The str representation of the equation to use.  This will be</span>
 <span class="sd">        passed to sympy&#39;s ``sympify`` function to make a *live* sympy object.</span>
@@ -752,7 +757,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key of the quantity of interest (i.e. main variable</span>
 <span class="sd">        to be solved; in this case, concentration).</span>
@@ -868,7 +873,8 @@
     <span class="k">return</span> <span class="n">values</span></div>
 
 
-<div class="viewcode-block" id="butler_volmer_voltage"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.butler_volmer_voltage.html#openpnm.models.physics.source_terms.butler_volmer_voltage">[docs]</a><span class="k">def</span> <span class="nf">butler_volmer_voltage</span><span class="p">(</span>
+<div class="viewcode-block" id="butler_volmer_voltage"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.butler_volmer_voltage.html#openpnm.models.physics.source_terms.butler_volmer_voltage">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">butler_volmer_voltage</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">i0_ref</span><span class="p">,</span> <span class="n">c_ref</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span>
     <span class="n">gamma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;pore.temperature&quot;</span><span class="p">,</span>
@@ -883,8 +889,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    phase : OpenPNM Phase</span>
-<span class="sd">        The Phase object where the result will be applied.</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    X : str</span>
 <span class="sd">        The dictionary key of the quantity of interest (i.e. main variable</span>
 <span class="sd">        to be solved; in this case, electrolyte voltage).</span>

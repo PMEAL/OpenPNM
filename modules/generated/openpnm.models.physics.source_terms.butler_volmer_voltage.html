@@ -7600,7 +7600,9 @@ based on <strong>voltage</strong> to be used in electron conduction algorithms.<
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>phase</strong> (<em>OpenPNM Phase</em>) – The Phase object where the result will be applied.</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
 <li><p><strong>X</strong> (<em>str</em>) – The dictionary key of the quantity of interest (i.e. main variable
 to be solved; in this case, electrolyte voltage).</p></li>
 <li><p><strong>n</strong> (<em>float</em>) – Number of electrons transferred in the redox reaction.</p></li>

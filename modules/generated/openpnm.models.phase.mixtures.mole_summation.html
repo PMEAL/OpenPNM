@@ -7596,7 +7596,9 @@
 <dd><p>Computes total mole fraction in each pore given component values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
+<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>vals</strong> – An ND-array containing the total mole fraction.  Note that this is not

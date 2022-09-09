@@ -7598,14 +7598,13 @@
 <dd><p>Computes the property of a mixture using the specified mixing rule</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
-</dd>
-</dl>
-<dl>
-<dt>prop<span class="classifier">str</span></dt><dd><p>The dictionary key containing the property of interest on each
-component</p>
-</dd>
-<dt>mode<span class="classifier">str</span></dt><dd><p>The mixing rule to to use. Options are:</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>prop</strong> (<em>str</em>) – The dictionary key containing the property of interest on each
+component</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>The mixing rule to to use. Options are:</p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>mode</p></th>
@@ -7613,23 +7612,24 @@ component</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>‘logarithmic’</p></td>
+<tr class="row-even"><td><p>’logarithmic’</p></td>
 <td><p>(default) Uses the natural logarithm of the property as:
 <span class="math notranslate nohighlight">\(ln(z) = \Sigma (x_i \cdot ln(\z_i))\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>‘linear’</p></td>
+<tr class="row-odd"><td><p>’linear’</p></td>
 <td><p>Basic mole fraction weighting of the form
 <span class="math notranslate nohighlight">\(z = \Sigma (x_i \cdot \z_i)\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>‘power</p></td>
+<tr class="row-even"><td><p>’power</p></td>
 <td><p>Applies an exponent to the property as:
 <span class="math notranslate nohighlight">\(\z^{power} = \Sigma (x_i \cdot \z_i^{power})\)</span></p></td>
 </tr>
 </tbody>
 </table>
-</dd>
-<dt>power<span class="classifier">scalar</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">mode='power'</span></code> this indicates the value of the exponent,
-otherwise this is ignored.</p>
+</p></li>
+<li><p><strong>power</strong> (<em>scalar</em>) – If <code class="docutils literal notranslate"><span class="pre">mode='power'</span></code> this indicates the value of the exponent,
+otherwise this is ignored.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

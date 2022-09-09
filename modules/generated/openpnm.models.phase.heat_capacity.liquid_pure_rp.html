@@ -7595,17 +7595,29 @@
 <span class="sig-name descname"><span class="pre">liquid_pure_rp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.temperature'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'param.critical_temperature'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'param.acentric_factor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Cpg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.heat_capacity_gas'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/phase/heat_capacity/_funcs.html#liquid_pure_rp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.phase.heat_capacity.liquid_pure_rp" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>T</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+temperature values, in units of [K].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>Tc</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+critical temperature values, in units of [K].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>omega</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+accentric factor values, which is dimensionless.
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+<li><p><strong>Cpg</strong> (<em>str</em><em> (</em><em>dict key</em><em>) or </em><em>numeric</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the ndarray of
+gas phase heat capacity values, in units of [J/mol].
+If a numerical value is passed (i.e. a scalar or ndarray)
+it gets used directly.</p></li>
+</ul>
 </dd>
 </dl>
-<dl class="simple">
-<dt>T<span class="classifier">str (dict key) or scalar</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">phase</span></code> containing the array of
-temperature values. If a scalar is passed it get used directly.</p>
-</dd>
-</dl>
-<p>Tc : str (dict key) or scalar</p>
-<p>omega : str (dict key) or scalar</p>
-<p>Cpg : str (dict key) or scalar</p>
 </dd></dl>
 
 </section>

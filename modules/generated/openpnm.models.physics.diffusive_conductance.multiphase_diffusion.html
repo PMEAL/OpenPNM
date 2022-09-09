@@ -7592,19 +7592,19 @@
 <h1>multiphase_diffusion<a class="headerlink" href="#multiphase-diffusion" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.physics.diffusive_conductance.multiphase_diffusion">
-<span class="sig-name descname"><span class="pre">multiphase_diffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diffusivity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diffusivity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diffusivity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diffusivity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_factors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diffusive_size_factors'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition_coef_global</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.partition_coef.global'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance/_funcs.html#multiphase_diffusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.multiphase_diffusion" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">multiphase_diffusion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diffusivity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diffusivity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diffusivity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diffusivity'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_factors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diffusive_size_factors'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition_coef_global</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.partition_coef.global'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/diffusive_conductance/_funcs.html#multiphase_diffusion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.physics.diffusive_conductance.multiphase_diffusion" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculates the diffusive conductance of conduits in network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
-<li><p><strong>pore_diffusivity</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>pore_diffusivity</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  pore diffusivity</p></li>
-<li><p><strong>throat_diffusivity</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>throat_diffusivity</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  throat diffusivity</p></li>
-<li><p><strong>size_factors</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>size_factors</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  conduit size factors</p></li>
 </ul>
 </dd>

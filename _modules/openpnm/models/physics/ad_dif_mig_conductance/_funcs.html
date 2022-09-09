@@ -192,12 +192,14 @@
                 
   <h1>Source code for openpnm.models.physics.ad_dif_mig_conductance._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">from</span> <span class="nn">openpnm.models</span> <span class="kn">import</span> <span class="n">_doctxt</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ad_dif_mig&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="ad_dif_mig"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig.html#openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig">[docs]</a><span class="k">def</span> <span class="nf">ad_dif_mig</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
+<div class="viewcode-block" id="ad_dif_mig"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig.html#openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig">[docs]</a><span class="nd">@_doctxt</span>
+<span class="k">def</span> <span class="nf">ad_dif_mig</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span>
                <span class="n">pore_pressure</span><span class="o">=</span><span class="s2">&quot;pore.pressure&quot;</span><span class="p">,</span>
                <span class="n">pore_potential</span><span class="o">=</span><span class="s2">&quot;pore.potential&quot;</span><span class="p">,</span>
                <span class="n">throat_hydraulic_conductance</span><span class="o">=</span><span class="s2">&quot;throat.hydraulic_conductance&quot;</span><span class="p">,</span>
@@ -212,7 +214,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    %(target_blurb)s</span>
+<span class="sd">    %(phase)s</span>
 <span class="sd">    pore_pressure : str</span>
 <span class="sd">        %(dict_blurb)s pore pressure</span>
 <span class="sd">    pore_potential : str</span>
@@ -253,8 +255,7 @@
     <span class="n">throat_diffusive_conductance</span> <span class="o">=</span> <span class="n">throat_diffusive_conductance</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">ion</span>
     <span class="n">throat_valence</span> <span class="o">=</span> <span class="n">throat_valence</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">ion</span>
 
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-    <span class="n">phase</span> <span class="o">=</span> <span class="n">target</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">]</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">throat_temperature</span><span class="p">]</span>
     <span class="c1"># Check if pressure and potential values exist, otherwise, assign zeros</span>

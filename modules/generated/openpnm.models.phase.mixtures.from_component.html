@@ -7596,21 +7596,19 @@
 <dd><p>Fetches the given values from the specified object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>prop</strong> (<em>str</em>) – The name of the array to retreive</p></li>
+<li><p><strong>compname</strong> (<em>str</em>) – The name of the object possessing the desired data</p></li>
+</ul>
 </dd>
-</dl>
-<dl class="simple">
-<dt>prop<span class="classifier">str</span></dt><dd><p>The name of the array to retreive</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vals</strong> – An ND-array containing the request data</p>
 </dd>
-<dt>compname<span class="classifier">str</span></dt><dd><p>The name of the object possessing the desired data</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>vals</strong> – An ND-array containing the request data</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>ND-array</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
 </dd></dl>

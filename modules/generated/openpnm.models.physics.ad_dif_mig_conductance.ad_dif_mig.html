@@ -7592,26 +7592,38 @@
 <h1>ad_dif_mig<a class="headerlink" href="#ad-dif-mig" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig">
-<span class="sig-name descname"><span class="pre">ad_dif_mig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.pressure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_potential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.potential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_hydraulic_conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.hydraulic_conductance'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diffusive_conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diffusive_conductance'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_valence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.valence'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.temperature'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'powerlaw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/ad_dif_mig_conductance/_funcs.html#ad_dif_mig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ad_dif_mig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_pressure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.pressure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_potential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.potential'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_hydraulic_conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.hydraulic_conductance'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_diffusive_conductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.diffusive_conductance'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_valence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.valence'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.temperature'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'powerlaw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/physics/ad_dif_mig_conductance/_funcs.html#ad_dif_mig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.physics.ad_dif_mig_conductance.ad_dif_mig" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculate the advective-diffusive-migrative conductance of conduits
 in network</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>%</strong><strong>(</strong><strong>target_blurb</strong><strong>)</strong><strong>s</strong> – </p></li>
-<li><p><strong>pore_pressure</strong> (<em>str</em>) – %(dict_blurb)s pore pressure</p></li>
-<li><p><strong>pore_potential</strong> (<em>str</em>) – %(dict_blurb)s pore potential</p></li>
-<li><p><strong>throat_hydraulic_conductance</strong> (<em>str</em>) – %(dict_blurb)s hydraulic conductance</p></li>
-<li><p><strong>throat_diffusive_conductance</strong> (<em>str</em>) – %(dict_blurb)s diffusive conductance</p></li>
-<li><p><strong>throat_valence</strong> (<em>str</em>) – %(dict_blurb)s throat ionic species valence</p></li>
-<li><p><strong>pore_temperature</strong> (<em>str</em>) – %(dict_blurb)s pore temperature</p></li>
-<li><p><strong>throat_temperature</strong> (<em>str</em>) – %(dict_blurb)s throat temperature</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>pore_pressure</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  pore pressure</p></li>
+<li><p><strong>pore_potential</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  pore potential</p></li>
+<li><p><strong>throat_hydraulic_conductance</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  hydraulic conductance</p></li>
+<li><p><strong>throat_diffusive_conductance</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  diffusive conductance</p></li>
+<li><p><strong>throat_valence</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  throat ionic species valence</p></li>
+<li><p><strong>pore_temperature</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  pore temperature</p></li>
+<li><p><strong>throat_temperature</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  throat temperature</p></li>
 <li><p><strong>ion</strong> (<em>str</em>) – Name of the ionic species</p></li>
 <li><p><strong>s_scheme</strong> (<em>str</em>) – Name of the space discretization scheme to use</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>%(return_arr)s advection-diffusion-migration conductance</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>values</strong> – A numpy ndarray containing the computed values of  advection-diffusion-migration conductance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

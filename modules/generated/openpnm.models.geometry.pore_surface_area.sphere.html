@@ -7592,7 +7592,7 @@
 <h1>sphere<a class="headerlink" href="#sphere" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.geometry.pore_surface_area.sphere">
-<span class="sig-name descname"><span class="pre">sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area/_funcs.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.sphere" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area/_funcs.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.sphere" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculates internal surface area of pore bodies assuming they are spheres,
 then subtracts the areas of the neighboring throats</p>
 <dl class="field-list simple">
@@ -7601,11 +7601,13 @@ then subtracts the areas of the neighboring throats</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>pore_diameter<span class="classifier">str</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> where the array containing
-pore diameter values is stored</p>
+<dt>pore_diameter<span class="classifier">str</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">network</span></code> containing the ndarray of
+pore diameter values.</p>
+</dd>
+<dt>throat_cross_sectional_area<span class="classifier">str</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">network</span></code> containing the ndarray of
+throat cross-sectional area values.</p>
 </dd>
 </dl>
-<p>throat_cross_sectional_area : str</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>surface_areas</strong> – Numpy ndarry containing pore surface area values</p>

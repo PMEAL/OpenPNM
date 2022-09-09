@@ -7592,14 +7592,14 @@
 <h1>match_histogram<a class="headerlink" href="#match-histogram" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.misc.match_histogram">
-<span class="sig-name descname"><span class="pre">match_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_heights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/misc/_statistical_distributions.html#match_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.misc.match_histogram" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">match_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_heights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/misc/_statistical_distributions.html#match_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.misc.match_histogram" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate values corresponding to a given histogram</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network object to which this model is associated (i.e.
+attached). This controls the length of the calculated array(s),
+and also provides access to other necessary properties.</p></li>
 <li><p><strong>bin_centers</strong> (<em>array_like</em>) – The x-axis of the histogram, such as pore sizes.</p></li>
 <li><p><strong>bin_heights</strong> (<em>array_like</em>) – The y-axis of the histogram, such as the number of pores of each size.</p></li>
 <li><p><strong>element</strong> (<em>str</em>) – Controls how many values to generate. Can either be ‘pore’ or ‘throat’.</p></li>

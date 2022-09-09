@@ -199,7 +199,7 @@
 
 
 <div class="viewcode-block" id="pore_to_pore"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_vector.pore_to_pore.html#openpnm.models.geometry.throat_vector.pore_to_pore">[docs]</a><span class="nd">@_geodocs</span>
-<span class="k">def</span> <span class="nf">pore_to_pore</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">pore_to_pore</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates throat vector as straight path between connected pores.</span>
 
@@ -220,15 +220,13 @@
 <span class="sd">    &#39;throat.conns&#39; array as stored on the network.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-    <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
     <span class="n">P1</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
     <span class="n">P2</span> <span class="o">=</span> <span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="n">coords</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span>
     <span class="n">vec</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">-</span> <span class="n">coords</span><span class="p">[</span><span class="n">P1</span><span class="p">]</span>
     <span class="n">unit_vec</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">unit_vector</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">unit_vec</span><span class="p">[</span><span class="n">throats</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">unit_vec</span></div>
 </pre></div>
 
               </article>

@@ -7592,13 +7592,16 @@
 <h1>normal<a class="headerlink" href="#normal" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.misc.normal">
-<span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stddev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/misc/_statistical_distributions.html#normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.misc.normal" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seeds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stddev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/misc/_statistical_distributions.html#normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.misc.normal" title="Permalink to this definition">#</a></dt>
 <dd><p>Produces values from a Weibull distribution given a set of random numbers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>%</strong><strong>(</strong><strong>models.target.parameters</strong><strong>)</strong><strong>s</strong> – </p></li>
-<li><p><strong>%</strong><strong>(</strong><strong>models.misc.seeds</strong><strong>)</strong><strong>s</strong> – </p></li>
+<li><p><strong>network</strong> (<em>OpenPNM Network object</em>) – The network object to which this model is associated (i.e.
+attached). This controls the length of the calculated array(s),
+and also provides access to other necessary properties.</p></li>
+<li><p><strong>seeds</strong> (<em>str</em><em> (</em><em>dict key</em><em>)</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of eed</p></li>
 <li><p><strong>mean</strong> (<em>float</em>) – The mean value of the distribution.  This is referred to as the
 <code class="docutils literal notranslate"><span class="pre">loc</span></code> in the scipy.stats function, and this key word is also
 accepted.</p></li>
@@ -7606,9 +7609,6 @@ accepted.</p></li>
 the  <code class="docutils literal notranslate"><span class="pre">scale</span></code> in the scipy.stats function, and this key word is also
 accepted.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>%(models.misc.stats.returns)s</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

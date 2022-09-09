@@ -7603,18 +7603,18 @@ triangular, square and circular [2].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
-<li><p><strong>pore_viscosity</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
+<li><p><strong>pore_viscosity</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  pore viscosity</p></li>
-<li><p><strong>throat_viscosity</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>throat_viscosity</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  throat viscosity</p></li>
-<li><p><strong>pore_shape_factor</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>pore_shape_factor</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  pore geometric shape factor</p></li>
-<li><p><strong>throat_shape_factor</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>throat_shape_factor</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  throat geometric shape factor</p></li>
-<li><p><strong>pore_area</strong> (<em>str</em>) – <p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>pore_area</strong> (<em>str</em>) – <p>Name of the dictionary key on the target object pointing to the
 array containing values of  pore area
 The pore area is calculated using following formula:</p>
 <div class="math notranslate nohighlight">
@@ -7624,7 +7624,7 @@ calculated using following formula:</p>
 <div class="math notranslate nohighlight">
 \[SF_P = \frac{A_P}{P_P^2} = 1/4π\]</div>
 </p></li>
-<li><p><strong>throat_area</strong> (<em>str</em>) – <p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>throat_area</strong> (<em>str</em>) – <p>Name of the dictionary key on the target object pointing to the
 array containing values of  throat area.
 The throat area is calculated using following formula:</p>
 <div class="math notranslate nohighlight">
@@ -7634,7 +7634,7 @@ calculated using :</p>
 <div class="math notranslate nohighlight">
 \[SF_T = \frac{T_A}{T_P^2} = 1/4π\]</div>
 </p></li>
-<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">target</span></code> pointing to the
+<li><p><strong>conduit_lengths</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
 array containing values of  throat conduit lengths</p></li>
 </ul>
 </dd>

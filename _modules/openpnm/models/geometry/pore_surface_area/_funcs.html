@@ -204,7 +204,7 @@
 
 <div class="viewcode-block" id="sphere"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_surface_area.sphere.html#openpnm.models.geometry.pore_surface_area.sphere">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">sphere</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
+    <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
 <span class="p">):</span>
@@ -230,18 +230,16 @@
 <span class="sd">    thus not accounting for the actual curvature of the intersection.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">value</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span>
     <span class="n">Tca</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">]</span>
     <span class="n">_np</span><span class="o">.</span><span class="n">subtract</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">_np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Tca</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="circle"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_surface_area.circle.html#openpnm.models.geometry.pore_surface_area.circle">[docs]</a><span class="nd">@_geodocs</span>
 <span class="k">def</span> <span class="nf">circle</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
+    <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
 <span class="p">):</span>
@@ -262,16 +260,14 @@
 <span class="sd">    -----</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">value</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
     <span class="n">Tca</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">]</span>
     <span class="n">_np</span><span class="o">.</span><span class="n">subtract</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">_np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Tca</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="cube"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_surface_area.cube.html#openpnm.models.geometry.pore_surface_area.cube">[docs]</a><span class="k">def</span> <span class="nf">cube</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
+    <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
 <span class="p">):</span>
@@ -289,17 +285,15 @@
 <span class="sd">    -------</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">*</span> <span class="n">D</span><span class="o">**</span><span class="mi">2</span>
     <span class="n">Tca</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">]</span>
     <span class="n">_np</span><span class="o">.</span><span class="n">subtract</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">_np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Tca</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="square"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.pore_surface_area.square.html#openpnm.models.geometry.pore_surface_area.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
+    <span class="n">network</span><span class="p">,</span>
     <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
     <span class="n">throat_cross_sectional_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span>
 <span class="p">):</span>
@@ -317,12 +311,10 @@
 <span class="sd">    -------</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
     <span class="n">D</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">pore_diameter</span><span class="p">]</span>
     <span class="n">value</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">D</span>
     <span class="n">Tca</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_cross_sectional_area</span><span class="p">]</span>
     <span class="n">_np</span><span class="o">.</span><span class="n">subtract</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">_np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">Tca</span><span class="p">,</span> <span class="n">repeats</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">value</span></div>
 </pre></div>
 

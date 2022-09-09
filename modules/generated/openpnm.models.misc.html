@@ -7629,7 +7629,7 @@ generating an array of random numbers.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.from_neighbor_throats.html#openpnm.models.misc.from_neighbor_throats" title="openpnm.models.misc.from_neighbor_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_neighbor_throats</span></code></a>(target, prop[, mode, ...])</p></td>
 <td><p>Adopt a value from the values found in neighboring throats</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.generic_distribution.html#openpnm.models.misc.generic_distribution" title="openpnm.models.misc.generic_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_distribution</span></code></a>(target, seeds, func)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.generic_distribution.html#openpnm.models.misc.generic_distribution" title="openpnm.models.misc.generic_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_distribution</span></code></a>(network, seeds, func)</p></td>
 <td><p>Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns values from the distribution for the given seeds</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.generic_function.html#openpnm.models.misc.generic_function" title="openpnm.models.misc.generic_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generic_function</span></code></a>(target, prop, func, **kwargs)</p></td>
@@ -7641,10 +7641,10 @@ generating an array of random numbers.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.linear.html#openpnm.models.misc.linear" title="openpnm.models.misc.linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linear</span></code></a>(target, m, b, prop)</p></td>
 <td><p>Calculates a property as a linear function of a given property</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.match_histogram.html#openpnm.models.misc.match_histogram" title="openpnm.models.misc.match_histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match_histogram</span></code></a>(target, bin_centers, bin_heights)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.match_histogram.html#openpnm.models.misc.match_histogram" title="openpnm.models.misc.match_histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match_histogram</span></code></a>(network, bin_centers, ...[, ...])</p></td>
 <td><p>Generate values corresponding to a given histogram</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.normal.html#openpnm.models.misc.normal" title="openpnm.models.misc.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a>(target, seeds[, mean, stddev, scale, loc])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.normal.html#openpnm.models.misc.normal" title="openpnm.models.misc.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a>(network, seeds[, mean, stddev, ...])</p></td>
 <td><p>Produces values from a Weibull distribution given a set of random numbers.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.normalize.html#openpnm.models.misc.normalize" title="openpnm.models.misc.normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code></a>(target, prop[, xmin, xmax])</p></td>
@@ -7656,7 +7656,7 @@ generating an array of random numbers.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.product.html#openpnm.models.misc.product" title="openpnm.models.misc.product"><code class="xref py py-obj docutils literal notranslate"><span class="pre">product</span></code></a>(target, props)</p></td>
 <td><p>Calculates the product of multiple property values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.random.html#openpnm.models.misc.random" title="openpnm.models.misc.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a>(target, element[, seed, num_range])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.random.html#openpnm.models.misc.random" title="openpnm.models.misc.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a>(network, element[, seed, num_range])</p></td>
 <td><p>Create an array of random numbers of a specified size.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.scaled.html#openpnm.models.misc.scaled" title="openpnm.models.misc.scaled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scaled</span></code></a>(target, prop, factor)</p></td>
@@ -7665,7 +7665,7 @@ generating an array of random numbers.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.misc.summation.html#openpnm.models.misc.summation" title="openpnm.models.misc.summation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summation</span></code></a>(target[, props])</p></td>
 <td><p>Sums the values in the given arrays</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.weibull.html#openpnm.models.misc.weibull" title="openpnm.models.misc.weibull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weibull</span></code></a>(target, seeds, shape, scale, loc)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.misc.weibull.html#openpnm.models.misc.weibull" title="openpnm.models.misc.weibull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weibull</span></code></a>(network, seeds, shape, scale, loc)</p></td>
 <td><p>Produces values from a Weibull distribution given a set of random numbers.</p></td>
 </tr>
 </tbody>

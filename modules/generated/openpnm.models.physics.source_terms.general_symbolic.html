@@ -7598,9 +7598,9 @@ components of the source term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>OpenPNM Base object</em>) – Object with which this model is associated. This controls
-the length of the calculated array, and also provides access
-to other necessary properties.</p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
 <li><p><strong>eqn</strong> (<em>str</em>) – The str representation of the equation to use.  This will be
 passed to sympy’s <code class="docutils literal notranslate"><span class="pre">sympify</span></code> function to make a <em>live</em> sympy object.</p></li>
 <li><p><strong>x</strong> (<em>str</em>) – The dictionary key of the independent variable</p></li>
