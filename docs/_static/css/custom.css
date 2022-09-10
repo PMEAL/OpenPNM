@@ -1,6 +1,4 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-/* @import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
@@ -102,7 +100,6 @@ nav .toctree-l3 > ul {
 
 .toctree-l3 > ul > li > a {
     line-height: 125% !important;
-    font-family: "JuliaMono Medium", monospace;
 }
 
 .bd-sidenav a {
