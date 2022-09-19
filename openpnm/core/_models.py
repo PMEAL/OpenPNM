@@ -187,11 +187,11 @@ class ModelsDict(PrintableDict):
         """
         names = {}
         for item in self:
-            name, domain = item.split('@')
+            name, _, domain = item.partition('@')
             if name not in names.keys():
                 names[name] = []
             names[name].append(domain)
-        D = PrintableDict(names, key='Model', value='Doamin')
+        D = PrintableDict(names, key='Model', value='Domain')
         return D
 
     def __str__(self):
@@ -217,7 +217,7 @@ class ModelsDict(PrintableDict):
         else:  # Delete all models with the same prefix
             for item in list(self.keys()):
                 if item.startswith(key):
-                    self.__delitem__(item)
+                    super().__delitem__(item)
 
     def __getitem__(self, key):
         try:
@@ -361,6 +361,9 @@ class ModelsMixin2:
                          effectively turning the property into a constant.
             ============ =====================================================
 
+        kwargs : keyword arguments
+            All additional keyword arguments are passed on to the model
+
         Notes
         -----
         The ``domain`` argument dictates where the results of ``model`` should
@@ -415,32 +418,36 @@ class ModelsMixin2:
         # Add model and regen_mode to kwargs dictionary
         kwargs.update({'model': model, 'regen_mode': regen_mode})
         # Insepct model to extract arguments and default values
+        kwargs.update(self._inspect_model(model, kwargs))
+    def _inspect_model(self, model, kwargs={}):
         if model.__defaults__:
             vals = list(inspect.getfullargspec(model).defaults)
             keys = inspect.getfullargspec(model).args[-len(vals):]
             for k, v in zip(keys, vals):  # Put defaults into kwargs
                 if k not in kwargs:  # Skip if argument was given in kwargs
                     kwargs.update({k: v})
-        self.models[propname+'@'+domain] = ModelWrapper(**kwargs)
-        if regen_mode != 'deferred':
-            self.run_model(propname+'@'+domain)
+        return kwargs
 
     def add_model_collection(self, models, regen_mode='deferred', domain=None):
         r"""
-        Add a collection of several models at once
+        Add a ``collection`` of several models at once
 
         Parameters
         ----------
         models : dict
-            The collection of models to add. Collections are dictionaries
-            that are formatted the same as ``obj.models``. Several model
-            collections are available in ``opnpnm.models.collections``.
+            The collection of models to add.
         regen_mode : str
             By default the models are not regenerated upon addition. See the
             docstring for ``add_model`` for more information.
         domain : str
-            The label indicate which pores/throats the supplied collection
+            The label indicating which locations the supplied collection
             of models should be applied to.
+
+        Notes
+        -----
+        Collections are dictionaries that are formatted the same as
+        ``obj.models``. Several model collections are available in
+        ``openpnm.models.collections``.
         """
         models = deepcopy(models)
         for k, v in models.items():
@@ -452,7 +459,7 @@ class ModelsMixin2:
 
     def regenerate_models(self, propnames=None, exclude=[]):
         r"""
-        Runs all the models stored in ``models``
+        Runs all the models stored in the object's ``models`` attribute
 
         Parameters
         ----------
@@ -492,15 +499,12 @@ class ModelsMixin2:
     def run_model(self, propname, domain=None):
         r"""
         Runs the requested model and places the result into the correct
-        locations.
+        locations
 
         Parameters
         ----------
         propname : str
-            The name of the model to run. If a domain is included in the
-            propname (i.e. '@domain') or ``domain`` is specified, then it
-            is solely run. If no domain is included than all models that
-            start with ``propname`` are run.
+            The name of the model to run.
         domain : str
             The label of the domain for which the model should be run. Passing
             ``propname='pore.diameter@domain1`` and ``domain=None`` is
@@ -509,12 +513,12 @@ class ModelsMixin2:
         """
         if domain is None:
             if '@' in propname:  # Get domain from propname if present
-                propname, domain = propname.split('@')
+                propname, _, domain = propname.partition('@')
                 self.run_model(propname=propname, domain=domain)
             else:  # No domain means run model for ALL domains
                 for item in self.models.keys():
-                    if item.startswith(propname+'@'):
-                        domain = item.split('@')[-1]
+                    if item.startswith(propname):
+                        _, _, domain = item.partition("@")
                         self.run_model(propname=propname, domain=domain)
         else:  # domain was given explicitly
             domain = domain.split('.', 1)[-1]

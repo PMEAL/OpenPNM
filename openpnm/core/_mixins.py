@@ -184,8 +184,8 @@ class ParserMixin:
 
 class LabelMixin:
     """r
-    This mixin add functionality to the Base2 class so that boolean arrays
-    are treated as labels.
+    This mixin adds functionality to the Base2 class so that boolean arrays
+    are treated as labels
     """
 
     def _get_labels(self, element, locations, mode):

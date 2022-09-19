@@ -533,18 +533,20 @@ def get_printable_props(item, suffix='', hr=78*'―'):
     header[5:15] = 'Properties'
     header[-12:] = 'Valid Values'
     lines = ''.join(header) + '\n' + hr
-    for i, k in enumerate(item.props()):
-        s = [' ']*78
-        s[:3] = str(i+1).rjust(3)
-        prop = k + suffix
-        s[5:5+len(prop)] = prop
-        element = k.split('.', 1)[0]
-        arr = item[k]
-        nans = np.any(np.isnan(np.atleast_2d(arr.T)), axis=0)
-        valid = str(np.sum(~nans)) + ' / ' + str(item._count(element))
-        s[-20:] = valid.rjust(20)
-        a = ''.join(s)
-        lines = '\n'.join((lines, a))
+    i = 0
+    for k, v in item.items():
+        if v.dtype != bool:
+            i += 1
+            s = [' ']*78
+            s[:3] = str(i+1).rjust(3)
+            prop = k + suffix
+            s[5:5+len(prop)] = prop
+            element = k.split('.', 1)[0]
+            nans = np.any(np.isnan(np.atleast_2d(v.T)), axis=0)
+            valid = str(np.sum(~nans)) + ' / ' + str(item._count(element))
+            s[-20:] = valid.rjust(20)
+            a = ''.join(s)
+            lines = '\n'.join((lines, a))
     return lines
 
 
@@ -588,15 +590,18 @@ def get_printable_labels(item, suffix='', hr=78*'―'):
     header[5:11] = 'Labels'
     header[-18:] = 'Assigned Locations'
     lines = ''.join(header) + '\n' + hr
-    for i, k in enumerate(item.labels()):
-        s = [' ']*78
-        s[:3] = str(i+1).rjust(3)
-        prop = k + suffix
-        s[5:5+len(prop)] = prop
-        valid = str(np.sum(item[k]))
-        s[-12:] = valid.rjust(12)
-        a = ''.join(s)
-        lines = '\n'.join((lines, a))
+    i = 0
+    for k, v in item.items():
+        if v.dtype == bool:
+            i += 1
+            s = [' ']*78
+            s[:3] = str(i+1).rjust(3)
+            prop = k + suffix
+            s[5:5+len(prop)] = prop
+            valid = str(np.sum(v))
+            s[-12:] = valid.rjust(12)
+            a = ''.join(s)
+            lines = '\n'.join((lines, a))
     return lines
 
 
