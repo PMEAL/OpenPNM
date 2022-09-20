@@ -36,7 +36,7 @@ def project_to_hdf5(project, filename=''):
 
 
     f = hdfFile(filename, "w")
-    for item in d.keys():
+    for item in list(d.keys()):
         tempname = '_'.join(item.split('.'))
         arr = d[item]
         if d[item].dtype == 'O':
