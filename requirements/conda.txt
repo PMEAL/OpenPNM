@@ -1,9 +1,7 @@
 chemicals
 docrep
-flatdict
 h5py
 jsonschema
-json_tricks
 matplotlib
 networkx
 numba
@@ -13,8 +11,6 @@ pypardiso
 scikit-image
 scipy
 sympy
-terminaltables
 thermo
 tqdm
-traits
 transforms3d
