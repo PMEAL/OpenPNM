@@ -1,4 +1,3 @@
-from traits.api import Int, List, Str, Float, TraitError, ListStr
 import openpnm as op
 from openpnm.utils import SettingsAttr, TypedList, TypedSet
 import pytest
