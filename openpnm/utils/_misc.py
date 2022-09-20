@@ -535,7 +535,7 @@ def get_printable_props(item, suffix='', hr=78*'―'):
     lines = ''.join(header) + '\n' + hr
     i = 0
     for k, v in item.items():
-        if v.dtype != bool:
+        if (v.dtype != bool) and not ('._' in k):
             i += 1
             s = [' ']*78
             s[:3] = str(i+1).rjust(3)
@@ -592,7 +592,7 @@ def get_printable_labels(item, suffix='', hr=78*'―'):
     lines = ''.join(header) + '\n' + hr
     i = 0
     for k, v in item.items():
-        if v.dtype == bool:
+        if (v.dtype == bool) and not ('._' in k):
             i += 1
             s = [' ']*78
             s[:3] = str(i+1).rjust(3)
