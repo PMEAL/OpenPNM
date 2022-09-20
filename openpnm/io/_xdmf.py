@@ -93,7 +93,7 @@ def project_to_xdmf(project, filename=''):
                                NumberOfElements=str(row))
         topo.append(topo_data)
         # Make HDF5 file with all datasets, and no groups
-        for item in D.keys():
+        for item in list(D.keys()):
             if D[item].dtype == 'O':
                 logger.warning(item + ' has dtype object,'
                                + ' will not write to file')
