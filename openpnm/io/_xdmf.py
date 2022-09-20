@@ -115,7 +115,7 @@ def project_to_xdmf(project, filename=''):
         time = create_time(mode='Single', Value=t_step)
         grid.append(time)
         # Add pore and throat properties
-        for item in D.keys():
+        for item in list(D.keys()):
             if item not in ['coordinates', 'connections']:
                 if ("#" in item and t_step == item.split("#")[1]) or (
                     "#" not in item
