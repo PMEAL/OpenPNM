@@ -71,6 +71,7 @@ class Transport(Algorithm):
         self._b = None
         self._pure_A = None
         self._pure_b = None
+        self.soln = {}
 
     @property
     def x(self):
