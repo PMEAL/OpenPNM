@@ -611,10 +611,10 @@ class BaseTest:
         with pytest.raises(Exception):
             self.geo['pore2.test'] = 0
 
-    # def test_setitem_wrong_length(self):
-    #     with pytest.raises(Exception):
-    #         self.geo['pore.test'] = np.ones((self.geo.Np+1))
-    #     assert 'pore.test' not in self.geo.keys()
+    def test_setitem_wrong_length(self):
+        with pytest.raises(Exception):
+            self.net['pore.test'] = np.ones((self.net.Np+1))
+        assert 'pore.test' not in self.net.keys()
 
     # def test_setitem_replace_all(self):
     #     array_len = np.size(self.geo['pore.all'])

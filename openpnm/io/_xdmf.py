@@ -1,5 +1,5 @@
 import logging
-from flatdict import FlatDict
+import pandas as pd
 import xml.etree.cElementTree as ET
 from openpnm.io import project_to_dict, _parse_filename
 from openpnm.utils._misc import is_transient
@@ -44,7 +44,9 @@ def project_to_xdmf(project, filename=''):
     fname_xdf = path.name
     d = project_to_dict(project=project, flatten=False,
                         categorize_by=['element', 'data'])
-    D = FlatDict(d, delimiter='/')
+    D = pd.json_normalize(d, sep='.').to_dict(orient='records')[0]
+    for k in list(D.keys()):
+        D[k.replace('.', '/')] = D.pop(k)
     # Identify time steps
     t_steps = []
     if transient:

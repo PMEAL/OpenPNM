@@ -1,7 +1,7 @@
 import logging
-from flatdict import FlatDict
 from openpnm.io import project_to_dict, _parse_filename
 from h5py import File as hdfFile
+import pandas as pd
 
 
 logger = logging.getLogger(__name__)
@@ -9,8 +9,7 @@ logger = logging.getLogger(__name__)
 
 def project_to_hdf5(project, filename=''):
     r"""
-    Creates an HDF5 file containing data from the specified objects,
-    and categorized according to the given arguments.
+    Creates an HDF5 file containing data from the specified objects
 
     Parameters
     ----------
@@ -31,7 +30,10 @@ def project_to_hdf5(project, filename=''):
     filename = _parse_filename(filename, ext='hdf')
 
     dct = project_to_dict(project=project)
-    d = FlatDict(dct, delimiter='/')
+    d = pd.json_normalize(dct, sep='.').to_dict(orient='records')[0]
+    for k in list(d.keys()):
+        d[k.replace('.', '/')] = d.pop(k)
+
 
     f = hdfFile(filename, "w")
     for item in d.keys():

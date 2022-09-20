@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import openpnm as op
-from flatdict import FlatDict
+import pandas as pd
 
 
 def project_to_paraview(project, filename):  # pragma: no cover
@@ -52,11 +52,17 @@ def project_to_paraview(project, filename):  # pragma: no cover
     p = op.io.Dict.to_dict(project=project, element=['pore'],
                            flatten=False,
                            categorize_by=['data' 'object'])
-    p = FlatDict(p, delimiter=' | ')
+    # The folloing lines are bit complex but avoid using the flatdict lib
+    p = pd.json_normalize(p, sep='.').to_dict(orient='records')[0]
+    for k in list(p.keys()):
+        p[k.replace('.', ' | ')] = p.pop(k)
     t = op.io.Dict.to_dict(project=project, element=['throat'],
                            flatten=False,
                            categorize_by=['data' 'object'])
-    t = FlatDict(t, delimiter=' | ')
+    t = pd.json_normalize(t, sep='.').to_dict(orient='records')[0]
+    for k in list(t.keys()):
+        t[k.replace('.', '/')] = t.pop(k)
+    # Now write the p and t dictionaries
     net_vtp.CellArrayStatus = t.keys()
     net_vtp.PointArrayStatus = p.keys()
     # Get active view

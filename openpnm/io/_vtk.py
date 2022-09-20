@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-from flatdict import FlatDict
+import pandas as pd
 from xml.etree import ElementTree as ET
 from openpnm.io import project_to_dict, _parse_filename
 from openpnm.utils import Workspace
@@ -28,7 +28,7 @@ _TEMPLATE = """
 """.strip()
 
 
-def project_to_vtk(project, filename="", delim=" | ",
+def project_to_vtk(project, filename="",
                    fill_nans=None, fill_infs=None):
     r"""
     Save network and phase data to a single vtp file for visualizing in
@@ -44,10 +44,6 @@ def project_to_vtk(project, filename="", delim=" | ",
     filename : str, optional
         Filename to write data.  If no name is given the file is named
         after the network
-    delim : str
-        Specify which character is used to delimit the data names.  The
-        default is ' | ' which creates a nice clean output in the Paraview
-        pipeline viewer (e.g. net | property | pore | diameter)
     fill_nans : scalar
         The value to use to replace NaNs with.  The VTK file format does
         not work with NaNs, so they must be dealt with.  The default is
@@ -76,7 +72,9 @@ def project_to_vtk(project, filename="", delim=" | ",
 
     am = project_to_dict(project=project,
                          categorize_by=["object", "data"])
-    am = FlatDict(am, delimiter=delim)
+    am = pd.json_normalize(am, sep='.').to_dict(orient='records')[0]
+    for k in list(am.keys()):
+        am[k.replace('.', ' | ')] = am.pop(k)
     key_list = list(sorted(am.keys()))
 
     points = network["pore.coords"]
