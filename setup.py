@@ -62,6 +62,7 @@ setup(
         'scikit-image',
         'scipy',
         'sympy',
+        'thermo',
         'tqdm',
         'transforms3d',
     ],
