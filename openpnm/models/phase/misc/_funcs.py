@@ -1,8 +1,5 @@
 import numpy as np
-from openpnm.utils import Docorator
-
-
-docstr = Docorator()
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -11,15 +8,20 @@ __all__ = [
 ]
 
 
-@docstr.dedent
-def mix_and_match(phase, prop, phases, occupancy):
+@_phasedocs
+def mix_and_match(
+    phase,
+    prop,
+    phases,
+    occupancy,
+):
     r"""
     Return the given property by looking it up from a list of given phases
     based on occupancy.
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(phase)s
     prop : str
         The dictionary key to the array containing the pore/throat property to
         be used in the calculation.
@@ -46,10 +48,23 @@ def mix_and_match(phase, prop, phases, occupancy):
     return values
 
 
+@_phasedocs
 def mole_to_mass_fraction(
     phase,
     MWs='param.molecular_weight.*',
 ):
+    r"""
+    Convert mole fraction to mass fraction
+
+    Parameters
+    ----------
+    %(phase)s
+    %(MWs)s
+
+    Returns
+    -------
+
+    """
     MWs = phase.get_comp_vals(MWs)
     xs = phase['pore.mole_fraction']
     ms = {}
@@ -61,22 +76,3 @@ def mole_to_mass_fraction(
     for c in xs.keys():
         ms[c] = ms[c]/denom
     return ms
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

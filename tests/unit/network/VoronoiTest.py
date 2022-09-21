@@ -22,6 +22,9 @@ class VoronoiTest:
         net = op.network.Voronoi(points=30, shape=[1, 1, 0])
         assert net.Np > 30
 
+    def test_voronoi_delaunay_dual(self):
+        dual = op.network.DelaunayVoronoiDual(points=100, shape=[1, 1, 1])
+
 
 if __name__ == '__main__':
 

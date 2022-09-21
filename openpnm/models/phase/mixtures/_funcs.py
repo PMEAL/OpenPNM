@@ -1,8 +1,5 @@
 import numpy as np
-from openpnm.utils import Docorator
-
-
-docstr = Docorator()
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -13,22 +10,20 @@ __all__ = [
 ]
 
 
-@docstr.dedent
+@_phasedocs
 def salinity(
     phase,
     T='pore.temperature',
-    M='pore.concentration',
+    conc='pore.concentration',
 ):
     r"""
     Calculates the salinity in g salt per kg of solution from concentration
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    concentration : str
-        The dictionary key containing the concentration values, in SI units of
-        mol/m3.
+    %(phase)s
+    %(T)s
+    %(conc)s
 
     Returns
     -------
@@ -47,7 +42,7 @@ def salinity(
     solute)
 
     """
-    C = phase[M]
+    C = phase[conc]
     T = phase[T]
     a = 8.73220929e+00
     b = 6.00389629e+01
@@ -60,6 +55,7 @@ def salinity(
     return S
 
 
+@_phasedocs
 def mixing_rule(
     phase,
     prop,
@@ -71,8 +67,7 @@ def mixing_rule(
 
     Parameters
     ----------
-    target : dict
-        The openpnm object to which this model applies
+    %(phase)s
     prop : str
         The dictionary key containing the property of interest on each
         component
@@ -111,14 +106,14 @@ def mixing_rule(
     return z
 
 
-@docstr.dedent
+@_phasedocs
 def mole_summation(phase):
     r"""
     Computes total mole fraction in each pore given component values
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(phase)s
 
     Returns
     -------
@@ -134,15 +129,14 @@ def mole_summation(phase):
     return xs
 
 
-@docstr.dedent
+@_phasedocs
 def from_component(phase, prop, compname):
     r"""
     Fetches the given values from the specified object
 
     Parameters
     ----------
-    %(models.target.parameters)s
-
+    %(phase)s
     prop : str
         The name of the array to retreive
     compname : str

@@ -166,8 +166,11 @@ def isoutside(g, shape, rtol=0.0):
     of ``shape`` should be set to 0.
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    try:
+        node_prefix = get_node_prefix(g)
+        coords = g[node_prefix+'.coords']
+    except AttributeError:
+        coords = g
     shape = np.array(shape, dtype=float)
     if np.isscalar(rtol):
         tolerance = np.array([rtol]*len(shape))

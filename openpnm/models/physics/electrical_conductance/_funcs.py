@@ -18,7 +18,7 @@ def generic_electrical(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_conductivity : str
         %(dict_blurb)s pore electrical conductivity
     throat_conductivity : str
@@ -49,7 +49,7 @@ def series_resistors(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_conductivity : str
         %(dict_blurb)s pore electrical conductivity
     throat_conductivity : str

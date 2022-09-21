@@ -4,6 +4,7 @@ from openpnm.phase import Phase
 from openpnm.models.phase.mixtures import mole_summation
 from openpnm.models.collections.phase import standard_liquid_mixture
 from openpnm.models.collections.phase import standard_gas_mixture
+from openpnm.models.collections.phase import binary_gas_mixture
 from openpnm.utils import HealthDict
 from openpnm.utils import Docorator, Workspace
 from openpnm.utils import get_printable_props, get_printable_labels
@@ -32,14 +33,15 @@ class MixtureSettings:
 @docstr.dedent
 class Mixture(Phase):
     r"""
-    Creates Phase object that represents a multicomponent mixture
-    consisting of a given list of individual phase objects as components.
+    Creates ``Phase`` object that represents a multicomponent mixture
+    consisting of a given list of individual ``Species`` objects as
+    components.
 
     Parameters
     ----------
     %(Phase.parameters)s
-    components : list
-        A list of all components that constitute this mixture
+    components : list of ``Species`` objects
+        A list of all components that constitute the mixture
 
     """
 
@@ -214,9 +216,42 @@ class Mixture(Phase):
     components = property(fget=_get_comps, fset=_set_comps)
 
     def add_comp(self, component, mole_fraction=np.nan):
+        r"""
+        Helper method to add a component
+
+        Parameters
+        ----------
+        component : Species object
+            The pure ``Species`` object to add
+        mole_fraction : float or array_like
+            The mole fraction of the given component in each pore. Can either
+            be a scalar which is applied to every pore, or an Np-long
+            ``ndarray`` with values for each pore.
+
+        Notes
+        -----
+        This method just adds `'pore.mole_fraction.<component.name>'`
+        to the `Mixture` dictionary, and assigns the given `mole_fraction`.
+        """
         self['pore.mole_fraction.' + component.name] = mole_fraction
 
     def remove_comp(self, component):
+        r"""
+        Helper method to remove a component from the mixture
+
+        Parameters
+        ----------
+        component : Species object or str name
+            The `Species` to remove from the mixture. Can either be a handle to
+            the object, or the object's `name`.
+
+        Notes
+        -----
+        This method just calls
+        `del mixture['pore.mole_fraction.<component.name>']` to remove the
+        given component.
+
+        """
         if hasattr(component, 'name'):
             component = component.name
         try:
@@ -226,17 +261,18 @@ class Mixture(Phase):
 
     def check_mixture_health(self):
         r"""
-        Checks the "health" of the mixture
+        Checks the state of health of the mixture
 
         Calculates the mole fraction of all species in each pore and returns
-        an list of where values are too low or too high
+        an list of where values are too low or too high,
 
         Returns
         -------
         health : dict
             A HealthDict object containing lists of locations where the mole
             fractions are not unity. One value indicates locations that are
-            too high, and another where they are too low.
+            too high, and another where they are too low. This `dict` evaluates
+            to `True` if all items are healthy.
 
         """
         h = HealthDict()
@@ -253,6 +289,12 @@ class Mixture(Phase):
 
 
 class LiquidMixture(Mixture):
+    r"""
+    Wrapper class for creating a liquid mixture.
+
+    This class has a helper method `x` which allows for setting and getting
+    of compositions.
+    """
 
     def x(self, compname=None, x=None):
         r"""
@@ -289,6 +331,12 @@ class LiquidMixture(Mixture):
 
 
 class GasMixture(Mixture):
+    r"""
+    Wrapper class for creating a gas mixture.
+
+    This class has a helper method `y` which allows for setting and getting
+    of compositions.
+    """
 
     def y(self, compname=None, y=None):
         r"""
@@ -325,15 +373,43 @@ class GasMixture(Mixture):
 
 
 class BinaryGas(GasMixture):
+    r"""
+    A `GasMixture` class that has a predefined set of models for computing the
+    properties of the mixture as a function of composition.
 
-    def add_comp(self, component, mole_fraction=0.0):
-        if len(self['pore.mole_fraction'].keys()) >= 2:
-            raise Exception("Binary mixtures cannot have more than 2 components"
-                            + ", remove one first")
-        super().add_comp(component=component, mole_fraction=mole_fraction)
+    The number of components is capped at 2 (i.e. binary) since the calculation
+    of diffusion coefficients using the Lennard-Jones method in the `chemicals`
+    package only works for binary mixtures.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_model_collection(binary_gas_mixture)
+        # Running models doesn't make sense as compositions are not set yet
+        # self.regenerate_models()
+
+    def __setitem__(self, key, value):
+        if key.startswith('pore.mole_fraction'):
+            if key not in self.keys():
+                try:
+                    d = self['pore.mole_fraction'].keys()
+                    if len(d) >= 2:
+                        msg = "Binary mixtures cannot have more than" \
+                            " 2 components, remove one first"
+                        raise Exception(msg)
+                except KeyError:
+                    pass
+        super().__setitem__(key, value)
 
 
 class StandardLiquidMixture(LiquidMixture):
+    r"""
+    A `LiquidMixture` class that also has a predefined suite of models for
+    computing the properties of the mixture as a function of composition.
+
+    The models are taken from the `chemicals` package and can be viewed with
+    `print(liq_mix.models)`, where `liq_mix` is an instance of this class.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -343,6 +419,13 @@ class StandardLiquidMixture(LiquidMixture):
 
 
 class StandardGasMixture(GasMixture):
+    r"""
+    A `GasMixture` class that also has a predefined suite of models for
+    computing the properties of the mixture as a function of composition.
+
+    The models are taken from the `chemicals` package and can be viewed with
+    `print(gas_mix.models)`, where `gas_mix` is an instance of this class.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

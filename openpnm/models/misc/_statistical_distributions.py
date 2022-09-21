@@ -1,11 +1,10 @@
 import logging
 import numpy as np
 import scipy.stats as spts
-from openpnm.utils import Docorator
+from openpnm.models import _doctxt
 
-
-docstr = Docorator()
 logger = logging.getLogger(__name__)
+
 
 __all__ = [
     'random',
@@ -16,17 +15,16 @@ __all__ = [
 ]
 
 
-@docstr.get_sections(base='models.misc.stats',
-                     sections=['Parameters', 'Returns'])
-@docstr.dedent
-def weibull(target, seeds, shape, scale, loc):
+@_doctxt
+def weibull(network, seeds, shape, scale, loc):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.misc.seeds)s
+    %(network)s
+    seeds : str (dict key)
+        %(dict_blurb) seed
     shape : float
         Controls the width or skewness of the distribution. For more
         information on the effect of this parameter refer to the
@@ -63,19 +61,21 @@ def weibull(target, seeds, shape, scale, loc):
        plt.show()
 
     """
-    seeds = target[seeds]
+    seeds = network[seeds]
     value = spts.weibull_min.ppf(q=seeds, c=shape, scale=scale, loc=loc)
     return value
 
 
-def normal(target, seeds, mean=None, stddev=None, scale=None, loc=None):
+@_doctxt
+def normal(network, seeds, mean=None, stddev=None, scale=None, loc=None):
     r"""
     Produces values from a Weibull distribution given a set of random numbers.
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.misc.seeds)s
+    %(network)s
+    seeds : str (dict key)
+        %(dict_blurb) seed
     mean : float
         The mean value of the distribution.  This is referred to as the
         ``loc`` in the scipy.stats function, and this key word is also
@@ -87,7 +87,6 @@ def normal(target, seeds, mean=None, stddev=None, scale=None, loc=None):
 
     Returns
     -------
-    %(models.misc.stats.returns)s
 
     Examples
     --------
@@ -109,12 +108,13 @@ def normal(target, seeds, mean=None, stddev=None, scale=None, loc=None):
     """
     scale = stddev if stddev is not None else scale
     loc = mean if mean is not None else loc
-    seeds = target[seeds]
+    seeds = network[seeds]
     value = spts.norm.ppf(q=seeds, scale=scale, loc=loc)
     return value
 
 
-def generic_distribution(target, seeds, func):
+@_doctxt
+def generic_distribution(network, seeds, func):
     r"""
     Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
     values from the distribution for the given seeds
@@ -123,15 +123,15 @@ def generic_distribution(target, seeds, func):
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.misc.seeds)s
+    %(network)s
+    seeds : str (dict key)
+        %(dict_blurb) seed
     func : object
         A 'rv_frozen' object from the scipy.stats library with all of the
         parameters pre-specified.
 
     Returns
     -------
-    %(models.misc.stats.returns)s
 
     Examples
     --------
@@ -161,19 +161,19 @@ def generic_distribution(target, seeds, func):
        plt.show()
 
     """
-    seeds = target[seeds]
+    seeds = network[seeds]
     value = func.ppf(seeds)
     return value
 
 
-@docstr.dedent
-def random(target, element, seed=None, num_range=[0, 1]):
+@_doctxt
+def random(network, element, seed=None, num_range=[0, 1]):
     r"""
     Create an array of random numbers of a specified size.
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(network)s
     seed : int
         The starting seed value to sent to numpy's random number generator.
         A value of ``None`` means a different distribution is returned each
@@ -186,25 +186,25 @@ def random(target, element, seed=None, num_range=[0, 1]):
 
     Returns
     -------
-    %(models.misc.stats.returns)s
 
     """
     range_size = num_range[1] - num_range[0]
     range_min = num_range[0]
     if seed is not None:
         np.random.seed(seed)
-    value = np.random.rand(target._count(element),)
+    value = np.random.rand(network._count(element),)
     value = value*range_size + range_min
     return value
 
-@docstr.dedent
-def match_histogram(target, bin_centers, bin_heights, element='pore'):
+
+@_doctxt
+def match_histogram(network, bin_centers, bin_heights, element='pore'):
     r"""
     Generate values corresponding to a given histogram
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(network)s
     bin_centers : array_like
         The x-axis of the histogram, such as pore sizes.
     bin_heights : array_like
@@ -219,7 +219,7 @@ def match_histogram(target, bin_centers, bin_heights, element='pore'):
         respective ``bin_heights``.
 
     """
-    N = target._count(element)
+    N = network._count(element)
     h = np.cumsum(bin_heights)
     b = np.digitize(np.random.rand(N)*np.amax(h), bins=h)
     vals = np.array(bin_centers)[b]

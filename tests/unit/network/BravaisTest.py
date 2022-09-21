@@ -11,7 +11,7 @@ class BravaisTest:
         ws.clear()
 
     def test_generation_fcc(self):
-        fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+        fcc = op.network.FaceCenteredCubic(shape=[3, 3, 3])
         assert fcc.Np == 63
         assert fcc.Nt == 294
         assert fcc.num_pores('pore.corner') == 27
@@ -20,7 +20,7 @@ class BravaisTest:
         assert fcc.num_throats('throat.corner_to_face') == 240
 
     def test_fcc_add_boundary_pores(self):
-        fcc = op.network.Bravais(shape=[3, 3, 3], mode='fcc')
+        fcc = op.network.FaceCenteredCubic(shape=[3, 3, 3])
         Np = fcc.Np
         fcc.add_boundary_pores(labels=['left', 'right'], spacing=1)
         assert fcc.Np > Np
@@ -31,7 +31,7 @@ class BravaisTest:
         assert 'pore.bottom_boundary' not in fcc.keys()
 
     def test_generation_bcc(self):
-        bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+        bcc = op.network.BodyCenteredCubic(shape=[3, 3, 3])
         assert bcc.Np == 35
         assert bcc.Nt == 130
         assert bcc.num_pores('pore.corner') == 27
@@ -41,7 +41,7 @@ class BravaisTest:
         assert bcc.num_throats('throat.body_to_body') == 12
 
     def test_bcc_add_boundary_pores(self):
-        bcc = op.network.Bravais(shape=[3, 3, 3], mode='bcc')
+        bcc = op.network.BodyCenteredCubic(shape=[3, 3, 3])
         Np = bcc.Np
         bcc.add_boundary_pores(labels=['left', 'right'], spacing=1)
         assert bcc.Np > Np
@@ -51,22 +51,9 @@ class BravaisTest:
         assert 'pore.top_boundary' not in bcc.keys()
         assert 'pore.bottom_boundary' not in bcc.keys()
 
-    def test_generation_hcp(self):
-        with pytest.raises(NotImplementedError):
-            op.network.Bravais(shape=[3, 3, 3], mode='hcp')
-
-    def test_generation_bad_mode(self):
-        with pytest.raises(Exception):
-            op.network.Bravais(shape=[3, 3, 3], mode='bad_mode')
-
-    def test_generation_sc(self):
-        sc = op.network.Bravais(shape=[3, 3, 3], mode='sc')
-        assert sc.Np == 27
-        assert sc.Nt == 54
-
     def test_generation_too_small(self):
         with pytest.raises(Exception):
-            op.network.Bravais(shape=[1, 2, 3], mode='')
+            op.network.BodyCentered(shape=[1, 2, 3], mode='')
 
 
 if __name__ == '__main__':

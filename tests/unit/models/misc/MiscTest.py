@@ -140,22 +140,22 @@ class MiscTest:
         net['pore.values'] = 1.0
         net['pore.values'][0] = np.nan
         f = mods.from_neighbor_pores
-        with_nans = f(target=net, prop='pore.values',
+        with_nans = f(net, prop='pore.values',
                       ignore_nans=False, mode='min')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, prop='pore.values',
+        no_nans = f(net, prop='pore.values',
                     ignore_nans=True, mode='min')
         assert np.all(~np.isnan(no_nans))
-        with_nans = f(target=net, prop='pore.values',
+        with_nans = f(net, prop='pore.values',
                       ignore_nans=False, mode='max')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, prop='pore.values',
+        no_nans = f(net, prop='pore.values',
                     ignore_nans=True, mode='max')
         assert np.all(~np.isnan(no_nans))
-        with_nans = f(target=net, prop='pore.values',
+        with_nans = f(net, prop='pore.values',
                       ignore_nans=False, mode='mean')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, prop='pore.values',
+        no_nans = f(net, prop='pore.values',
                     ignore_nans=True, mode='mean')
         assert np.all(~np.isnan(no_nans))
 
@@ -164,10 +164,10 @@ class MiscTest:
         net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
-        with_nans = f(target=net, prop='throat.values',
+        with_nans = f(net, prop='throat.values',
                       ignore_nans=False, mode='min')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, prop='throat.values',
+        no_nans = f(net, prop='throat.values',
                     ignore_nans=True, mode='min')
         assert np.all(~np.isnan(no_nans))
         assert np.all(~np.isinf(no_nans))
@@ -181,10 +181,10 @@ class MiscTest:
         net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
-        with_nans = f(target=net, prop='throat.values',
+        with_nans = f(net, prop='throat.values',
                       ignore_nans=False, mode='max')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, prop='throat.values',
+        no_nans = f(net, prop='throat.values',
                     ignore_nans=True, mode='max')
         assert np.all(~np.isnan(no_nans))
         assert np.all(~np.isinf(no_nans))
@@ -198,10 +198,10 @@ class MiscTest:
         net['throat.values'] = np.linspace(0, 1, net.Nt)
         net['throat.values'][0] = np.nan
         f = mods.from_neighbor_throats
-        with_nans = f(target=net, prop='throat.values',
+        with_nans = f(net, prop='throat.values',
                       ignore_nans=False, mode='mean')
         assert np.any(np.isnan(with_nans))
-        no_nans = f(target=net, prop='throat.values',
+        no_nans = f(net, prop='throat.values',
                     ignore_nans=True, mode='mean')
         assert np.all(~np.isnan(no_nans))
         assert np.all(~np.isinf(no_nans))
@@ -292,7 +292,7 @@ class MiscTest:
         net = op.network.Cubic(shape=[5, 5, 5])
         c = [0.1, 0.3, 0.8, 1.2]
         h = [5, 20, 20, 100]
-        a = mods.match_histogram(target=net, bin_centers=c, bin_heights=h,
+        a = mods.match_histogram(net, bin_centers=c, bin_heights=h,
                                  element='pore')
         assert np.all(np.unique(a) == c)
         vals, nums = np.unique(a, return_counts=True)

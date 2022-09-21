@@ -198,7 +198,7 @@ class Project(SimpleList):
     @property
     def network(self):
         for item in self:
-            if 'throat.conns' in item.keys():
+            if ('throat.conns' in item.keys()) or ('pore.coords' in item.keys()):
                 return item
 
     @property

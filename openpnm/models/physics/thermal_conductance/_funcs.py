@@ -15,7 +15,7 @@ def generic_thermal(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_conductivity : str
         %(dict_blurb)s thermal conductivity
     throat_conductivity : str
@@ -34,16 +34,19 @@ def generic_thermal(phase,
                                 size_factors=size_factors)
 
 
-def series_resistors(phase,
-                     pore_thermal_conductivity='pore.thermal_conductivity',
-                     throat_thermal_conductivity='throat.thermal_conductivity',
-                     size_factors='throat.diffusive_size_factors'):
+@_doctxt
+def series_resistors(
+    phase,
+    pore_thermal_conductivity='pore.thermal_conductivity',
+    throat_thermal_conductivity='throat.thermal_conductivity',
+    size_factors='throat.diffusive_size_factors'
+):
     r"""
     Calculate the thermal conductance of conduits in network.
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_conductivity : str
         %(dict_blurb)s thermal conductivity
     throat_conductivity : str

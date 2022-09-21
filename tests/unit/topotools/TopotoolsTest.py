@@ -395,7 +395,7 @@ class TopotoolsTest:
     def test_stitch_pores(self):
         np.random.seed(0)
         pts = np.random.rand(100, 3)
-        pn = op.network.Delaunay(points=pts)
+        pn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
         Ps = (pn.coords[:, 0] > 0.3) * (pn.coords[:, 0] < 0.6)
         assert pn.Np == 100
         op.topotools.trim(network=pn, pores=Ps)

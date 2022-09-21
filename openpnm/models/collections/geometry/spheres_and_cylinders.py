@@ -39,10 +39,19 @@ spheres_and_cylinders = {
         'model': mods.geometry.throat_cross_sectional_area.cylinder,
         'throat_diameter': 'throat.diameter',
     },
-    'throat.volume': {
+    'throat.total_volume': {
         'model': mods.geometry.throat_volume.cylinder,
         'throat_diameter': 'throat.diameter',
         'throat_length': 'throat.length',
+    },
+    'throat.lens_volume': {
+        'model': mods.geometry.throat_volume.lens,
+        'throat_diameter': 'throat.diameter',
+        'pore_diameter': 'pore.diameter',
+    },
+    'throat.volume': {
+        'model': mods.misc.difference,
+        'props': ['throat.total_volume', 'throat.lens_volume'],
     },
     'throat.diffusive_size_factors': {
         'model': mods.geometry.diffusive_size_factors.spheres_and_cylinders,

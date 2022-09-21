@@ -23,7 +23,7 @@ def generic_diffusive(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
@@ -52,7 +52,7 @@ def ordinary_diffusion(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
@@ -70,6 +70,7 @@ def ordinary_diffusion(phase,
                                 throat_conductivity=throat_diffusivity,
                                 size_factors=size_factors)
 
+
 @_doctxt
 def mixed_diffusion(phase,
                     pore_diameter="pore.diameter",
@@ -86,7 +87,7 @@ def mixed_diffusion(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diameter : str
         %(dict_blurb)s pore diameter
     throat_diameter : str
@@ -146,7 +147,7 @@ def taylor_aris_diffusion(phase,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_area : str
         %(dict_blurb)s pore cross-sectional area
     throat_area : str
@@ -197,7 +198,7 @@ def taylor_aris_diffusion(phase,
 
 
 @_doctxt
-def multiphase_diffusion(target,
+def multiphase_diffusion(phase,
                          pore_diffusivity="pore.diffusivity",
                          throat_diffusivity="throat.diffusivity",
                          size_factors="throat.diffusive_size_factors",
@@ -207,7 +208,7 @@ def multiphase_diffusion(target,
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str
@@ -226,7 +227,7 @@ def multiphase_diffusion(target,
     more information.
 
     """
-    network = target.network
+    network = phase.network
     cn = network.conns
     SF = network[size_factors]
     if isinstance(SF, dict):
@@ -237,15 +238,15 @@ def multiphase_diffusion(target,
         F1, Ft, F2 = _np.inf, SF, _np.inf
 
     # Fetch model parameters
-    D1, D2 = target[pore_diffusivity][cn].T
-    Dt = target[throat_diffusivity]
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase[throat_diffusivity]
     g1 = D1 * F1
     gt = Dt * Ft
     g2 = D2 * F2
 
     # Apply Henry's partitioning coefficient
     # Note: m12 = (G21*c1 - G12*c2)  NOT  (G12*c1 - G21*c2)
-    K12 = target[partition_coef_global]
+    K12 = phase[partition_coef_global]
     G21 = (1/g1 + 0.5/gt + K12 * (1/g2 + 0.5/gt)) ** -1
     G12 = K12 * G21
 

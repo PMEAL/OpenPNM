@@ -22,7 +22,7 @@ def generic_hydraulic(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_viscosity : str
         %(dict_blurb)s pore viscosity
     throat_viscosity : str
@@ -66,7 +66,7 @@ def hagen_poiseuille(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_viscosity : str
         %(dict_blurb)s pore viscosity
     throat_viscosity : str
@@ -108,7 +108,7 @@ def hagen_poiseuille_power_law(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_area : str
         %(dict_blurb)s pore area
     throat_area : str
@@ -205,7 +205,7 @@ def valvatne_blunt(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_viscosity : str
         %(dict_blurb)s pore viscosity
     throat_viscosity : str

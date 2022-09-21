@@ -1,8 +1,5 @@
 import numpy as np
-from openpnm.utils import Docorator
-
-
-docstr = Docorator()
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -12,21 +9,25 @@ __all__ = [
 ]
 
 
-@docstr.dedent
-def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
+@_phasedocs
+def water_correlation(
+    phase,
+    T='pore.temperature',
+    salinity='pore.salinity'
+):
     r"""
     Calculates surface tension of pure water or seawater at atmospheric
-    pressure using Eq. (28) given by Sharqawy et al. Values at
+    pressure
+
+    This model uses Eq. (28) given by Sharqawy et al. [1]. Values at
     temperature higher than the normal boiling temperature are calculated at
     the saturation pressure.
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    salinity : str
-        The dictionary key containing the salinity values. Salinity must be
-        expressed in g of salt per kg of solution (ppt).
+    %(phase)s
+    %(T)s
+    %(salinity)s
 
     Returns
     -------
@@ -37,11 +38,11 @@ def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
     -----
     T must be in K, and S in g of salt per kg of phase, or ppt (parts per
     thousand). The correlation is valid for 273 < T < 313 K and
-    0 < S < 40 g/kg within 0.2% accuracy.
+    0 < S < 40 g/kg within 0.2 percent accuracy.
 
     References
     ----------
-    Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
+    [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
     Water Treatment, 2010.
 
     """
@@ -60,7 +61,7 @@ def water_correlation(phase, T='pore.temperature', salinity='pore.salinity'):
     return value
 
 
-@docstr.dedent
+@_phasedocs
 def liquid_pure_bb(
     phase,
     T='pore.temperature',
@@ -69,14 +70,16 @@ def liquid_pure_bb(
     Pc='param.critical_pressure',
 ):
     r"""
-    Uses Brock_Bird model
+    Computes the surface tension of a pure liquid in its own vapor using the
+    correlation in [1]
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
-    critical_temperature : str
-        The dictionary key containing the critical temperature values (K)
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(Tb)s
+    %(Pc)s
 
     Returns
     -------
@@ -84,8 +87,11 @@ def liquid_pure_bb(
         A numpy ndarray containing surface tension values scaled to the
         temperature [N/m]
 
+    References
+    ----------
+    [1] Brock and Bird
+
     """
-    # brock_bird
     T = phase[T]
     Tc = phase[Tc]
     Tr = T/Tc
@@ -97,6 +103,7 @@ def liquid_pure_bb(
     return sigma
 
 
+@_phasedocs
 def liquid_mixture_wsd(
     phase,
     sigmas='pore.surface_tension.*',
@@ -104,8 +111,24 @@ def liquid_mixture_wsd(
     MWs='param.molecular_weight.*',
 ):
     r"""
+    Computes the surface tension of a liqiud mixture with its own vapor using
+    the correlation in [1]
+
+    Parameters
+    ----------
+    %(phase)s
+    %(sigmas)s
+    %(rhos)s
+    %(MWs)s
+
+    Returns
+    -------
+
+    References
+    ----------
+    [1] Winterfeld, Scriven, and Davis
+
     """
-    # winterfelf_scriven_davis
     sigmas = phase.get_comp_vals(sigmas)
     xs = phase['pore.mole_fraction']
     rhos = phase.get_comp_vals(rhos)  # kg/m3

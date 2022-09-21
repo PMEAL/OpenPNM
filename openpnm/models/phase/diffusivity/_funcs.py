@@ -1,8 +1,5 @@
-from openpnm.utils import Docorator
 import numpy as np
-
-
-docstr = Docorator()
+from openpnm.models.phase import _phasedocs
 
 
 __all__ = [
@@ -13,6 +10,7 @@ __all__ = [
 ]
 
 
+@_phasedocs
 def liquid_mixture_tc(
     phase,
     T='pore.temperature',
@@ -26,8 +24,9 @@ def liquid_mixture_tc(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.phase.T)s
+    %(phase)s
+    %(T)s
+    %(mu)s
     Vms_at_Tb : str or list of scalars
         Molar volumes of each component at its boiling temperature (m3/mol).
         Can either be a string to a parameter on each component of a list
@@ -37,7 +36,7 @@ def liquid_mixture_tc(
 
     Returns
     -------
-    %(models.phase.diffusivity.returns)s
+
     """
     T = phase[T]
     mu = phase[mu]
@@ -49,6 +48,7 @@ def liquid_mixture_tc(
     return value
 
 
+@_phasedocs
 def gas_mixture_ce(
     phase,
     T='pore.temperature',
@@ -65,17 +65,19 @@ def gas_mixture_ce(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    MA, MB : scalar
-        The molecular mass of species A and B in units of kg/mol
-    sigma_AB : scalar
-        The collision diameter in units of Angstroms
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(phase)s
+    %(T)s
+    %(P)s
+    %(Tcs)s
+    %(Pcs)s
+    %(omegas)s
+    %(MWs)s
+    %(epsilons)s
+    %(sigmas)s
 
     Returns
     -------
-    %(models.phase.diffusivity.returns)s
+
     """
     # Fetch values from components
     T = phase[T]
@@ -85,9 +87,9 @@ def gas_mixture_ce(
     except ValueError:
         raise Exception('This function only works on binary mixtures')
     MWAB = 2/(1/MA + 1/MB)
-    omega = phase[omegas].values()
-    Tc = phase[Tcs].values()
-    Pc = phase[Pcs].values()
+    omega = phase.get_comp_vals(omegas).values()
+    Tc = phase.get_comp_vals(Tcs).values()
+    Pc = phase.get_comp_vals(Pcs).values()
     k = 1.380649e-23  # Boltzmann constant
     try:
         eA, eB = phase.get_comp_vals(epsilons).values()
@@ -112,6 +114,7 @@ def gas_mixture_ce(
     return DAB
 
 
+@_phasedocs
 def gas_mixture_fesg(
     phase,
     T='pore.temperature',
@@ -121,44 +124,40 @@ def gas_mixture_fesg(
 ):
     r"""
     Estimates the diffusion coefficient of both species in a binary gas
-    mixture using the Fuller et al correlation [1]
+    mixture using the Fuller et al correlation [1]_, [2]_, [3]_.
 
     Parameters
     ----------
-    %(models.phase.parameters)s
-    molecular_weight : string
-        Dictionary key containing the molecular weight of each species. The
-        default is 'pore.molecular_weight'
-    molar_diffusion_volume : string
-        Dictionary key containing the molar diffusion volume of each species.
-        This is used by the Fuller correlation. The default is
-        'pore.molar_diffusion_volume'
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(phase)s
+    %(T)s
+    %(P)s
+    %(MWs)s
+    %(Vdms)s
 
     Returns
     -------
-    Dij : dict containing ND-arrys
+    Dij : dict[ndarray]
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
 
     References
     ----------
-    [1] Fuller, E. N., and J. C. Giddings: J. Gas Chromatogr., 3: 222 (1965).
-    [2] Fuller, E. N., P. D. Schettler, and J. C. Giddings: Ind. Eng. Chem.,
-        58(5): 18 (1966).
-    [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,
-        73: 3679 (1969).
+    .. [1] Fuller, E. N., and J. C. Giddings: J. Gas Chromatogr., 3: 222 (1965).
+    .. [2] Fuller, E. N., P. D. Schettler, and J. C. Giddings: Ind. Eng. Chem.,
+       58(5): 18 (1966).
+    .. [3] Fuller, E. N., K. Ensley, and J. C. Giddings: J. Phys. Chem.,
+       73: 3679 (1969).
+
     """
     T = phase[T]
     P = phase[P]
     # The following is to accomodate proper mixtures AND normal Phase objects
     try:
-        MA, MB = phase[MWs].values()
+        MA, MB = phase.get_comp_vals(MWs).values()
     except AttributeError:
         MA, MB = phase[MWs]
     try:
-        vA, vB = phase[Vdms].values()
+        vA, vB = phase.get_comp_vals(Vdms).values()
     except AttributeError:
         vA, vB = phase[Vdms]
     MAB = 2/(1/MA + 1/MB)
@@ -178,33 +177,29 @@ def gas_mixture_fw(
     Estimates the diffusion coeffient of each species in a gas mixture
 
     Uses the Fuller equation to estimate binary diffusivity between pairs,
-    then uses the correction of Fairbanks and Wilke [1] to account for the
+    then uses the correction of Fairbanks and Wilke [1]_ to account for the
     composition of the gas mixture.
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    molecular_weight : str
-        Dictionary key containing the molecular weight of each species.  The
-        default is 'pore.molecular_weight'
-    molar_diffusion_volume : str
-        Dictionary key containing the molar diffusion volume of each species.
-        This is used by the Fuller correlation.  The default is
-        'pore.molar_diffusion_volume'
-    %(models.phase.T)s
-    %(models.phase.P)s
+    %(phase)s
+    %(T)s
+    %(P)s
+    %(MWs)s
+    %(Vdms)s
 
     Returns
     -------
-    Dij : dict containing ND-arrys
+    Dij : dict[ndarray]
         The dict contains one array for each component, containing the
         diffusion coefficient of that component at each location.
 
-    Reference
-    ---------
-    [1] Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
-    Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
-    `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+    References
+    ----------
+    .. [1] Fairbanks DF and CR Wilke, Diffusion Coefficients in Multicomponent
+       Gas Mixtures. Industrial & Engineering Chemistry, 42(3), p471–475 (1950).
+       `DOI: 10.1021/ie50483a022 <http://doi.org/10.1021/ie50483a022>`_
+
     """
     raise Exception('This function is not ready yet')
     comps = list(phase.components.values())

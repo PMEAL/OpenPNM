@@ -1,8 +1,5 @@
-from openpnm.utils import Docorator
 from openpnm.models.phase import _phasedocs
 import numpy as np
-
-docstr = Docorator()
 
 
 __all__ = [
@@ -26,11 +23,10 @@ def ideal_gas(
 
     Parameters
     ----------
+    %(phase)s
     %(T)s
     %(P)s
-    mol_weight : str
-        Name of the dictionary key on ``phase`` where the array containing
-        molecular weight values is stored
+    %(MW)s
 
     Returns
     -------
@@ -63,7 +59,9 @@ def water_correlation(
 
     Parameters
     ----------
+    %(phase)s
     %(T)s
+    %(salinity)s
 
     Returns
     -------
@@ -78,7 +76,7 @@ def water_correlation(
     References
     ----------
     [1] Sharqawy M. H., Lienhard J. H., and Zubair, S. M., Desalination and
-    Water Treatment, 2010.
+        Water Treatment, 2010.
 
     """
     T = phase[T]
@@ -119,8 +117,12 @@ def liquid_mixture_COSTALD(
 
     Parameters
     ----------
+    %(phase)s
     %(T)s
-
+    %(MWs)s
+    %(Tcs)s
+    %(Vcs)s
+    %(omegas)s
 
     Returns
     -------
@@ -173,6 +175,7 @@ def liquid_mixture_COSTALD(
     return rhoL
 
 
+@_phasedocs
 def liquid_pure_COSTALD(
     phase,
     T='pore.temperature',
@@ -182,6 +185,21 @@ def liquid_pure_COSTALD(
     MW='param.molecular_weight',
 ):
     r"""
+    Computes the density of a pure liquid using the COrrospoding STAtes
+    Liquid Density (COSTALD) method.
+
+    Parameters
+    ----------
+    %(phase)s
+    %(T)s
+    %(Tc)s
+    %(Vc)s
+    %(omega)s
+    %(MW)s
+
+    Returns
+    -------
+
     """
     Vc = phase[Vc]
     Tc = phase[Tc]
@@ -197,6 +215,7 @@ def liquid_pure_COSTALD(
     return rhoL
 
 
+@_phasedocs
 def mass_to_molar(
     phase,
     MW='param.molecular_weight',
@@ -207,11 +226,9 @@ def mass_to_molar(
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    mol_weight : str
-        The dictionary key containing the molecular weight in kg/mol
-    density : str
-        The dictionary key containing the density in kg/m3
+    %(phase)s
+    %(MW)s
+    %(rho)s
 
     Returns
     -------

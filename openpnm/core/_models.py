@@ -1,12 +1,25 @@
 import logging
+import inspect
 import openpnm as op
-from openpnm.utils import PrintableDict, Workspace
-from openpnm.utils import is_valid_propname
+import numpy as np
+from copy import deepcopy
+from openpnm.utils import (
+    PrintableDict,
+    Workspace,
+    is_valid_propname,
+    prettify_logger_message,
+)
+
+
 logger = logging.getLogger(__name__)
 ws = Workspace()
 
 
-__all__ = ['ModelsDict', 'ModelWrapper']
+__all__ = [
+    'ModelsDict',
+    'ModelWrapper',
+    'ModelsMixin2',
+]
 
 
 class ModelsDict(PrintableDict):
@@ -174,11 +187,11 @@ class ModelsDict(PrintableDict):
         """
         names = {}
         for item in self:
-            name, domain = item.split('@')
+            name, _, domain = item.partition('@')
             if name not in names.keys():
                 names[name] = []
             names[name].append(domain)
-        D = PrintableDict(names, key='Model', value='Doamin')
+        D = PrintableDict(names, key='Model', value='Domain')
         return D
 
     def __str__(self):
@@ -204,7 +217,7 @@ class ModelsDict(PrintableDict):
         else:  # Delete all models with the same prefix
             for item in list(self.keys()):
                 if item.startswith(key):
-                    self.__delitem__(item)
+                    super().__delitem__(item)
 
     def __getitem__(self, key):
         try:
@@ -212,14 +225,14 @@ class ModelsDict(PrintableDict):
         except KeyError:
             d = PrintableDict(key='Model', value='Args')
             for k, v in self.items():
-                if k.startswith(key):
+                if k.startswith(key+'@'):
                     d[k] = v
             if len(d) > 0:
                 return d
             else:
                 raise KeyError(key)
 
-    def update(self, d, domain='all'):
+    def update(self, d, domain=None):
         # Catch un-run function
         if hasattr(d, '__call__'):
             raise Exception('Received dict argument is a function, try running it')
@@ -292,7 +305,7 @@ class ModelWrapper(dict):
 
     def _find_target(self):
         """
-        Finds and returns the parent object to self.
+        Finds and returns the parent object to self
         """
         for proj in ws.values():
             for obj in proj:
@@ -303,169 +316,252 @@ class ModelWrapper(dict):
         raise Exception("No target object found!")
 
 
-# class ModelsMixin:
-#     """
-#     This class is meant to be combined by the Base class in multiple
-#     inheritence. This approach is used since Network and Algorithm do not
-#     need to have any ``models`` attribute, while Phase, Geometry, and
-#     Physics do. By using a mixin class, all objects can inherit from Base
-#     while the model functionality can be added only where needed.
-#     """
+class ModelsMixin2:
+    r"""
+    This class is added to ``Network`` and ``Phase`` objects under the
+    ``models`` attribute. It provides the functionality for storing and
+    running pore-scale models.
+    """
 
-#     def add_model(self, propname, model, regen_mode='', **kwargs):
-#         """
-#         Adds a new model to the models dictionary.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.models = ModelsDict()
 
-#         Parameters
-#         ----------
-#         propname : str
-#             The name of the property to be calculated by the model.
-#         model : function
-#             A reference (handle) to the function to be used.
-#         regen_mode : str
-#             Controls how/when the model is run (See Notes for more details).
-#             Options are:
+    def add_model(self, propname, model, domain='all', regen_mode='normal',
+                  **kwargs):
+        r"""
+        Add a pore-scale model to the object, along with the desired arguments
 
-#             ===========  =====================================================
-#             mode         meaning
-#             ===========  =====================================================
-#             'normal'     The model is run directly upon being
-#                          assigned, and also run every time ``regenerate_models``
-#                          is called.
-#             'constant'   The model is run directly upon being assigned, but
-#                          is not called again, thus making its data act like a
-#                          constant. If, however, the data is deleted from the
-#                          object it will be regenerated again.
-#             'deferred'   Is not run upon being assigned, but is run the first
-#                          time that ``regenerate_models`` is called.
-#             'explicit'   Is only run if the model name is explicitly passed
-#                          to the ``regenerate_models`` method.  This allows
-#                          full control of when the model is run.
-#             ===========  =====================================================
+        Parameters
+        ----------
+        propname : str
+            The name of the property being computed. E.g. if
+            ``propname='pore.diameter'`` then the computed results will be stored
+            in ``obj['pore.diameter']``.
+        model : function handle
+            The function that produces the values
+        domain : str
+            The label indicating the locations in which results generated by
+            ``model`` should be stored. See `Notes` for more details.
+        regen_mode : str
+            How the model should be regenerated. Options are:
 
+            ============ =====================================================
+            regen_mode   description
+            ============ =====================================================
+            normal       (default) The model is run immediately upon being
+                         added, and is also run each time ``regenerate_models``
+                         is called.
+            deferred     The model is NOT run when added, but is run each time
+                         ``regenerate_models`` is called. This is useful for
+                         models that depend on other data that may not exist
+                         yet.
+            constant     The model is run immediately upon being added, but is
+                         is not run when ``regenerate_models`` is called,
+                         effectively turning the property into a constant.
+            ============ =====================================================
 
-#         """
-#         if propname in kwargs.values():  # Prevent infinite loops of look-ups
-#             raise Exception(propname+' can\'t be both dependency and propname')
-#         # Look for default regen_mode in settings if present, else use 'normal'
-#         if regen_mode == '':
-#             if 'regen_mode' in self.settings._attrs:
-#                 regen_mode = self.settings['regen_mode']
-#             else:
-#                 regen_mode = 'normal'
-#         # Add model and regen_mode to kwargs dictionary
-#         kwargs.update({'model': model, 'regen_mode': regen_mode})
-#         # Insepct model to extract arguments and default values
-#         if model.__defaults__:
-#             vals = list(inspect.getfullargspec(model).defaults)
-#             keys = inspect.getfullargspec(model).args[-len(vals):]
-#             for k, v in zip(keys, vals):  # Put defaults into kwargs
-#                 if k not in kwargs:  # Skip if argument was given in kwargs
-#                     kwargs.update({k: v})
-#         self.models[propname] = ModelWrapper(kwargs)  # Store all kwargs
-#         # Regenerate model values if necessary
-#         if regen_mode not in ['deferred', 'explicit']:
-#             self._regen(propname)
+        kwargs : keyword arguments
+            All additional keyword arguments are passed on to the model
 
-#     def regenerate_models(self, propnames=None, exclude=[], deep=False):
-#         """
-#         Re-runs the specified model or models.
+        Notes
+        -----
+        The ``domain`` argument dictates where the results of ``model`` should
+        be stored. For instance, given ``propname='pore.diameter'`` and
+        ``domain='left'`` then when `model` is run, the results are stored in
+        in the pores labelled left. Note that if ``model`` returns ``Np``
+        values, then values not belonging to ``'pore.left'`` are discarded.
+        The following steps outline the process:
 
-#         Parameters
-#         ----------
-#         propnames : str or list of str
-#             The list of property names to be regenerated.  If none are given
-#             then ALL models are re-run (except for those whose ``regen_mode``
-#             is 'constant').
-#         exclude : list of str
-#             Since the default behavior is to run ALL models, this can be used
-#             to exclude specific models.  It may be more convenient to supply
-#             as list of 2 models to exclude than to specify 8 models to include.
+        1. Find the pore indices:
 
-#         """
-#         # If empty list of propnames was given, do nothing and return
-#         if isinstance(propnames, list) and len(propnames) == 0:
-#             return
-#         if isinstance(propnames, str):  # Convert string to list if necessary
-#             propnames = [propnames]
-#         if propnames is None:  # If no props given, then regenerate them all
-#             propnames = self.models.dependency_list()
-#             # If some props are to be excluded, remove them from list
-#             for k, v in self.models.items():
-#                 if 'regen_mode' not in v:
-#                     pass
-#                 elif v['regen_mode'] == 'explicit':
-#                     exclude.extend([k])
-#             propnames = [i for i in propnames if i not in exclude]
-#         # Re-order given propnames according to dependency tree
-#         self_models = self.models.dependency_list()
-#         propnames = [i for i in self_models if i in propnames]
-#         for item in propnames:
-#             self._regen(item)
+        .. code-block:: python
 
-#     def _regen(self, prop):
-#         # Create a temporary dict of all model arguments
-#         model = self.models[prop]['model']
-#         regen_mode = self.models[prop]['regen_mode']
-#         kwargs = {}
-#         for k, v in self.models[prop].items():
-#             if k not in ['model', 'regen_mode']:
-#                 kwargs[k] = v
-#         # Only regenerate model if regen_mode is correct
-#         if regen_mode == 'constant':
-#             # Only regenerate if data not already in dictionary
-#             if prop not in self.keys():
-#                 self[prop] = model(self, **kwargs)
-#         else:
-#             try:
-#                 self[prop] = model(self, **kwargs)
-#             except KeyError as e:
-#                 msg = (f"{prop} was not run since the following property"
-#                        f" is missing: {e}")
-#                 logger.error(prettify_logger_message(msg))
-#                 self.models[prop]['regen_mode'] = 'deferred'
+          Ps = obj.pores('left')
 
-#     def remove_model(self, propname=None, mode=['model', 'data']):
-#         """
-#         Removes model and data from object.
+        2. Run the model:
 
-#         Parameters
-#         ----------
-#         propname : str or list[str]
-#             The property or list of properties to remove
-#         mode : list[str]
-#             Controls what is removed. Options are:
+        .. code-block:: python
 
-#             ===========  =====================================================
-#             mode         meaning
-#             ===========  =====================================================
-#             'model'      Removes the model but not any numerical data that may
-#                          already exist.
-#             data'        Removes the data but leaves the model.
-#             ===========  =====================================================
-#         The default is both.
+          vals = model(**kwargs)
 
-#         """
-#         if isinstance(propname, str):
-#             propname = [propname]
-#         for item in propname:
-#             if 'model' in mode:
-#                 if item in self.models.keys():
-#                     del self.models[item]
-#             if 'data' in mode:
-#                 if item in self.keys():
-#                     del self[item]
+        3. If the model returns a full Np-length array, then extract the
+        correct values and apply them to the corresponding locations:
 
-#     def _get_models(self):
-#         """List of available models on the objects"""
-#         if not hasattr(self, '_models_dict'):
-#             self._models_dict = ModelsDict()
-#         return self._models_dict
+        .. code-block:: python
 
-#     def _set_models(self, dict_):
-#         self._models_dict = ModelsDict()
-#         # Renerate all models in new dict if regen mode says so
-#         for model in dict_.keys():
-#             self.add_model(propname=model, **dict_[model])
+          if len(vals) == obj.Np:
+              obj['pore.diameter'][Ps] = vals[Ps]
 
-#     models = property(fget=_get_models, fset=_set_models)
+        4. If the model was designed to return only the subset of values then:
+
+        .. code-block:: python
+
+          if len(vals) == obj.num_pores('left'):
+              obj['pore.diameter'][Ps] = vals
+
+        """
+        if '@' in propname:
+            propname, domain = propname.split('@')
+        elif domain is None:
+            domain = self.settings['default_domain']
+        element, prop = propname.split('.', 1)
+        if (element + '.' + domain not in self.keys()) and (domain != 'all'):
+            try:
+                N = self._count(element)
+                self[element + '.' + domain] = True
+            except:
+                logger.warning(f'Could not define {element}.{domain} since '
+                               f'number of {element}s is not defined yet')
+        domain = domain.split('.', 1)[-1]
+
+        # Add model and regen_mode to kwargs dictionary
+        kwargs.update({'model': model, 'regen_mode': regen_mode})
+        # Insepct model to extract arguments and default values
+        kwargs.update(self._inspect_model(model, kwargs))
+        self.models[propname+'@'+domain] = ModelWrapper(**kwargs)
+        if regen_mode != 'deferred':
+            self.run_model(propname+'@'+domain)
+
+    def _inspect_model(self, model, kwargs={}):
+        if model.__defaults__:
+            vals = list(inspect.getfullargspec(model).defaults)
+            keys = inspect.getfullargspec(model).args[-len(vals):]
+            for k, v in zip(keys, vals):  # Put defaults into kwargs
+                if k not in kwargs:  # Skip if argument was given in kwargs
+                    kwargs.update({k: v})
+        return kwargs
+
+    def add_model_collection(self, models, domain='all', regen_mode='deferred'):
+        r"""
+        Add a ``collection`` of several models at once
+
+        Parameters
+        ----------
+        models : dict
+            The collection of models to add.
+        regen_mode : str
+            By default the models are not regenerated upon addition. See the
+            docstring for ``add_model`` for more information.
+        domain : str
+            The label indicating which locations the supplied collection
+            of models should be applied to.
+
+        Notes
+        -----
+        Collections are dictionaries that are formatted the same as
+        ``obj.models``. Several model collections are available in
+        ``openpnm.models.collections``.
+        """
+        models = deepcopy(models)
+        for k, v in models.items():
+            if 'domain' not in v.keys():
+                v['domain'] = domain
+            if 'regen_mode' not in v.keys():
+                v['regen_mode'] = regen_mode
+            self.add_model(propname=k, **v)
+
+    def regenerate_models(self, propnames=None, exclude=[]):
+        r"""
+        Runs all the models stored in the object's ``models`` attribute
+
+        Parameters
+        ----------
+        propnames : list of strings
+            If given then only the specified models are run
+        exclude : list of strings
+            If given then these models will *not* be run
+
+        Notes
+        -----
+        This function will ensure that models are called in the correct order
+        such that 'pore.diameter' will be run before 'pore.volume', since
+        the diameter is required to compute the volume.
+        """
+        all_models = self.models.dependency_list()
+        # Regenerate all properties by default
+        if propnames is None:
+            propnames = all_models
+        else:
+            propnames = np.atleast_1d(propnames).tolist()
+        # Remove any that are specifically excluded
+        propnames = np.setdiff1d(propnames, exclude).tolist()
+        # Reorder given propnames according to dependency tree
+        tmp = [e.split("@")[0] for e in propnames]
+        idx_sorted = [all_models.index(e) for e in tmp]
+        propnames = [elem for i, elem in sorted(zip(idx_sorted, propnames))]
+        # Now run each on in sequence
+        for item in propnames:
+            try:
+                self.run_model(item)
+            except KeyError as e:
+                msg = (f"{item} was not run since the following property"
+                       f" is missing: {e}")
+                logger.warning(prettify_logger_message(msg))
+                self.models[item]['regen_mode'] = 'deferred'
+
+    def run_model(self, propname, domain=None):
+        r"""
+        Runs the requested model and places the result into the correct
+        locations
+
+        Parameters
+        ----------
+        propname : str
+            The name of the model to run.
+        domain : str
+            The label of the domain for which the model should be run. Passing
+            ``propname='pore.diameter@domain1`` and ``domain=None`` is
+            equivalent to passing ``propname='pore.diameter`` and
+            ``domain=domain1``. Passing ``domain=None`` will regenerate
+            all models starting with ``propname``.
+        """
+        if domain is None:
+            if '@' in propname:  # Get domain from propname if present
+                propname, _, domain = propname.partition('@')
+                self.run_model(propname=propname, domain=domain)
+            else:  # No domain means run model for ALL domains
+                for item in self.models.keys():
+                    if item.startswith(propname+"@"):
+                        _, _, domain = item.partition("@")
+                        self.run_model(propname=propname, domain=domain)
+        else:  # domain was given explicitly
+            domain = domain.split('.', 1)[-1]
+            element, prop = propname.split('@')[0].split('.', 1)
+            propname = f'{element}.{prop}'
+            mod_dict = self.models[propname+'@'+domain]
+            # Collect kwargs
+            kwargs = {'domain': f'{element}.{domain}'}
+            for item in mod_dict.keys():
+                if item not in ['model', 'regen_mode']:
+                    kwargs[item] = mod_dict[item]
+            # Deal with models that don't have domain argument yet
+            if 'domain' not in inspect.getfullargspec(mod_dict['model']).args:
+                _ = kwargs.pop('domain', None)
+                vals = mod_dict['model'](self, **kwargs)
+                if isinstance(vals, dict):  # Handle models that return a dict
+                    for k, v in vals.items():
+                        v = np.atleast_1d(v)
+                        if v.shape[0] == 1:  # Returned item was a scalar
+                            v = np.tile(v, self._count(element))
+                        vals[k] = v[self[f'{element}.{domain}']]
+                elif isinstance(vals, (int, float)):  # Handle models that return a float
+                    vals = np.atleast_1d(vals)
+                else:  # Index into full domain result for use below
+                    vals = vals[self[f'{element}.{domain}']]
+            else:  # Model that accepts domain arg
+                vals = mod_dict['model'](self, **kwargs)
+            # Finally add model results to self
+            if isinstance(vals, np.ndarray):  # If model returns single array
+                if propname not in self.keys():
+                    # Create empty array if not found
+                    self[propname] = np.nan*np.ones([self._count(element),
+                                                     *vals.shape[1:]])
+                self[propname][self[f'{element}.{domain}']] = vals
+            elif isinstance(vals, dict):  # If model returns a dict of arrays
+                for k, v in vals.items():
+                    if f'{propname}.{k}' not in self.keys():
+                        # Create empty array if not found
+                        self[f'{propname}.{k}'] = \
+                            np.nan*np.ones([self._count(element), *v.shape[1:]])
+                    self[f'{propname}.{k}'][self[f'{element}.{domain}']] = v

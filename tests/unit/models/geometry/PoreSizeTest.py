@@ -42,7 +42,8 @@ class PoreSizeTest:
         net = op.network.Cubic(shape=[5, 5, 5], spacing=[0.1, 0.2, 0.3])
         net.add_model(propname='pore.diameter',
                       model=mods.largest_sphere,
-                      iters=5)
+                      iters=5,
+                      domain='all')
         dmin = np.amin(net['pore.diameter'])
         assert dmin <= 0.1
         net.models['pore.diameter@all']['iters'] = 5
@@ -70,7 +71,8 @@ class PoreSizeTest:
         self.net.add_model(propname='pore.diameter',
                            model=mod,
                            pore_volume='pore.volume',
-                           pore_shape='sphere')
+                           pore_shape='sphere',
+                           domain='all')
         a = np.unique(self.net['pore.diameter'])
         b = np.array(1.24070098, ndmin=1)
         assert np.allclose(a, b)

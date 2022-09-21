@@ -5,7 +5,6 @@ Pore-scale models related to topology of the network.
 
 """
 from numpy.linalg import norm
-from scipy.sparse import csgraph
 import numpy as np
 
 __all__ = [  # Keep this alphabetical for easier inspection of what's imported
@@ -14,7 +13,6 @@ __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'distance_to_nearest_neighbor',
     'distance_to_nearest_pore',
     'pore_to_pore_distance',
-    'reduce_coordination',
 ]
 
 
@@ -77,50 +75,3 @@ def distance_to_nearest_pore(network):
     ds, ids = tree.query(coords, k=2)
     values = ds[:, 1]
     return values
-
-
-def reduce_coordination(network, z):
-    r"""
-    Deletes throats on network to match specified average coordination number
-
-    Parameters
-    ----------
-    target : Network
-        The network whose throats are to be trimmed
-    z : scalar
-        The desired average coordination number.  It is not possible to specify
-        the distribution of the coordination, only the mean value.
-
-    Returns
-    -------
-    trim : ndarray
-        A boolean array with ``True`` values indicating which pores to trim
-        (using ``op.topotools.trim``) to obtain the desired average
-        coordination number.
-
-    Notes
-    -----
-    This method first finds the minimum spanning tree of the network using
-    random weights on each throat, then assures that these throats are *not*
-    deleted, in order to maintain network connectivity.  The list of throats
-    to trim is generated randomly from the throats *not* on the spanning tree.
-
-    """
-    # Find minimum spanning tree using random weights
-    am = network.create_adjacency_matrix(weights=np.random.rand(network.Nt),
-                                         triu=False)
-    mst = csgraph.minimum_spanning_tree(am, overwrite=True)
-    mst = mst.tocoo()
-
-    # Label throats on spanning tree to avoid deleting them
-    Ts = network.find_connecting_throat(mst.row, mst.col)
-    Ts = np.hstack(Ts)
-    network['throat.mst'] = False
-    network['throat.mst'][Ts] = True
-
-    # Trim throats not on the spanning tree to acheive desired coordination
-    Ts = np.random.permutation(network.throats('mst', mode='nor'))
-    del network['throat.mst']
-    Ts = Ts[:int(network.Nt - network.Np*(z/2))]
-    Ts = network.to_mask(throats=Ts)
-    return Ts

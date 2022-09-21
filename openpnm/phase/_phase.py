@@ -27,6 +27,7 @@ class PhaseSettings:
         a normal ``KeyError`` is raised.
     """
     auto_interpolate = True
+    default_domain = 'all'
 
 
 @docstr.get_sections(base='Phase', sections=['Parameters'])
@@ -46,9 +47,9 @@ class Phase(Domain):
     def __init__(self, network, name='phase_?', **kwargs):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(PhaseSettings())
+        # Set standard conditions on the phase
         self['pore.all'] = np.ones([network.Np, ], dtype=bool)
         self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
-        # Set standard conditions on the phase
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
 
@@ -60,7 +61,7 @@ class Phase(Domain):
 
         try:  # Allow look-up from network mostly for label/domain info
             return self.network[key]
-        except KeyError:
+        except:
             pass
 
         # Parse the key
@@ -77,8 +78,8 @@ class Phase(Domain):
         # Next get the data arrays, this is the case if @ notation was used
         if element + '.' + prop in self.keys():
             vals = super().__getitem__(element + '.' + prop)
-        elif element + '.' + prop in self.network.keys():
-            vals = self.network[element + '.' + prop]
+        # elif element + '.' + prop in self.network.keys():
+        #     vals = self.network[element + '.' + prop]
         else:  # If above are not triggered then try to interpolate
             if self.settings['auto_interpolate']:
                 if (element == 'pore') and ('throat.'+prop not in self.keys()):
@@ -99,4 +100,20 @@ class Phase(Domain):
         else:
             raise KeyError(element + '.' + domain)
 
+        # Next get the data arrays
+        if element + '.' + prop in self.keys():
+            vals = super().__getitem__(element + '.' + prop)
+        # elif element + '.' + prop in self.network.keys():
+        #     vals = self.network[element + '.' + prop]
+        else:
+            if self.settings['auto_interpolate']:
+                if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                    msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
+                    raise KeyError(msg)
+                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
+                    msg = f"'pore.{prop}', cannot interpolate '{element}.{prop}'"
+                    raise KeyError(msg)
+                vals = self.interpolate_data(element + '.' + prop)
+            else:
+                raise KeyError(key)
         return vals[locs]

@@ -39,8 +39,8 @@ class CubicTemplate(Network):
     """
 
     def __init__(self, template, spacing=[1, 1, 1], **kwargs):
-        template = np.atleast_3d(template)
         super().__init__(**kwargs)
+        template = np.atleast_3d(template)
         net = cubic_template(template=template, spacing=spacing,
                              node_prefix='pore', edge_prefix='throat')
         self.update(net)

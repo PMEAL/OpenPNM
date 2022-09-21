@@ -96,7 +96,6 @@ class TransientReactiveTransport(ReactiveTransport):
         # Return solution as dictionary
         self.soln = SolutionContainer()
         self.soln[self.settings['quantity']] = soln
-        return self.soln
 
     def _run_special(self, x0): ...
 

@@ -1,4 +1,4 @@
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = ["spheres_and_cylinders",
@@ -14,11 +14,9 @@ __all__ = ["spheres_and_cylinders",
            "hybrid_pyramids_and_cuboids",
            "cubes_and_cuboids",
            "squares_and_rectangles"]
-docstr = Docorator()
 
 
-@docstr.get_sections(base='models.geometry.throat_length',
-                     sections=['Parameters', 'Returns'])
+@_geodocs
 def spheres_and_cylinders(
     network,
     pore_diameter='pore.diameter',
@@ -30,16 +28,9 @@ def spheres_and_cylinders(
 
     Parameters
     ----------
-    network : OpenPNM Base object
-        Object with which this model is associated. This controls
-        the length of the calculated array, and also provides access to
-        other necessary properties.
-    pore_diameter : str
-        Name of the dictionary key on ``network`` where the array containing
-        pore diameter values is stored
-    throat_diameter : str
-        Name of the dictionary key on ``network`` where the array containing
-        throat diameter values is stored
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
@@ -56,10 +47,11 @@ def spheres_and_cylinders(
     return out[:, 1]
 
 
+@_geodocs
 def circles_and_rectangles(
     network,
     pore_diameter='pore.diameter',
-    throat_diameter='throat.diameter'
+    throat_diameter='throat.diameter',
 ):
     r"""
     Finds throat length assuming pores are circles and throats are
@@ -67,11 +59,12 @@ def circles_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns)
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -83,6 +76,7 @@ def circles_and_rectangles(
     return out[:, 1]
 
 
+@_geodocs
 def cones_and_cylinders(
     network,
     pore_diameter='pore.diameter',
@@ -94,11 +88,12 @@ def cones_and_cylinders(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -110,6 +105,7 @@ def cones_and_cylinders(
     return out[:, 1]
 
 
+@_geodocs
 def intersecting_cones(
     network,
     pore_coords="pore.coords",
@@ -120,11 +116,12 @@ def intersecting_cones(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Pcoords)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -136,6 +133,7 @@ def intersecting_cones(
     return out[:, 1]
 
 
+@_geodocs
 def hybrid_cones_and_cylinders(
     network,
     pore_diameter="pore.diameter",
@@ -147,11 +145,12 @@ def hybrid_cones_and_cylinders(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -163,6 +162,7 @@ def hybrid_cones_and_cylinders(
     return out[:, 1]
 
 
+@_geodocs
 def trapezoids_and_rectangles(
     network,
     pore_diameter='pore.diameter',
@@ -174,11 +174,12 @@ def trapezoids_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -190,6 +191,7 @@ def trapezoids_and_rectangles(
     return out[:, 1]
 
 
+@_geodocs
 def intersecting_trapezoids(
     network,
     pore_coords="pore.coords",
@@ -200,11 +202,12 @@ def intersecting_trapezoids(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Pcoords)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -216,6 +219,7 @@ def intersecting_trapezoids(
     return out[:, 1]
 
 
+@_geodocs
 def hybrid_trapezoids_and_rectangles(
     network,
     pore_diameter="pore.diameter",
@@ -227,11 +231,12 @@ def hybrid_trapezoids_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -243,6 +248,7 @@ def hybrid_trapezoids_and_rectangles(
     return out[:, 1]
 
 
+@_geodocs
 def pyramids_and_cuboids(
     network,
     pore_diameter='pore.diameter',
@@ -254,11 +260,12 @@ def pyramids_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -270,6 +277,7 @@ def pyramids_and_cuboids(
     return out[:, 1]
 
 
+@_geodocs
 def intersecting_pyramids(
     network,
     pore_coords="pore.coords",
@@ -280,11 +288,12 @@ def intersecting_pyramids(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Pcoords)s
+    %(Tcoords)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -296,10 +305,11 @@ def intersecting_pyramids(
     return out[:, 1]
 
 
+@_geodocs
 def hybrid_pyramids_and_cuboids(
     network,
     pore_diameter='pore.diameter',
-        throat_coords="throat.coords"
+    throat_coords="throat.coords",
 ):
     r"""
     Finds throat length assuming pores are pyramids and throats are
@@ -307,11 +317,10 @@ def hybrid_pyramids_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -323,6 +332,7 @@ def hybrid_pyramids_and_cuboids(
     return out[:, 1]
 
 
+@_geodocs
 def cubes_and_cuboids(
     network,
     pore_diameter='pore.diameter',
@@ -334,11 +344,12 @@ def cubes_and_cuboids(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths
@@ -350,6 +361,7 @@ def cubes_and_cuboids(
     return out[:, 1]
 
 
+@_geodocs
 def squares_and_rectangles(
     network,
     pore_diameter='pore.diameter',
@@ -361,11 +373,12 @@ def squares_and_rectangles(
 
     Parameters
     ----------
-    %(models.geometry.throat_length.parameters)
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_length.returns
 
     """
     from openpnm.models.geometry import conduit_lengths

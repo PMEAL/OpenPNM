@@ -7,7 +7,7 @@ ws.clear()
 
 pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
 
-# Create domain1
+# Create domain
 Ps = pn.coords[:, 0] < 13e-4
 Ts = pn.find_neighbor_throats(pores=Ps, asmask=True)
 pn['pore.domain1'] = Ps
@@ -30,10 +30,7 @@ pn.regenerate_models()
 
 # Create phase and add phase/physics models
 air = op.phase.Air(network=pn, name="air")
-air.add_model_collection(collections.physics.standard,
-                         domain='domain1')
-air.add_model_collection(collections.physics.standard,
-                         domain='domain2')
+air.add_model_collection(collections.physics.standard)
 air.regenerate_models()
 
 # Add a nonlinear reaction

@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies (pip)
         run: |
           pip install \
-            -r requirements/requirements.txt \
+            -r requirements.txt \
             -r requirements/tests.txt
 
       - name: Running tests

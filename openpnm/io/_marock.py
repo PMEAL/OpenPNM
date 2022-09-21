@@ -13,7 +13,7 @@ def network_from_marock(filename, voxel_size=1):
     r"""
     Load data from a 3DMA-Rock extracted network.
 
-        Parameters
+    Parameters
     ----------
     filename : str
         The location of the 'np2th' and 'th2np' files. This can be an
@@ -35,8 +35,8 @@ def network_from_marock(filename, voxel_size=1):
     They should be stored together in a folder which is referred to by the
     path argument. These files are binary and therefore not human readable.
 
-    Reference
-    ---------
+    References
+    ----------
     3DMA-Rock is a network extraction algorithm developed by Brent Lindquist
     and his group
 
@@ -45,9 +45,9 @@ def network_from_marock(filename, voxel_size=1):
     cross-sectional area.
 
     [1] Lindquist, W. Brent, S. M. Lee, W. Oh, A. B. Venkatarangan, H. Shin,
-    and M. Prodanovic. "3DMA-Rock: A software package for automated analysis
-    of rock pore structure in 3-D computed microtomography images." SUNY Stony
-    Brook (2005).
+        and M. Prodanovic. "3DMA-Rock: A software package for automated analysis
+        of rock pore structure in 3-D computed microtomography images." SUNY Stony
+        Brook (2005).
 
     """
 

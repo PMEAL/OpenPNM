@@ -21,7 +21,7 @@ def poisson(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_permittivity : str
         %(dict_blurb)s pore permittivity
     throat_permittivity : str
@@ -61,7 +61,7 @@ def electroneutrality(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     pore_diffusivity : str
         %(dict_blurb)s pore diffusivity
     throat_diffusivity : str

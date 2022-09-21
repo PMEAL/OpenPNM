@@ -9,8 +9,6 @@ class BaseTest:
         self.net = op.network.Cubic([3, 3, 3])
         self.net.set_label(throats=self.net.Ts, label='internal')
         self.net.set_label(pores=self.net.Ps, label='internal')
-        _ = self.net['pore.all']
-        _ = self.net['throat.all']
 
     def teardown_class(self):
         ws = op.Workspace()
@@ -399,14 +397,14 @@ class BaseTest:
 
     def test_labels_on_pores(self):
         a = self.net.labels(element='pore')
-        b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
+        b = ['pore.back', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.left', 'pore.right',
              'pore.top', 'pore.surface']
         assert sorted(a) == sorted(b)
 
     def test_labels_on_throats(self):
         a = self.net.labels(element='throat')
-        b = ['throat.all', 'throat.internal', 'throat.surface']
+        b = ['throat.internal', 'throat.surface']
         assert sorted(a) == sorted(b)
 
     def test_labels_on_pores_and_throats(self):
@@ -419,26 +417,26 @@ class BaseTest:
 
     def test_labels_on_all_pores(self):
         a = self.net.labels(pores=self.net.Ps)
-        b = ['pore.all', 'pore.back', 'pore.bottom', 'pore.front',
+        b = ['pore.back', 'pore.bottom', 'pore.front',
              'pore.internal', 'pore.left', 'pore.right','pore.top',
              'pore.surface']
         assert sorted(a) == sorted(b)
 
     def test_labels_on_all_throats(self):
         a = self.net.labels(throats=self.net.Ts)
-        b = ['throat.all', 'throat.internal', 'throat.surface']
+        b = ['throat.internal', 'throat.surface']
         assert sorted(a) == sorted(b)
 
     def test_labels_on_one_pore(self):
         a = self.net.labels(pores=0)
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left']
         assert sorted(a) == sorted(b)
 
     def test_labels_on_list_of_pores(self):
         a = self.net.labels(pores=[0, 1])
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left']
         assert sorted(a) == sorted(b)
@@ -447,21 +445,21 @@ class BaseTest:
         ind = np.zeros((self.net.Np), dtype=bool)
         ind[[0, 1]] = True
         a = self.net.labels(pores=ind)
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left']
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_or(self):
         a = self.net.labels(pores=[0, 1, 2], mode='or')
-        b = ['pore.all', 'pore.bottom', 'pore.front',
+        b = ['pore.bottom', 'pore.front',
              'pore.internal', 'pore.surface',
              'pore.left', 'pore.top']
         assert sorted(a) == sorted(b)
 
     def test_labels_pores_mode_and(self):
         a = self.net.labels(pores=[0, 1, 2], mode='and')
-        b = ['pore.all', 'pore.front', 'pore.internal', 'pore.left',
+        b = ['pore.front', 'pore.internal', 'pore.left',
              'pore.surface']
         assert sorted(a) == sorted(b)
 
@@ -477,7 +475,7 @@ class BaseTest:
 
     def test_labels_pores_mode_xnor(self):
         a = self.net.labels(pores=[0, 1, 2], mode='xnor')
-        b = ['pore.all', 'pore.front', 'pore.internal',
+        b = ['pore.front', 'pore.internal',
              'pore.surface', 'pore.left']
         assert sorted(a) == sorted(b)
 
@@ -648,12 +646,6 @@ class BaseTest:
     #     assert self.geo.Np == Np
     #     assert self.geo.Nt == Nt
 
-    def test_get_indices(self):
-        temp = self.net.pop('pore.all')
-        with pytest.raises(Exception):
-            self.net._get_indices(element='pores', labels='blah')
-        self.net.update({'pore.all': temp})
-
     def test_get_indices_wildcard(self):
         a = self.net._get_indices(element='pore', labels='ba*')
         assert np.all(a == [6, 7, 8, 15, 16, 17, 24, 25, 26])
@@ -809,11 +801,6 @@ class BaseTest:
     def test_renaming_to_current_name_is_allowed(self):
         obj = op.core.Base2(name="temp")
         obj.name = "temp"
-
-    def test_object_names_must_be_unique_within_project(self):
-        obj = op.core.Base2(name="temp")
-        with pytest.raises(Exception):
-            op.core.Base2(name="temp", project=obj.project)
 
     def test_get_conduit_data(self):
         pn = op.network.Cubic(shape=[3, 3, 3])

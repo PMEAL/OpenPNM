@@ -1,28 +1,25 @@
 from numpy import pi as _pi
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
-
-docstr = Docorator()
-docstr.params['models.geometry.throat_cross_sectional_area.returns'] = \
-    r"""areas : ndarray
-            A numpy ndarray containing throat cross-sectional area values"""
 
 __all__ = ["cylinder", "cuboid", "rectangle"]
 
 
-@docstr.dedent
-def cylinder(network, throat_diameter='throat.diameter'):
+@_geodocs
+def cylinder(
+    network,
+    throat_diameter='throat.diameter',
+    ):
     r"""
     Calculate throat cross-sectional area for a cylindrical throat
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
     diams = network[throat_diameter]
@@ -30,19 +27,21 @@ def cylinder(network, throat_diameter='throat.diameter'):
     return value
 
 
-@docstr.dedent
-def cuboid(network, throat_diameter='throat.diameter'):
+@_geodocs
+def cuboid(
+    network,
+    throat_diameter='throat.diameter',
+):
     r"""
     Calculate throat cross-sectional area for a cuboid throat
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
     diams = network[throat_diameter]
@@ -50,18 +49,21 @@ def cuboid(network, throat_diameter='throat.diameter'):
     return value
 
 
-def rectangle(network, throat_diameter='throat.diameter'):
+@_geodocs
+def rectangle(
+    network,
+    throat_diameter='throat.diameter',
+):
     r"""
     Calculate throat cross-sectional area for a rectangular throat
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.tdia)s
+    %(network)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.throat_cross_sectional_area.returns)s
 
     """
     return network[throat_diameter]

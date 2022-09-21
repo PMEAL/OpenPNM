@@ -41,6 +41,7 @@ __all__ = [
     'filter_pores_by_z',
     'find_interface_throats',
     'add_reservoir_pore',
+    'reduce_coordination',
 ]
 
 
@@ -1173,6 +1174,53 @@ def get_domain_length(network, inlets=None, outlets=None):
         logger.error('A unique value of length could not be found')
     length = Ls[0]
     return length
+
+
+def reduce_coordination(network, z):
+    r"""
+    Deletes throats on network to match specified average coordination number
+
+    Parameters
+    ----------
+    target : Network
+        The network whose throats are to be trimmed
+    z : scalar
+        The desired average coordination number.  It is not possible to specify
+        the distribution of the coordination, only the mean value.
+
+    Returns
+    -------
+    trim : ndarray
+        A boolean array with ``True`` values indicating which pores to trim
+        (using ``op.topotools.trim``) to obtain the desired average
+        coordination number.
+
+    Notes
+    -----
+    This method first finds the minimum spanning tree of the network using
+    random weights on each throat, then assures that these throats are *not*
+    deleted, in order to maintain network connectivity.  The list of throats
+    to trim is generated randomly from the throats *not* on the spanning tree.
+
+    """
+    # Find minimum spanning tree using random weights
+    am = network.create_adjacency_matrix(weights=np.random.rand(network.Nt),
+                                         triu=False)
+    mst = csgraph.minimum_spanning_tree(am, overwrite=True)
+    mst = mst.tocoo()
+
+    # Label throats on spanning tree to avoid deleting them
+    Ts = network.find_connecting_throat(mst.row, mst.col)
+    Ts = np.hstack(Ts)
+    network['throat.mst'] = False
+    network['throat.mst'][Ts] = True
+
+    # Trim throats not on the spanning tree to acheive desired coordination
+    Ts = np.random.permutation(network.throats('mst', mode='nor'))
+    del network['throat.mst']
+    Ts = Ts[:int(network.Nt - network.Np*(z/2))]
+    Ts = network.to_mask(throats=Ts)
+    return Ts
 
 
 def add_reservoir_pore(cls, network, pores, offset=0.1):

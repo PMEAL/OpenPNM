@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import pi as _pi
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 __all__ = ["sphere",
            "cube",
@@ -8,20 +8,20 @@ __all__ = ["sphere",
            "square",
            "effective"
            ]
-docstr = Docorator()
 
 
-@docstr.get_sections(base='models.geometry.pore_volume',
-                     sections=['Parameters', 'Returns'])
-@docstr.dedent
-def sphere(network, pore_diameter='pore.diameter'):
+@_geodocs
+def sphere(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.pdia)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
@@ -29,60 +29,75 @@ def sphere(network, pore_diameter='pore.diameter'):
         Numpy ndarray containing pore volume values
 
     """
-    return _pi/6*network[pore_diameter]**3
+    return 4/3*_pi*(network[pore_diameter]/2)**3
 
 
-@docstr.dedent
-def cube(network, pore_diameter='pore.diameter'):
+@_geodocs
+def cube(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate pore volume from diameter assuming a cubic pore body
 
     Parameters
     ----------
-    %(models.geometry.pore_volume.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_volume.returns)s
 
     """
     return network[pore_diameter]**3
 
 
-def circle(network, pore_diameter='pore.diameter'):
+@_geodocs
+def circle(
+    network,
+    pore_diameter='pore.diameter',
+):
     r"""
     Calculate pore volume from diameter assuming a spherical pore body
 
     Parameters
     ----------
-    %(models.geometry.pore_volume.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_volume.returns)s
 
     """
     return _pi/4 * network[pore_diameter]**2
 
 
-def square(network, pore_diameter='pore.diameter'):
+@_geodocs
+def square(
+    network,
+    pore_diameter='pore.diameter',
+):
     r"""
     Calculate pore volume from diameter assuming a cubic pore body
 
     Parameters
     ----------
-    %(models.geometry.pore_volume.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_volume.returns)s
 
     """
     return network[pore_diameter]**2
 
 
-def effective(network, pore_volume='pore.volume',
-              throat_volume='throat.volume'):
+@_geodocs
+def effective(
+    network,
+    pore_volume='pore.volume',
+    throat_volume='throat.volume',
+):
     r"""
     Calculate the effective pore volume for optional use in transient
     simulations. The effective pore volume is calculated by adding half
@@ -90,13 +105,12 @@ def effective(network, pore_volume='pore.volume',
 
     Parameters
     ----------
-    %(models.geometry.pore_volume.parameters)s
-    %(models.geometry.pvol)s
-    %(models.geometry.tvol)s
+    %(network)s
+    %(Dp)s
+    %(Dt)s
 
     Returns
     -------
-    %(models.geometry.pore_volume.returns)s
 
     """
     cn = network['throat.conns']

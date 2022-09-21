@@ -25,7 +25,7 @@ def general_toroidal(
 
     Parameters
     ----------
-    %(target_blurb)s
+    %(phase)s
     profile_equation : str
         Options are 'elliptical' (default), 'sinusoidal'.
     mode : str
