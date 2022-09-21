@@ -92,6 +92,11 @@ class Mixture(Phase):
     #     else:
     #         super().__setitem__(key, value)
 
+    def regenerate_models(self, **kwargs):
+        for c in self.components.values():
+            c.regenerate_models(**kwargs)
+        super().regenerate_models(**kwargs)
+
     def get_comp_vals(self, propname):
         r"""
         Get a dictionary of the requested values from each component in the

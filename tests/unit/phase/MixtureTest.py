@@ -96,6 +96,27 @@ class MixtureTest:
         set_a = set(['pure_N2', 'pure_O2'])
         assert set_a.difference(set(d.keys())) == set()
 
+    def test_regenerate_components(self):
+        net = op.network.Demo()
+        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        air = op.phase.StandardGasMixture(network=net, components=[n2, o2])
+        air.y(o2.name, y=0.2)
+        air.y(n2.name, y=0.8)
+        air.regenerate_models()
+        mu1 = air['pore.viscosity'].mean()
+        o2['pore.temperature'] = 333.3
+        air.regenerate_models()
+        mu2 = air['pore.viscosity'].mean()
+        assert mu2 > mu1
+        o2['pore.temperature'] = 298.0
+        o2.regenerate_models()
+        mu3 = air['pore.viscosity'].mean()
+        assert mu2 == mu3
+        air.regenerate_models()
+        mu4 = air['pore.viscosity'].mean()
+        assert mu4 == mu1
+
 
 if __name__ == '__main__':
 
