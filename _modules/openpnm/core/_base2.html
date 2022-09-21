@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.core._base2 &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>openpnm.core._base2 &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -241,8 +241,7 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Base2</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A subclassed dictionary used for storing Network, Phase, and Algorithm</span>
-<span class="sd">    objects.</span>
+<span class="sd">    A subclassed dictionary used for storing data</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -319,7 +318,7 @@
                 <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
             <span class="k">return</span>
 
-        <span class="c1"># Enfore correct dict naming</span>
+        <span class="c1"># Enforce correct dict naming</span>
         <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;All keys must start with either pore or throat&#39;</span><span class="p">)</span>
         <span class="c1"># Convert value to ndarray</span>
@@ -741,145 +740,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pytest</span>
-    <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-
-    <span class="k">def</span> <span class="nf">random_seed</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]):</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-        <span class="n">seeds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">inds</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">*</span><span class="p">(</span><span class="n">lim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">lim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">lim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">seeds</span>
-
-    <span class="k">def</span> <span class="nf">factor</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">vals</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span><span class="o">*</span><span class="n">f</span>
-        <span class="k">return</span> <span class="n">vals</span>
-
-    <span class="k">def</span> <span class="nf">dolittle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">domain</span><span class="p">):</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">domain</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;item1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">N</span><span class="p">,</span> <span class="p">])</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;item2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">N</span><span class="p">,</span> <span class="p">])</span><span class="o">*</span><span class="mi">2</span>
-        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;item3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">N</span><span class="p">,</span> <span class="p">])</span><span class="o">*</span><span class="mi">3</span>
-        <span class="k">return</span> <span class="n">d</span>
-
-    <span class="n">g</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed@left&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span>
-                <span class="n">lim</span><span class="o">=</span><span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed@right&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span>
-                <span class="n">lim</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">],</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seedx&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span>
-                <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
-                <span class="n">f</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.test&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span>
-                <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;front&#39;</span><span class="p">,</span>
-                <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
-                <span class="n">f</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.dict2&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">dolittle</span><span class="p">,</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.dict3&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">dolittle</span><span class="p">,</span>
-                <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.dict3&#39;</span><span class="p">,</span>
-                <span class="n">model</span><span class="o">=</span><span class="n">dolittle</span><span class="p">,</span>
-                <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
-                <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,)</span>
-
-    <span class="c1"># Run some basic tests</span>
-    <span class="c1"># --------------------</span>
-    <span class="c1"># Use official args</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;pore.left&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="c1"># Use partial syntax</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="c1"># Use lazy syntax</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.seed@right&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="c1"># Run the pore seed model for all domains at once:</span>
-    <span class="k">del</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>  <span class="c1"># This does not work yet</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.seed&#39;</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed@left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed@right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.seedx&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="c1"># Full domain model</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.seedx&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.seedx&#39;</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seedx&#39;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">x</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">2</span>
-    <span class="c1"># Run the non-domain enabled model on a subdomain</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.test&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.test&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.test&#39;</span> <span class="ow">in</span> <span class="n">g</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">7</span>
-    <span class="k">del</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">]</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.test@front&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.test&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">7</span>
-    <span class="c1"># Fetch data with lazy syntax</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed@left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="c1"># Write data with lazy syntax, ensuring scalar to array conversion</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed@right&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="c1"># Write array directly</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed@right&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">3</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="c1"># Use labels that were not used by models</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.seed@front&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="c1"># Write a dict</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;item2&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">}</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict.item1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">9</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict.item2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">18</span>
-    <span class="c1"># A dict with domains</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item1@left&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;item2@right&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict.item1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">12</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict.item2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">21</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;item3@left&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;item3@right&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">}</span>
-    <span class="c1"># Double dots...not sure how these should work</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested.name1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested.name2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span>
-    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">):</span>
-        <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested.fail&#39;</span><span class="p">]</span>
-    <span class="k">del</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested.name1&#39;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.nested.name1&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="k">del</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.nested&#39;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="s1">&#39;pore.nested.name2&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="c1"># More fun</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;conduit.seed&#39;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">c</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="s1">&#39;throat.seed&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">c</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">g</span><span class="o">.</span><span class="n">Nt</span>
-    <span class="c1"># Run model that returns a dict to all pores</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.dict2&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict2&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict2.item1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">9</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict2.item2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">18</span>
-    <span class="c1"># Run model that returns a dict to only subdomain pores</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.dict3@left&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3.item1&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">6</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3.item1@left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3.item2&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">6</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3.item3&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">6</span>
-    <span class="c1"># Run model on both domains that its assigned</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="s1">&#39;pore.dict3&#39;</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3.item1@left&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="s1">&#39;pore.dict3.item1@right&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span>
 </pre></div>
 
               </article>

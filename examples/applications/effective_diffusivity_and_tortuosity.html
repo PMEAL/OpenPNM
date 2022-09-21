@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Finding Effective Diffusivity and Tortuosity of a Network &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Finding Effective Diffusivity and Tortuosity of a Network &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -487,36 +492,36 @@ D_{AB} = D_{eff}\frac{\epsilon}{\tau}\\
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fa7d5bc1450&gt;
+net : &lt;openpnm.network.Cubic at 0x7fce7d0b1f90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coordination_number                                        100 / 100
   2  pore.coords                                                     100 / 100
-  3  pore.diameter                                                   100 / 100
-  4  pore.max_size                                                   100 / 100
-  5  pore.seed                                                       100 / 100
-  6  pore.volume                                                     100 / 100
-  7  throat.conns                                                    180 / 180
-  8  throat.cross_sectional_area                                     180 / 180
-  9  throat.diameter                                                 180 / 180
- 10  throat.diffusive_size_factors                                   180 / 180
- 11  throat.hydraulic_size_factors                                   180 / 180
- 12  throat.length                                                   180 / 180
- 13  throat.lens_volume                                              180 / 180
- 14  throat.max_size                                                 180 / 180
- 15  throat.spacing                                                  180 / 180
+  3  throat.conns                                                    180 / 180
+  4  pore.coordination_number                                        100 / 100
+  5  pore.max_size                                                   100 / 100
+  6  throat.spacing                                                  180 / 180
+  7  pore.seed                                                       100 / 100
+  8  pore.diameter                                                   100 / 100
+  9  throat.max_size                                                 180 / 180
+ 10  throat.diameter                                                 180 / 180
+ 11  throat.cross_sectional_area                                     180 / 180
+ 12  throat.hydraulic_size_factors                                   180 / 180
+ 13  throat.diffusive_size_factors                                   180 / 180
+ 14  throat.lens_volume                                              180 / 180
+ 15  throat.length                                                   180 / 180
  16  throat.total_volume                                             180 / 180
  17  throat.volume                                                   180 / 180
+ 18  pore.volume                                                     100 / 100
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                              10
-  2  pore.front                                                             10
-  3  pore.left                                                              10
-  4  pore.right                                                             10
-  5  pore.surface                                                           36
-  6  throat.surface                                                         36
+  2  pore.surface                                                           36
+  3  throat.surface                                                         36
+  4  pore.left                                                              10
+  5  pore.right                                                             10
+  6  pore.front                                                             10
+  7  pore.back                                                              10
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -606,7 +611,7 @@ net : &lt;openpnm.network.Cubic at 0x7fa7d5bc1450&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/84abab236112bca98e1498ae6a1745916521852ca336ec179ad670dfd40c5742.svg" src="../../_images/84abab236112bca98e1498ae6a1745916521852ca336ec179ad670dfd40c5742.svg" /></div>
+<img alt="../../_images/d343136af134480a2706fa622c4bd40aa70cd64bab902c371d80e8f334b3a3d0.svg" src="../../_images/d343136af134480a2706fa622c4bd40aa70cd64bab902c371d80e8f334b3a3d0.svg" /></div>
 </div>
 </section>
 <section id="calculate-the-effective-diffusivity">

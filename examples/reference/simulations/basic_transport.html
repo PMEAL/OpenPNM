@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Steady State Transport &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Steady State Transport &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -53,7 +53,7 @@
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Basic Transport" href="reactive_transport.html" />
+    <link rel="next" title="Explanation of Units" href="explanation_of_units.html" />
     <link rel="prev" title="Available Matrix Solvers" href="available_matrix_solvers.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="reactive_transport.html">
      Basic Transport
     </a>
@@ -444,10 +449,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.78110594  0.97714208  0.80396386  0.        ]
- [ 0.97714208 -1.00898538  0.          0.03184329]
- [ 0.80396386  0.         -0.9574725   0.15350864]
- [ 0.          0.03184329  0.15350864 -0.18535193]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-0.42862942  0.41365671  0.01497271  0.        ]
+ [ 0.41365671 -0.45905282  0.          0.04539611]
+ [ 0.01497271  0.         -0.9527663   0.93779359]
+ [ 0.          0.04539611  0.93779359 -0.9831897 ]]
 </pre></div>
 </div>
 </div>
@@ -477,9 +482,9 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.97714208 -1.00898538  0.          0.03184329]
- [ 0.80396386  0.         -0.9574725   0.15350864]
- [ 0.          0.03184329  0.15350864 -0.18535193]]
+ [ 0.41365671 -0.45905282  0.          0.04539611]
+ [ 0.01497271  0.         -0.9527663   0.93779359]
+ [ 0.          0.04539611  0.93779359 -0.9831897 ]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -499,7 +504,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 2.          1.90121252  1.49814834 -1.13017661]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 2.          1.11140152 -6.84444233 -6.98565173]
 </pre></div>
 </div>
 </div>
@@ -585,9 +590,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.97714208 -1.00898538  0.          0.03184329]
- [ 0.80396386  0.         -0.9574725   0.15350864]
- [ 0.          0.03184329  0.15350864 -0.18535193]]
+ [ 0.41365671 -0.45905282  0.          0.04539611]
+ [ 0.01497271  0.         -0.9527663   0.93779359]
+ [ 0.          0.04539611  0.93779359 -0.9831897 ]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -604,7 +609,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 2.          1.90121252  1.49814834 -1.13017661]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 2.          1.11140152 -6.84444233 -6.98565173]
 </pre></div>
 </div>
 </div>

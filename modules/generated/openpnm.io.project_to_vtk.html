@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>project_to_vtk &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>project_to_vtk &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -7592,7 +7592,7 @@
 <h1>project_to_vtk<a class="headerlink" href="#project-to-vtk" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.io.project_to_vtk">
-<span class="sig-name descname"><span class="pre">project_to_vtk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">|</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_infs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/_vtk.html#project_to_vtk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.project_to_vtk" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">project_to_vtk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_infs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/io/_vtk.html#project_to_vtk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.io.project_to_vtk" title="Permalink to this definition">#</a></dt>
 <dd><p>Save network and phase data to a single vtp file for visualizing in
 Paraview.</p>
 <dl class="field-list simple">
@@ -7603,9 +7603,6 @@ Paraview.</p>
 written</p></li>
 <li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Filename to write data.  If no name is given the file is named
 after the network</p></li>
-<li><p><strong>delim</strong> (<em>str</em>) – Specify which character is used to delimit the data names.  The
-default is ‘ | ‘ which creates a nice clean output in the Paraview
-pipeline viewer (e.g. net | property | pore | diameter)</p></li>
 <li><p><strong>fill_nans</strong> (<em>scalar</em>) – The value to use to replace NaNs with.  The VTK file format does
 not work with NaNs, so they must be dealt with.  The default is
 <cite>None</cite> which means property arrays with NaNs are not written to the

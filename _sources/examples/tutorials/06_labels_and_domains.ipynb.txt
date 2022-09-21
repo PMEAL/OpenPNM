@@ -161,7 +161,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "```{note} Points to Note about Using Labels\n",
+    "```{note} **Points to Note about Using Labels**\n",
+    "\n",
     "  * Labels can be applied to throats in exactly the same way as decribed here for pores.\n",
     "  * Every OpenPNM object has a ``pores`` and a ``throats`` method that can be used to retrieve the pore or throat indices  where a label or combination of labels has been applied.\n",
     "  * The format of creating an entire ND-array to label just a few locations may seem a bit wasteful of data storage since many ``False`` values are created to indicate pores do *not* have a label. Worse, Boolean arrays are actually stored as 8-bit integer arrays by Numpy, so they consume 8x more memory than needed.  Nonetheless, the investment is worth it since Boolean arrays are so convenient.  They can be used to index into Numpy arrays (e.g. ``arr[mask]``) and great for combining logic (e.g. ``locs = mask1 * mask2``).\n",
@@ -675,7 +676,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Using the @ Syntax to Define Subdomains\n",
+    "## Defining Subdomains\n",
     "\n",
     "Using the @ symbol for data read/write as shown above is actually a side effect of a *major conceptual shift* made in V3. The ``Geometry`` and ``Physics`` objects are now *gone*.  There was essentially only one use case for these, which was to model heterogeneous domains, like bimodal pore size distributions or layered structures.  \n",
     "\n",
@@ -860,15 +861,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### Other Advantages of the @ Syntax\n",
-    "There are many upsides to this approach, as will be demonstrated in the following sections."
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "metadata": {},
-   "source": [
-    "#### Defining and Changing Subdomain Locations\n",
+    "### Defining and Changing Subdomain Locations\n",
     "It becomes trivial to define and redefine the locations of a domain.  This simply requires changing where ``pn['pore.left']`` is ``True``.  This is demonstrated as follows:"
    ]
   },
@@ -951,7 +944,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Mixing Full Domain and Subdomain Models\n",
+    "### Mixing Full Domain and Subdomain Models\n",
     "When defining two separate subdomains, the pore and throat sizes are often the only thing that is different.  In V2, however, it was recommended practice to include ALL the additional models on each subdomain object as well, such as volume calculations.  With the @ syntax, only models that actualy differ between the domains need to be specifically dealt with.\n",
     "\n",
     "This is demonstrated below by first deleting the individual ``'pore.seed'`` models applied above, and replacing them with a single model that applies uniform values on all locations, then applying two different normal distributions to the ``'left'`` and ``'right'`` domains."
@@ -1077,7 +1070,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Mixing Many Subdomains of Different Shape\n",
+    "### Mixing Many Subdomains of Different Shape\n",
     "Because subdomains are now very abstract (actually just labels), it is possible to define multiple subdomains with different shape and apply models to each. So far we have added ``'pore.seed'`` and ``'pore.diameter'`` models to the ``'left'`` and ``'right'`` pores.  We can now freely add another set of models to the ``'front'`` and ``'back'``, even though they partially overlap:"
    ]
   },
@@ -1176,7 +1169,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.7"
+   "version": "3.9.12"
   }
  },
  "nbformat": 4,

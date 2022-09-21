@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Creating Phases &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Creating Phases &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -326,6 +326,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -430,8 +435,8 @@
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#exploring-the-features-of-the-mixture-objects">
-     Exploring the Features of the Mixture Objects
+    <a class="reference internal nav-link" href="#exploring-features-of-the-mixture-objects">
+     Exploring Features of the Mixture Objects
     </a>
     <ul class="nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
@@ -572,17 +577,17 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f393d8dda90&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7fc115ce8590&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.pressure                                                       4 / 4
   2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -653,8 +658,10 @@ After: [0.00091476 0.00091476 0.00091476 0.00091476]
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>Models are run when added
-When assigning a pore-scale model using the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> function, it is automatically run, so it either overwrites any values present in <code class="docutils literal notranslate"><span class="pre">phase1['pore.viscosity']</span></code> or creates a new array in that location.  To prevent this behavior, for instance if a model needs other information to be computed before it’s run, add <code class="docutils literal notranslate"><span class="pre">regen_mode='deferred'</span></code> to the argument list of the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> method.</p>
+<p><strong>Models are run when added</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>When assigning a pore-scale model using the ``add_model`` function, it is automatically run, so it either overwrites any values present in ``phase1[&#39;pore.viscosity&#39;]`` or creates a new array in that location.  To prevent this behavior, for instance if a model needs other information to be computed before it&#39;s run, add ``regen_mode=&#39;deferred&#39;`` to the argument list of the ``add_model`` method.
+</pre></div>
+</div>
 </div>
 <p>The most important benefit of using a pore-scale model is that it can re-compute each model if one of its dependent properties has changed. To illustrate the point, let’s set the temperature to a random number between 300 and 350 K, the rerun the model at the new temperatures:</p>
 <div class="cell docutils container">
@@ -668,7 +675,7 @@ When assigning a pore-scale model using the <code class="docutils literal notran
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00091476 0.00091476 0.00091476 0.00091476]
-After: [0.00043352 0.00048949 0.00066159 0.00052569]
+After: [0.00067153 0.00079872 0.0008091  0.00052788]
 </pre></div>
 </div>
 </div>
@@ -688,20 +695,25 @@ After: [0.00043352 0.00048949 0.00066159 0.00052569]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00043352 0.00048949 0.00066159 0.00052569]
-After: [0.00039981 0.00045863 0.0006303  0.00049366]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00067153 0.00079872 0.0008091  0.00052788]
+After: [0.00064063 0.00077362 0.00078442 0.00049578]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Overwriting existing models
-Assigning a new model with <code class="docutils literal notranslate"><span class="pre">propname='pore.viscostiy'</span></code> will overwrite the existing model that is stored in <code class="docutils literal notranslate"><span class="pre">pn.models['pore.viscosity&#64;&lt;domain&gt;']</span></code>, which in this case was the custom model we defined above.</p>
+<p><strong>Overwriting existing models</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Assigning a new model with ``propname=&#39;pore.viscostiy&#39;`` will overwrite the existing model that is stored in `pn.models[&#39;pore.viscosity@&lt;domain&gt;&#39;]`, which in this case was the custom model we defined above.
+</pre></div>
+</div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>OpenPNM also has specific models for <strong>air</strong> and <strong>mercury</strong>, which are also common.</p>
+<p><strong>Predefined Fluids</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OpenPNM also has specific models for **air** and **mercury**, which are also common. 
+</pre></div>
+</div>
 </div>
 </section>
 <section id="writing-your-own-custom-model">
@@ -726,7 +738,7 @@ Assigning a new model with <code class="docutils literal notranslate"><span clas
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00043352 0.00048949 0.00066159 0.00052569]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00067153 0.00079872 0.0008091  0.00052788]
 </pre></div>
 </div>
 </div>
@@ -745,24 +757,24 @@ Assigning a new model with <code class="docutils literal notranslate"><span clas
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_02 : &lt;openpnm.phase.Water at 0x7f38f1435ae0&gt;
+phase_02 : &lt;openpnm.phase.Water at 0x7fc115892b30&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.contact_angle                                                  4 / 4
-  2  pore.density                                                        4 / 4
-  3  pore.molar_density                                                  4 / 4
-  4  pore.pressure                                                       4 / 4
-  5  pore.surface_tension                                                4 / 4
-  6  pore.temperature                                                    4 / 4
-  7  pore.thermal_conductivity                                           4 / 4
-  8  pore.vapor_pressure                                                 4 / 4
-  9  pore.viscosity                                                      4 / 4
+  2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
+  4  pore.contact_angle                                                  4 / 4
+  5  pore.density                                                        4 / 4
+  6  pore.molar_density                                                  4 / 4
+  7  pore.surface_tension                                                4 / 4
+  8  pore.thermal_conductivity                                           4 / 4
+  9  pore.vapor_pressure                                                 4 / 4
+ 10  pore.viscosity                                                      4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -820,8 +832,10 @@ phase_02 : &lt;openpnm.phase.Water at 0x7f38f1435ae0&gt;
 <p>As can be seen, many of these models include <code class="docutils literal notranslate"><span class="pre">T='pore.temperature'</span></code> as a parameter, which means that these models will fetch the current value of <code class="docutils literal notranslate"><span class="pre">water['pore.temperature']</span></code> when running, thereby using the most current value of temperature.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Dependency checking
-Close inspection of the above printout reveals that <code class="docutils literal notranslate"><span class="pre">'pore.molar_density'</span></code> takes <code class="docutils literal notranslate"><span class="pre">'pore.density'</span></code> as an argument.  OpenPNM uses a graph-based dependency handler to ensure that <code class="docutils literal notranslate"><span class="pre">'pore.density'</span></code> is computed before <code class="docutils literal notranslate"><span class="pre">'pore.molar_denstiy'</span></code>.  This happens automatically when <code class="docutils literal notranslate"><span class="pre">regenerate_model</span></code> is called.  In some cases an error will occur if these dependencies form cycles which cannot be resolved.  This can be fixed by changing the name of one of the “upstream” models, for instance.</p>
+<p>**Dependency checking **</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Close inspection of the above printout reveals that `&#39;pore.molar_density&#39;` takes `&#39;pore.density&#39;` as an argument.  OpenPNM uses a graph-based dependency handler to ensure that `&#39;pore.density&#39;` is computed before `&#39;pore.molar_denstiy&#39;`.  This happens automatically when ``regenerate_model`` is called.  In some cases an error will occur if these dependencies form cycles which cannot be resolved.  This can be fixed by changing the name of one of the &quot;upstream&quot; models, for instance.
+</pre></div>
+</div>
 </div>
 </section>
 </section>
@@ -830,8 +844,10 @@ Close inspection of the above printout reveals that <code class="docutils litera
 <p>In some cases a user may wish to compute the thermophysical properties of unusual species, or even mixtures of species. There are packages who’s entire purpose is computing these values, so OpenPNM does not attempt to reproduce this functionality. However, it is needed often enough that OpenPNM has some base level support for making ‘first-approximation’ estimates of species properties, and also has a defined API for dealing with mixtures of individual species.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>Mixtues might be an unnecessary complication for you
-In most cases you probably do not need to use the <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> feature is the right choice.</p>
+<p><strong>Mixtures might be an unnecessary complication for you</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>In most cases you probably do not need to use the ``Mixture`` class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the ``Mixture`` feature is the right choice.
+</pre></div>
+</div>
 </div>
 <section id="pure-species">
 <h3>Pure Species<a class="headerlink" href="#pure-species" title="Permalink to this heading">#</a></h3>
@@ -845,26 +861,28 @@ In most cases you probably do not need to use the <code class="docutils literal 
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_03 : &lt;openpnm.phase.Species at 0x7f38ef24ae50&gt;
+phase_03 : &lt;openpnm.phase.Species at 0x7fc113735d10&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.pressure                                                       4 / 4
   2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>OpenPNM uses the “chemicals” and “thermo” packages behind the scenes
-The <code class="docutils literal notranslate"><span class="pre">species</span></code> argument is looked up using the <code class="docutils literal notranslate"><span class="pre">thermo</span></code> package which contains numerous synonyms for each species. This is argument is actually passed to <code class="docutils literal notranslate"><span class="pre">thermo.Chemical</span></code>, which does the database look-up to fetch all the needed chemical properties.</p>
+<p>```{seealso} <strong>OpenPNM uses the <code class="docutils literal notranslate"><span class="pre">chemicals</span></code> and <code class="docutils literal notranslate"><span class="pre">thermo</span></code> packages behind the scenes</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The ``species`` argument is looked up using the ``thermo`` package which contains numerous synonyms for each species. This is argument is actually passed to ``thermo.Chemical``, which does the database look-up to fetch all the needed chemical properties.
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
 </div>
 <p>As can be seen above the <code class="docutils literal notranslate"><span class="pre">Species</span></code> class does not compute any properties of the given species, <em>BUT</em> it does contain a host of thermodynamic properties in the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute:</p>
 <div class="cell docutils container">
@@ -903,8 +921,10 @@ acentric_factor                     0.021
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The “param” prefix and “params” attribute
-You can access the values of these parameters either from the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute or using the dictionary lookup of the main object which will dispatch the query to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute.</p>
+<p><strong>The “param” prefix and “params” attribute</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>You can access the values of these parameters either from the ``params`` attribute or using the dictionary lookup of the main object which will dispatch the query to the ``params`` attribute. 
+</pre></div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1028,8 +1048,10 @@ You can access the values of these parameters either from the <code class="docut
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Passing “param.<propname>” to a model
-The ability to fetch items from the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute via the standard dictionary look-up was added specifically to support the above behavior.  Within the function the following line is called:</p>
+<p><strong>Passing “param.<propname>” to a model</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The ability to fetch items from the ``params`` attribute via the standard dictionary look-up was added specifically to support the above behavior.  Within the function the following line is called: 
+</pre></div>
+</div>
 <p><code class="docutils literal notranslate"><span class="pre">Tcrit</span> <span class="pre">=</span> <span class="pre">phase[Tc]</span></code></p>
 <p>So if <code class="docutils literal notranslate"><span class="pre">Tc='pore.critical_temperature'</span></code> is supplied as the argument, then OpenPNM will look for values in the main dictionary (i.e. <code class="docutils literal notranslate"><span class="pre">phase['pore.critical_temperature']</span></code>.  If however, <code class="docutils literal notranslate"><span class="pre">Tc='param.critical_temperature'</span></code> is specified, then OpenPNM will look in the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute, becuase <code class="docutils literal notranslate"><span class="pre">phase['param.critical_temperature']</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">phase.params['critical_temperature']</span></code>.</p>
 </div>
@@ -1054,22 +1076,22 @@ The ability to fetch items from the <code class="docutils literal notranslate"><
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_04 : &lt;openpnm.phase.StandardGas at 0x7f38ef269c20&gt;
+phase_04 : &lt;openpnm.phase.StandardGas at 0x7fc113684db0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.density                                                        4 / 4
-  2  pore.heat_capacity                                                  4 / 4
-  3  pore.heat_capacity_gas                                              4 / 4
-  4  pore.pressure                                                       4 / 4
-  5  pore.temperature                                                    4 / 4
+  2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
+  4  pore.heat_capacity_gas                                              4 / 4
+  5  pore.heat_capacity                                                  4 / 4
   6  pore.thermal_conductivity                                           4 / 4
   7  pore.viscosity                                                      4 / 4
+  8  pore.density                                                        4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1083,23 +1105,23 @@ phase_04 : &lt;openpnm.phase.StandardGas at 0x7f38ef269c20&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7f38ef2616d0&gt;
+phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7fc113691860&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.density                                                        4 / 4
-  2  pore.heat_capacity                                                  4 / 4
-  3  pore.heat_capacity_gas                                              4 / 4
-  4  pore.pressure                                                       4 / 4
-  5  pore.temperature                                                    4 / 4
+  2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
+  4  pore.heat_capacity_gas                                              4 / 4
+  5  pore.heat_capacity                                                  4 / 4
   6  pore.thermal_conductivity                                           4 / 4
   7  pore.vapor_pressure                                                 4 / 4
   8  pore.viscosity                                                      4 / 4
+  9  pore.density                                                        4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1193,23 +1215,23 @@ phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7f38ef2616d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f38ef2994f0&gt;
+mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7fc1136aa3b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.density                                                        4 / 4
-  2  pore.heat_capacity                                                  4 / 4
-  3  pore.mole_fraction.nitrogen                                         4 / 4
+  2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
   4  pore.mole_fraction.oxygen                                           4 / 4
-  5  pore.pressure                                                       4 / 4
-  6  pore.temperature                                                    4 / 4
+  5  pore.mole_fraction.nitrogen                                         4 / 4
+  6  pore.heat_capacity                                                  4 / 4
   7  pore.thermal_conductivity                                           4 / 4
   8  pore.viscosity                                                      4 / 4
+  9  pore.density                                                        4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1235,8 +1257,10 @@ After: [2.01881831e-05 2.01881831e-05 2.01881831e-05 2.01881831e-05]
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Retrieving sub-dicts
-The mole fractions of <em>both</em> species can be retrieved using the <code class="docutils literal notranslate"><span class="pre">dict</span></code> lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys.</p>
+<p><strong>Retrieving sub-dicts</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The mole fractions of *both* species can be retrieved using the `dict` lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys.
+</pre></div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1284,8 +1308,8 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f38ef261e00&gt;,
- &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f38ef257a90&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7fc113691ef0&gt;,
+ &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc11369cb80&gt;}
 </pre></div>
 </div>
 </div>
@@ -1320,8 +1344,8 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 </section>
-<section id="exploring-the-features-of-the-mixture-objects">
-<h3>Exploring the Features of the Mixture Objects<a class="headerlink" href="#exploring-the-features-of-the-mixture-objects" title="Permalink to this heading">#</a></h3>
+<section id="exploring-features-of-the-mixture-objects">
+<h3>Exploring Features of the Mixture Objects<a class="headerlink" href="#exploring-features-of-the-mixture-objects" title="Permalink to this heading">#</a></h3>
 <section id="adding-and-removing-species">
 <h4>Adding and Removing Species<a class="headerlink" href="#adding-and-removing-species" title="Permalink to this heading">#</a></h4>
 <p>You can remove a species:</p>
@@ -1333,14 +1357,17 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f38ef257a90&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc11369cb80&gt;}
 </pre></div>
 </div>
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>A species is considered a component of a mixture <em>if and only if</em> <code class="docutils literal notranslate"><span class="pre">'pore.mole_fraction.&lt;species.name&gt;'</span></code> appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined.</p>
+<p><strong>How a Component is Defined</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A species is considered a component of a mixture *if and only if* ``&#39;pore.mole_fraction.&lt;species.name&gt;&#39;`` appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined. 
+</pre></div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1364,7 +1391,7 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f38ef261e00&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7fc113691ef0&gt;}
 </pre></div>
 </div>
 </div>
@@ -1378,8 +1405,8 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f38ef261e00&gt;,
- &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f38ef257a90&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7fc113691ef0&gt;,
+ &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc11369cb80&gt;}
 </pre></div>
 </div>
 </div>
@@ -1396,59 +1423,59 @@ The mole fractions of <em>both</em> species can be retrieved using the <code cla
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f38ef2994f0&gt;
+mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7fc1136aa3b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.density                                                        4 / 4
-  2  pore.heat_capacity                                                  4 / 4
-  3  pore.mole_fraction.nitrogen                                         4 / 4
-  4  pore.mole_fraction.oxygen                                           4 / 4
-  5  pore.pressure                                                       4 / 4
-  6  pore.temperature                                                    4 / 4
-  7  pore.thermal_conductivity                                           4 / 4
-  8  pore.viscosity                                                      4 / 4
+  2  pore.temperature                                                    4 / 4
+  3  pore.pressure                                                       4 / 4
+  4  pore.heat_capacity                                                  4 / 4
+  5  pore.thermal_conductivity                                           4 / 4
+  6  pore.viscosity                                                      4 / 4
+  7  pore.density                                                        4 / 4
+  8  pore.mole_fraction.oxygen                                           4 / 4
+  9  pore.mole_fraction.nitrogen                                         4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  throat.all                                                              4
+  2  pore.all                                                                4
+  3  throat.all                                                              4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 Component Phases
 ══════════════════════════════════════════════════════════════════════════════
-oxygen : &lt;openpnm.phase.StandardGas at 0x7f38ef261e00&gt;
+oxygen : &lt;openpnm.phase.StandardGas at 0x7fc113691ef0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.density.oxygen                                                 4 / 4
-  2  pore.heat_capacity.oxygen                                           4 / 4
-  3  pore.heat_capacity_gas.oxygen                                       4 / 4
-  4  pore.pressure.oxygen                                                4 / 4
-  5  pore.temperature.oxygen                                             4 / 4
+  2  pore.temperature.oxygen                                             4 / 4
+  3  pore.pressure.oxygen                                                4 / 4
+  4  pore.heat_capacity_gas.oxygen                                       4 / 4
+  5  pore.heat_capacity.oxygen                                           4 / 4
   6  pore.thermal_conductivity.oxygen                                    4 / 4
   7  pore.viscosity.oxygen                                               4 / 4
+  8  pore.density.oxygen                                                 4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all.oxygen                                                         4
-  2  throat.all.oxygen                                                       4
+  2  pore.all.oxygen                                                         4
+  3  throat.all.oxygen                                                       4
 ══════════════════════════════════════════════════════════════════════════════
-nitrogen : &lt;openpnm.phase.StandardGas at 0x7f38ef257a90&gt;
+nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc11369cb80&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.density.nitrogen                                               4 / 4
-  2  pore.heat_capacity.nitrogen                                         4 / 4
-  3  pore.heat_capacity_gas.nitrogen                                     4 / 4
-  4  pore.pressure.nitrogen                                              4 / 4
-  5  pore.temperature.nitrogen                                           4 / 4
+  2  pore.temperature.nitrogen                                           4 / 4
+  3  pore.pressure.nitrogen                                              4 / 4
+  4  pore.heat_capacity_gas.nitrogen                                     4 / 4
+  5  pore.heat_capacity.nitrogen                                         4 / 4
   6  pore.thermal_conductivity.nitrogen                                  4 / 4
   7  pore.viscosity.nitrogen                                             4 / 4
+  8  pore.density.nitrogen                                               4 / 4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all.nitrogen                                                       4
-  2  throat.all.nitrogen                                                     4
+  2  pore.all.nitrogen                                                       4
+  3  throat.all.nitrogen                                                     4
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1623,7 +1650,10 @@ mole_fraction_too_high              []
 <p>If we were to pass <code class="docutils literal notranslate"><span class="pre">'pore.viscosity'</span></code> then the function would throw an error since the call to <code class="docutils literal notranslate"><span class="pre">phase['pore.viscosity']</span></code> would return a single numpy array of viscosity values of the mixture (or not find any values at all).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In summary, <code class="docutils literal notranslate"><span class="pre">air['pore.viscosity']</span></code> will fetch the viscosity of the mixture, while <code class="docutils literal notranslate"><span class="pre">air['pore.viscosity.oxygen']</span></code> will retrieve the values of viscosity from <code class="docutils literal notranslate"><span class="pre">o2</span></code>, and <code class="docutils literal notranslate"><span class="pre">air['pore.viscosity.*']</span></code> will fetch the viscosity from all the components and return them in a dictionary with each component name as the key.</p>
+<p><strong>Component Look-ups</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>In summary, ``air[&#39;pore.viscosity&#39;]`` will fetch the viscosity of the mixture, while ``air[&#39;pore.viscosity.oxygen&#39;]`` will retrieve the values of viscosity from ``o2``, and ``air[&#39;pore.viscosity.*&#39;]`` will fetch the viscosity from all the components and return them in a dictionary with each component name as the key.
+</pre></div>
+</div>
 </div>
 </section>
 </section>

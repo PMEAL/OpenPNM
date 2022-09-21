@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Using Labels and Defining Domains &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Using Labels and Defining Domains &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -326,6 +326,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -424,31 +429,24 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#using-the-syntax-to-define-subdomains">
-   Using the @ Syntax to Define Subdomains
+  <a class="reference internal nav-link" href="#defining-subdomains">
+   Defining Subdomains
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#other-advantages-of-the-syntax">
-     Other Advantages of the @ Syntax
+    <a class="reference internal nav-link" href="#defining-and-changing-subdomain-locations">
+     Defining and Changing Subdomain Locations
     </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#defining-and-changing-subdomain-locations">
-       Defining and Changing Subdomain Locations
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#mixing-full-domain-and-subdomain-models">
-       Mixing Full Domain and Subdomain Models
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#mixing-many-subdomains-of-different-shape">
-       Mixing Many Subdomains of Different Shape
-      </a>
-     </li>
-    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mixing-full-domain-and-subdomain-models">
+     Mixing Full Domain and Subdomain Models
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mixing-many-subdomains-of-different-shape">
+     Mixing Many Subdomains of Different Shape
+    </a>
    </li>
   </ul>
  </li>
@@ -494,21 +492,21 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f8151f66900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                       25 / 25
-  2  throat.conns                                                      40 / 40
+  2  pore.coords                                                       25 / 25
+  3  throat.conns                                                      40 / 40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.front                                                              5
-  3  pore.left                                                               5
-  4  pore.right                                                              5
-  5  pore.surface                                                           16
-  6  throat.surface                                                         16
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
+  4  pore.left                                                               5
+  5  pore.right                                                              5
+  6  pore.front                                                              5
+  7  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -559,7 +557,7 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Points to Note about Using Labels</p>
+<p><strong>Points to Note about Using Labels</strong></p>
 <ul class="simple">
 <li><p>Labels can be applied to throats in exactly the same way as decribed here for pores.</p></li>
 <li><p>Every OpenPNM object has a <code class="docutils literal notranslate"><span class="pre">pores</span></code> and a <code class="docutils literal notranslate"><span class="pre">throats</span></code> method that can be used to retrieve the pore or throat indices  where a label or combination of labels has been applied.</p></li>
@@ -831,8 +829,8 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 </div>
 </section>
-<section id="using-the-syntax-to-define-subdomains">
-<h2>Using the &#64; Syntax to Define Subdomains<a class="headerlink" href="#using-the-syntax-to-define-subdomains" title="Permalink to this heading">#</a></h2>
+<section id="defining-subdomains">
+<h2>Defining Subdomains<a class="headerlink" href="#defining-subdomains" title="Permalink to this heading">#</a></h2>
 <p>Using the &#64; symbol for data read/write as shown above is actually a side effect of a <em>major conceptual shift</em> made in V3. The <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> and <code class="docutils literal notranslate"><span class="pre">Physics</span></code> objects are now <em>gone</em>.  There was essentially only one use case for these, which was to model heterogeneous domains, like bimodal pore size distributions or layered structures.</p>
 <p>In V2 this was accomplished by using 2 (or more) <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> objects to represent each class of pores, with unique pore-scale models attached to each.  Without getting lost in the details, it is sufficient to say that having separate objects for managing each class of pores (and/or throats) created a <em>lot</em> of complications, both to the user and to the maintenence of the backend.</p>
 <p>In V3 we have developed what we think is a <em>much tidier approach</em> to managing heterogeneous domains.  Instead of creating multiple <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> objects (and consequently multiple <code class="docutils literal notranslate"><span class="pre">Physics</span></code> objects), you now add all the pore-scale models to the <code class="docutils literal notranslate"><span class="pre">Network</span></code> and <code class="docutils literal notranslate"><span class="pre">Phase</span></code> objects directly.  The trick is that when adding models you specify one additional argument: the  <code class="docutils literal notranslate"><span class="pre">domain</span></code> (i.e. pores or throats) to which the model applies, as follows:</p>
@@ -857,24 +855,24 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f8151f66900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                       25 / 25
-  2  pore.new_array                                                     9 / 25
-  3  pore.seed                                                          5 / 25
+  2  pore.coords                                                       25 / 25
+  3  throat.conns                                                      40 / 40
   4  pore.values                                                       25 / 25
-  5  throat.conns                                                      40 / 40
+  5  pore.new_array                                                     9 / 25
+  6  pore.seed                                                          5 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.front                                                              5
-  3  pore.left                                                               5
-  4  pore.right                                                              5
-  5  pore.surface                                                           16
-  6  throat.surface                                                         16
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
+  4  pore.left                                                               5
+  5  pore.right                                                              5
+  6  pore.front                                                              5
+  7  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -901,24 +899,24 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f8151f66900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                       25 / 25
-  2  pore.new_array                                                     9 / 25
-  3  pore.seed                                                         10 / 25
+  2  pore.coords                                                       25 / 25
+  3  throat.conns                                                      40 / 40
   4  pore.values                                                       25 / 25
-  5  throat.conns                                                      40 / 40
+  5  pore.new_array                                                     9 / 25
+  6  pore.seed                                                         10 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.front                                                              5
-  3  pore.left                                                               5
-  4  pore.right                                                              5
-  5  pore.surface                                                           16
-  6  throat.surface                                                         16
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
+  4  pore.left                                                               5
+  5  pore.right                                                              5
+  6  pore.front                                                              5
+  7  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -956,11 +954,8 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 </div>
 <p>Appending <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to the model name creates a unique dictionary key. OpenPNM recoginizes that the models in <code class="docutils literal notranslate"><span class="pre">'pore.seed&#64;left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.seed&#64;right'</span></code> both compute values of <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code>, and directs the outputs of each function to the correct locations, which it can infer from the <code class="docutils literal notranslate"><span class="pre">&#64;right/left</span></code> portion of the key.</p>
-<section id="other-advantages-of-the-syntax">
-<h3>Other Advantages of the &#64; Syntax<a class="headerlink" href="#other-advantages-of-the-syntax" title="Permalink to this heading">#</a></h3>
-<p>There are many upsides to this approach, as will be demonstrated in the following sections.</p>
 <section id="defining-and-changing-subdomain-locations">
-<h4>Defining and Changing Subdomain Locations<a class="headerlink" href="#defining-and-changing-subdomain-locations" title="Permalink to this heading">#</a></h4>
+<h3>Defining and Changing Subdomain Locations<a class="headerlink" href="#defining-and-changing-subdomain-locations" title="Permalink to this heading">#</a></h3>
 <p>It becomes trivial to define and redefine the locations of a domain.  This simply requires changing where <code class="docutils literal notranslate"><span class="pre">pn['pore.left']</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.  This is demonstrated as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -991,24 +986,24 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f8151f66900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                       25 / 25
-  2  pore.new_array                                                     9 / 25
-  3  pore.seed                                                          6 / 25
+  2  pore.coords                                                       25 / 25
+  3  throat.conns                                                      40 / 40
   4  pore.values                                                       25 / 25
-  5  throat.conns                                                      40 / 40
+  5  pore.new_array                                                     9 / 25
+  6  pore.seed                                                          6 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.front                                                              5
-  3  pore.left                                                               6
-  4  pore.right                                                              5
-  5  pore.surface                                                           16
-  6  throat.surface                                                         16
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
+  4  pore.left                                                               6
+  5  pore.right                                                              5
+  6  pore.front                                                              5
+  7  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1017,7 +1012,7 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 <p>It can now been observed that <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values are found in 6 locations because the domain labelled <code class="docutils literal notranslate"><span class="pre">'left'</span></code> was expanded by 2 pores.</p>
 </section>
 <section id="mixing-full-domain-and-subdomain-models">
-<h4>Mixing Full Domain and Subdomain Models<a class="headerlink" href="#mixing-full-domain-and-subdomain-models" title="Permalink to this heading">#</a></h4>
+<h3>Mixing Full Domain and Subdomain Models<a class="headerlink" href="#mixing-full-domain-and-subdomain-models" title="Permalink to this heading">#</a></h3>
 <p>When defining two separate subdomains, the pore and throat sizes are often the only thing that is different.  In V2, however, it was recommended practice to include ALL the additional models on each subdomain object as well, such as volume calculations.  With the &#64; syntax, only models that actualy differ between the domains need to be specifically dealt with.</p>
 <p>This is demonstrated below by first deleting the individual <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> models applied above, and replacing them with a single model that applies uniform values on all locations, then applying two different normal distributions to the <code class="docutils literal notranslate"><span class="pre">'left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'right'</span></code> domains.</p>
 <div class="cell docutils container">
@@ -1067,7 +1062,7 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b8fbe9c8c74b3b3849ba998964c036caa144f2e52b53f6c50ffcedb53b6c3d55.png" src="../../_images/b8fbe9c8c74b3b3849ba998964c036caa144f2e52b53f6c50ffcedb53b6c3d55.png" />
+<img alt="../../_images/7be7c08268504ed2c853d45207173cf2f6ba6ae40f6df2d0e723147d96f2acee.png" src="../../_images/7be7c08268504ed2c853d45207173cf2f6ba6ae40f6df2d0e723147d96f2acee.png" />
 </div>
 </div>
 <p>And now we can apply a model to the full domain that computes the pore volume, using values of pore diameter that were computed uniquely for each domain:</p>
@@ -1091,12 +1086,12 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/412b8beffb48d779868968bb0d074fa3903e930aaffeafc790e746e35f382de0.png" src="../../_images/412b8beffb48d779868968bb0d074fa3903e930aaffeafc790e746e35f382de0.png" />
+<img alt="../../_images/e8a2dca221c2c65f0d6f6ab1b9a3244b2607c1e7caf93b64479333c35d9ea3ea.png" src="../../_images/e8a2dca221c2c65f0d6f6ab1b9a3244b2607c1e7caf93b64479333c35d9ea3ea.png" />
 </div>
 </div>
 </section>
 <section id="mixing-many-subdomains-of-different-shape">
-<h4>Mixing Many Subdomains of Different Shape<a class="headerlink" href="#mixing-many-subdomains-of-different-shape" title="Permalink to this heading">#</a></h4>
+<h3>Mixing Many Subdomains of Different Shape<a class="headerlink" href="#mixing-many-subdomains-of-different-shape" title="Permalink to this heading">#</a></h3>
 <p>Because subdomains are now very abstract (actually just labels), it is possible to define multiple subdomains with different shape and apply models to each. So far we have added <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.diameter'</span></code> models to the <code class="docutils literal notranslate"><span class="pre">'left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'right'</span></code> pores.  We can now freely add another set of models to the <code class="docutils literal notranslate"><span class="pre">'front'</span></code> and <code class="docutils literal notranslate"><span class="pre">'back'</span></code>, even though they partially overlap:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1131,36 +1126,34 @@ net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fa08c57d9f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f8151f66900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                       25 / 25
-  2  pore.diameter                                                     11 / 25
-  3  pore.new_array                                                     9 / 25
-  4  pore.seed                                                         25 / 25
-  5  pore.values                                                       25 / 25
-  6  pore.volume                                                       11 / 25
-  7  throat.conns                                                      40 / 40
-  8  throat.diameter                                                   40 / 40
+  2  pore.coords                                                       25 / 25
+  3  throat.conns                                                      40 / 40
+  4  pore.values                                                       25 / 25
+  5  pore.new_array                                                     9 / 25
+  6  pore.seed                                                         25 / 25
+  7  pore.diameter                                                     11 / 25
+  8  pore.volume                                                       11 / 25
+  9  throat.diameter                                                   40 / 40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.domain_1                                                          25
-  3  pore.front                                                              5
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
   4  pore.left                                                               6
   5  pore.right                                                              5
-  6  pore.surface                                                           16
-  7  throat.back                                                            22
+  6  pore.front                                                              5
+  7  pore.back                                                               5
   8  throat.front                                                           18
-  9  throat.surface                                                         16
+  9  throat.back                                                            22
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
 </div>
-</section>
 </section>
 </section>
 </section>

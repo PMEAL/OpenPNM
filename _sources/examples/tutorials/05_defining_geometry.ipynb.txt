@@ -52,23 +52,23 @@
      "text": [
       "\n",
       "══════════════════════════════════════════════════════════════════════════════\n",
-      "net : <openpnm.network.Cubic at 0x21c5eded540>\n",
+      "net : <openpnm.network.Cubic at 0x26c1d52b720>\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
       "  #  Properties                                                   Valid Values\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
-      "  1  pore.coords                                                   8000 / 8000\n",
-      "  2  throat.conns                                                22800 / 22800\n",
+      "  2  pore.coords                                                   8000 / 8000\n",
+      "  3  throat.conns                                                22800 / 22800\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
       "  #  Labels                                                 Assigned Locations\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
-      "  1  pore.back                                                             400\n",
-      "  2  pore.bottom                                                           400\n",
-      "  3  pore.front                                                            400\n",
+      "  2  pore.surface                                                         2168\n",
+      "  3  throat.surface                                                       4332\n",
       "  4  pore.left                                                             400\n",
       "  5  pore.right                                                            400\n",
-      "  6  pore.surface                                                         2168\n",
-      "  7  pore.top                                                              400\n",
-      "  8  throat.surface                                                       4332\n",
+      "  6  pore.front                                                            400\n",
+      "  7  pore.back                                                             400\n",
+      "  8  pore.bottom                                                           400\n",
+      "  9  pore.top                                                              400\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
      ]
     }
@@ -84,8 +84,10 @@
    "id": "d7e40b76",
    "metadata": {},
    "source": [
-    "```{attention} Changed in V3\n",
+    "```{attention} **Changed in V3**\n",
+    "\n",
     "  In OpenPNM V3 we have removed the concept of ``Geometry`` and ``Physics`` objects, in favor of placing all the properties on the ``Network`` and ``Phase`` objects instead. \n",
+    "  \n",
     "```"
    ]
   },
@@ -104,8 +106,10 @@
    "source": [
     "## Manually Calculating Properties\n",
     "\n",
-    "```{warning} Manual Calculation is Not Recommended\n",
-    "  This is not the preferred way to do things, but does illustrate the processes very well. The preferred way is using pore-scale models, which allow for the automatic regeneration of dependent properities when something changes. \n",
+    "```{warning} **Manual Calculation is Not Recommended**\n",
+    "\n",
+    "  This is *not* the preferred way to do things, but does illustrate the processes very well. The preferred way is using pore-scale models, which allow for the automatic regeneration of dependent properities when something changes. \n",
+    "  \n",
     "```\n",
     "\n",
     "Let's start by adding pore and throat size distributions.  There are a few different ways to do this, and we'll explore each one to be thorough.  "
@@ -318,8 +322,10 @@
    "id": "f403af58",
    "metadata": {},
    "source": [
-    "```{tip} Indexing pore properties by conns\n",
-    "  Using the ``conns`` array to index into a pore property returns an Nt-by-2 array with the properties of the pores on the end of a throat in each column.  For instance, so see the diameter of the pore on each end of a throat, use ``pn['pore.diameter'][pn.conns]``.  This approach is very powerful.  If you ever feel tempted to use a for-loop to scan over each pore, then inspect the properties of the neighboring throats, consider instead if you can \"loop\" over the throats then interogate each pore.  If yes, then you can use this conns-indexing trick.\n",
+    "```{tip} **Indexing pore properties by conns**\n",
+    "\n",
+    "    Using the ``conns`` array to index into a pore property returns an Nt-by-2 array with the properties of the pores on the end of a throat in each column.  For instance, so see the diameter of the pore on each end of a throat, use ``pn['pore.diameter'][pn.conns]``.  This approach is very powerful.  If you ever feel tempted to use a for-loop to scan over each pore, then inspect the properties of the neighboring throats, consider instead if you can \"loop\" over the throats then interogate each pore.  If yes, then you can use this conns-indexing trick.\n",
+    "    \n",
     "```"
    ]
   },
@@ -328,7 +334,7 @@
    "id": "0eb07950",
    "metadata": {},
    "source": [
-    "There are two *safer* ways to assign pore and throat sizes, to ensure that throats are smaller than the pores they connected.  The first is to proceed as above by assign pore sizes randomly, *then* assigning throats to be the *as small (or smaller) as the smallest pore it is connected to*.  This can be done using some `numpy` functions as follows:"
+    "There are two *safer* ways to assign pore and throat sizes, to ensure that throats are smaller than the pores they connected.  The first is to proceed as above by assigning pore sizes randomly, *then* assigning throats to be the *as small (or smaller) as the smallest pore it is connected to*.  This can be done using some `numpy` functions as follows:"
    ]
   },
   {
@@ -404,7 +410,7 @@
    "id": "9d309397",
    "metadata": {},
    "source": [
-    "One downside of the above approach is that you no longer have control over the shape and distribution of the throat sizes. This can be solved by applying the same approach just described but to random seeds instead of actual sizes. Then the random seeds can be put into a cumulative density function to compute the corresponding size.  This is demonstrated below:"
+    "One downside of the above approach is that you no longer have control over the shape and distribution of the throat sizes. This can be solved by applying the same approach just described but to *random seeds* instead of actual sizes. Then the random seeds can be put into a cumulative density function to compute the corresponding size.  This is demonstrated below:"
    ]
   },
   {
@@ -658,8 +664,9 @@
    "id": "9421fc7f",
    "metadata": {},
    "source": [
-    "```{note} Where do models go?\n",
-    "  We'll look more closely at models later in this tutorial, but it's worth pointing out that the `add_model` method collects all the arguments provided and stores them in the `models` attribute of the object. Later, when `regenerate_models` is called, it looks into the `models` attribute and fetches the model (`f`) and the given arguments, calls the function, collects the returned result, and stores them in `pn[propname]`. You can see a list of models applied to the object with `print(pn.models)`. \n",
+    "```{note} **Where do models go?**\n",
+    "\n",
+    "    We'll look more closely at models later in this tutorial, but it's worth pointing out that the `add_model` method collects all the arguments provided and stores them in the `models` attribute of the object. Later, when `regenerate_models` is called, it looks into the `models` attribute and fetches the model (`f`) and the given arguments, calls the function, collects the returned result, and stores them in `pn[propname]`. You can see a list of models applied to the object with `print(pn.models)`. \n",
     "```"
    ]
   },
@@ -690,7 +697,8 @@
    "id": "72d55b9b",
    "metadata": {},
    "source": [
-    "```{tip} Using shift-tab to see the docstring\n",
+    "```{tip} **Using shift-tab to see the docstring**\n",
+    "\n",
     "  In the above two code blocks the models were assigned to `f` first, then `f` was passed to the `model` argument. This is helpful for two reasons.  (1) It helps keep the line length below Python's preferred limit of 78 characters, and (2) it makes it possible to see the docstring of the model by putting the cursor at the end of the first line and hitting `shift-tab`. Seeing the docstring really helps to understand what a model does and what arguments are required.\n",
     "```"
    ]
@@ -800,8 +808,9 @@
    "id": "f9628d8c",
    "metadata": {},
    "source": [
-    "```{warning} Spherical pores overlap with their throats\n",
-    "  A spherical pore will always have a region of overlap with it's connected throats. The volume of this region will be double counted if an extra step is not taken. \n",
+    "```{warning} **Spherical pores overlap with their throats**\n",
+    "\n",
+    "    A spherical pore will always have a region of overlap with it's connected throats. The volume of this region will be double counted if an extra step is not taken. \n",
     "```"
    ]
   },
@@ -892,7 +901,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 31,
+   "execution_count": 28,
    "id": "0260c363",
    "metadata": {},
    "outputs": [
@@ -900,40 +909,40 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "{'pore.diameter': {'model': <function product at 0x0000021C62660F70>,\n",
+      "{'pore.diameter': {'model': <function product at 0x0000026C1FECB790>,\n",
       "                   'props': ['pore.max_size', 'pore.seed']},\n",
       " 'pore.max_size': {'iters': 10,\n",
-      "                   'model': <function largest_sphere at 0x0000021C635DDF70>},\n",
+      "                   'model': <function largest_sphere at 0x0000026C20E30790>},\n",
       " 'pore.seed': {'element': 'pore',\n",
-      "               'model': <function random at 0x0000021C626605E0>,\n",
+      "               'model': <function random at 0x0000026C1FEC2E50>,\n",
       "               'num_range': [0.2, 0.7],\n",
       "               'seed': None},\n",
-      " 'pore.volume': {'model': <function sphere at 0x0000021C635E1670>,\n",
+      " 'pore.volume': {'model': <function sphere at 0x0000026C20E30E50>,\n",
       "                 'pore_diameter': 'pore.diameter'},\n",
-      " 'throat.cross_sectional_area': {'model': <function cylinder at 0x0000021C635E1F70>,\n",
+      " 'throat.cross_sectional_area': {'model': <function cylinder at 0x0000026C20E3C430>,\n",
       "                                 'throat_diameter': 'throat.diameter'},\n",
       " 'throat.diameter': {'factor': 0.5,\n",
-      "                     'model': <function scaled at 0x0000021C62667040>,\n",
+      "                     'model': <function scaled at 0x0000026C1FECB820>,\n",
       "                     'prop': 'throat.max_size'},\n",
-      " 'throat.diffusive_size_factors': {'model': <function spheres_and_cylinders at 0x0000021C6364C820>,\n",
+      " 'throat.diffusive_size_factors': {'model': <function spheres_and_cylinders at 0x0000026C20E9AD30>,\n",
       "                                   'pore_diameter': 'pore.diameter',\n",
       "                                   'throat_diameter': 'throat.diameter'},\n",
-      " 'throat.hydraulic_size_factors': {'model': <function spheres_and_cylinders at 0x0000021C6363B430>,\n",
+      " 'throat.hydraulic_size_factors': {'model': <function spheres_and_cylinders at 0x0000026C20E8F820>,\n",
       "                                   'pore_diameter': 'pore.diameter',\n",
       "                                   'throat_diameter': 'throat.diameter'},\n",
-      " 'throat.length': {'model': <function spheres_and_cylinders at 0x0000021C636009D0>,\n",
+      " 'throat.length': {'model': <function spheres_and_cylinders at 0x0000026C20E56160>,\n",
       "                   'pore_diameter': 'pore.diameter',\n",
       "                   'throat_diameter': 'throat.diameter'},\n",
-      " 'throat.lens_volume': {'model': <function lens at 0x0000021C636079D0>,\n",
+      " 'throat.lens_volume': {'model': <function lens at 0x0000026C20E620D0>,\n",
       "                        'pore_diameter': 'pore.diameter',\n",
       "                        'throat_diameter': 'throat.diameter'},\n",
       " 'throat.max_size': {'mode': 'min',\n",
-      "                     'model': <function from_neighbor_pores at 0x0000021C62667310>,\n",
+      "                     'model': <function from_neighbor_pores at 0x0000026C1FECBA60>,\n",
       "                     'prop': 'pore.diameter'},\n",
-      " 'throat.total_volume': {'model': <function cylinder at 0x0000021C63607790>,\n",
+      " 'throat.total_volume': {'model': <function cylinder at 0x0000026C20E56EE0>,\n",
       "                         'throat_diameter': 'throat.diameter',\n",
       "                         'throat_length': 'throat.length'},\n",
-      " 'throat.volume': {'model': <function difference at 0x0000021C62660C10>,\n",
+      " 'throat.volume': {'model': <function difference at 0x0000026C1FECB430>,\n",
       "                   'props': ['throat.total_volume', 'throat.lens_volume']}}\n"
      ]
     }
@@ -964,40 +973,38 @@
      "text": [
       "\n",
       "══════════════════════════════════════════════════════════════════════════════\n",
-      "net : <openpnm.network.Cubic at 0x21c64684220>\n",
+      "net : <openpnm.network.Cubic at 0x26c22f00900>\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
       "  #  Properties                                                   Valid Values\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
-      "  1  pore.coordination_number                                      8000 / 8000\n",
       "  2  pore.coords                                                   8000 / 8000\n",
-      "  3  pore.diameter                                                 8000 / 8000\n",
-      "  4  pore.max_size                                                 8000 / 8000\n",
-      "  5  pore.seed                                                     8000 / 8000\n",
-      "  6  pore.volume                                                   8000 / 8000\n",
-      "  7  throat.conns                                                22800 / 22800\n",
-      "  8  throat.cross_sectional_area                                 22800 / 22800\n",
-      "  9  throat.diameter                                             22800 / 22800\n",
-      " 10  throat.diffusive_size_factors                               22800 / 22800\n",
-      " 11  throat.hydraulic_size_factors                               22800 / 22800\n",
-      " 12  throat.length                                               22800 / 22800\n",
-      " 13  throat.lens_volume                                          22800 / 22800\n",
-      " 14  throat.max_size                                             22800 / 22800\n",
-      " 15  throat.spacing                                              22800 / 22800\n",
+      "  3  throat.conns                                                22800 / 22800\n",
+      "  4  pore.coordination_number                                      8000 / 8000\n",
+      "  5  pore.max_size                                                 8000 / 8000\n",
+      "  6  throat.spacing                                              22800 / 22800\n",
+      "  7  pore.seed                                                     8000 / 8000\n",
+      "  8  pore.diameter                                                 8000 / 8000\n",
+      "  9  throat.max_size                                             22800 / 22800\n",
+      " 10  throat.diameter                                             22800 / 22800\n",
+      " 11  throat.cross_sectional_area                                 22800 / 22800\n",
+      " 12  throat.hydraulic_size_factors                               22800 / 22800\n",
+      " 13  throat.diffusive_size_factors                               22800 / 22800\n",
+      " 14  throat.lens_volume                                          22800 / 22800\n",
+      " 15  throat.length                                               22800 / 22800\n",
       " 16  throat.total_volume                                         22800 / 22800\n",
       " 17  throat.volume                                               22800 / 22800\n",
+      " 18  pore.volume                                                   8000 / 8000\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
       "  #  Labels                                                 Assigned Locations\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
-      "  1  pore.back                                                             400\n",
-      "  2  pore.bottom                                                           400\n",
-      "  3  pore.domain_1                                                        8000\n",
-      "  4  pore.front                                                            400\n",
-      "  5  pore.left                                                             400\n",
-      "  6  pore.right                                                            400\n",
-      "  7  pore.surface                                                         2168\n",
-      "  8  pore.top                                                              400\n",
-      "  9  throat.domain_1                                                     22800\n",
-      " 10  throat.surface                                                       4332\n",
+      "  2  pore.surface                                                         2168\n",
+      "  3  throat.surface                                                       4332\n",
+      "  4  pore.left                                                             400\n",
+      "  5  pore.right                                                            400\n",
+      "  6  pore.front                                                            400\n",
+      "  7  pore.back                                                             400\n",
+      "  8  pore.bottom                                                           400\n",
+      "  9  pore.top                                                              400\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
      ]
     }
@@ -1041,7 +1048,7 @@
     }
    ],
    "source": [
-    "print(pn.models['pore.diameter@domain_1'])"
+    "print(pn.models['pore.diameter@all'])"
    ]
   },
   {
@@ -1049,8 +1056,9 @@
    "id": "99103ed9",
    "metadata": {},
    "source": [
-    "```{note} The @ Notation\n",
-    "  The @domain_1 that has been added to the model name is new in Version 3 and means that this model should be applied to pore that have the label `'pore.domain_1'`. This will be explained in detail in the next tutorial. \n",
+    "```{note} **The @ Notation**\n",
+    "\n",
+    "    The `'@all'` that has been added to the model name is new in Version 3 and means that this model should be applied to pore that have the label `'pore.dall'`. This will be explained in detail in the next tutorial. \n",
     "```"
    ]
   },
@@ -1087,7 +1095,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 34,
+   "execution_count": 35,
    "id": "e687fdd7",
    "metadata": {},
    "outputs": [
@@ -1108,7 +1116,7 @@
     }
    ],
    "source": [
-    "print(pn.models['pore.diameter@domain_1'])"
+    "print(pn.models['pore.diameter@all'])"
    ]
   },
   {
@@ -1121,7 +1129,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 35,
+   "execution_count": 36,
    "id": "abf73f2b",
    "metadata": {},
    "outputs": [
@@ -1152,7 +1160,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 36,
+   "execution_count": 37,
    "id": "d5e4fac7",
    "metadata": {},
    "outputs": [
@@ -1173,7 +1181,7 @@
     }
    ],
    "source": [
-    "print(pn.models['pore.seed@domain_1'])"
+    "print(pn.models['pore.seed@all'])"
    ]
   },
   {
@@ -1186,7 +1194,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 37,
+   "execution_count": 39,
    "id": "e316f20c",
    "metadata": {},
    "outputs": [
@@ -1204,7 +1212,7 @@
     }
    ],
    "source": [
-    "pn.models['pore.seed@domain_1']['num_range'] = [0.01, 0.99]\n",
+    "pn.models['pore.seed@all']['num_range'] = [0.01, 0.99]\n",
     "pn.regenerate_models()\n",
     "plt.hist(pn['pore.diameter'], edgecolor='k');"
    ]
@@ -1216,12 +1224,12 @@
    "source": [
     "## Introduction to the Dependency Handler\n",
     "\n",
-    "Pore-scale models clearly make life easier since you don't have to produce the complex numpy functions by hand each time, but this is not even their best feature. The main benefit of pore-scale models is that they can be *recomputed* automatically. For instance, if we re-run the `'pore.seed'` model, then all the other models that depend on `'pore.seed'` will automatically be reomcomputed as well. This all occurs when we call `regenerate_models`, as demonstrated below:"
+    "Pore-scale models clearly make life easier since you don't have to produce the complex numpy functions by hand each time, but this is not even their best feature! The main benefit of pore-scale models is that they can be *recomputed* automatically. For instance, if we re-run the `'pore.seed'` model, then all the other models that depend on `'pore.seed'` will automatically be reomcomputed as well. This all occurs when we call `regenerate_models`, as demonstrated below:"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 38,
+   "execution_count": 40,
    "id": "07e6f7fe",
    "metadata": {},
    "outputs": [
@@ -1258,7 +1266,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 39,
+   "execution_count": 41,
    "id": "95915c96",
    "metadata": {},
    "outputs": [
@@ -1296,7 +1304,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 40,
+   "execution_count": 42,
    "id": "4080b43e",
    "metadata": {},
    "outputs": [
@@ -1333,7 +1341,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 41,
+   "execution_count": 43,
    "id": "fde9676e",
    "metadata": {},
    "outputs": [

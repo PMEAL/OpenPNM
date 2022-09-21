@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Numerical Python Primer &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Numerical Python Primer &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -326,6 +326,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -450,9 +455,10 @@
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>Note that round brackets indicate a “tuple” which is basically the same as a list except they are <strong>immutable</strong>, meaning their values cannot be changed.</p>
-</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that round brackets indicate a “tuple” which is basically the same as a list except they are <strong>immutable</strong>, meaning their values cannot be changed.</p>
+</div>
 <p>You can read and write values in a list as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -467,9 +473,10 @@
 </div>
 </div>
 </div>
-<blockquote>
-<div><p>Note that Python uses 0-indexing, and also that square brackets are used to index into a sequence while round brackets are used in function calls.</p>
-</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Python uses 0-indexing, and also that square brackets are used to index into a sequence while round brackets are used in function calls.</p>
+</div>
 <p>You can make the <code class="docutils literal notranslate"><span class="pre">list</span></code> longer by <code class="docutils literal notranslate"><span class="pre">append</span></code>ing a single item:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -512,7 +519,7 @@
 </div>
 </div>
 </div>
-<p>However, this list is not very good at math:</p>
+<p>However, the <code class="docutils literal notranslate"><span class="pre">list</span></code> is not very good at math:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -562,9 +569,10 @@
 </section>
 <section id="numpy-ndarray-optimized-for-numerics">
 <h2>Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>: Optimized for Numerics<a class="headerlink" href="#numpy-ndarray-optimized-for-numerics" title="Permalink to this heading">#</a></h2>
-<p>Given the above noted limitations of python for math, it is natural to wonder why use python for scientific work. The answer to this question is Numpy. Numpy has been around almost as long as python, and it is used almost exclusively in scientific python applications because as discussed above the native <code class="docutils literal notranslate"><span class="pre">list</span></code> is not very fast. Numpy arrays, or <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s on the other hand are actually “C” arrays behind the scenes so are very fast. The downside is that you must learn a ‘mini-language’ to use them. The following few code blocks illustrate this.</p>
-<div class="highlight-{seealso notranslate"><div class="highlight"><pre><span></span>There are many resources for learning and understaning Numpy arrays, such as the [official numpy user guide](https://numpy.org/doc/stable/user/index.html#user) and this fun [illustrated guide](https://betterprogramming.pub/numpy-illustrated-the-visual-guide-to-numpy-3b1d4976de1d).
-</pre></div>
+<p>Given the above noted limitations of python for math, it is natural to wonder why use python for scientific work. The answer to this question is Numpy. Numpy has been around almost as long as python, and it is used almost exclusively in scientific python applications because as discussed above the native <code class="docutils literal notranslate"><span class="pre">list</span></code> is not very fast. Numpy arrays, or <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s, on the other hand are actually “C” arrays behind the scenes so are very fast. The downside is that you must learn a ‘mini-language’ to use them. The following few code blocks illustrate this.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>There are many resources for learning and understaning Numpy arrays, such as the <a class="reference external" href="https://numpy.org/doc/stable/user/index.html#user">official numpy user guide</a> and this fun <a class="reference external" href="https://betterprogramming.pub/numpy-illustrated-the-visual-guide-to-numpy-3b1d4976de1d">illustrated guide</a>.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

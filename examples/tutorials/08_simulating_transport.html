@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Simulating Single Phase Transport &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -389,14 +394,21 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#rigorous-conductance-calculation-manual-method">
-   Rigorous Conductance Calculation: Manual Method
+  <a class="reference internal nav-link" href="#rigorous-conductance-calculation">
+   Rigorous Conductance Calculation
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#rigorous-conductance-calculation-pore-scale-model-method">
-   Rigorous Conductance Calculation: Pore-Scale Model Method
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#manual-method">
+     Manual Method
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pore-scale-model-method">
+     Pore-Scale Model Method
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -436,38 +448,36 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
+net : &lt;openpnm.network.Demo at 0x7fdb9061b590&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coordination_number                                          25 / 25
   2  pore.coords                                                       25 / 25
-  3  pore.diameter                                                     25 / 25
-  4  pore.max_size                                                     25 / 25
-  5  pore.seed                                                         25 / 25
-  6  pore.volume                                                       25 / 25
-  7  throat.conns                                                      40 / 40
-  8  throat.cross_sectional_area                                       40 / 40
-  9  throat.diameter                                                   40 / 40
- 10  throat.diffusive_size_factors                                     40 / 40
- 11  throat.hydraulic_size_factors                                     40 / 40
- 12  throat.length                                                     40 / 40
- 13  throat.lens_volume                                                40 / 40
- 14  throat.max_size                                                   40 / 40
- 15  throat.spacing                                                    40 / 40
+  3  throat.conns                                                      40 / 40
+  4  pore.coordination_number                                          25 / 25
+  5  pore.max_size                                                     25 / 25
+  6  throat.spacing                                                    40 / 40
+  7  pore.seed                                                         25 / 25
+  8  pore.diameter                                                     25 / 25
+  9  throat.max_size                                                   40 / 40
+ 10  throat.diameter                                                   40 / 40
+ 11  throat.cross_sectional_area                                       40 / 40
+ 12  throat.hydraulic_size_factors                                     40 / 40
+ 13  throat.diffusive_size_factors                                     40 / 40
+ 14  throat.lens_volume                                                40 / 40
+ 15  throat.length                                                     40 / 40
  16  throat.total_volume                                               40 / 40
  17  throat.volume                                                     40 / 40
+ 18  pore.volume                                                       25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.domain_1                                                          25
-  3  pore.front                                                              5
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
   4  pore.left                                                               5
   5  pore.right                                                              5
-  6  pore.surface                                                           16
-  7  throat.domain_1                                                        40
-  8  throat.surface                                                         16
+  6  pore.front                                                              5
+  7  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -494,18 +504,18 @@ net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f59dbda2540&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7fdb46031590&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.pressure                                                     25 / 25
   2  pore.temperature                                                  25 / 25
-  3  pore.viscosity                                                    25 / 25
+  3  pore.pressure                                                     25 / 25
+  4  pore.viscosity                                                    25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -550,16 +560,16 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f59dbda2540&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[4.08155086e-14 6.21106302e-14 5.88395887e-14 4.53545320e-14
- 1.05038958e-14 5.10305285e-16 4.84654661e-16 9.23181604e-16
- 2.95393909e-15 2.82878573e-15 1.42702409e-14 7.40441316e-16
- 2.40426143e-14 2.41991135e-14 4.49434786e-15 4.36414830e-15
- 1.27312462e-15 5.67079535e-15 4.99870057e-15 4.14947485e-15
- 3.70447869e-14 1.14261074e-14 5.92286556e-16 4.73512424e-15
- 1.10244444e-15 2.07726941e-14 2.79052415e-15 5.16663436e-16
- 5.14819824e-15 5.19669455e-16 1.99945271e-14 3.00585784e-15
- 1.21408401e-14 5.21530532e-15 6.30689320e-16 1.47366262e-15
- 4.92562963e-15 3.90612522e-14 3.78573910e-15 1.41708905e-14]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[5.69063722e-16 5.93571296e-16 1.41796130e-14 7.89931970e-16
+ 1.35154457e-14 2.45089796e-15 2.37430157e-15 1.40110120e-14
+ 2.41359594e-14 2.47429009e-14 4.46545981e-14 3.88335458e-15
+ 2.42214091e-14 1.26490216e-14 1.68254815e-15 9.42049110e-16
+ 1.33455668e-14 1.39284009e-14 5.82319904e-14 6.23224821e-14
+ 1.46816923e-14 5.32442597e-16 2.75542131e-15 1.13906520e-14
+ 9.38295680e-16 1.43637221e-14 1.76425387e-14 2.63652422e-15
+ 1.43591162e-14 3.79839652e-15 3.63264664e-14 2.04719675e-14
+ 1.35382821e-14 2.05439513e-15 9.72520778e-16 4.15540805e-14
+ 1.25594086e-14 1.40288640e-14 2.03652948e-15 1.21299729e-15]
 </pre></div>
 </div>
 </div>
@@ -620,17 +630,17 @@ The <code class="docutils literal notranslate"><span class="pre">Phase</span></c
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f59dbdc1270&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fdb46044220&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.bc.rate                                                       0 / 25
-  2  pore.bc.value                                                      0 / 25
+  2  pore.bc.rate                                                       0 / 25
+  3  pore.bc.value                                                      0 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -650,17 +660,17 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f59dbdc1270&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f59dbdc1270&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fdb46044220&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.bc.rate                                                       5 / 25
-  2  pore.bc.value                                                      5 / 25
+  2  pore.bc.rate                                                       5 / 25
+  3  pore.bc.value                                                      5 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -724,19 +734,19 @@ All boundary conditions are stored as ‘pore.bc.<type>’, which means that Ope
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f59dbdc1270&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fdb46044220&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.bc.rate                                                       5 / 25
-  2  pore.bc.value                                                      5 / 25
-  3  pore.initial_guess                                                25 / 25
+  2  pore.bc.rate                                                       5 / 25
+  3  pore.bc.value                                                      5 / 25
   4  pore.pressure                                                     25 / 25
+  5  pore.initial_guess                                                25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -750,17 +760,19 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f59dbdc1270&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([185010.78950524, 163084.9921324 , 156564.68051602, 171230.12532704,
-       176953.63288394])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([139407.40218179, 144807.78631174, 150786.49964258, 153424.17738803,
+       154745.22307077])
 </pre></div>
 </div>
 </div>
 </div>
 <p>So we can see that 150 kPa was required to accomplish the requested flow.</p>
 </section>
-<section id="rigorous-conductance-calculation-manual-method">
-<h2>Rigorous Conductance Calculation: Manual Method<a class="headerlink" href="#rigorous-conductance-calculation-manual-method" title="Permalink to this heading">#</a></h2>
+<section id="rigorous-conductance-calculation">
+<h2>Rigorous Conductance Calculation<a class="headerlink" href="#rigorous-conductance-calculation" title="Permalink to this heading">#</a></h2>
 <p>The above demonstration used a very simplistic conductance calculation.  It was also stated that computing conductance is the most important part of doing a PNM simulation.  To finish this notebook, we’ll look more closely at this process.</p>
+<section id="manual-method">
+<h3>Manual Method<a class="headerlink" href="#manual-method" title="Permalink to this heading">#</a></h3>
 <p>Let’s print the network object again:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -770,38 +782,36 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f59dbdc1270&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
+net : &lt;openpnm.network.Demo at 0x7fdb9061b590&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coordination_number                                          25 / 25
   2  pore.coords                                                       25 / 25
-  3  pore.diameter                                                     25 / 25
-  4  pore.max_size                                                     25 / 25
-  5  pore.seed                                                         25 / 25
-  6  pore.volume                                                       25 / 25
-  7  throat.conns                                                      40 / 40
-  8  throat.cross_sectional_area                                       40 / 40
-  9  throat.diameter                                                   40 / 40
- 10  throat.diffusive_size_factors                                     40 / 40
- 11  throat.hydraulic_size_factors                                     40 / 40
- 12  throat.length                                                     40 / 40
- 13  throat.lens_volume                                                40 / 40
- 14  throat.max_size                                                   40 / 40
- 15  throat.spacing                                                    40 / 40
+  3  throat.conns                                                      40 / 40
+  4  pore.coordination_number                                          25 / 25
+  5  pore.max_size                                                     25 / 25
+  6  throat.spacing                                                    40 / 40
+  7  pore.seed                                                         25 / 25
+  8  pore.diameter                                                     25 / 25
+  9  throat.max_size                                                   40 / 40
+ 10  throat.diameter                                                   40 / 40
+ 11  throat.cross_sectional_area                                       40 / 40
+ 12  throat.hydraulic_size_factors                                     40 / 40
+ 13  throat.diffusive_size_factors                                     40 / 40
+ 14  throat.lens_volume                                                40 / 40
+ 15  throat.length                                                     40 / 40
  16  throat.total_volume                                               40 / 40
  17  throat.volume                                                     40 / 40
+ 18  pore.volume                                                       25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.domain_1                                                          25
-  3  pore.front                                                              5
+  2  pore.surface                                                           16
+  3  throat.surface                                                         16
   4  pore.left                                                               5
   5  pore.right                                                              5
-  6  pore.surface                                                           16
-  7  throat.domain_1                                                        40
-  8  throat.surface                                                         16
+  6  pore.front                                                              5
+  7  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -821,46 +831,46 @@ net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[4.16322581e-16, 3.64560428e-17, 5.10759959e-16],
-       [6.11594356e-16, 5.54766526e-17, 5.54645692e-16],
-       [5.54645692e-16, 5.25549880e-17, 5.67084425e-16],
-       [5.06008165e-16, 4.05102574e-17, 4.63744650e-16],
-       [2.52044429e-16, 9.38198462e-18, 1.72137703e-16],
-       [4.68485914e-17, 4.55800061e-19, 2.14940436e-17],
-       [2.14940436e-17, 4.32889156e-19, 3.75118136e-17],
-       [5.02726227e-17, 8.24577452e-19, 3.44355420e-17],
-       [1.21279116e-16, 2.63843165e-18, 7.39229005e-17],
-       [7.39229005e-17, 2.52664581e-18, 1.05964997e-16],
-       [1.94760739e-16, 1.27460500e-17, 3.42320297e-16],
-       [9.03725941e-17, 6.61355480e-19, 2.37508200e-17],
-       [3.41757832e-16, 2.14746454e-17, 3.16542683e-16],
-       [3.16542683e-16, 2.16144291e-17, 3.46180651e-16],
-       [1.64622774e-16, 4.01431082e-18, 9.60855335e-17],
-       [9.60855335e-17, 3.89801776e-18, 1.52976512e-16],
-       [4.32689658e-17, 1.13714339e-18, 6.02007503e-17],
-       [1.05364965e-16, 5.06510307e-18, 2.15598491e-16],
-       [2.03853309e-16, 4.46479410e-18, 9.63494294e-17],
-       [9.63494294e-17, 3.70627337e-18, 1.31342883e-16],
-       [4.16322581e-16, 3.30880683e-17, 4.38070153e-16],
-       [2.94947442e-16, 1.02056957e-17, 1.72137703e-16],
-       [7.18869560e-17, 5.29024990e-19, 2.14940436e-17],
-       [1.88564400e-16, 4.22937011e-18, 9.52092306e-17],
-       [9.09511772e-17, 9.84693396e-19, 3.44355420e-17],
-       [3.39705744e-16, 1.85539823e-17, 2.78079555e-16],
-       [1.01123369e-16, 2.49247091e-18, 7.39229005e-17],
-       [2.14940436e-17, 4.61479104e-19, 4.90494683e-17],
-       [9.52092306e-17, 4.59832406e-18, 2.18787311e-16],
-       [2.71939081e-17, 4.64164053e-19, 2.37508200e-17],
-       [2.78079555e-16, 1.78589306e-17, 3.14897869e-16],
-       [7.39229005e-17, 2.68480501e-18, 1.27371278e-16],
-       [1.94760739e-16, 1.08440885e-17, 2.55345453e-16],
-       [2.20051842e-16, 4.65826350e-18, 9.60855335e-17],
-       [2.37508200e-17, 5.63325991e-19, 6.37267318e-17],
-       [9.86730982e-17, 1.31626211e-18, 4.32689658e-17],
-       [1.58742979e-16, 4.39952780e-18, 1.05364965e-16],
-       [4.05323628e-16, 3.48891568e-17, 4.98684093e-16],
-       [9.60855335e-17, 3.38138789e-18, 9.61794071e-17],
-       [2.57892514e-16, 1.26573111e-17, 2.22301399e-16]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[6.57495456e-17, 5.08282565e-19, 2.14631169e-17],
+       [2.14631169e-17, 5.30172508e-19, 7.24699719e-17],
+       [3.02168435e-16, 1.26651020e-17, 2.07766600e-16],
+       [6.08344957e-17, 7.05560085e-19, 2.91519357e-17],
+       [2.20811386e-16, 1.20718738e-17, 2.34526668e-16],
+       [1.09303912e-16, 2.18911987e-18, 6.49954016e-17],
+       [6.49954016e-17, 2.12070467e-18, 9.88045918e-17],
+       [1.99937599e-16, 1.25145091e-17, 3.18366917e-16],
+       [3.40370884e-16, 2.15580204e-17, 3.18237669e-16],
+       [3.18237669e-16, 2.21001351e-17, 3.57346217e-16],
+       [4.37771396e-16, 3.98850828e-17, 5.39562315e-16],
+       [1.86311478e-16, 3.46857715e-18, 7.95471854e-17],
+       [4.09730072e-16, 2.16343433e-17, 2.89940591e-16],
+       [2.34940991e-16, 1.12979916e-17, 2.08328498e-16],
+       [8.57791926e-17, 1.50283678e-18, 5.04852943e-17],
+       [4.08112986e-17, 8.41429737e-19, 3.61379062e-17],
+       [2.69154584e-16, 1.19201394e-17, 2.07279009e-16],
+       [2.07279009e-16, 1.24407216e-17, 2.93538565e-16],
+       [5.28885206e-16, 5.20122866e-17, 5.97821678e-16],
+       [6.15494319e-16, 5.56658769e-17, 5.53892009e-16],
+       [2.83374667e-16, 1.31135546e-17, 2.20811386e-16],
+       [2.14631169e-17, 4.75572907e-19, 5.46040832e-17],
+       [1.46407904e-16, 2.46111737e-18, 6.49954016e-17],
+       [2.02698315e-16, 1.01740272e-17, 1.99937599e-16],
+       [2.91519357e-17, 8.38077207e-19, 9.47639660e-17],
+       [2.20811386e-16, 1.28295466e-17, 2.70431733e-16],
+       [2.61014626e-16, 1.57581559e-17, 2.80375000e-16],
+       [6.49954016e-17, 2.35491956e-18, 1.32796579e-16],
+       [1.99937599e-16, 1.28254326e-17, 3.31469985e-16],
+       [1.79095156e-16, 3.39269339e-18, 7.95471854e-17],
+       [3.83448644e-16, 3.24464709e-17, 4.87544733e-16],
+       [2.99782489e-16, 1.82853760e-17, 2.89940591e-16],
+       [2.74132487e-16, 1.20922710e-17, 2.08328498e-16],
+       [1.39766460e-16, 1.83496714e-18, 5.04852943e-17],
+       [4.83941721e-17, 8.68646755e-19, 3.61379062e-17],
+       [5.16443606e-16, 3.71157285e-17, 4.20512636e-16],
+       [2.34194630e-16, 1.12179501e-17, 2.07279009e-16],
+       [2.08328498e-16, 1.25304543e-17, 2.94460803e-16],
+       [5.04852943e-17, 1.81900970e-18, 1.37589055e-16],
+       [3.61379062e-17, 1.08343819e-18, 1.00075167e-16]])
 </pre></div>
 </div>
 </div>
@@ -888,16 +898,16 @@ net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([3.52178772e-14, 5.21618070e-14, 4.95520509e-14, 3.88504543e-14,
-       9.62136349e-15, 4.94992641e-16, 4.69772260e-16, 8.87377986e-16,
-       2.79346379e-15, 2.67365081e-15, 1.29414287e-14, 7.15289116e-16,
-       2.12639087e-14, 2.14015145e-14, 4.21543993e-15, 4.09375820e-15,
-       1.21810292e-15, 5.29206745e-15, 4.67937271e-15, 3.89006471e-15,
-       3.20731744e-14, 1.04453924e-14, 5.73936789e-16, 4.43841129e-15,
-       1.06063232e-15, 1.85248903e-14, 2.63663686e-15, 5.01187501e-16,
-       4.81448525e-15, 5.01315419e-16, 1.78373528e-14, 2.84269412e-15,
-       1.10557480e-14, 4.87571508e-15, 6.10802871e-16, 1.41187868e-15,
-       4.60567386e-15, 3.37888494e-14, 3.53692186e-15, 1.28125384e-14])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([5.51732554e-16, 5.75156334e-16, 1.28569846e-14, 7.62629173e-16,
+       1.22185242e-14, 2.32597237e-15, 2.25246109e-15, 1.27153148e-14,
+       2.13388852e-14, 2.18713938e-14, 3.83291215e-14, 3.65588157e-15,
+       2.14839667e-14, 1.14749063e-14, 1.60657692e-15, 9.02431101e-16,
+       1.21125675e-14, 1.26346036e-14, 4.91265654e-14, 5.23304777e-14,
+       1.32786151e-14, 5.16499719e-16, 2.61257603e-15, 1.03449910e-14,
+       9.04300811e-16, 1.29924612e-14, 1.58005636e-14, 2.50152829e-15,
+       1.30201291e-14, 3.57801377e-15, 3.15561741e-14, 1.82124990e-14,
+       1.22834614e-14, 1.95754487e-15, 9.33333461e-16, 3.58184390e-14,
+       1.13967140e-14, 1.27222683e-14, 1.94093627e-15, 1.16543932e-15])
 </pre></div>
 </div>
 </div>
@@ -922,16 +932,16 @@ net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([191393.50225079, 169064.19840146, 162378.1710315 , 177734.75630388,
-       183708.42430083])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([143616.47947512, 149395.42135024, 155834.13272055, 158903.68599765,
+       160454.57896569])
 </pre></div>
 </div>
 </div>
 </div>
 <p>As can be seen the numbers are about the same as with the simple case, but should be somewhat more correct.  In fact, these above pressures are a bit higher, which is because the total conductance of the conduit is lower due to the inclusion of the pore body lengths into the total length, compared to above where only the throat length was included.</p>
 </section>
-<section id="rigorous-conductance-calculation-pore-scale-model-method">
-<h2>Rigorous Conductance Calculation: Pore-Scale Model Method<a class="headerlink" href="#rigorous-conductance-calculation-pore-scale-model-method" title="Permalink to this heading">#</a></h2>
+<section id="pore-scale-model-method">
+<h3>Pore-Scale Model Method<a class="headerlink" href="#pore-scale-model-method" title="Permalink to this heading">#</a></h3>
 <p>Instead of computing the hydraulic conductance manually as done above, there is a pore-scale model available:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -961,13 +971,14 @@ net : &lt;openpnm.network.Demo at 0x7f59e2ea3b30&gt;
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([191393.50225079, 169064.19840146, 162378.17103149, 177734.75630388,
-       183708.42430083])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([143616.47947512, 149395.42135024, 155834.13272055, 158903.68599765,
+       160454.57896569])
 </pre></div>
 </div>
 </div>
 </div>
 <p>Which gives exactly the same result, without have to manually deal with the conductances-in-series calculation.</p>
+</section>
 </section>
 </section>
 

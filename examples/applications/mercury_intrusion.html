@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Simulating Mercury Intrusion Porosimetry Curves &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Simulating Mercury Intrusion Porosimetry Curves &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -486,7 +491,7 @@
              the following property is missing:
              &#39;throat.diffusivity&#39; 
   - SOURCE : openpnm.core._models.regenerate_models 
-  - TIME   : 2022-09-09 02:06:47,578    
+  - TIME   : 2022-09-21 01:42:28,677    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -500,21 +505,20 @@
 <p><strong>FIX: Where is porosimetry class? Since this process is simulated very frequently, OpenPNM includes a class called Porosimetry that is a subclass of OrdinaryPercolation, with several useful methods added. It’s use is illustrated below:</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">OrdinaryPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
-<span class="n">mip</span><span class="o">.</span><span class="n">set_inlets</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span>
 <span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">OrdinaryPercolation</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">mip</span><span class="o">.</span><span class="n">set_inlets</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-
-<span class="ne">AttributeError</span>: module &#39;openpnm.algorithms&#39; has no attribute &#39;OrdinaryPercolation&#39;
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 522.71it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -522,48 +526,13 @@
 <p>The meaning of this warning message will be analyzed below, but first let’s take a quick look at the result using the built-in plotting method:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span><span class="o">.</span><span class="n">plot_intrusion_curve</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pc</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="o">*</span><span class="n">pc</span><span class="p">,</span> <span class="s1">&#39;b-o&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Inlets have non-zero volume, perc. curve won&#39;t start at 0. 
-  - SOURCE : openpnm.algorithms._ordinary_percolation.get_intrusion_data 
-  - TIME   : 2022-09-02 12:25:02,005    
-------------------------------------------------------------
-</pre></div>
-</div>
-<img alt="../../_images/970d5b4a40dac87ecaef356f88d837a1011dd09f380c457e1dff5cfaf15b05eb.svg" src="../../_images/970d5b4a40dac87ecaef356f88d837a1011dd09f380c457e1dff5cfaf15b05eb.svg" /></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Pc</span><span class="p">,</span> <span class="n">Snwp</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">get_intrusion_data</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Inlets have non-zero volume, perc. curve won&#39;t start at 0. 
-  - SOURCE : openpnm.algorithms._ordinary_percolation.get_intrusion_data 
-  - TIME   : 2022-09-02 12:25:02,324    
-------------------------------------------------------------
-</pre></div>
-</div>
-</div>
-</div>
-<p>With the above data in the form of arrays it’s possible to cut&amp;paste into Excel, or to use a Python plotting package such as Matplotlib to make plots with your desired style:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">Pc</span><span class="p">,</span> <span class="n">Snwp</span><span class="p">,</span> <span class="s1">&#39;r*-&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Capillary pressure (Pa)&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Saturation&quot;</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/d616befab0f7460335415eec3d3e67b52162fbce7d5865ca8ff57e515459f741.svg" src="../../_images/d616befab0f7460335415eec3d3e67b52162fbce7d5865ca8ff57e515459f741.svg" /></div>
+<img alt="../../_images/518caac2dc32e70c38162bfedc58ca312e4c65c97f03b3fe09e5965629ae8edb.svg" src="../../_images/518caac2dc32e70c38162bfedc58ca312e4c65c97f03b3fe09e5965629ae8edb.svg" /></div>
 </div>
 </section>
 </section>

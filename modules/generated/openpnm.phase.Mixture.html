@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Mixture &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Mixture &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -7628,8 +7628,8 @@ components.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.phase.Mixture.add_model.html#openpnm.phase.Mixture.add_model" title="openpnm.phase.Mixture.add_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model</span></code></a>(propname, model[, domain, regen_mode])</p></td>
 <td><p>Add a pore-scale model to the object, along with the desired arguments</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.phase.Mixture.add_model_collection.html#openpnm.phase.Mixture.add_model_collection" title="openpnm.phase.Mixture.add_model_collection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_collection</span></code></a>(models[, regen_mode, ...])</p></td>
-<td><p>Add a collection of several models at once</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.phase.Mixture.add_model_collection.html#openpnm.phase.Mixture.add_model_collection" title="openpnm.phase.Mixture.add_model_collection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_collection</span></code></a>(models[, domain, ...])</p></td>
+<td><p>Add a <code class="docutils literal notranslate"><span class="pre">collection</span></code> of several models at once</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.phase.Mixture.check_mixture_health.html#openpnm.phase.Mixture.check_mixture_health" title="openpnm.phase.Mixture.check_mixture_health"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_mixture_health</span></code></a>()</p></td>
 <td><p>Checks the state of health of the mixture</p></td>
@@ -7664,14 +7664,14 @@ components.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.phase.Mixture.props.html#openpnm.phase.Mixture.props" title="openpnm.phase.Mixture.props"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code></a>([element])</p></td>
 <td><p>Retrieves a list of keys that contain numerical data (i.e.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.phase.Mixture.regenerate_models.html#openpnm.phase.Mixture.regenerate_models" title="openpnm.phase.Mixture.regenerate_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regenerate_models</span></code></a>([propnames, exclude])</p></td>
-<td><p>Runs all the models stored in <code class="docutils literal notranslate"><span class="pre">models</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.phase.Mixture.regenerate_models.html#openpnm.phase.Mixture.regenerate_models" title="openpnm.phase.Mixture.regenerate_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regenerate_models</span></code></a>(**kwargs)</p></td>
+<td><p>Runs all the models stored in the object's <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.phase.Mixture.remove_comp.html#openpnm.phase.Mixture.remove_comp" title="openpnm.phase.Mixture.remove_comp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_comp</span></code></a>(component)</p></td>
 <td><p>Helper method to remove a component from the mixture</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.phase.Mixture.run_model.html#openpnm.phase.Mixture.run_model" title="openpnm.phase.Mixture.run_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_model</span></code></a>(propname[, domain])</p></td>
-<td><p>Runs the requested model and places the result into the correct locations.</p></td>
+<td><p>Runs the requested model and places the result into the correct locations</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.phase.Mixture.set_label.html#openpnm.phase.Mixture.set_label" title="openpnm.phase.Mixture.set_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_label</span></code></a>(label[, pores, throats, mode])</p></td>
 <td><p>Creates or updates a label array</p></td>

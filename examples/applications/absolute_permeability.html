@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Predicting absolute permeability &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Predicting absolute permeability &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -453,7 +458,7 @@
              following property is missing:
              &#39;throat.surface_tension&#39; 
   - SOURCE : openpnm.core._models.regenerate_models 
-  - TIME   : 2022-09-09 02:06:10,829    
+  - TIME   : 2022-09-21 01:41:59,564    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -462,7 +467,7 @@
              the following property is missing:
              &#39;throat.diffusivity&#39; 
   - SOURCE : openpnm.core._models.regenerate_models 
-  - TIME   : 2022-09-09 02:06:10,843    
+  - TIME   : 2022-09-21 01:41:59,587    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -479,8 +484,8 @@
 <span class="n">flow</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
 <span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">soln</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="n">phase</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">phase</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">soln</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -494,21 +499,14 @@
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">soln</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">7</span> <span class="n">phase</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span>
-
-<span class="ne">TypeError</span>: &#39;NoneType&#39; object is not iterable
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Solution attribute</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`flow.soln` is a `dict` with the `quantity` as the `key` (i.e. `&#39;pore.pressure&#39;`) and the solution as the `value` (i.e an `ndarray`). The last line in the cell above updates the `phase` with the new computed values of `pore.pressure` from solving the Stokes flow transport algorithm.
 </pre></div>
 </div>
-</div>
-</div>
-<p>.. Note:: <solution></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`soln` contains the `quantity` for which the steady state flow algorithm was solved. Here, the quantity was `pore.pressure`. The last line in the cell above updates the phase&#39;s `pore.pressure` values with the new values from solving the Stokes flow transport algorithm.
-</pre></div>
 </div>
 <p>We can visulalize the pressure in the network:</p>
 <div class="cell docutils container">
@@ -519,14 +517,15 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c5ed545644cc23f83ef1b2d251d3407b002441d40ead25e03688351e7b470e2e.svg" src="../../_images/c5ed545644cc23f83ef1b2d251d3407b002441d40ead25e03688351e7b470e2e.svg" /></div>
+<img alt="../../_images/f38400e24028249ac7fa7e811dbdf34ea3196c698da6e90008cd2af4db031434.svg" src="../../_images/f38400e24028249ac7fa7e811dbdf34ea3196c698da6e90008cd2af4db031434.svg" /></div>
 </div>
 </section>
 <section id="calculate-permeability">
 <h2>Calculate permeability<a class="headerlink" href="#calculate-permeability" title="Permalink to this heading">#</a></h2>
 <p>Calculate the permeability using Darcy’s law:</p>
-<p><span class="math notranslate nohighlight">\(K_{abs}= \frac{Q}{A} \frac{\mu L} {\Delta P}\)</span></p>
-<p>Where <span class="math notranslate nohighlight">\(Q\)</span> is the inlet flow rate, <span class="math notranslate nohighlight">\(A\)</span> is the inlet area, and <span class="math notranslate nohighlight">\(L\)</span> is the distance between inlet and outlet. As pressure difference and viscosity were assumed to be 1, we have a simplified equation.</p>
+<div class="math notranslate nohighlight">
+\[ K_{abs}= \frac{Q}{A} \frac{\mu L} {\Delta P} \]</div>
+<p>where <span class="math notranslate nohighlight">\(Q\)</span> is the inlet flow rate, <span class="math notranslate nohighlight">\(A\)</span> is the inlet area, and <span class="math notranslate nohighlight">\(L\)</span> is the distance between inlet and outlet. As pressure difference and viscosity were assumed to be 1, we have a simplified equation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># NBVAL_IGNORE_OUTPUT</span>
@@ -543,12 +542,15 @@
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
   - WARNING: Attempting to estimate inlet area...will be low 
   - SOURCE : openpnm.topotools._topotools.get_domain_area 
-  - TIME   : 2022-09-01 10:35:39,051    
+  - TIME   : 2022-09-21 01:42:01,793    
 ------------------------------------------------------------
-------------------------------------------------------------
-  - WARNING: Attempting to estimate domain length...could be low if boundary pores were not added 
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
+  - WARNING: Attempting to estimate domain length...could be
+             low if boundary pores were not added 
   - SOURCE : openpnm.topotools._topotools.get_domain_length 
-  - TIME   : 2022-09-01 10:35:39,061    
+  - TIME   : 2022-09-21 01:42:01,795    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -557,10 +559,11 @@
 </div>
 </div>
 </div>
-<p>.. Note:: <finding permeability of extracted network></p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1) The methods of finding domain area in `topotools` is based on Scipy&#39;s `ConvexHull`, where a convexhull that includes the inlet pores will be created to approximate the inlet area. Both `get_domain_area` and `get_domain_length` can be a useful approximation in estimating area and length in extracted networks. In extracted networks without boundary pores where inlet/outlet pores are not necessarily located on an almost flat plane, the estimated value could be low.
+<div class="highlight-{note) notranslate"><div class="highlight"><pre><span></span>    
+    1) The methods of finding domain area in `topotools` is based on Scipy&#39;s `ConvexHull`, where a convexhull that includes the inlet pores will be created to approximate the inlet area. Both `get_domain_area` and `get_domain_length` can be a useful approximation in estimating area and length in extracted networks. In extracted networks without boundary pores where inlet/outlet pores are not necessarily located on an almost flat plane, the estimated value could be low.
 
-2) In this example we assumed the network has spherical pores and cylindrical throats. Different geometrical shapes for pores and throats are defined in `geometry` collection. Each geometry collection includes pore-scale size factor models that are necessary for finding hydraulic conductance of the conduits and applying transport algorithm, accordingly. These size factor models can alternatively be assigned using `add_model` method to the network and choosing the model from `op.models.geometry.hydraulic_size_factors`. For more information on these pore-scale models see size factor example notebook.
+    2) In this example we assumed the network has spherical pores and cylindrical throats. Different geometrical shapes for pores and throats are defined in `geometry` collection. Each geometry collection includes pore-scale size factor models that are necessary for finding hydraulic conductance of the conduits and applying transport algorithm, accordingly. These size factor models can alternatively be assigned using `add_model` method to the network and choosing the model from `op.models.geometry.hydraulic_size_factors`. For more information on these pore-scale models see size factor example notebook.
+    
 </pre></div>
 </div>
 </section>

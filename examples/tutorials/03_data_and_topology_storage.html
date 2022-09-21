@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Storage of Network Data and Topology &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Storage of Network Data and Topology &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -326,6 +326,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -427,23 +432,22 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#sparse-adjacency-matrices">
-     Sparse Adjacency Matrices
-    </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#additional-thoughts-on-sparse-storage">
-       Additional Thoughts on Sparse Storage
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#topology-rules">
-     Topology Rules
+    <a class="reference internal nav-link" href="#adjacency-matrices-dense-vs-sparse">
+     Adjacency Matrices: Dense vs Sparse
     </a>
    </li>
   </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-conduit-prefix">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     conduit
+    </span>
+   </code>
+   prefix
+  </a>
  </li>
 </ul>
 
@@ -742,7 +746,7 @@ Name: pore.volume, dtype: float64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;pore.domain_1&#39;, &#39;pore.label&#39;, &#39;pore.left&#39;, &#39;pore.right&#39;, &#39;pore.surface&#39;]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;pore.label&#39;, &#39;pore.left&#39;, &#39;pore.right&#39;, &#39;pore.surface&#39;]
 </pre></div>
 </div>
 </div>
@@ -901,18 +905,18 @@ test                                2
 </section>
 <section id="representing-topology">
 <h2>Representing Topology<a class="headerlink" href="#representing-topology" title="Permalink to this heading">#</a></h2>
-<p>Topology was introduced in the last tutorial, but not discussed to</p>
+<p>Topology was introduced in the last tutorial, but not discussed in depth. Actually, the <em>next</em> tutorial will explain topology in full detail, but here we can reveal a little more about it as it pertains to data storage.</p>
 <p>Consider the following simple random network:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">);</span>
+<span class="n">dn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">dn</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7e2b08fbe88909d6c34c460f09f81479d9787846e531636478fe447a313f926a.png" src="../../_images/7e2b08fbe88909d6c34c460f09f81479d9787846e531636478fe447a313f926a.png" />
+<img alt="../../_images/911b0b1cf4367f12c769674b51543bf91df81ff7425ffe9565ec94a715869b0d.png" src="../../_images/911b0b1cf4367f12c769674b51543bf91df81ff7425ffe9565ec94a715869b0d.png" />
 </div>
 </div>
 <p>The basic premise of how OpenPNM stores topology can be stated in 1 sentence:</p>
@@ -920,7 +924,7 @@ test                                2
 <p>In other words, referring to the above diagram, throat No. 5 has pores 1 and 4 on it’s ends.  Using the spreadsheet analogy, this implies a new colunm that stores the pair of pores connected by each throat.  OpenPNM calls this property <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">dn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -935,35 +939,155 @@ test                                2
 </div>
 </div>
 <p>Inspection of this <em>Nt-by-2</em> array shows that each row contains the pore indices corresponding to that throat.</p>
-<section id="sparse-adjacency-matrices">
-<h3>Sparse Adjacency Matrices<a class="headerlink" href="#sparse-adjacency-matrices" title="Permalink to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Topology Rules</p>
+<p>OpenPNM requires that the following be true about the network:</p>
+<ol class="arabic simple">
+<li><p>A throat is a connection between exactly two pores, no more and no less</p></li>
+<li><p>Throats are non-directional, meaning that flow in either direction is equal
+Other general, but non-essential rules are:</p></li>
+<li><p>Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.</p></li>
+<li><p>Two pores are generally connected by no more than one throat.  It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise.</p></li>
+</ol>
+</div>
+<section id="adjacency-matrices-dense-vs-sparse">
+<h3>Adjacency Matrices: Dense vs Sparse<a class="headerlink" href="#adjacency-matrices-dense-vs-sparse" title="Permalink to this heading">#</a></h3>
 <p>The topology storage scheme described above is actually an <a class="reference external" href="http://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a>, in a <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">sparse storage format</a> known as IJV or COO.</p>
 <p>An adjacency matrix is a <em>Np</em>-by-<em>Np</em> matrix with non-zero values at location (<em>i</em>, <em>j</em>) indicating that pores <em>i</em> and <em>j</em> are connected.</p>
+<p>OpenPNM Network objects have a method that generates the sparse adjacency matrix:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">dn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">dn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">am</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  (0, 1)	0
+  (0, 2)	1
+  (0, 3)	2
+  (1, 3)	3
+  (2, 3)	4
+</pre></div>
+</div>
+</div>
+</div>
+<p>This can be converted to a <em>dense</em> array and visualized:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">dn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">am</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1 1 1]
+ [1 0 0 1]
+ [1 0 0 1]
+ [1 1 1 0]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>In dense format the <em>Np-by-Np</em> shape is evident. The above matrix is symmetrical, so connections between pore <em>i</em> and <em>j</em> as well as between <em>j</em> and <em>i</em> are shown.</p>
 <p>An important feature of the adjacency matrix is that it is highly sparse (mostly zeros) and can be stored with a variety of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/sparse.html">sparse storage schemes</a> offered by Scipy.  OpenPNM stores the adjacency matrix in the ‘COO’ format, which essentially stores the coordinates (I,J) of the nonzero elements in an two-colume wide array.</p>
 <p>Thus the throat property called <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> is an <em>Nt</em>-by-2 array that gives the index of the two pores on either end of a given throat.</p>
-<section id="additional-thoughts-on-sparse-storage">
-<h4>Additional Thoughts on Sparse Storage<a class="headerlink" href="#additional-thoughts-on-sparse-storage" title="Permalink to this heading">#</a></h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Additional Thoughts on Sparse Storage</p>
 <ul class="simple">
 <li><p>In pore networks there is (usually) no difference between traversing from pore <em>i</em> to pore <em>j</em> or from pore <em>j</em> to pore <em>i</em>, so a 1 is also found at location (<em>j</em>, <em>i</em>) and the matrix is symmetrical.</p></li>
 <li><p>Since the adjacency matrix is symmetric, it is redundant to store the entire matrix when only the upper triangular part is necessary.  The <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array only stores the upper triangular information, and <em>i</em> is always less than <em>j</em>.</p></li>
 <li><p>Although this storage scheme is widely known as <em>IJV</em>, the <code class="docutils literal notranslate"><span class="pre">scipy.sparse</span></code> module calls this the Coordinate or <em>COO</em> storage scheme.</p></li>
 <li><p>Some tasks are best performed on other types of storages scheme, such as <em>CSR</em> or <em>LIL</em>.  OpenPNM converts between these internally as necessary, but users can generate a desired format using the <code class="docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code> method which accepts the storage type as an argument (i.e. <code class="docutils literal notranslate"><span class="pre">'csr'</span></code>, <code class="docutils literal notranslate"><span class="pre">'lil'</span></code>, etc).  For a discussion of sparse storage schemes and the respective merits, see this <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">Wikipedia article</a>.</p></li>
 </ul>
+</div>
 </section>
 </section>
-<section id="topology-rules">
-<h3>Topology Rules<a class="headerlink" href="#topology-rules" title="Permalink to this heading">#</a></h3>
-<p>OpenPNM requires that the following be true about the network:</p>
-<ol class="arabic simple">
-<li><p>A throat is a connection between exactly two pores, no more and no less</p></li>
-<li><p>Throats are non-directional, meaning that flow in either direction is equal</p></li>
-</ol>
-<p>Other general, but non-essential rules are:</p>
-<ol class="arabic simple" start="3">
-<li><p>Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.</p></li>
-<li><p>Two pores are generally connected by no more than one throat.  It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise.</p></li>
-</ol>
-</section>
+<section id="the-conduit-prefix">
+<h2>The <code class="docutils literal notranslate"><span class="pre">conduit</span></code> prefix<a class="headerlink" href="#the-conduit-prefix" title="Permalink to this heading">#</a></h2>
+<p>A <em>conduit</em> in OpenPNM refers to a ‘pore-throat-pore’ connection, where the pores and throats are each called <em>elements</em>. These <em>elements</em> act as resistors (or conductors) in series. Each <em>conduit</em> therefor contains exactly 1 throat and 2 pores. Transport within the network occurs via these interconnected <em>conduits</em>, so the geometric properties of these elements are often need for computing things like diffusive conductance. This is common enough that OpenPNM provides a short-cut for obtaining this data, as illustrated below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;conduit.diameter&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.47440675 0.23720338 0.55759468]
+ [0.55759468 0.25069084 0.50138169]
+ [0.50138169 0.2362208  0.47244159]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above array contains 3 columns, with the center column representing the throat diameter:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.23720338 0.25069084 0.2362208 ]
+</pre></div>
+</div>
+</div>
+</div>
+<p>And the left and right columns represent the diameter of the pores on each end of the throat. The order of “left” vs “right” reflects the pore indices for the <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">conns</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1]
+ [1 2]
+ [2 3]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>In fact, the values for the pore elements can be obtained using numpy’s fancy indexing:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">R1_R2</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">][</span><span class="n">pn</span><span class="o">.</span><span class="n">conns</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">R1_R2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.47440675 0.55759468]
+ [0.55759468 0.50138169]
+ [0.50138169 0.47244159]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Which can be seen to match the diameter values in <code class="docutils literal notranslate"><span class="pre">D</span></code> above.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">conduit</span></code> prefix only works for <em>reading</em> data, and does not allow writing data.</p>
+</div>
+<p>There is also a methon on all OpenPNM object that allow for retrieval of contuit data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.47440675 0.23720338 0.55759468]
+ [0.55759468 0.25069084 0.50138169]
+ [0.50138169 0.2362208  0.47244159]]
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 

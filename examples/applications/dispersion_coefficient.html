@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Predicting dispersion coefficient &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Predicting dispersion coefficient &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -422,7 +427,7 @@
 <p>This example will show how to find the dispersion coefficient of a porous medium. The following equation given by <a class="reference external" href="https://www.sciencedirect.com/science/article/abs/pii/B9780120218073500084%5D">Fried and Combarnous (1971)</a> is used to solve the longitudinal dispersion coefficient:</p>
 <div class="math notranslate nohighlight">
 \[\frac{C}{C_{0}} = \frac{1}{2}erfc\Bigl(\frac{x-Ut}{2(D_{L}t)^{\frac{1}{2}}}\Bigr)+\frac{1}{2}exp\Bigl(\frac{Ux}{D_{L}}\Bigl)erfc\Bigr(\frac{x+Ut}{2(D_{L}t)^{\frac{1}{2}}}\Bigr)\]</div>
-<p>Where <span class="math notranslate nohighlight">\(x\)</span> is the length between the inlet and the outlet, <span class="math notranslate nohighlight">\(t\)</span> is the time, <span class="math notranslate nohighlight">\(D_{L}\)</span> is the longitudinal dispersion coefficient, <span class="math notranslate nohighlight">\(U\)</span> is the average pore velocity, <span class="math notranslate nohighlight">\(C_{0}\)</span> is the inlet concentration, and <span class="math notranslate nohighlight">\(C\)</span> is the concentration at the given time. <span class="math notranslate nohighlight">\(erfc\)</span> is the complementary error function. In this example we implement a transient advection diffusion algorithm to fit the data to the equation above and find the value of <span class="math notranslate nohighlight">\(D_{L}\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(x\)</span> is the length between the inlet and the outlet, <span class="math notranslate nohighlight">\(t\)</span> is the time, <span class="math notranslate nohighlight">\(D_{L}\)</span> is the longitudinal dispersion coefficient, <span class="math notranslate nohighlight">\(U\)</span> is the average pore velocity, <span class="math notranslate nohighlight">\(C_{0}\)</span> is the inlet concentration, and <span class="math notranslate nohighlight">\(C\)</span> is the concentration at the given time. <span class="math notranslate nohighlight">\(erfc\)</span> is the complementary error function. In this example we implement a transient advection diffusion algorithm to fit the data to the equation above and find the value of <span class="math notranslate nohighlight">\(D_{L}\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -461,7 +466,7 @@
              the following property is missing:
              &#39;throat.electrical_conductivity&#39; 
   - SOURCE : openpnm.core._models.regenerate_models 
-  - TIME   : 2022-09-09 02:06:24,655    
+  - TIME   : 2022-09-21 01:42:11,501    
 ------------------------------------------------------------
 </pre></div>
 </div>
@@ -534,7 +539,7 @@
 <span class="n">ad</span><span class="o">.</span><span class="n">set_outflow_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">)</span>
 <span class="n">tspan</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">saveat</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">soln</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tspan</span><span class="o">=</span><span class="n">tspan</span><span class="p">,</span> <span class="n">saveat</span><span class="o">=</span><span class="n">saveat</span><span class="p">)</span>
+<span class="n">ad</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tspan</span><span class="o">=</span><span class="n">tspan</span><span class="p">,</span> <span class="n">saveat</span><span class="o">=</span><span class="n">saveat</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -550,7 +555,7 @@
 <span class="n">steps</span> <span class="o">=</span> <span class="n">tspan</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">saveat</span> <span class="o">+</span> <span class="mi">1</span>
 <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">c_avg</span> <span class="o">=</span> <span class="p">[]</span>
-
+<span class="n">soln</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">soln</span>
 <span class="k">for</span> <span class="n">ti</span> <span class="ow">in</span> <span class="n">soln</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">t</span><span class="p">:</span>
     <span class="n">c_front</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">](</span><span class="n">ti</span><span class="p">)[</span><span class="n">Ps_front</span><span class="p">]</span>
     <span class="n">q_front</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">)[</span><span class="n">Ts_front</span><span class="p">]</span>
@@ -565,19 +570,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">c_avg</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="ne">----&gt; </span><span class="mi">7</span> <span class="k">for</span> <span class="n">ti</span> <span class="ow">in</span> <span class="n">soln</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">t</span><span class="p">:</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">c_front</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">](</span><span class="n">ti</span><span class="p">)[</span><span class="n">Ps_front</span><span class="p">]</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">q_front</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">)[</span><span class="n">Ts_front</span><span class="p">]</span>
-
-<span class="ne">TypeError</span>: &#39;NoneType&#39; object is not subscriptable
-</pre></div>
-</div>
-</div>
+<img alt="../../_images/185e6ece8e3a4a3dd58650418197bc56d0c86a5fe21ed9df68b88beb9f9db26b.svg" src="../../_images/185e6ece8e3a4a3dd58650418197bc56d0c86a5fe21ed9df68b88beb9f9db26b.svg" /></div>
 </div>
 </section>
 <section id="solving-for-the-dispersion-coefficient">
@@ -649,7 +642,7 @@ v_fitted =  7.0669E-05  m/s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8a77542ae85a28ecb7e4b4eff50748d8dbf299972a11d38dbe58569e6dc71f31.svg" src="../../_images/8a77542ae85a28ecb7e4b4eff50748d8dbf299972a11d38dbe58569e6dc71f31.svg" /></div>
+<img alt="../../_images/a1f937b4e2fa4a7e9b66782ef7ac62055b9f15781397630fb610546b148d4198.svg" src="../../_images/a1f937b4e2fa4a7e9b66782ef7ac62055b9f15781397630fb610546b148d4198.svg" /></div>
 </div>
 </section>
 </section>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>FaceCenteredCubic &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>FaceCenteredCubic &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -7651,8 +7651,8 @@ Throats are labelled by the which type of pores they connect, e.g.
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.add_model.html#openpnm.network.FaceCenteredCubic.add_model" title="openpnm.network.FaceCenteredCubic.add_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model</span></code></a>(propname, model[, domain, regen_mode])</p></td>
 <td><p>Add a pore-scale model to the object, along with the desired arguments</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.add_model_collection.html#openpnm.network.FaceCenteredCubic.add_model_collection" title="openpnm.network.FaceCenteredCubic.add_model_collection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_collection</span></code></a>(models[, regen_mode, ...])</p></td>
-<td><p>Add a collection of several models at once</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.add_model_collection.html#openpnm.network.FaceCenteredCubic.add_model_collection" title="openpnm.network.FaceCenteredCubic.add_model_collection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_model_collection</span></code></a>(models[, domain, ...])</p></td>
+<td><p>Add a <code class="docutils literal notranslate"><span class="pre">collection</span></code> of several models at once</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.create_adjacency_matrix.html#openpnm.network.FaceCenteredCubic.create_adjacency_matrix" title="openpnm.network.FaceCenteredCubic.create_adjacency_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_adjacency_matrix</span></code></a>([weights, fmt, ...])</p></td>
 <td><p>Generates a weighted adjacency matrix in the desired sparse format</p></td>
@@ -7709,10 +7709,10 @@ Throats are labelled by the which type of pores they connect, e.g.
 <td><p>Retrieves a list of keys that contain numerical data (i.e.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.regenerate_models.html#openpnm.network.FaceCenteredCubic.regenerate_models" title="openpnm.network.FaceCenteredCubic.regenerate_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regenerate_models</span></code></a>([propnames, exclude])</p></td>
-<td><p>Runs all the models stored in <code class="docutils literal notranslate"><span class="pre">models</span></code></p></td>
+<td><p>Runs all the models stored in the object's <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.run_model.html#openpnm.network.FaceCenteredCubic.run_model" title="openpnm.network.FaceCenteredCubic.run_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_model</span></code></a>(propname[, domain])</p></td>
-<td><p>Runs the requested model and places the result into the correct locations.</p></td>
+<td><p>Runs the requested model and places the result into the correct locations</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.network.FaceCenteredCubic.set_label.html#openpnm.network.FaceCenteredCubic.set_label" title="openpnm.network.FaceCenteredCubic.set_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_label</span></code></a>(label[, pores, throats, mode])</p></td>
 <td><p>Creates or updates a label array</p></td>

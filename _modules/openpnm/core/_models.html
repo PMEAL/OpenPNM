@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.core._models &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>openpnm.core._models &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -380,11 +380,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">names</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">name</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">names</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">names</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
-        <span class="n">D</span> <span class="o">=</span> <span class="n">PrintableDict</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;Model&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;Doamin&#39;</span><span class="p">)</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">PrintableDict</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;Model&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;Domain&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">D</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -410,7 +410,7 @@
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># Delete all models with the same prefix</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
                 <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -418,7 +418,7 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">PrintableDict</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;Model&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;Args&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
                     <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">d</span>
@@ -520,7 +520,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="n">ModelsDict</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ModelsMixin2.add_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.add_model.html#openpnm.phase.ModelsMixin2.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="ModelsMixin2.add_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.add_model.html#openpnm.phase.ModelsMixin2.add_model">[docs]</a>    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span>
                   <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a pore-scale model to the object, along with the desired arguments</span>
@@ -534,7 +534,7 @@
 <span class="sd">        model : function handle</span>
 <span class="sd">            The function that produces the values</span>
 <span class="sd">        domain : str</span>
-<span class="sd">            The label indicating which locations the results generated by</span>
+<span class="sd">            The label indicating the locations in which results generated by</span>
 <span class="sd">            ``model`` should be stored. See `Notes` for more details.</span>
 <span class="sd">        regen_mode : str</span>
 <span class="sd">            How the model should be regenerated. Options are:</span>
@@ -553,6 +553,9 @@
 <span class="sd">                         is not run when ``regenerate_models`` is called,</span>
 <span class="sd">                         effectively turning the property into a constant.</span>
 <span class="sd">            ============ =====================================================</span>
+
+<span class="sd">        kwargs : keyword arguments</span>
+<span class="sd">            All additional keyword arguments are passed on to the model</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -608,32 +611,40 @@
         <span class="c1"># Add model and regen_mode to kwargs dictionary</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span> <span class="s1">&#39;regen_mode&#39;</span><span class="p">:</span> <span class="n">regen_mode</span><span class="p">})</span>
         <span class="c1"># Insepct model to extract arguments and default values</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inspect_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">!=</span> <span class="s1">&#39;deferred&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_inspect_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{}):</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="vm">__defaults__</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">):]</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>  <span class="c1"># Put defaults into kwargs</span>
                 <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>  <span class="c1"># Skip if argument was given in kwargs</span>
                     <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">!=</span> <span class="s1">&#39;deferred&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">kwargs</span>
 
-<div class="viewcode-block" id="ModelsMixin2.add_model_collection"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.add_model_collection.html#openpnm.phase.ModelsMixin2.add_model_collection">[docs]</a>    <span class="k">def</span> <span class="nf">add_model_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelsMixin2.add_model_collection"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.add_model_collection.html#openpnm.phase.ModelsMixin2.add_model_collection">[docs]</a>    <span class="k">def</span> <span class="nf">add_model_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a collection of several models at once</span>
+<span class="sd">        Add a ``collection`` of several models at once</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        models : dict</span>
-<span class="sd">            The collection of models to add. Collections are dictionaries</span>
-<span class="sd">            that are formatted the same as ``obj.models``. Several model</span>
-<span class="sd">            collections are available in ``opnpnm.models.collections``.</span>
+<span class="sd">            The collection of models to add.</span>
 <span class="sd">        regen_mode : str</span>
 <span class="sd">            By default the models are not regenerated upon addition. See the</span>
 <span class="sd">            docstring for ``add_model`` for more information.</span>
 <span class="sd">        domain : str</span>
-<span class="sd">            The label indicate which pores/throats the supplied collection</span>
+<span class="sd">            The label indicating which locations the supplied collection</span>
 <span class="sd">            of models should be applied to.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Collections are dictionaries that are formatted the same as</span>
+<span class="sd">        ``obj.models``. Several model collections are available in</span>
+<span class="sd">        ``openpnm.models.collections``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">models</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -645,7 +656,7 @@
 
 <div class="viewcode-block" id="ModelsMixin2.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.regenerate_models.html#openpnm.phase.ModelsMixin2.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propnames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[]):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Runs all the models stored in ``models``</span>
+<span class="sd">        Runs all the models stored in the object&#39;s ``models`` attribute</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -685,29 +696,27 @@
 <div class="viewcode-block" id="ModelsMixin2.run_model"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ModelsMixin2.run_model.html#openpnm.phase.ModelsMixin2.run_model">[docs]</a>    <span class="k">def</span> <span class="nf">run_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the requested model and places the result into the correct</span>
-<span class="sd">        locations.</span>
+<span class="sd">        locations</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        propname : str</span>
-<span class="sd">            The name of the model to run. If a domain is included in the</span>
-<span class="sd">            propname (i.e. &#39;@domain&#39;) or ``domain`` is specified, then it</span>
-<span class="sd">            is solely run. If no domain is included than all models that</span>
-<span class="sd">            start with ``propname`` are run.</span>
+<span class="sd">            The name of the model to run.</span>
 <span class="sd">        domain : str</span>
 <span class="sd">            The label of the domain for which the model should be run. Passing</span>
 <span class="sd">            ``propname=&#39;pore.diameter@domain1`` and ``domain=None`` is</span>
 <span class="sd">            equivalent to passing ``propname=&#39;pore.diameter`` and</span>
-<span class="sd">            ``domain=domain1``.</span>
+<span class="sd">            ``domain=domain1``. Passing ``domain=None`` will regenerate</span>
+<span class="sd">            all models starting with ``propname``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>  <span class="c1"># Get domain from propname if present</span>
-                <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+                <span class="n">propname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># No domain means run model for ALL domains</span>
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
-                        <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+                        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># domain was given explicitly</span>
             <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>

@@ -225,8 +225,9 @@
    "id": "80b40010",
    "metadata": {},
    "source": [
-    "```{caution} Models are run when added\n",
-    "  When assigning a pore-scale model using the ``add_model`` function, it is automatically run, so it either overwrites any values present in ``phase1['pore.viscosity']`` or creates a new array in that location.  To prevent this behavior, for instance if a model needs other information to be computed before it's run, add ``regen_mode='deferred'`` to the argument list of the ``add_model`` method.\n",
+    "```{caution} **Models are run when added**\n",
+    "\n",
+    "    When assigning a pore-scale model using the ``add_model`` function, it is automatically run, so it either overwrites any values present in ``phase1['pore.viscosity']`` or creates a new array in that location.  To prevent this behavior, for instance if a model needs other information to be computed before it's run, add ``regen_mode='deferred'`` to the argument list of the ``add_model`` method.\n",
     "```"
    ]
   },
@@ -298,8 +299,9 @@
    "id": "3ad5c1d0",
    "metadata": {},
    "source": [
-    "```{tip} Overwriting existing models\n",
-    "  Assigning a new model with ``propname='pore.viscostiy'`` will overwrite the existing model that is stored in `pn.models['pore.viscosity@<domain>']`, which in this case was the custom model we defined above.\n",
+    "```{tip} **Overwriting existing models**\n",
+    "\n",
+    "    Assigning a new model with ``propname='pore.viscostiy'`` will overwrite the existing model that is stored in `pn.models['pore.viscosity@<domain>']`, which in this case was the custom model we defined above.\n",
     "```"
    ]
   },
@@ -308,8 +310,9 @@
    "id": "bc67cc5a",
    "metadata": {},
    "source": [
-    "```{seealso}\n",
-    "  OpenPNM also has specific models for **air** and **mercury**, which are also common. \n",
+    "```{seealso} **Predefined Fluids**\n",
+    "\n",
+    "    OpenPNM also has specific models for **air** and **mercury**, which are also common. \n",
     "```"
    ]
   },
@@ -485,8 +488,9 @@
    "id": "b0cd9e12",
    "metadata": {},
    "source": [
-    "```{note} Dependency checking \n",
-    "  Close inspection of the above printout reveals that `'pore.molar_density'` takes `'pore.density'` as an argument.  OpenPNM uses a graph-based dependency handler to ensure that `'pore.density'` is computed before `'pore.molar_denstiy'`.  This happens automatically when ``regenerate_model`` is called.  In some cases an error will occur if these dependencies form cycles which cannot be resolved.  This can be fixed by changing the name of one of the \"upstream\" models, for instance.\n",
+    "```{note} **Dependency checking **\n",
+    "\n",
+    "    Close inspection of the above printout reveals that `'pore.molar_density'` takes `'pore.density'` as an argument.  OpenPNM uses a graph-based dependency handler to ensure that `'pore.density'` is computed before `'pore.molar_denstiy'`.  This happens automatically when ``regenerate_model`` is called.  In some cases an error will occur if these dependencies form cycles which cannot be resolved.  This can be fixed by changing the name of one of the \"upstream\" models, for instance.\n",
     "```"
    ]
   },
@@ -505,8 +509,9 @@
    "id": "652cf887",
    "metadata": {},
    "source": [
-    "```{caution} Mixtues might be an unnecessary complication for you\n",
-    "  In most cases you probably do not need to use the ``Mixture`` class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the ``Mixture`` feature is the right choice.\n",
+    "```{caution} **Mixtures might be an unnecessary complication for you**\n",
+    "\n",
+    "    In most cases you probably do not need to use the ``Mixture`` class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the ``Mixture`` feature is the right choice.\n",
     "```"
    ]
   },
@@ -557,8 +562,9 @@
    "id": "87d3047a",
    "metadata": {},
    "source": [
-    "```{seealso} OpenPNM uses the \"chemicals\" and \"thermo\" packages behind the scenes\n",
-    "  The ``species`` argument is looked up using the ``thermo`` package which contains numerous synonyms for each species. This is argument is actually passed to ``thermo.Chemical``, which does the database look-up to fetch all the needed chemical properties.\n",
+    "```{seealso} **OpenPNM uses the `chemicals` and `thermo` packages behind the scenes**\n",
+    "\n",
+    "    The ``species`` argument is looked up using the ``thermo`` package which contains numerous synonyms for each species. This is argument is actually passed to ``thermo.Chemical``, which does the database look-up to fetch all the needed chemical properties.\n",
     "```"
    ]
   },
@@ -615,8 +621,9 @@
    "id": "dc90c5bc",
    "metadata": {},
    "source": [
-    "```{tip} The \"param\" prefix and \"params\" attribute\n",
-    "  You can access the values of these parameters either from the ``params`` attribute or using the dictionary lookup of the main object which will dispatch the query to the ``params`` attribute. \n",
+    "```{tip} **The \"param\" prefix and \"params\" attribute**\n",
+    "\n",
+    "    You can access the values of these parameters either from the ``params`` attribute or using the dictionary lookup of the main object which will dispatch the query to the ``params`` attribute. \n",
     "```"
    ]
   },
@@ -834,8 +841,9 @@
    "id": "e59097ee",
    "metadata": {},
    "source": [
-    "```{tip} Passing \"param.<propname>\" to a model\n",
-    "  The ability to fetch items from the ``params`` attribute via the standard dictionary look-up was added specifically to support the above behavior.  Within the function the following line is called: \n",
+    "```{tip} **Passing \"param.<propname>\" to a model**\n",
+    "\n",
+    "    The ability to fetch items from the ``params`` attribute via the standard dictionary look-up was added specifically to support the above behavior.  Within the function the following line is called: \n",
     "\n",
     "  ``Tcrit = phase[Tc]``\n",
     "\n",
@@ -1145,8 +1153,9 @@
    "id": "1944472c",
    "metadata": {},
    "source": [
-    "```{tip} Retrieving sub-dicts\n",
-    "  The mole fractions of *both* species can be retrieved using the `dict` lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys.\n",
+    "```{tip} **Retrieving sub-dicts**\n",
+    "\n",
+    "    The mole fractions of *both* species can be retrieved using the `dict` lookup without specifying which component.  OpenPNM will return a dictionary of both components with their names as they keys.\n",
     "```"
    ]
   },
@@ -1311,7 +1320,7 @@
    "id": "7d97a169",
    "metadata": {},
    "source": [
-    "### Exploring the Features of the Mixture Objects"
+    "### Exploring Features of the Mixture Objects"
    ]
   },
   {
@@ -1351,8 +1360,9 @@
    "id": "c257cab8",
    "metadata": {},
    "source": [
-    "```{note} \n",
-    "  A species is considered a component of a mixture *if and only if* ``'pore.mole_fraction.<species.name>'`` appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined. \n",
+    "```{note} **How a Component is Defined**\n",
+    "\n",
+    "    A species is considered a component of a mixture *if and only if* ``'pore.mole_fraction.<species.name>'`` appears in the mixture dictionary. Adding and removing the corresponding array from the dictionary is literally how the components are defined. \n",
     "```"
    ]
   },
@@ -1826,8 +1836,9 @@
    "id": "c2b5f23e",
    "metadata": {},
    "source": [
-    "```{note}\n",
-    "  In summary, ``air['pore.viscosity']`` will fetch the viscosity of the mixture, while ``air['pore.viscosity.oxygen']`` will retrieve the values of viscosity from ``o2``, and ``air['pore.viscosity.*']`` will fetch the viscosity from all the components and return them in a dictionary with each component name as the key.\n",
+    "```{note} **Component Look-ups**\n",
+    "\n",
+    "    In summary, ``air['pore.viscosity']`` will fetch the viscosity of the mixture, while ``air['pore.viscosity.oxygen']`` will retrieve the values of viscosity from ``o2``, and ``air['pore.viscosity.*']`` will fetch the viscosity from all the components and return them in a dictionary with each component name as the key.\n",
     "```"
    ]
   }
@@ -1848,7 +1859,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.7"
+   "version": "3.9.12"
   }
  },
  "nbformat": 4,

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -326,6 +326,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -445,7 +450,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ecafc9e489fb3e48b742ed53de7ea65b3ed356ce14d63f470bf109e2f6b80241.svg" src="../../_images/ecafc9e489fb3e48b742ed53de7ea65b3ed356ce14d63f470bf109e2f6b80241.svg" /></div>
+<img alt="../../_images/8469fb14003696336cc7968d33855e5be502c77d4fe6c4da185941d6c549d5b7.svg" src="../../_images/8469fb14003696336cc7968d33855e5be502c77d4fe6c4da185941d6c549d5b7.svg" /></div>
 </div>
 </section>
 <section id="geometry">
@@ -499,38 +504,36 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f75f4e0e400&gt;
+net : &lt;openpnm.network.Cubic at 0x7fad809b5c20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coordination_number                                        625 / 625
   2  pore.coords                                                     625 / 625
-  3  pore.diameter                                                   625 / 625
-  4  pore.max_size                                                   625 / 625
-  5  pore.seed                                                       625 / 625
-  6  pore.volume                                                     625 / 625
-  7  throat.conns                                                  1200 / 1200
-  8  throat.cross_sectional_area                                   1200 / 1200
-  9  throat.diameter                                               1200 / 1200
- 10  throat.diffusive_size_factors                                 1200 / 1200
- 11  throat.hydraulic_size_factors                                 1200 / 1200
- 12  throat.length                                                 1200 / 1200
- 13  throat.lens_volume                                            1200 / 1200
- 14  throat.max_size                                               1200 / 1200
- 15  throat.spacing                                                1200 / 1200
+  3  throat.conns                                                  1200 / 1200
+  4  pore.coordination_number                                        625 / 625
+  5  pore.max_size                                                   625 / 625
+  6  throat.spacing                                                1200 / 1200
+  7  pore.seed                                                       625 / 625
+  8  pore.diameter                                                   625 / 625
+  9  throat.max_size                                               1200 / 1200
+ 10  throat.diameter                                               1200 / 1200
+ 11  throat.cross_sectional_area                                   1200 / 1200
+ 12  throat.hydraulic_size_factors                                 1200 / 1200
+ 13  throat.diffusive_size_factors                                 1200 / 1200
+ 14  throat.lens_volume                                            1200 / 1200
+ 15  throat.length                                                 1200 / 1200
  16  throat.total_volume                                           1200 / 1200
  17  throat.volume                                                 1200 / 1200
+ 18  pore.volume                                                     625 / 625
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                              25
-  2  pore.domain_1                                                         625
-  3  pore.front                                                             25
+  2  pore.surface                                                           96
+  3  throat.surface                                                         96
   4  pore.left                                                              25
   5  pore.right                                                             25
-  6  pore.surface                                                           96
-  7  throat.domain_1                                                      1200
-  8  throat.surface                                                         96
+  6  pore.front                                                             25
+  7  pore.back                                                              25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -548,7 +551,7 @@ net : &lt;openpnm.network.Cubic at 0x7f75f4e0e400&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f39d46634709903519a1c13013d21e8f6e2bf76d06b9b7312fb1032c6da869f9.svg" src="../../_images/f39d46634709903519a1c13013d21e8f6e2bf76d06b9b7312fb1032c6da869f9.svg" /></div>
+<img alt="../../_images/b2a01a35f1e80b1a19cf911f9246053f44bb251d76f4032aa707142e7c7ea947.svg" src="../../_images/b2a01a35f1e80b1a19cf911f9246053f44bb251d76f4032aa707142e7c7ea947.svg" /></div>
 </div>
 </section>
 <section id="adjusting-pore-and-throat-sizes">
@@ -593,7 +596,7 @@ net : &lt;openpnm.network.Cubic at 0x7f75f4e0e400&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9fd7c9d95ea03e86a4a02e7b248155a3df0b127538691fbda889cdfed1577b33.svg" src="../../_images/9fd7c9d95ea03e86a4a02e7b248155a3df0b127538691fbda889cdfed1577b33.svg" /></div>
+<img alt="../../_images/805e09373b4de2dbf8a41b979a6388963db2057c5812778bdb53b1914a0f183a.svg" src="../../_images/805e09373b4de2dbf8a41b979a6388963db2057c5812778bdb53b1914a0f183a.svg" /></div>
 </div>
 </section>
 <section id="using-pre-defined-models-in-openpnm">
@@ -653,7 +656,7 @@ net : &lt;openpnm.network.Cubic at 0x7f75f4e0e400&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3d7683568ad514eac14aa60865b1153f951cb723c70f22a86c2e958d5863d26b.svg" src="../../_images/3d7683568ad514eac14aa60865b1153f951cb723c70f22a86c2e958d5863d26b.svg" /></div>
+<img alt="../../_images/e58abd566065acdd4d6f954328d44d1019c6b8b109fc646589bb8b86cc1d3c2d.svg" src="../../_images/e58abd566065acdd4d6f954328d44d1019c6b8b109fc646589bb8b86cc1d3c2d.svg" /></div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
 <div class="cell docutils container">
@@ -676,7 +679,7 @@ net : &lt;openpnm.network.Cubic at 0x7f75f4e0e400&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/66ecc0f24f49314aa80397d201452f84edb67d01c86d129da615abbe4657dbfd.svg" src="../../_images/66ecc0f24f49314aa80397d201452f84edb67d01c86d129da615abbe4657dbfd.svg" /></div>
+<img alt="../../_images/c0a8d2e34efc63b357bbd0a5b5e646fb6e28051dfc2ed26739ea71d01153b187.svg" src="../../_images/c0a8d2e34efc63b357bbd0a5b5e646fb6e28051dfc2ed26739ea71d01153b187.svg" /></div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
 <p>Plotting the network itself ahould ideally be done in Paraview, but a quick plot with <code class="docutils literal notranslate"><span class="pre">plot_networkx</span></code> shows the pore sizes.</p>
@@ -688,7 +691,7 @@ net : &lt;openpnm.network.Cubic at 0x7f75f4e0e400&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/fd4254bd84632968ac858b5b94a0cc53fd8e6f72c93adf6f14414934c8ce54a0.svg" src="../../_images/fd4254bd84632968ac858b5b94a0cc53fd8e6f72c93adf6f14414934c8ce54a0.svg" /></div>
+<img alt="../../_images/65ccf486f701ec22645e76231349a59961bd31f358b2b40614f2a77ddc351365.svg" src="../../_images/65ccf486f701ec22645e76231349a59961bd31f358b2b40614f2a77ddc351365.svg" /></div>
 </div>
 </section>
 </section>

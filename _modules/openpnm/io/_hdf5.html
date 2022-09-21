@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.io._hdf5 &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>openpnm.io._hdf5 &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -192,9 +192,9 @@
                 
   <h1>Source code for openpnm.io._hdf5</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">flatdict</span> <span class="kn">import</span> <span class="n">FlatDict</span>
 <span class="kn">from</span> <span class="nn">openpnm.io</span> <span class="kn">import</span> <span class="n">project_to_dict</span><span class="p">,</span> <span class="n">_parse_filename</span>
 <span class="kn">from</span> <span class="nn">h5py</span> <span class="kn">import</span> <span class="n">File</span> <span class="k">as</span> <span class="n">hdfFile</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -202,8 +202,7 @@
 
 <div class="viewcode-block" id="project_to_hdf5"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.project_to_hdf5.html#openpnm.io.project_to_hdf5">[docs]</a><span class="k">def</span> <span class="nf">project_to_hdf5</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an HDF5 file containing data from the specified objects,</span>
-<span class="sd">    and categorized according to the given arguments.</span>
+<span class="sd">    Creates an HDF5 file containing data from the specified objects</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -224,10 +223,13 @@
     <span class="n">filename</span> <span class="o">=</span> <span class="n">_parse_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;hdf&#39;</span><span class="p">)</span>
 
     <span class="n">dct</span> <span class="o">=</span> <span class="n">project_to_dict</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
-    <span class="n">d</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
 
     <span class="n">f</span> <span class="o">=</span> <span class="n">hdfFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
         <span class="n">tempname</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.io._paraview &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>openpnm.io._paraview &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -194,7 +194,7 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">flatdict</span> <span class="kn">import</span> <span class="n">FlatDict</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
 <div class="viewcode-block" id="project_to_paraview"><a class="viewcode-back" href="../../../modules/generated/openpnm.io.project_to_paraview.html#openpnm.io.project_to_paraview">[docs]</a><span class="k">def</span> <span class="nf">project_to_paraview</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
@@ -245,11 +245,17 @@
     <span class="n">p</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">Dict</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">],</span>
                            <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                            <span class="n">categorize_by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;data&#39;</span> <span class="s1">&#39;object&#39;</span><span class="p">])</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; | &#39;</span><span class="p">)</span>
+    <span class="c1"># The folloing lines are bit complex but avoid using the flatdict lib</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39; | &#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">Dict</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;throat&#39;</span><span class="p">],</span>
                            <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                            <span class="n">categorize_by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;data&#39;</span> <span class="s1">&#39;object&#39;</span><span class="p">])</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">FlatDict</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; | &#39;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="c1"># Now write the p and t dictionaries</span>
     <span class="n">net_vtp</span><span class="o">.</span><span class="n">CellArrayStatus</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="n">net_vtp</span><span class="o">.</span><span class="n">PointArrayStatus</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="c1"># Get active view</span>

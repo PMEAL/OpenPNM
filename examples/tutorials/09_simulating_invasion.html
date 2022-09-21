@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Simulating Invasion &#8212; OpenPNM 2.8.2.dev111141 documentation</title>
+    <title>Simulating Invasion &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -328,6 +328,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
+     Explanation of Units
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
      Basic Transport
     </a>
@@ -546,7 +551,7 @@ Imbibtion is quite a bit more challenging to simulate than drainage, since the m
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d6446f901226a9352a3b66d550c7afa2e968d2c46c4fd909f6630ecfeae6373c.png" src="../../_images/d6446f901226a9352a3b66d550c7afa2e968d2c46c4fd909f6630ecfeae6373c.png" />
+<img alt="../../_images/bca33e1be474076eaed47098f63674a919dfea6632cdd2ec957c07611f55dafb.png" src="../../_images/bca33e1be474076eaed47098f63674a919dfea6632cdd2ec957c07611f55dafb.png" />
 </div>
 </div>
 <p>The ‘black’ cluster extends from the left edge thoughout the domain, while the other colors are not connected to the left edge.  Physically speaking only a pores that are connected to the left edge can be filled, so all the other cluster numbers should be set to uninvaded. This is illustrated in the following block where the yellow pores are invaded:</p>
@@ -559,7 +564,7 @@ Imbibtion is quite a bit more challenging to simulate than drainage, since the m
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d51d255107a08e25cd82bee37469bb830c9a82839705b784bd22763297c945e3.png" src="../../_images/d51d255107a08e25cd82bee37469bb830c9a82839705b784bd22763297c945e3.png" />
+<img alt="../../_images/5176128c315f823548966aa463ec6452906fb0689edcfc2fc61fd0233b87445e.png" src="../../_images/5176128c315f823548966aa463ec6452906fb0689edcfc2fc61fd0233b87445e.png" />
 </div>
 </div>
 <p>The above process can yeild a capillary pressure or drainage curve be repeating for increaingly high values of ‘throat.entry_pressure’ until the entire domain is invaded. This is the process that is used in the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm.</p>
@@ -579,7 +584,7 @@ Imbibtion is quite a bit more challenging to simulate than drainage, since the m
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 919.90it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 1422.43it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -596,25 +601,25 @@ Imbibtion is quite a bit more challenging to simulate than drainage, since the m
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fd1244b64f0&gt;
+drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fccdcdab1d0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.invasion_pressure                                          625 / 625
-  2  pore.invasion_sequence                                          625 / 625
+  2  pore.invasion_pressure                                          625 / 625
   3  throat.invasion_pressure                                      1200 / 1200
-  4  throat.invasion_sequence                                      1200 / 1200
+  4  pore.invasion_sequence                                          625 / 625
+  5  throat.invasion_sequence                                      1200 / 1200
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                              625
-  2  pore.bc.inlet                                                          25
-  3  pore.bc.outlet                                                          0
-  4  pore.invaded                                                          625
-  5  pore.trapped                                                            0
-  6  throat.all                                                           1200
+  2  pore.all                                                              625
+  3  throat.all                                                           1200
+  4  pore.bc.inlet                                                          25
+  5  pore.bc.outlet                                                          0
+  6  pore.invaded                                                          625
   7  throat.invaded                                                       1200
-  8  throat.trapped                                                          0
+  8  pore.trapped                                                            0
+  9  throat.trapped                                                          0
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -638,7 +643,7 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fd1244b64f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7cdb8acde5e11d1eaed48de8325709da64b3fe5c1912f3f2b0ecf2c79b365a74.png" src="../../_images/7cdb8acde5e11d1eaed48de8325709da64b3fe5c1912f3f2b0ecf2c79b365a74.png" />
+<img alt="../../_images/aa72e1a75df480417a5c9fce8ae6b33cbee62da90e79cc58a736dc9d8ca55429.png" src="../../_images/aa72e1a75df480417a5c9fce8ae6b33cbee62da90e79cc58a736dc9d8ca55429.png" />
 </div>
 </div>
 <p>We can also apply trapping, which is done as a post processing step. This requires first specifying the outlet pores through which the wetting phase can escape, then running the <code class="docutils literal notranslate"><span class="pre">apply_trapping</span></code> method, which alters the <code class="docutils literal notranslate"><span class="pre">'invasion_pressure'</span></code> and <code class="docutils literal notranslate"><span class="pre">'invasion_sequence'</span></code> arrays. It sets <code class="docutils literal notranslate"><span class="pre">'invasion_pressure'</span></code> and <code class="docutils literal notranslate"><span class="pre">'invasion_sequence'</span></code> to <code class="docutils literal notranslate"><span class="pre">inf</span></code> to indicated trapped by pores/throats, so that they are not found when doing <code class="docutils literal notranslate"><span class="pre">drn['throat.invasion_pressure']</span> <span class="pre">&lt;</span> <span class="pre">p</span></code>.</p>
@@ -654,7 +659,7 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fd1244b64f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a0eea49e5a184d7260068100ec1132889d2cbe14479aba2df882d6bdbe775fcd.png" src="../../_images/a0eea49e5a184d7260068100ec1132889d2cbe14479aba2df882d6bdbe775fcd.png" />
+<img alt="../../_images/2bd1b18cc906c38b5404dcfe63438b5ad8f5cc526b540d2d9a010113b41359dd.png" src="../../_images/2bd1b18cc906c38b5404dcfe63438b5ad8f5cc526b540d2d9a010113b41359dd.png" />
 </div>
 </div>
 <p>One of the main uses of the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm is to simulate capillary pressure curves, and specifical mercury intrusion porosimetry. One of the main ways to calibrate a PNM is to ensure that the simulated MIP curve matches experimental data. Let’s simulate this:</p>
@@ -678,7 +683,7 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fd1244b64f0&gt;
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 841.61it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 1361.03it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -697,7 +702,7 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fd1244b64f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/20bfa7e760025ad0c58cef6f1ce29bbaf11a88bca939ed97b0c2a6c7e8a0af3c.png" src="../../_images/20bfa7e760025ad0c58cef6f1ce29bbaf11a88bca939ed97b0c2a6c7e8a0af3c.png" />
+<img alt="../../_images/e22e6620a9585f13b793482585bc63899f924c3397a61656fdc93ec3ac2c9027.png" src="../../_images/e22e6620a9585f13b793482585bc63899f924c3397a61656fdc93ec3ac2c9027.png" />
 </div>
 </div>
 <p>Trapping does not occur in an MIP experiment since the wetting phase (air) is evacuated prior to mercury injection, but we can still apply trapping to the simulations just for demonstration purposes:</p>
@@ -715,7 +720,7 @@ drainage_01 : &lt;openpnm.algorithms.Drainage at 0x7fd1244b64f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/39de8ec24e70b9f727a50758fa757ccedbfc9bdfc544c459566856efaa4167aa.png" src="../../_images/39de8ec24e70b9f727a50758fa757ccedbfc9bdfc544c459566856efaa4167aa.png" />
+<img alt="../../_images/01370c170a4999af3b594cba494ecb3a9d723125e20eea248530a23f4bc2c148.png" src="../../_images/01370c170a4999af3b594cba494ecb3a9d723125e20eea248530a23f4bc2c148.png" />
 </div>
 </div>
 <p>The impact of trapping is that the non-wetting phase saturations does not reach 1.0, but plateaus at some lower value.</p>
@@ -754,7 +759,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(9260.551831957264, 0), (9493.684102948077, 1), (5453.77236305936, 381)]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(9260.551831957262, 0), (9493.684102948075, 1), (5453.772363059359, 381)]
 </pre></div>
 </div>
 </div>
@@ -769,7 +774,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(5453.77236305936, 381), (9493.684102948077, 1), (9260.551831957264, 0)]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(5453.772363059359, 381), (9493.684102948075, 1), (9260.551831957262, 0)]
 </pre></div>
 </div>
 </div>
@@ -783,7 +788,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(5453.77236305936, 381)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(5453.772363059359, 381)
 </pre></div>
 </div>
 </div>
@@ -846,7 +851,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(5878.523914979103, 19), (8650.99821903632, 20), (9260.551831957264, 0), (9493.684102948077, 1), (9187.96117661225, 401)]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[(5878.523914979102, 19), (8650.998219036319, 20), (9260.551831957262, 0), (9493.684102948075, 1), (9187.961176612249, 401)]
 </pre></div>
 </div>
 </div>
@@ -875,7 +880,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/94dee4ac7538ed079b0461b7d16d96db0f435ec21c4e96a03b9251442faa29b2.png" src="../../_images/94dee4ac7538ed079b0461b7d16d96db0f435ec21c4e96a03b9251442faa29b2.png" />
+<img alt="../../_images/4b40e8a087950d9dfca689fe5c07a5015e0ffaf6af6771879644170ec3de3333.png" src="../../_images/4b40e8a087950d9dfca689fe5c07a5015e0ffaf6af6771879644170ec3de3333.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -906,7 +911,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f80c90dd3762de1e286c19856ac43f7ffad495bf18067755d721eba8ce294131.png" src="../../_images/f80c90dd3762de1e286c19856ac43f7ffad495bf18067755d721eba8ce294131.png" />
+<img alt="../../_images/0e166505aeece3aae1c5e7db8d2522e4ca038d42e19a4b00c776a06875a5d142.png" src="../../_images/0e166505aeece3aae1c5e7db8d2522e4ca038d42e19a4b00c776a06875a5d142.png" />
 </div>
 </div>
 <p>We can also apply trapping as a post processing step.  Like the <code class="docutils literal notranslate"><span class="pre">Drainage</span></code> algorithm, this sets the invasion sequence number for any trapped pores to <code class="docutils literal notranslate"><span class="pre">inf</span></code> so that invasion patterns can be found using boolean query (e.g. &lt; N).</p>
@@ -924,7 +929,7 @@ The curve shown above starts at a non-wetting phase saturation slightly above 0.
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5af858b203a00ee301e2149c9c6bbc4b30d7c7e57ca6a09c81d2f4cbebd97129.png" src="../../_images/5af858b203a00ee301e2149c9c6bbc4b30d7c7e57ca6a09c81d2f4cbebd97129.png" />
+<img alt="../../_images/a934776eb92d4ff555f77ead948790ed9683fea88694d0cfd3b37111256c4d46.png" src="../../_images/a934776eb92d4ff555f77ead948790ed9683fea88694d0cfd3b37111256c4d46.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -957,13 +962,13 @@ When <code class="docutils literal notranslate"><span class="pre">ip.run()</span
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation:   0%|          | 0/25 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 892.47it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Performing drainage simulation: 100%|██████████| 25/25 [00:00&lt;00:00, 1424.79it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<img alt="../../_images/583577c958a8ebbc24605ee061154668336c8cabd97fe936694067394a6ffd3a.png" src="../../_images/583577c958a8ebbc24605ee061154668336c8cabd97fe936694067394a6ffd3a.png" />
+<img alt="../../_images/1f8d2320ac5cd80850b6e0378ccbeeeaefb6b25d3aeb2039615bdd4f03160920.png" src="../../_images/1f8d2320ac5cd80850b6e0378ccbeeeaefb6b25d3aeb2039615bdd4f03160920.png" />
 </div>
 </div>
 <p>In the above cell we first set the volume of the inlet pores to 0, this ensures that both algorithms start with 0 invaded volume. Next we run both the algorithms with the ‘left’ pores as inlets, and neglect trapping, which assumes that the wetting phase remains connected via small films in corners and cracks. Plotting these results together reveals a few things.</p>
