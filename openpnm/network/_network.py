@@ -665,16 +665,6 @@ class Network(Domain):
         else:
             raise Exception('Cannot create mask on an unflattened output')
 
-    def _find_neighbors(self, pores, element, **kwargs):
-        element = self._parse_element(element=element, single=True)
-        if np.size(pores) == 0:
-            return np.array([], ndmin=1, dtype=int)
-        if element == 'pore':
-            neighbors = self.find_neighbor_pores(pores=pores, **kwargs)
-        else:
-            neighbors = self.find_neighbor_throats(pores=pores, **kwargs)
-        return neighbors
-
     def num_neighbors(self, pores, mode='or', flatten=False):
         r"""
         Returns the number of neigbhoring pores for each given input pore

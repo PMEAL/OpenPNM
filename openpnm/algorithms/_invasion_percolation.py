@@ -87,7 +87,7 @@ class InvasionPercolation(Algorithm):
         # self['pore.residual'] = False
         # self['throat.residual'] = False
 
-    def _set_residual(self, pores=None, throats=None, mode='add'):
+    def _set_residual(self, pores=None, throats=None, mode='add'):  # pragma: no cover
         raise NotImplementedError("The ability to add residual nwp is not ready yet")
         if mode == 'add':
             if pores is not None:
@@ -262,7 +262,8 @@ class InvasionPercolation(Algorithm):
             self['throat.invasion_sequence'].astype(float)
         self['throat.invasion_sequence'][Tmask] = np.inf
 
-    def _apply_trapping_slow(self, step_size=1, mode='mixed'):
+    def _apply_trapping_slow(self, step_size=1, mode='mixed'):  # pragma: no cover
+        # TODO: Make sure this function actually works and keep it for debugging
         N = self['throat.invasion_sequence'].max()
         pseq = self['pore.invasion_sequence']
         tseq = self['throat.invasion_sequence']

@@ -172,7 +172,7 @@ def gas_mixture_fw(
     P='pore.pressure',
     MWs='param.molecular_weight.*',
     Vdms='pore.molar_diffusion_volume.*',
-):
+):  # pragma: no cover
     r"""
     Estimates the diffusion coeffient of each species in a gas mixture
 

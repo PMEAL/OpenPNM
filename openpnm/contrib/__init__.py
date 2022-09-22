@@ -10,4 +10,4 @@ removed.
 """
 
 from ._transient_multiphysics import *
-from ._multiphase import MultiPhase
+from ._multiphase import *

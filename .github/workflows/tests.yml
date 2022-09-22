@@ -47,12 +47,18 @@ jobs:
             -r requirements.txt \
             -r requirements/tests.txt
 
+      - name: Disable numba JIT for codecov to include jitted methods
+        if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
+        run: |
+          echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
+
       - name: Running tests
         run:
           pytest .
             --cov=.
             --cov-report=xml
             --color=yes
+
 
       - name: Upload coverage to Codecov
         if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
