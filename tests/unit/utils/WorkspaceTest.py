@@ -41,12 +41,6 @@ class WorkspaceTest:
     #     assert old_name not in self.ws.keys()
     #     self.ws.clear()
 
-    def test_str(self):
-        op.network.Cubic(shape=[3, 3, 3])
-        s = self.ws.__str__().split('\n')
-        assert len(s) == 8
-        self.ws.clear()
-
     # def test_save_and_load_project(self):
     #     proj = self.ws.new_project('test_proj')
     #     net = op.network.Cubic(shape=[3, 3, 3], project=proj)

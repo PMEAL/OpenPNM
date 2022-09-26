@@ -194,7 +194,7 @@ class ModelsDict(PrintableDict):
         D = PrintableDict(names, key='Model', value='Domain')
         return D
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         horizontal_rule = '―' * 85
         lines = [horizontal_rule]
         strg = '{0:<3s} {1:<35s} {2:<25s} {3}'
@@ -287,7 +287,7 @@ class ModelWrapper(dict):
         prop, domain = prop.split('@')
         return element + '.' + domain
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
         strg = '{0:<25s} {1:<25s} {2}'

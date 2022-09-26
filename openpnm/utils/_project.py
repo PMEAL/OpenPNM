@@ -25,7 +25,7 @@ class SimpleList:
         else:
             self._list = list()
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return self._list.__repr__()
 
     def __len__(self):
@@ -40,7 +40,7 @@ class SimpleList:
     def __delitem__(self, ii):
         del self._list[ii]
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return str(self._list)
 
     def __iter__(self):
@@ -223,7 +223,7 @@ class Project(SimpleList):
     def workspace(self):
         return ws
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         hr = '―'*78
         s = '═'*78 + '\n'
         s += 'Object Name : Object Class and ID' + '\n'

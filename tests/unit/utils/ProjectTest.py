@@ -315,12 +315,6 @@ class ProjectTest:
         b = self.proj[a.name]
         assert a is b
 
-    # def test_print(self):
-    #     proj = self.proj
-    #     s = proj.__str__()
-    #     # 13 rows
-    #     assert len(s.split('\n')) == 13
-
     # def test_save_and_load_object(self):
     #     proj = self.proj
     #     name = proj.network.name

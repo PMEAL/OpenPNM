@@ -173,7 +173,7 @@ class SettingsAttr:
     def __setitem__(self, key, value):
         setattr(self, key, value)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         d = PrintableDict(key="Settings", value="Values")
         d.update(self.__dict__)
         for item in self.__dir__():
@@ -181,5 +181,5 @@ class SettingsAttr:
                 d[item] = getattr(self, item)
         return d.__str__()
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return self.__str__()

@@ -175,7 +175,7 @@ class Mixture(Phase):
             z = z**(1/power)
         return z
 
-    # def __str__(self):
+    # def __str__(self):  # pragma: no cover
     #     hr = '―' * 78
     #     lines = '\n' + 'Component Phases'
     #     for item in self.components.values():

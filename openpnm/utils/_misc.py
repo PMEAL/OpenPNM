@@ -83,7 +83,7 @@ class PrintableList(list):
         lines.append(horizontal_rule)
         return "\n".join(lines)
 
-    # def __repr__(self):
+    # def __repr__(self):  # pragma: no cover
     #     return self.__str__()
 
 
@@ -116,7 +116,7 @@ class PrintableDict(dict):
         self._key = key
         super().__init__(*args, **kwargs)
 
-    # def __repr__(self):
+    # def __repr__(self):  # pragma: no cover
     #     return self.__str__()
 
     def __str__(self):

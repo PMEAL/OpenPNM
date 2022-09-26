@@ -81,7 +81,7 @@ class Base2(dict):
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         module = self.__module__
         module = ".".join([x for x in module.split(".") if not x.startswith("_")])
         cname = self.__class__.__name__
@@ -527,7 +527,7 @@ class Base2(dict):
             raise KeyError(f'{propname} not found')
         return vals
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         hr = '―' * 78
         lines = ''
         lines += '\n' + "═"*78 + '\n' + self.__repr__() + '\n' + hr + '\n'
