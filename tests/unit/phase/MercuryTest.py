@@ -2,10 +2,10 @@ import openpnm as op
 import numpy.testing as nptest
 
 
-class WaterTest:
+class MercuryTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.phase = op.phase.Water(network=self.net)
+        self.phase = op.phase.Mercury(network=self.net)
 
     def test_generic_prop_with_temperature(self):
         T1 = 298.0
@@ -13,33 +13,28 @@ class WaterTest:
         vals = {
             'pore.viscosity':
                 {
-                    T1: 0.000893190947459112,
-                    T2: 0.00046734380929754017,
+                    T1: 0.0015360551647071996,
+                    T2: 0.0014046786779692,
                 },
             'pore.density':
                 {
-                    T1: 996.9522269370573,
-                    T2: 983.3169657125407,
+                    T1: 13544.82808,
+                    T2: 13458.37668,
                 },
             'pore.thermal_conductivity':
                 {
-                    T1: 0.6104761069075901,
-                    T2: 0.6500614873117142,
+                    T1: 8.514606495199999,
+                    T2: 8.9719517682,
                 },
             'pore.molar_density':
                 {
-                    T1: 55339.25794864455,
-                    T2: 54582.3859364129,
+                    T1: 67524.9418216262,
+                    T2: 67093.95622912409,
                 },
             'pore.surface_tension':
                 {
-                    T1: 0.07199532948823899,
-                    T2: 0.06626423376953479,
-                },
-            'pore.vapor_pressure':
-                {
-                    T1: 3150.408314323942,
-                    T2: 19812.906299267815,
+                    T1: 0.4791000000000001,
+                    T2: 0.46930000000000005,
                 },
         }
         for prop in vals.keys():
@@ -56,7 +51,7 @@ class WaterTest:
 
 if __name__ == '__main__':
 
-    t = WaterTest()
+    t = MercuryTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

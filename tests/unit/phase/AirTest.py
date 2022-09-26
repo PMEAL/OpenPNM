@@ -2,10 +2,10 @@ import openpnm as op
 import numpy.testing as nptest
 
 
-class WaterTest:
+class AirTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.phase = op.phase.Water(network=self.net)
+        self.phase = op.phase.Air(network=self.net)
 
     def test_generic_prop_with_temperature(self):
         T1 = 298.0
@@ -13,33 +13,28 @@ class WaterTest:
         vals = {
             'pore.viscosity':
                 {
-                    T1: 0.000893190947459112,
-                    T2: 0.00046734380929754017,
+                    T1: 1.8444445170912796e-05,
+                    T2: 2.00725794239133e-05,
                 },
             'pore.density':
                 {
-                    T1: 996.9522269370573,
-                    T2: 983.3169657125407,
+                    T1: 1.1798234085231065,
+                    T2: 1.0558179451648222,
                 },
             'pore.thermal_conductivity':
                 {
-                    T1: 0.6104761069075901,
-                    T2: 0.6500614873117142,
+                    T1: 0.026369425206800003,
+                    T2: 0.028787674351300006,
+                },
+            'pore.diffusivity':
+                {
+                    T1: 2.0946939351898755e-05,
+                    T2: 2.5440141454852606e-05,
                 },
             'pore.molar_density':
                 {
-                    T1: 55339.25794864455,
-                    T2: 54582.3859364129,
-                },
-            'pore.surface_tension':
-                {
-                    T1: 0.07199532948823899,
-                    T2: 0.06626423376953479,
-                },
-            'pore.vapor_pressure':
-                {
-                    T1: 3150.408314323942,
-                    T2: 19812.906299267815,
+                    T1: 40.89461870781484,
+                    T2: 36.596385510296765,
                 },
         }
         for prop in vals.keys():
@@ -56,7 +51,7 @@ class WaterTest:
 
 if __name__ == '__main__':
 
-    t = WaterTest()
+    t = AirTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
