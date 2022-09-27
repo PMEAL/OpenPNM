@@ -6,6 +6,7 @@ __all__ = [
     'water_correlation',
     'gas_pure_gismr',
     'liquid_pure_gismr',
+    'liquid_pure_sr',
     'gas_mixture_whz',
     'liquid_mixture_DIPPR9H',
 ]
