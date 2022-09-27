@@ -50,6 +50,14 @@ default_argmap = {
 }
 
 
+mixture_argmap = {
+    'xs': 'pore.mole_fraction',
+    'ys': 'pore.mole_fraction',
+    'ks': 'pore.thermal_conductivity.*',
+    'ws': 'pore.mass_fraction',
+}
+
+
 def chemicals_wrapper(phase, f, **kwargs):
     r"""
     Wrapper function for calling models in the ``chemicals`` package

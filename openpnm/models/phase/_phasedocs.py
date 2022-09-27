@@ -158,4 +158,8 @@ _phasedocs = Substitution(
             concentration values, in units of [mol/L].
             If a numerical value is passed (i.e. a scalar or ndarray)
             it gets used directly.""",
+    zs=
+    r"""T : str (dict key)
+            Name of the dictionary key on ``phase`` containing the ndarray of
+            mole fraction values.""",
 )

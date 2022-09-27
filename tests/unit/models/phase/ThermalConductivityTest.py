@@ -1,5 +1,7 @@
 import openpnm as op
 import chemicals
+import inspect
+import numpy as np
 from thermo import Chemical
 from numpy.testing import assert_approx_equal, assert_allclose
 from openpnm.utils import get_mixture_model_args
@@ -118,6 +120,54 @@ class ThermalConductivityTest:
         for f in mods:
             vals.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(vals, 2.898e-1, rtol=1.5)
+
+    def test_pure_liquid_thermal_conductivity_models(self):
+        pn = op.network.Demo()
+        phase = op.phase.Species(network=pn, species='water')
+        argmap = op.models.phase.default_argmap
+        vals = {
+            'Gharagheizi_liquid': op.models.phase.thermal_conductivity.liquid_pure_gismr,
+            'Sato_Riedel': op.models.phase.thermal_conductivity.liquid_pure_sr
+        }
+        for k, v in vals.items():
+            print(f'Testing {k}')
+            f = getattr(chemicals.thermal_conductivity, k)
+            args = inspect.getfullargspec(f)[0]
+            kwargs = {i: np.atleast_1d(phase[argmap[i]])[0] for i in args}
+            ref = f(**kwargs)
+            val = v(phase)[0]
+            assert_allclose(ref, val, rtol=1e-13)
+
+    def test_liquid_mixture_thermal_conductivity_models(self):
+        pn = op.network.Demo()
+        a = op.phase.StandardLiquid(network=pn, species='water')
+        b = op.phase.StandardLiquid(network=pn, species='ethanol')
+        phase = op.phase.StandardLiquidMixture(network=pn, components=[a, b])
+        phase.add_model(propname='pore.mass_fraction',
+                        model=op.models.phase.mixtures.mole_to_mass_fraction,
+                        regen_mode='deferred')
+        phase.x(a, 0.5)
+        phase.x(b, 0.5)
+        phase.regenerate_models()
+        argmap = op.models.phase.default_argmap
+        argmap.update(op.models.phase.mixture_argmap)
+        vals = {
+            'DIPPR9H': op.models.phase.thermal_conductivity.liquid_mixture_DIPPR9H,
+        }
+        for k, v in vals.items():
+            print(f'Testing {k}')
+            f = getattr(chemicals.thermal_conductivity, k)
+            args = inspect.getfullargspec(f)[0]
+            # Get the first element from each prop array
+            kwargs = {i: np.atleast_1d(phase[argmap[i]])[0] for i in args}
+            # If a dict was returned, take first element from each and put into list
+            for item in list(kwargs.keys()):
+                if hasattr(kwargs[item], 'keys'):
+                    kwargs[item] = \
+                        [kwargs[item][comp][0] for comp in phase.components.keys()]
+            ref = f(**kwargs)
+            val = v(phase)[0]
+            assert_allclose(ref, val, rtol=1e-13)
 
 
 if __name__ == '__main__':
