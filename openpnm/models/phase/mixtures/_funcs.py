@@ -7,6 +7,7 @@ __all__ = [
     'mixing_rule',
     'mole_summation',
     'from_component',
+    'mole_to_mass_fraction',
 ]
 
 
@@ -104,6 +105,35 @@ def mixing_rule(
             z += xs[i]*ys[i]**power
         z = z**(1/power)
     return z
+
+
+@_phasedocs
+def mole_to_mass_fraction(
+    phase,
+    MWs='param.molecular_weight'
+):
+    r"""
+    Computes the mass fraction in each pore
+
+    Parameters
+    ----------
+    %(phase)s
+    %(MWs)s
+
+    Returns
+    -------
+    ws : ndarray
+        An ndarray containing the mass fraction in each pore computed from
+        the mole fractions of each component and their molecular weights.
+    """
+    xs = phase['pore.mole_fraction']
+    MW = phase.get_comp_vals(MWs)
+    num = [xs[k]*MW[k] for k in xs.keys()]
+    denom = np.sum(num, axis=0)
+    ws = num/denom
+    comps = list(phase.components.keys())
+    d = {comps[i]: ws[i, :] for i in range(len(comps))}
+    return d
 
 
 @_phasedocs
