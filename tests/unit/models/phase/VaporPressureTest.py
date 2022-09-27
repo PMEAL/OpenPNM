@@ -1,5 +1,6 @@
 import numpy as np
 import openpnm as op
+import inspect
 from numpy.testing import assert_approx_equal, assert_array_almost_equal, assert_allclose
 import chemicals
 
@@ -57,6 +58,27 @@ class VaporPressureTest:
         for f in mods:
             vals.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(vals, 2.762e3, rtol=.5)
+
+    def test_pure_liquid_vapor_pressure_models(self):
+        pn = op.network.Demo()
+        phase = op.phase.Species(network=pn, species='water')
+        argmap = op.models.phase.default_argmap
+        vals = {
+            'Lee_Kesler': op.models.phase.vapor_pressure.liquid_pure_lk,
+            # 'Antoine': op.models.phase.vapor_pressure.liquid_pure_antoine,
+        }
+        data = chemicals.vapor_pressure.Psat_data_AntoinePoling
+        for k, v in vals.items():
+            print(f'Testing {k}')
+            f = getattr(chemicals.vapor_pressure, k)
+            args = inspect.getfullargspec(f)[0]
+            # args = args[0][:-len(args.defaults)]
+            kwargs = {i: np.atleast_1d(phase[argmap[i]])[0] for i in args}
+            # if len(set(args).intersection(set(['A', 'B', 'C']))) == 3:
+                # kwargs.update({i: data.loc[phase.params['CAS']][i] for i in ['A', 'B', 'C']})
+            ref = f(**kwargs)
+            val = v(phase)[0]
+            assert_allclose(ref, val, rtol=1e-13)
 
 
 if __name__ == '__main__':
