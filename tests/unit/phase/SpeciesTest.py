@@ -43,6 +43,14 @@ class SpeciesTest:
         assert_allclose(o2['pore.thermal_conductivity'].mean(), a.kg, rtol=0.5)
         # assert_allclose(o2['pore.viscosity'].mean(), a.mug, rtol=0.5)
 
+    def test_get_mixture(self):
+        net = op.network.Demo()
+        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        air = op.phase.GasMixture(network=net, components=[n2, o2])
+        assert air is o2.mixture
+        assert air is n2.mixture
+
 
 if __name__ == '__main__':
 
