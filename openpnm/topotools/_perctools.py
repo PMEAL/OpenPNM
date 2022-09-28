@@ -20,15 +20,24 @@ __all__ = [
 
 
 def find_path(network, pore_pairs, weights=None):
-    am = network.create_adjacency_matrix(weights=weights)
-    return queries.find_path(am, pairs=pore_pairs)
+    return queries.find_path(g=network, pairs=pore_pairs, weights=weights)
 
 
 find_path.__doc__ = queries.find_path.__doc__
 
 
-def ispercolating(**kwargs):
-    return simulations.ispercolating(**kwargs)
+def ispercolating(network, inlets, outlets):
+    if np.array(inlets).dtype == bool:
+        inlets = np.where(inlets)[0]
+    if np.array(outlets).dtype == bool:
+        outlets = np.where(outlets)[0]
+    flag = simulations.ispercolating(
+        conns=network.conns,
+        occupied=np.ones(network.Nt, dtype=bool),
+        inlets=inlets,
+        outlets=outlets
+    )
+    return flag
 
 
 ispercolating.__doc__ = simulations.ispercolating.__doc__
@@ -41,15 +50,15 @@ def remove_isolated_clusters(**kwargs):
 remove_isolated_clusters.__doc__ = simulations.remove_isolated_clusters.__doc__
 
 
-def site_percolation(conns, occupied_sites):
-    return simulations.site_percolation(conns, occupied_sites)
+def site_percolation(network, occupied_sites):
+    return simulations.site_percolation(network.conns, occupied_sites)
 
 
 site_percolation.__doc__ = simulations.site_percolation.__doc__
 
 
-def bond_percolation(conns, occupied_bonds):
-    return simulations.bond_percolation(conns, occupied_bonds)
+def bond_percolation(network, occupied_bonds):
+    return simulations.bond_percolation(network.conns, occupied_bonds)
 
 
 bond_percolation.__doc__ = simulations.bond_percolation.__doc__

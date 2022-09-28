@@ -225,45 +225,34 @@ def remove_isolated_clusters(labels, inlets):
     return labels
 
 
-def ispercolating(am, inlets, outlets, mode='site'):
+def ispercolating(conns, occupied, inlets, outlets):
     r"""
     Determines if a percolating clusters exists in the network spanning
     the given inlet and outlet nodes
 
     Parameters
     ----------
-    am : adjacency_matrix
-        The adjacency matrix with the ``data`` attribute indicating
-        if an egde is occupied or not.
+    conns : array_like
+        An N x 2 array connections. If two connected sites are both occupied
+        they are part of the same cluster, as is the bond connecting them.
+    occupied : array_like
+        A boolean array with ``True`` values indicating if a bond or site
+        is occupied.  If the length of this array is equal to the number
+        of bonds (i.e. ``conns.shape[0]``) then bond percolation is assumed,
+        otherwise site percolation is assumed.
     inlets : array_like
         An array of indices indicating which nodes are part of the inlets
     outlets : array_like
         An array of indices indicating which nodes are part of the outlets
-    mode : str
-        Indicates which type of percolation to apply. Options are:
-
-        ===========  =====================================================
-        mode         meaning
-        ===========  =====================================================
-        'site'       Applies site percolation
-        'bond'       Applies bond percolation
-        'mixed'      Applies combination of site and bond
-        ===========  =====================================================
-
     """
-    if am.format != 'coo':
-        am = am.to_coo()
-    ij = np.vstack((am.col, am.row)).T
+    if occupied.size == conns.shape[0]:
+        mode = 'bond'
+    else:
+        mode = 'site'
     if mode.startswith('site'):
-        occupied_sites = np.zeros(shape=am.shape[0], dtype=bool)
-        occupied_sites[ij[am.data].flatten()] = True
-        clusters = site_percolation(ij, occupied_sites)
+        clusters = site_percolation(conns, occupied)
     elif mode.startswith('bond'):
-        occupied_bonds = am.data
-        clusters = bond_percolation(ij, occupied_bonds)
-    elif mode.startswith('mixed'):
-        # TODO: implement this
-        raise NotImplementedError()
+        clusters = bond_percolation(conns, occupied)
     ins = np.unique(clusters.site_labels[inlets])
     if ins[0] == -1:
         ins = ins[1:]
