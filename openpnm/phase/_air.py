@@ -34,7 +34,7 @@ class Air(Phase):
         self.regenerate_models()
 
 
-class _AirMixture(StandardGasMixture):
+class _AirMixture(StandardGasMixture):  # pragma: no cover
 
     def __init__(self, network, **kwargs):
         o2 = StandardGas(network=network, species='o2')

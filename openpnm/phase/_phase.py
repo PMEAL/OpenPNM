@@ -78,8 +78,6 @@ class Phase(Domain):
         # Next get the data arrays, this is the case if @ notation was used
         if element + '.' + prop in self.keys():
             vals = super().__getitem__(element + '.' + prop)
-        # elif element + '.' + prop in self.network.keys():
-        #     vals = self.network[element + '.' + prop]
         else:  # If above are not triggered then try to interpolate
             if self.settings['auto_interpolate']:
                 if (element == 'pore') and ('throat.'+prop not in self.keys()):
@@ -100,20 +98,4 @@ class Phase(Domain):
         else:
             raise KeyError(element + '.' + domain)
 
-        # Next get the data arrays
-        if element + '.' + prop in self.keys():
-            vals = super().__getitem__(element + '.' + prop)
-        # elif element + '.' + prop in self.network.keys():
-        #     vals = self.network[element + '.' + prop]
-        else:
-            if self.settings['auto_interpolate']:
-                if (element == 'pore') and ('throat.'+prop not in self.keys()):
-                    msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
-                    raise KeyError(msg)
-                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                    msg = f"'pore.{prop}', cannot interpolate '{element}.{prop}'"
-                    raise KeyError(msg)
-                vals = self.interpolate_data(element + '.' + prop)
-            else:
-                raise KeyError(key)
         return vals[locs]

@@ -1,5 +1,6 @@
 import openpnm as op
 import numpy as np
+import pytest
 
 
 class MixtureTest:
@@ -95,6 +96,44 @@ class MixtureTest:
         d = air['pore.mole_fraction']
         set_a = set(['pure_N2', 'pure_O2'])
         assert set_a.difference(set(d.keys())) == set()
+
+    def test_getitem_with_species(self):
+        net = op.network.Demo()
+        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        air = op.phase.GasMixture(network=net, components=[n2, o2])
+        mu1 = air['pore.viscosity.pure_N2']
+        mu2 = air['pore.viscosity.pure_O2']
+        assert not np.all(mu1 == mu2)
+
+    def test_get_comp(self):
+        net = op.network.Demo()
+        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        air = op.phase.GasMixture(network=net, components=[n2, o2])
+        del o2['pore.viscosity']
+        _ = air['pore.viscosity.pure_N2']
+        with pytest.raises(KeyError):
+            _ = air['pore.viscosity.pure_O2']
+
+    def test_get_mix_vals(self):
+        net = op.network.Demo()
+        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        air = op.phase.GasMixture(network=net, components=[n2, o2])
+        mu1 = air.get_mix_vals('pore.viscosity')
+        # Mole fraction weighting won't work without mole fractions
+        assert np.all(np.isnan(mu1))
+        air.y(o2.name, 0.5)
+        air.y(n2.name, 0.5)
+        mu2 = air.get_mix_vals('pore.viscosity')
+        assert np.all(np.isreal(mu2))
+        # Assert each method works and returns something different
+        mu3 = air.get_mix_vals('pore.viscosity', mode='logarithmic')
+        mu4 = air.get_mix_vals('pore.viscosity', mode='power', power=2)
+        assert not np.all(mu2 == mu3)
+        assert not np.all(mu3 == mu4)
+        assert not np.all(mu2 == mu4)
 
     def test_regenerate_components(self):
         net = op.network.Demo()
