@@ -30,7 +30,7 @@ class PerctoolsTest:
         assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
         assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
 
-    def test_ispercolating_bond(self):
+    def test_ispercolating(self):
         pn = op.network.Demo(shape=[4, 4, 1])
         flag = op.topotools.ispercolating(
             network=pn,
@@ -50,8 +50,13 @@ class PerctoolsTest:
             outlets=pn.pores('right'))
         assert not flag
 
-    def test_remove_isolated_clusters(self):
-        pass
+    def test_find_isolated_clusters(self):
+        pn = op.network.Demo(shape=[4, 4, 1])
+        plabels = np.zeros_like(pn.Ps)
+        tlabels = np.zeros_like(pn.Ts)
+        labels = op.topotools.remove_isolated_clusters(
+
+            )
 
     def test_site_percolation(self):
         pass
