@@ -1161,7 +1161,7 @@ def get_domain_length(network, inlets=None, outlets=None):
     """
     msg = ('Attempting to estimate domain length...could be low if'
            ' boundary pores were not added')
-    logger.warning(prettify_logger_message(msg))
+    logger.warning(msg)
     inlets = network.coords[inlets]
     outlets = network.coords[outlets]
     if not iscoplanar(inlets):
