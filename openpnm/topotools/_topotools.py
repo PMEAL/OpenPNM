@@ -4,7 +4,7 @@ import scipy as sp
 from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import Workspace, prettify_logger_message
+from openpnm.utils import Workspace
 import openpnm._skgraph as skgr
 
 

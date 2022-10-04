@@ -7,7 +7,6 @@ from openpnm.utils import (
     PrintableDict,
     Workspace,
     is_valid_propname,
-    prettify_logger_message,
 )
 
 
