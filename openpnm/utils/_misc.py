@@ -24,7 +24,6 @@ __all__ = [
     'is_valid_propname',
     'is_transient',
     'get_mixture_model_args',
-    'prettify_logger_message',
     'dict_to_struct',
     'struct_to_dict',
     'get_printable_props',
@@ -417,15 +416,6 @@ def is_symmetric(a, rtol=1e-10):
     return issym
 
 
-def prettify_logger_message(msg):
-    """Prettifies logger messages by breaking them up into multi lines"""
-    from textwrap import wrap
-    linewidth = 75 - 13
-    indent = "\n" + " " * 13
-    temp = wrap(msg, width=linewidth)
-    return indent.join(temp)
-
-
 def get_mixture_model_args(
     phase,
     composition='xs',
@@ -669,17 +659,3 @@ def nbr_to_str(nbr, t_precision=12):
             * (round(nbr, t_precision) != int(nbr)))
     nbr_str = (str(int(round(nbr, t_precision)*10**n)) + ('e-'+str(n))*(n != 0))
     return nbr_str
-
-
-def prettify_logger_message(msg):
-    r"""Prettifies logger messages by breaking them up into multi lines"""
-    from textwrap import wrap
-    try:
-        terminal_width = os.get_terminal_size().columns
-    except OSError:
-        terminal_width = 60
-    logger_prefix_length = 13
-    column_width = terminal_width - logger_prefix_length
-    indent = "\n" + " " * logger_prefix_length
-    temp = wrap(msg, width=column_width)
-    return indent.join(temp)
