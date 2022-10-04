@@ -2,7 +2,7 @@ import logging
 import heapq as hq
 import numpy as np
 from numba import njit, jit
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from collections import namedtuple
 from openpnm.utils import Docorator
 from openpnm.algorithms import Algorithm

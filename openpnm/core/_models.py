@@ -497,7 +497,7 @@ class ModelsMixin2:
             except KeyError as e:
                 msg = (f"{item} was not run since the following property"
                        f" is missing: {e}")
-                logger.warning(prettify_logger_message(msg))
+                logger.warning(msg)
                 self.models[item]['regen_mode'] = 'deferred'
 
     def run_model(self, propname, domain=None):

@@ -166,7 +166,7 @@ class Transport(Algorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()
 
-    def run(self, solver=None, x0=None, verbose=True):
+    def run(self, solver=None, x0=None, verbose=False):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.

@@ -1,5 +1,5 @@
 import numpy as np
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from collections import namedtuple
 from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator, TypedSet

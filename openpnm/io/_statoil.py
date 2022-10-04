@@ -5,7 +5,7 @@ from openpnm.topotools import trim, extend
 from openpnm.network import Network
 from pathlib import Path
 from pandas import read_table, DataFrame
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 logger = logging.getLogger(__name__)
