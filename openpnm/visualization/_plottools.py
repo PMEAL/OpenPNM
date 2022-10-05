@@ -127,7 +127,7 @@ def plot_connections(network,
         fig, ax = plt.subplots()
     else:
         # The next line is necessary if ax was created using plt.subplots()
-        fig, ax = ax.get_figure(), ax
+        fig, ax = ax.get_figure(), ax.get_figure().gca()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -279,7 +279,7 @@ def plot_coordinates(network,
         fig, ax = plt.subplots()
     else:
         # The next line is necessary if ax was created using plt.subplots()
-        fig, ax = ax.get_figure(), ax
+        fig, ax = ax.get_figure(), ax.get_figure().gca()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
