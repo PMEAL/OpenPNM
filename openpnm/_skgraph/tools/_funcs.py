@@ -202,7 +202,7 @@ def isoutside(g, shape, rtol=0.0):
     return Ps
 
 
-def dimensionality(g):
+def dimensionality(g, cache=True):
     r"""
     Checks the dimensionality of the network
 
@@ -210,6 +210,9 @@ def dimensionality(g):
     ----------
     g : dict
         The graph dictionary
+    cache : boolean, optional (default is True)
+        If ``False`` then the dimensionality is recalculated even if it has
+        already been calculated and stored in the graph dictionary.
 
     Returns
     -------
@@ -219,10 +222,18 @@ def dimensionality(g):
         in that dimension.
 
     """
+    if cache:
+        try:
+            return g.params["dimensionality"]
+        # union of KeyErroa and AttributeError
+        except (KeyError, AttributeError):
+            pass
     n = get_node_prefix(g)
     coords = g[n+'.coords']
     eps = np.finfo(float).resolution
     dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
+    if cache:
+        g["params.dimensionality"] = np.array(dims_unique)
     return np.array(dims_unique)
 
 
@@ -310,6 +321,7 @@ def find_surface_nodes(g):
     tesselation between these points and the network nodes.  Any network
     nodes which are connected to a generated points is considered a surface
     node.
+
     """
     node_prefix = get_node_prefix(g)
     coords = np.copy(g[node_prefix+'.coords'])
