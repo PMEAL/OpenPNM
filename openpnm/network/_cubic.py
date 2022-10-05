@@ -117,7 +117,7 @@ class Cubic(Network):
             try:
                 Ps = self.pores(label)
                 topotools.clone_pores(network=self, pores=Ps,
-                                      labels=label + "_boundary",
+                                      labels=f"{label}_boundary",
                                       mode='parents')
                 # Translate cloned pores
                 ind = self.pores(label + "_boundary")
@@ -125,5 +125,5 @@ class Cubic(Network):
                 coords = coords * scale[label] + offset[label]
                 self["pore.coords"][ind] = coords
             except KeyError:
-                logger.warning("No pores labelled " + label
-                               + " were found, skipping boundary addition")
+                msg = f"No pores labelled {label} found, skipping boundary addition"
+                logger.warning(msg)

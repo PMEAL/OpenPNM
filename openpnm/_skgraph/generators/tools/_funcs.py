@@ -80,6 +80,7 @@ def label_faces_cubic(g, rtol=0.0):
     -------
     g : dict
         The network dictionary with the face labels added
+
     """
     node_prefix = tools.get_node_prefix(g)
     coords = g[node_prefix+'.coords']
