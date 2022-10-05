@@ -71,8 +71,9 @@ def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edg
         tails = np.concatenate((tails, T.flatten()))
         heads = np.concatenate((heads, H.flatten()))
     pairs = np.vstack([tails, heads]).T
-    # NOTE: pairs is already sorted -> skipping np.sort() for performance
-    # pairs = np.sort(pairs, axis=1)
+    # NOTE: pairs is already sorted for connectivity = 6
+    if connectivity != 6:
+        pairs = np.sort(pairs, axis=1)
 
     d = {}
     d[f"{node_prefix}.coords"] = points * spacing
