@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Generating Networks and Quick Visualization &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
@@ -27,8 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
 
@@ -40,14 +39,10 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -332,7 +327,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
-     Basic Transport
+     Reactive Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -342,7 +337,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/transient_transport.html">
-     Basic Transport
+     Transient Transport
     </a>
    </li>
   </ul>
@@ -423,6 +418,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -439,7 +435,29 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e215cf7217ec731a71e5e79226c66a4cc27e46cff6b874feb7b6000afe025841.png" src="../../_images/e215cf7217ec731a71e5e79226c66a4cc27e46cff6b874feb7b6000afe025841.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:131,</span> in <span class="ni">plot_connections</span><span class="nt">(network, throats, ax, size_by, color_by, cmap, color, alpha, linestyle, linewidth, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">128</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">129</span>     <span class="c1"># The next line is necessary if ax was created using plt.subplots()</span>
+<span class="g g-Whitespace">    </span><span class="mi">130</span>     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">(),</span> <span class="n">ax</span>
+<span class="ne">--&gt; </span><span class="mi">131</span> <span class="k">if</span> <span class="n">ThreeD</span> <span class="ow">and</span> <span class="n">ax</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;3d&#39;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">132</span>     <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="ne">AttributeError</span>: &#39;Path3DCollection&#39; object has no attribute &#39;name&#39;
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/IPython/core/pylabtools.py:151: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="../../_images/b6d9a54ee03643f9255887a68fcff0fe83b854b1c330f765af4f016ad56be3d6.png" src="../../_images/b6d9a54ee03643f9255887a68fcff0fe83b854b1c330f765af4f016ad56be3d6.png" />
 </div>
 </div>
 <div class="admonition tip">
@@ -457,7 +475,7 @@ The above block uses <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e46502782acfc08683e5af82c94ba9fd6fe97a1d117ea41b36f6a5ed303738a0.png" src="../../_images/e46502782acfc08683e5af82c94ba9fd6fe97a1d117ea41b36f6a5ed303738a0.png" />
+<img alt="../../_images/a1b38f259a75f6fda4c79088642678a22e98a3b882801787de4af575b793853d.png" src="../../_images/a1b38f259a75f6fda4c79088642678a22e98a3b882801787de4af575b793853d.png" />
 </div>
 </div>
 <p>It is also possible to add more than just the standard 6 connections:</p>
@@ -470,7 +488,7 @@ The above block uses <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ae60f536bf19135448d893a3d5abdc5a131a1e90362ee9de9f865e7451601443.png" src="../../_images/ae60f536bf19135448d893a3d5abdc5a131a1e90362ee9de9f865e7451601443.png" />
+<img alt="../../_images/33e66bb20bb8c58cc562855e3c03db8bb64b053207038fd6d5cfd1dc98191f7a.png" src="../../_images/33e66bb20bb8c58cc562855e3c03db8bb64b053207038fd6d5cfd1dc98191f7a.png" />
 </div>
 </div>
 <p>One of the uses of a 26-connreadd network is the removal of throats at random to create a more natural topology.  There is a more detailed description of how to manipulate networks in a following tutorial, but here we’ll introduce the <code class="docutils literal notranslate"><span class="pre">topotools</span></code> module, which contains the <code class="docutils literal notranslate"><span class="pre">trim</span></code> function which allows us to delete some throats or pores:</p>
@@ -486,7 +504,7 @@ The above block uses <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/75caa8a18ce43de3d355c726f398e44506838e17dca60e0029fb5cb351851a12.png" src="../../_images/75caa8a18ce43de3d355c726f398e44506838e17dca60e0029fb5cb351851a12.png" />
+<img alt="../../_images/404eff8d5d73d5a3d7c45b17d49497ae2158b16c5aabcfc439ab4572f61bc98f.png" src="../../_images/404eff8d5d73d5a3d7c45b17d49497ae2158b16c5aabcfc439ab4572f61bc98f.png" />
 </div>
 </div>
 <div class="admonition tip">
@@ -502,23 +520,23 @@ It is very common practice to print the objects at the interactive prompt to see
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f76412b2860&gt;
+net : &lt;openpnm.network.Cubic at 0x168fbc70d10&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.coords                                                       64 / 64
-  3  throat.conns                                                    161 / 161
+  1  pore.coords                                                       64 / 64
+  2  throat.conns                                                    161 / 161
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.surface                                                           56
-  3  throat.surface                                                         96
+  1  pore.back                                                              16
+  2  pore.bottom                                                            16
+  3  pore.front                                                             16
   4  pore.left                                                              16
   5  pore.right                                                             16
-  6  pore.front                                                             16
-  7  pore.back                                                              16
-  8  pore.bottom                                                            16
-  9  pore.top                                                               16
+  6  pore.surface                                                           56
+  7  pore.top                                                               16
+  8  throat.surface                                                         96
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -574,7 +592,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5e6b8b075187747ffb7e5fcf4d58d88d6f53017472fdbd5f813f9caf38047f32.png" src="../../_images/5e6b8b075187747ffb7e5fcf4d58d88d6f53017472fdbd5f813f9caf38047f32.png" />
+<img alt="../../_images/3e729fbe243cd29a3a41c34ac1db542b0025da124349752da6de8f5e4346b995.png" src="../../_images/3e729fbe243cd29a3a41c34ac1db542b0025da124349752da6de8f5e4346b995.png" />
 </div>
 </div>
 </section>
@@ -593,8 +611,8 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6ea973082ad83908e621d46f30898e173a61b91c5adb0c2f2abd9a4246eacab8.png" src="../../_images/6ea973082ad83908e621d46f30898e173a61b91c5adb0c2f2abd9a4246eacab8.png" />
-<img alt="../../_images/c2b70093c625df689e368a4dd3a7a130c14925d500fda9495c97679bc0524caf.png" src="../../_images/c2b70093c625df689e368a4dd3a7a130c14925d500fda9495c97679bc0524caf.png" />
+<img alt="../../_images/308c6b23305160433e8b833dfff4f0076eaf62cf87d3b180ef9e20eb33502e82.png" src="../../_images/308c6b23305160433e8b833dfff4f0076eaf62cf87d3b180ef9e20eb33502e82.png" />
+<img alt="../../_images/dbe5b79506612b88a38f21e52146bb3d735e5621eff203852919471a730946cf.png" src="../../_images/dbe5b79506612b88a38f21e52146bb3d735e5621eff203852919471a730946cf.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -611,27 +629,27 @@ Note that the 4x4x4 spacing refers to the number of corner sites, so it’s basi
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
+net : &lt;openpnm.network.BodyCenteredCubic at 0x168fbc24720&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.coords                                                       91 / 91
-  3  throat.conns                                                    414 / 414
+  1  pore.coords                                                       91 / 91
+  2  throat.conns                                                    414 / 414
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.corner                                                            64
-  3  pore.body                                                              27
-  4  throat.corner_to_body                                                 216
-  5  throat.corner_to_corner                                               144
-  6  throat.body_to_body                                                    54
-  7  pore.surface                                                           56
-  8  pore.left                                                              16
-  9  pore.right                                                             16
- 10  pore.front                                                             16
- 11  pore.back                                                              16
- 12  pore.top                                                               16
- 13  pore.bottom                                                            16
+  1  pore.back                                                              16
+  2  pore.body                                                              27
+  3  pore.bottom                                                            16
+  4  pore.corner                                                            64
+  5  pore.front                                                             16
+  6  pore.left                                                              16
+  7  pore.right                                                             16
+  8  pore.surface                                                           56
+  9  pore.top                                                               16
+ 10  throat.body_to_body                                                    54
+ 11  throat.corner_to_body                                                 216
+ 12  throat.corner_to_corner                                               144
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -645,7 +663,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1f7990ba2869eb8fb12e6b27bdf87c02f8a3e800afacd8508b81c77785d1f8b9.png" src="../../_images/1f7990ba2869eb8fb12e6b27bdf87c02f8a3e800afacd8508b81c77785d1f8b9.png" />
+<img alt="../../_images/cc1175b66b9aee9b3222a9564250bac806d42627aad31ef6a219eab5dff19f7c.png" src="../../_images/cc1175b66b9aee9b3222a9564250bac806d42627aad31ef6a219eab5dff19f7c.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -658,7 +676,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f93f72703a582453bde18c89079a1293a351ab4479e8d40ce42d6f129632ae6f.png" src="../../_images/f93f72703a582453bde18c89079a1293a351ab4479e8d40ce42d6f129632ae6f.png" />
+<img alt="../../_images/3f85b2fe56146889b8c61010c4b7c931c3c0a8143d2d142f2df6fb9f73678309.png" src="../../_images/3f85b2fe56146889b8c61010c4b7c931c3c0a8143d2d142f2df6fb9f73678309.png" />
 </div>
 </div>
 </section>
@@ -674,7 +692,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/843c0376e0e1352114c4b7df5dfc405ae093b862d84786fcb8913cda3ff7f242.png" src="../../_images/843c0376e0e1352114c4b7df5dfc405ae093b862d84786fcb8913cda3ff7f242.png" />
+<img alt="../../_images/9a689c923c444a27ac06cef438d3c63d3a030f6080e85c101bb8ff16935a223e.png" src="../../_images/9a689c923c444a27ac06cef438d3c63d3a030f6080e85c101bb8ff16935a223e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -686,7 +704,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f2648b24379eec26bede81ec1a15d9b357c67b2ddf7a4c707610e918f5da537c.png" src="../../_images/f2648b24379eec26bede81ec1a15d9b357c67b2ddf7a4c707610e918f5da537c.png" />
+<img alt="../../_images/31e0ea2a77450109fdf6211c2d5dd211beb045232669f188b8baa3a1b332f29f.png" src="../../_images/31e0ea2a77450109fdf6211c2d5dd211beb045232669f188b8baa3a1b332f29f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -698,7 +716,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/900453ee1c66793373bc6d800073570a86eb7b09e56666be63721c386b0b33f4.png" src="../../_images/900453ee1c66793373bc6d800073570a86eb7b09e56666be63721c386b0b33f4.png" />
+<img alt="../../_images/7ca62ce0bd84f7e03ffe473959aa2178e0a29c4e4c28cc3466f06b5bab86650f.png" src="../../_images/7ca62ce0bd84f7e03ffe473959aa2178e0a29c4e4c28cc3466f06b5bab86650f.png" />
 </div>
 </div>
 <p>It is also possible to create these lattices in cylindrical and spherical shapes.  This is done via the <code class="docutils literal notranslate"><span class="pre">shape</span></code> argument such that [x, y, z] assumes cartesian, [r, z] assumes cylindrical and [r] assumes spherical:</p>
@@ -711,7 +729,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d3d017cc0e314aae84e7058bd03c22070430ca731fd211c779755c4954aead2b.png" src="../../_images/d3d017cc0e314aae84e7058bd03c22070430ca731fd211c779755c4954aead2b.png" />
+<img alt="../../_images/18a8e572f4a99e760ea1904f4a1ed7eb9f33fb3b5d76096063a1ad972c9216bf.png" src="../../_images/18a8e572f4a99e760ea1904f4a1ed7eb9f33fb3b5d76096063a1ad972c9216bf.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -723,7 +741,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c0c519fa752bdf04e2fbffba6339fdb37f1001a8b2d83c01f39eb79fb041ab4c.png" src="../../_images/c0c519fa752bdf04e2fbffba6339fdb37f1001a8b2d83c01f39eb79fb041ab4c.png" />
+<img alt="../../_images/4a10e735a37e3dec68a7557722b9d8782248a5b986b345d0d302459bd33b6039.png" src="../../_images/4a10e735a37e3dec68a7557722b9d8782248a5b986b345d0d302459bd33b6039.png" />
 </div>
 </div>
 </section>
@@ -761,7 +779,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/07865522aa8f2ee231339fbf3c699b11a61ae699b7dadf07c8b9e6a64dad10c0.png" src="../../_images/07865522aa8f2ee231339fbf3c699b11a61ae699b7dadf07c8b9e6a64dad10c0.png" />
+<img alt="../../_images/353b5fe018c839a9119014f99d95fe81041c07f368576a645f233d58f1ba96f3.png" src="../../_images/353b5fe018c839a9119014f99d95fe81041c07f368576a645f233d58f1ba96f3.png" />
 </div>
 </div>
 <p>Now let’s add the pore and throat diameter values. Note the naming convention of preceding the keys with <code class="docutils literal notranslate"><span class="pre">'pore.'</span></code> or <code class="docutils literal notranslate"><span class="pre">'throat.'</span></code>. This will be discussed in more depth in the next tutorial.</p>
@@ -782,7 +800,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f5e370ded4e15c5aace05e84fc152ba9655ad0c70d8c9f9ef71b18d5b93953c0.png" src="../../_images/f5e370ded4e15c5aace05e84fc152ba9655ad0c70d8c9f9ef71b18d5b93953c0.png" />
+<img alt="../../_images/d93949c83fcd01fec30cbdf90cc78f82dc60da07b26739965868f0d8a1c1275d.png" src="../../_images/d93949c83fcd01fec30cbdf90cc78f82dc60da07b26739965868f0d8a1c1275d.png" />
 </div>
 </div>
 <p>For extracted networks it is not expected that a user would enter all the values by hand as done above. OpenPNM has an <code class="docutils literal notranslate"><span class="pre">io</span></code> module which contains functions for reading from a wide assortment of file formats, as well as outputting to a limited number.  This is covered in the final tutorial of this series.</p>
@@ -814,7 +832,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f7640df48b0&gt;
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

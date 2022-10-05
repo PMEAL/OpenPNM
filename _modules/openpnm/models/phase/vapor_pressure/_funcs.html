@@ -26,8 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../../_static/togglebutton.js"></script>
     <script src="../../../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -291,7 +286,6 @@
 <span class="k">def</span> <span class="nf">liquid_pure_antoine</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
-    <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the vapor pressure of a pure liquid using Antoine&#39;s equation</span>
@@ -318,21 +312,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># either antoine or extended antoine using constants from RPP</span>
     <span class="n">CAS</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CAS&#39;</span><span class="p">]</span>
-    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
     <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">chemicals.vapor_pressure</span> <span class="kn">import</span> <span class="n">Psat_data_AntoineExtended</span>
-        <span class="n">coeffs</span> <span class="o">=</span> <span class="n">Psat_data_AntoineExtended</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">coeffs</span>
-        <span class="c1"># Pvap = TRC_Antoine_extended(T, A, B, C, n, E, F)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">to</span> <span class="o">-</span> <span class="mf">273.15</span><span class="p">)</span><span class="o">/</span><span class="n">Tc</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">Pvap</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">A</span> <span class="o">-</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="n">C</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.43429</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="n">E</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">12</span><span class="p">))</span>
-    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">chemicals.vapor_pressure</span> <span class="kn">import</span> <span class="n">Psat_data_AntoinePoling</span>
-        <span class="n">coeffs</span> <span class="o">=</span> <span class="n">Psat_data_AntoinePoling</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">coeffs</span>
-        <span class="n">Pvap</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">A</span> <span class="o">-</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">C</span><span class="p">))</span>
+    <span class="kn">from</span> <span class="nn">chemicals.vapor_pressure</span> <span class="kn">import</span> <span class="n">Psat_data_AntoinePoling</span>
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">Psat_data_AntoinePoling</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CAS</span><span class="p">]</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">Tmin</span><span class="p">,</span> <span class="n">Tmax</span> <span class="o">=</span> <span class="n">coeffs</span>
+    <span class="n">Pvap</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">A</span> <span class="o">-</span> <span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">T</span> <span class="o">+</span> <span class="n">C</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">Pvap</span></div>
 </pre></div>
 
@@ -360,7 +344,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

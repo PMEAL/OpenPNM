@@ -26,8 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -247,17 +242,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="c1"># Provisional support for hashtag notation</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">delim</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span>
-            <span class="k">if</span> <span class="n">delim</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
-                <span class="n">comps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
-                <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">delim</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">]:</span>  <span class="c1"># Wildcard, get all comps as dict</span>
-                    <span class="n">vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_comp_vals</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">vals</span> <span class="o">=</span> <span class="n">comps</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
-                <span class="k">return</span> <span class="n">vals</span>
-        <span class="c1"># Below is the original support using the &quot;.*&quot; notation</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -273,17 +257,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">vals</span>
-
-    <span class="c1"># def __setitem__(self, key, value):</span>
-    <span class="c1">#     if key == &#39;pore.mole_fraction&#39;:</span>
-    <span class="c1">#         raise Exception(&quot;Cannot write a mole fraction without a .&lt;compname&gt;&quot;)</span>
-    <span class="c1">#     element, propname = key.split(&#39;.&#39;, 1)</span>
-    <span class="c1">#     if propname.split(&#39;.&#39;)[-1] in self.components.keys():</span>
-    <span class="c1">#         obj = self.components[key.split(&#39;.&#39;)[-1]]</span>
-    <span class="c1">#         key = &#39;.&#39;.join(key.split(&#39;.&#39;)[:-1])</span>
-    <span class="c1">#         obj[key] = value</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         super().__setitem__(key, value)</span>
 
 <div class="viewcode-block" id="Mixture.regenerate_models"><a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mixture.regenerate_models.html#openpnm.phase.Mixture.regenerate_models">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -368,21 +341,8 @@
             <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">power</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">z</span></div>
 
-    <span class="c1"># def __str__(self):</span>
-    <span class="c1">#     hr = &#39;―&#39; * 78</span>
-    <span class="c1">#     lines = &#39;\n&#39; + &#39;Component Phases&#39;</span>
-    <span class="c1">#     for item in self.components.values():</span>
-    <span class="c1">#         lines += &#39;\n&#39; + &quot;═&quot;*78 + &#39;\n&#39; + item.__repr__() + &#39;\n&#39; + hr + &#39;\n&#39;</span>
-    <span class="c1">#         lines += get_printable_props(item, suffix=item.name)</span>
-    <span class="c1">#         lines += &#39;\n&#39; + hr + &#39;\n&#39;</span>
-    <span class="c1">#         lines += get_printable_labels(item, suffix=item.name)</span>
-    <span class="c1">#     temp = super().__str__().split(hr)</span>
-    <span class="c1">#     temp.insert(-1, lines + &#39;\n&#39;)</span>
-    <span class="c1">#     lines = hr.join(temp)</span>
-    <span class="c1">#     return lines</span>
-
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">hr</span> <span class="o">=</span> <span class="s1">&#39;―&#39;</span> <span class="o">*</span> <span class="mi">78</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;Component Phases&#39;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -656,7 +616,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

@@ -23,6 +23,7 @@ mixtures
       from_component
       mixing_rule
       mole_summation
+      mole_to_mass_fraction
       salinity
    
    

@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Predicting absolute permeability &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
@@ -27,8 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
 
@@ -40,14 +39,10 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/custom.js"></script>
@@ -334,7 +329,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
-     Basic Transport
+     Reactive Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -344,7 +339,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/transient_transport.html">
-     Basic Transport
+     Transient Transport
     </a>
    </li>
   </ul>
@@ -419,7 +414,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="o">%</span><span class="k">config</span> InlineBackend.figure_formats = [&#39;svg&#39;]
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -453,25 +448,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: throat.entry_pressure was not run since the
-             following property is missing:
-             &#39;throat.surface_tension&#39; 
-  - SOURCE : openpnm.core._models.regenerate_models 
-  - TIME   : 2022-09-21 01:41:59,564    
-------------------------------------------------------------
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: throat.diffusive_conductance was not run since
-             the following property is missing:
-             &#39;throat.diffusivity&#39; 
-  - SOURCE : openpnm.core._models.regenerate_models 
-  - TIME   : 2022-09-21 01:41:59,587    
-------------------------------------------------------------
-</pre></div>
-</div>
-</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[02:48:41] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#499" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">499</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         <span style="color: #008000; text-decoration-color: #008000">'throat.surface_tension'</span>                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
+</pre>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.diffusive_conductance was not run since the following property is         <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#499" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">499</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         missing: <span style="color: #008000; text-decoration-color: #008000">'throat.diffusivity'</span>                                                    <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
+</pre>
+</div></div>
 </div>
 </section>
 <section id="apply-stokes-flow">
@@ -486,17 +469,6 @@
 <span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 <span class="n">phase</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">soln</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stokes_01 : Newton iterations:   0%|          | 0/100 [00:00&lt;?, ?it/s]
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                      
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -517,7 +489,29 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f38400e24028249ac7fa7e811dbdf34ea3196c698da6e90008cd2af4db031434.svg" src="../../_images/f38400e24028249ac7fa7e811dbdf34ea3196c698da6e90008cd2af4db031434.svg" /></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">])</span>
+
+<span class="nn">File ~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:283,</span> in <span class="ni">plot_coordinates</span><span class="nt">(network, pores, ax, size_by, color_by, cmap, color, alpha, marker, markersize, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">280</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">281</span>     <span class="c1"># The next line is necessary if ax was created using plt.subplots()</span>
+<span class="g g-Whitespace">    </span><span class="mi">282</span>     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">(),</span> <span class="n">ax</span>
+<span class="ne">--&gt; </span><span class="mi">283</span> <span class="k">if</span> <span class="n">ThreeD</span> <span class="ow">and</span> <span class="n">ax</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;3d&#39;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">284</span>     <span class="n">fig</span><span class="o">.</span><span class="n">delaxes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">285</span>     <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+<span class="ne">AttributeError</span>: &#39;Line3DCollection&#39; object has no attribute &#39;name&#39;
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/IPython/core/pylabtools.py:151: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="../../_images/46c54ff16c7f679c9b13d1e32f4f4cbd6b796e9f5a4c67b2a20c2a0514885cb8.png" src="../../_images/46c54ff16c7f679c9b13d1e32f4f4cbd6b796e9f5a4c67b2a20c2a0514885cb8.png" />
+</div>
 </div>
 </section>
 <section id="calculate-permeability">
@@ -535,26 +529,6 @@
 <span class="c1"># K = Q * L * mu / (A * Delta_P) # mu and Delta_P were assumed to be 1.</span>
 <span class="n">K</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="n">A</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The value of K is: </span><span class="si">{</span><span class="n">K</span><span class="o">/</span><span class="mf">0.98e-12</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1"> mD&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Attempting to estimate inlet area...will be low 
-  - SOURCE : openpnm.topotools._topotools.get_domain_area 
-  - TIME   : 2022-09-21 01:42:01,793    
-------------------------------------------------------------
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>------------------------------------------------------------
-  - WARNING: Attempting to estimate domain length...could be
-             low if boundary pores were not added 
-  - SOURCE : openpnm.topotools._topotools.get_domain_length 
-  - TIME   : 2022-09-21 01:42:01,795    
-------------------------------------------------------------
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The value of K is: 0.07 mD
 </pre></div>
 </div>
 </div>
@@ -594,7 +568,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

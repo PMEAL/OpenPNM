@@ -4,9 +4,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Basic Transport &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
+    <title>Reactive Transport &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -27,8 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
@@ -40,14 +39,12 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -332,7 +329,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Basic Transport
+     Reactive Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -342,7 +339,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="transient_transport.html">
-     Basic Transport
+     Transient Transport
     </a>
    </li>
   </ul>
@@ -365,9 +362,24 @@
     
     <div class="toc-item">
       
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#using-the-source-term-functionality-in-openpnm">
+   Using the source term functionality in OpenPNM
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#how-the-source-term-functionality-works">
+   How the source-term functionality works
+  </a>
+ </li>
+</ul>
+
 </nav>
     </div>
     
@@ -385,8 +397,279 @@
               
               <article class="bd-article" role="main">
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="basic-transport">
-<h1>Basic Transport<a class="headerlink" href="#basic-transport" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="reactive-transport">
+<h1>Reactive Transport<a class="headerlink" href="#reactive-transport" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p>This notebook is still a work in progress</p>
+</div></blockquote>
+<p>Incorporating chemical reactions or source terms in general is an important feature. This notebook will explain how OpenPNM implements this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7fb74741a950&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.coords                                                         9 / 9
+  3  throat.conns                                                      12 / 12
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.surface                                                            8
+  3  throat.surface                                                          8
+  4  pore.left                                                               3
+  5  pore.right                                                              3
+  6  pore.front                                                              3
+  7  pore.back                                                               3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>And let’s also create a <code class="docutils literal notranslate"><span class="pre">Phase</span></code> object to store the diffusive conductance values:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ph</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">ph</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="using-the-source-term-functionality-in-openpnm">
+<h2>Using the source term functionality in OpenPNM<a class="headerlink" href="#using-the-source-term-functionality-in-openpnm" title="Permalink to this heading">#</a></h2>
+<p>First, we’ll illustrate the process of adding a source term to a diffusion simulation, then we’ll look behind the scenes at how it works.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">ph</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>OpenPNM’s <code class="docutils literal notranslate"><span class="pre">models</span></code> module contains a variety to pre-written source terms. Let’s use a standar reaction, also known as a power-law:</p>
+<div class="math notranslate nohighlight">
+\[ y = A_0 X^{A_1} + A_3 \rightarrow r_A = kC_A^b\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_A\)</span> is the concentration of the diffusion species <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are the kinetic constant (actually a strong function of temperature) and <span class="math notranslate nohighlight">\(b\)</span> is the reaction order.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">source_terms</span><span class="o">.</span><span class="n">power_law</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This model is added to the <code class="docutils literal notranslate"><span class="pre">ph</span></code> object, since it is a function of the phase properties, specifically concentration and temperature if the reaction is not isothermal.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ph</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.reaction&#39;</span><span class="p">,</span> 
+             <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+             <span class="n">X</span><span class="o">=</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">,</span>
+             <span class="n">A1</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
+             <span class="n">A2</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">A3</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+             <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s unpack the above code block:</p>
+<ul class="simple">
+<li><p>The model is being stored under <code class="docutils literal notranslate"><span class="pre">'pore.reaction'</span></code>, which means that the <code class="docutils literal notranslate"><span class="pre">FickianDiffusion</span></code> algorithm will call this model to retrieve the reaction rate at the given conditions. However, we still have to tell <code class="docutils literal notranslate"><span class="pre">fd</span></code> about this reaction.</p></li>
+<li><p>The model uses the values of <code class="docutils literal notranslate"><span class="pre">'pore.concentration'</span></code> to compute <span class="math notranslate nohighlight">\(r_A\)</span>, so we specify to use that array for <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p>Since <code class="docutils literal notranslate"><span class="pre">'pore.concentration'</span></code> does not exist yet this model will throw an error if run, so we set the <code class="docutils literal notranslate"><span class="pre">regen_mode</span></code> to <code class="docutils literal notranslate"><span class="pre">'deferred'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A1</span></code>, <code class="docutils literal notranslate"><span class="pre">A2</span></code> and <code class="docutils literal notranslate"><span class="pre">A3</span></code> can be either scalars or dictionary keys to numpy arrays on the <code class="docutils literal notranslate"><span class="pre">ph</span></code> object. This is possible since all OpenPNM dict object return any non-string keys directly back, so <code class="docutils literal notranslate"><span class="pre">fd[1.0]</span></code> returns <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p></li>
+</ul>
+<p>Now we add this model to our algorithm, to tell the algorithm about it and also in which pores it applies:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span><span class="o">.</span><span class="n">set_source</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.reaction&#39;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The act of adding a source term creates a new array on the algorithm as can be seen below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fb74742d6d0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.bc.rate                                                        0 / 9
+  3  pore.bc.value                                                       3 / 9
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.all                                                                9
+  3  throat.all                                                             12
+  4  pore.source.reaction                                                    3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">'pore.source.reaction'</span></code> array contains a <code class="docutils literal notranslate"><span class="pre">boolean</span></code> array where <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicate the locations where the source term should be applied.  Had we added a second reaction, called <code class="docutils literal notranslate"><span class="pre">'pore.another_reaction'</span></code>, the above printout would have an entry for <code class="docutils literal notranslate"><span class="pre">'pore.source.another_reaction'</span></code>.  This is designed to make it easy to get a list of all source terms and their location using <code class="docutils literal notranslate"><span class="pre">fd['pore.source']</span></code> which would return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> with <code class="docutils literal notranslate"><span class="pre">'reaction'</span></code> and <code class="docutils literal notranslate"><span class="pre">'another_reaction'</span></code> as keys, and two <code class="docutils literal notranslate"><span class="pre">boolean</span></code> arrays as values indicating where each reaction was applied.</p>
+<p>So now the algorithm is ready to be run:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s look at which arrays are created on both <code class="docutils literal notranslate"><span class="pre">fd</span></code> and <code class="docutils literal notranslate"><span class="pre">ph</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fb74742d6d0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.bc.rate                                                        0 / 9
+  3  pore.bc.value                                                       3 / 9
+  4  pore.concentration                                                  9 / 9
+  5  pore.initial_guess                                                  9 / 9
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.all                                                                9
+  3  throat.all                                                             12
+  4  pore.source.reaction                                                    3
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Above we can see that <code class="docutils literal notranslate"><span class="pre">'pore.concentration'</span></code> was created, which contains the solution of the transport problem. <code class="docutils literal notranslate"><span class="pre">'pore.initial_guess'</span></code> was also created since the algorithm was aware that a source term was added, so iteration of the problem would be required hence an initial guess was needed.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ph</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+phase_01 : &lt;openpnm.phase.Phase at 0x7fb74742bef0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.temperature                                                    9 / 9
+  3  pore.pressure                                                       9 / 9
+  4  throat.diffusive_conductance                                      12 / 12
+  5  pore.concentration                                                  9 / 9
+  6  pore.reaction.S1                                                    9 / 9
+  7  pore.reaction.S2                                                    9 / 9
+  8  pore.reaction.rate                                                  9 / 9
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.all                                                                9
+  3  throat.all                                                             12
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that <code class="docutils literal notranslate"><span class="pre">'pore.concentration'</span></code> was <em>also added</em> to this object. This was necessary since the source-term models needed access to this array in order to compute the reaction rate. So the <code class="docutils literal notranslate"><span class="pre">fd</span></code> algorithm writes this array to <code class="docutils literal notranslate"><span class="pre">fd</span></code> and <em>then</em> regenerates the source term model(s). Recall that we set <code class="docutils literal notranslate"><span class="pre">regen_mode='deferred'</span></code> when assigning this model, so the algorithm is the first to run this model.</p>
+<p>We can also see <code class="docutils literal notranslate"><span class="pre">'pore.reaction.S1'</span></code>, <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> and <code class="docutils literal notranslate"><span class="pre">'rate'</span></code> which are all values returned by the model. We’ll explain what <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> mean in the following section, and <code class="docutils literal notranslate"><span class="pre">'rate'</span></code> is self explanatory.</p>
+</section>
+<section id="how-the-source-term-functionality-works">
+<h2>How the source-term functionality works<a class="headerlink" href="#how-the-source-term-functionality-works" title="Permalink to this heading">#</a></h2>
+<p>OpenPNM uses the method described by Patankar [ref] to linearize the source-terms.  As will be shown below, this method computes the slope and intercept of non-linear term at the current value of the quantity being computed.  This is the origin of the <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> (the slope) and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> (the intercept) arrays on the <code class="docutils literal notranslate"><span class="pre">ph</span></code> object above.</p>
+<p>Determination of <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> will be outlined below, but let’s first illustrate how they are used. Consider the mass balance around pore 6, which connects to pore 3 and 7:</p>
+<div class="math notranslate nohighlight">
+\[ g_{3,6} (C_{A,3} - C_{A,6}) + g_{7,6} (C_{A,7} - C_{A,6}) = r_A \]</div>
+<p>Meaning the net diffusive flux into pore 6 from pores 3 and 7 is equal to the rate of consumption in pore 6.  We can further write the rate value as:</p>
+<div class="math notranslate nohighlight">
+\[ g_{3,6} (C_{A,3} - C_{A,6}) + g_{7,6} (C_{A,7} - C_{A,6}) = k C_{A,6}^2 \]</div>
+<p>Now we can see there will be a problem solving this equation since a non-linear concentration term has appeared.  <em>If</em> we could just write the reaction term as a linear expresssion we would be able to proceed:</p>
+<div class="math notranslate nohighlight">
+\[ g_{3,6} (C_{A,3} - C_{A,6}) + g_{7,6} (C_{A,7} - C_{A,6}) = S_1 C_{A,6} + S_2 \]</div>
+<p>We could then group all the linear terms as follows:</p>
+<div class="math notranslate nohighlight">
+\[ g_{3,6} C_{A,3} + (-g_{3,6} - g_{7,6} - S_1) C_{A,6} + g_{7,6} C_{A,7} =  S_2 \]</div>
+<p>The above equation (or rather the system of equations to which is belongs) is then solved using standard numerical solvers to find all the unknown values of <span class="math notranslate nohighlight">\(C_A\)</span>. Now we just need to find <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code>.</p>
+<p>The process starts with the standard definition of Newton’s method:</p>
+<div class="math notranslate nohighlight">
+\[ S'=\frac{(S-S^*)}{(x_i-x_i^* )} \]</div>
+<p>This can be rearranged to solve for <span class="math notranslate nohighlight">\(S\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ S=S^*+(S')^*⋅(x_i-x_i^* ) \]</div>
+<p>Where <span class="math notranslate nohighlight">\(S'^*\)</span> is is the derivative of the function at <span class="math notranslate nohighlight">\(x_i^*\)</span>. Since <span class="math notranslate nohighlight">\(x_i^*\)</span> is known (as either an initial guess or a updated value from each iteration), we can treat it and <span class="math notranslate nohighlight">\(S'^*\)</span> as constants and lump them together as follows:</p>
+<div class="math notranslate nohighlight">
+\[ S= (S' )^* x_i+(S^*-(S' )^* x_i^* )=S_1 x_i+S_2 \]</div>
+<p>So both <span class="math notranslate nohighlight">\(S\)</span> values are computed from known values, and the result is a linear equation that is a function of the unknown <span class="math notranslate nohighlight">\(x_i\)</span>, which can be entered into the system of equations as mentioned in the previous section.</p>
+<p>Now that we have seen how <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> are defined and computed, we can  revisit how this is implemented in OpenPNM. We the <code class="docutils literal notranslate"><span class="pre">run</span></code> method is called on the <code class="docutils literal notranslate"><span class="pre">fd</span></code>, several hidden methods are called, these include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_build_A</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_build_b</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_apply_bcs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_apply_sources</span></code></p></li>
+</ul>
+<p>Let see how the coefficient and RHS matrix evolve as these are each called.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">ph</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_source</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.reaction&#39;</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.24458982 -0.02473547  0.         -0.21985435  0.          0.
+   0.          0.          0.        ]
+ [-0.02473547  0.50509334 -0.07490933  0.         -0.40544854  0.
+   0.          0.          0.        ]
+ [ 0.         -0.07490933  0.99387609  0.          0.         -0.91896676
+   0.          0.          0.        ]
+ [-0.21985435  0.          0.          0.60914497 -0.15757822  0.
+  -0.2317124   0.          0.        ]
+ [ 0.         -0.40544854  0.         -0.15757822  1.48614519 -0.1516305
+   0.         -0.77148793  0.        ]
+ [ 0.          0.         -0.91896676  0.         -0.1516305   1.34057703
+   0.          0.         -0.26997977]
+ [ 0.          0.          0.         -0.2317124   0.          0.
+   0.74311195 -0.51139955  0.        ]
+ [ 0.          0.          0.          0.         -0.77148793  0.
+  -0.51139955  1.62661622 -0.34372874]
+ [ 0.          0.          0.          0.          0.         -0.26997977
+   0.         -0.34372874  0.6137085 ]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 
@@ -414,7 +697,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

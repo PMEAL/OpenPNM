@@ -72,6 +72,8 @@
    "source": [
     "import numpy as np\n",
     "import openpnm as op\n",
+    "op.visualization.set_mpl_style()\n",
+    "\n",
     "pn = op.network.Demo(shape=[5, 5, 1], spacing=5e-5)\n",
     "print(pn)"
    ]

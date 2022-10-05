@@ -22,7 +22,6 @@ hydraulic\_conductance
    
       generic_hydraulic
       hagen_poiseuille
-      hagen_poiseuille_power_law
       valvatne_blunt
    
    

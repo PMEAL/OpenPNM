@@ -127,6 +127,7 @@
    ],
    "source": [
     "import openpnm as op\n",
+    "op.visualization.set_mpl_style()\n",
     "op.Workspace().settings.loglevel = 50\n",
     "diffusive_size_factors = op.models.geometry.diffusive_size_factors\n",
     "print(\"\\n\".join(diffusive_size_factors._funcs.__all__))"

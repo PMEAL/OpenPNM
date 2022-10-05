@@ -26,8 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -192,7 +187,7 @@
                 
   <h1>Source code for openpnm.algorithms._drainage</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">openpnm.algorithms</span> <span class="kn">import</span> <span class="n">Algorithm</span>
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">Docorator</span><span class="p">,</span> <span class="n">TypedSet</span>
@@ -260,7 +255,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The ability to add residual nwp is not ready yet&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invaded&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -465,38 +460,6 @@
         <span class="k">return</span> <span class="n">data</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">late_filling</span><span class="p">(</span><span class="n">target</span><span class="p">,</span>
-                 <span class="n">pc</span><span class="o">=</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">,</span>
-                 <span class="n">pc_star</span><span class="o">=</span><span class="s1">&#39;pore.pc_star&#39;</span><span class="p">,</span>
-                 <span class="n">eta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                 <span class="n">swp_star</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the saturation of each pore at the given pressure</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    target : dict</span>
-<span class="sd">        The algorithm dictionary</span>
-<span class="sd">    pnwp : str</span>
-<span class="sd">        The name of the array containing the capillary pressure defined as the</span>
-<span class="sd">        pressure difference between the non-wetting and wetting phases. A value</span>
-<span class="sd">        less than 0 indicates that the element is not invaded.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pc</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pc</span><span class="p">]</span>
-    <span class="n">pc_star</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">pc_star</span><span class="p">]</span>
-    <span class="n">swp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
-    <span class="c1"># Skip calc for</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">pc</span> <span class="o">&gt;</span> <span class="n">pc_star</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">swp_star</span><span class="o">*</span><span class="p">(</span><span class="n">pc_star</span><span class="o">/</span><span class="n">pc</span><span class="p">)</span><span class="o">**</span><span class="n">eta</span>
-        <span class="n">swp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">pc</span> <span class="o">&lt;</span> <span class="n">pc_star</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">pc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">swp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">swp_star</span>
-    <span class="n">snwp</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">swp</span>
-    <span class="k">return</span> <span class="n">snwp</span>
-
-
 <span class="c1"># %%</span>
 <span class="c1"># def run_examples():</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -614,7 +577,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

@@ -26,8 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../../_static/togglebutton.js"></script>
     <script src="../../../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -197,7 +192,6 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;charge_conservation&quot;</span><span class="p">,</span>
     <span class="s2">&quot;standard_kinetics&quot;</span><span class="p">,</span>
     <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
     <span class="s2">&quot;power_law&quot;</span><span class="p">,</span>
@@ -209,90 +203,6 @@
     <span class="s2">&quot;butler_volmer_conc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;butler_volmer_voltage&quot;</span>
 <span class="p">]</span>
-
-
-<div class="viewcode-block" id="charge_conservation"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.charge_conservation.html#openpnm.models.physics.source_terms.charge_conservation">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">charge_conservation</span><span class="p">(</span>
-    <span class="n">phase</span><span class="p">,</span>
-    <span class="n">p_alg</span><span class="p">,</span>
-    <span class="n">e_alg</span><span class="p">,</span>
-    <span class="n">assumption</span>
-<span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Applies the source term on the charge conservation equation when solving</span>
-<span class="sd">    for ions transport.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(phase)s</span>
-<span class="sd">    p_alg : Algorithm</span>
-<span class="sd">        The algorithm used to enforce charge conservation.</span>
-<span class="sd">    e_alg : list</span>
-<span class="sd">        The list of algorithms used to solve for transport of different</span>
-<span class="sd">        ionic species of the mixture phase.</span>
-<span class="sd">    assumption : str</span>
-<span class="sd">        The assumption adopted to enforce charge conservation. Options are:</span>
-
-<span class="sd">        ================= ====================================================</span>
-<span class="sd">        Options           Description</span>
-<span class="sd">        ================= ====================================================</span>
-<span class="sd">        poisson           ?</span>
-<span class="sd">        electroneutrality ?</span>
-<span class="sd">        laplace           ?</span>
-<span class="sd">        ================= ====================================================</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    rate_info : dict</span>
-<span class="sd">        A dictionary containing the following three items:</span>
-
-<span class="sd">        ======= ==============================================================</span>
-<span class="sd">        Item    Description</span>
-<span class="sd">        ======= ==============================================================</span>
-<span class="sd">        rate    The value of the source term function for the given list</span>
-<span class="sd">                of algortihms under the provided assumption.</span>
-<span class="sd">        S1      A placeholder (zeros array)</span>
-<span class="sd">        S2      The value of the source term function for the given list of</span>
-<span class="sd">                algortihms under the provided assumption (same as &#39;rate&#39;).</span>
-<span class="sd">        ======= ==============================================================</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">assumption</span> <span class="o">=</span> <span class="n">assumption</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="kn">import</span> <span class="nn">scipy.sparse.csgraph</span> <span class="k">as</span> <span class="nn">_spgr</span>
-
-    <span class="n">F</span> <span class="o">=</span> <span class="mf">96485.3321233100184</span>
-    <span class="n">rhs</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">p_alg</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">p_alg</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-    <span class="k">if</span> <span class="n">assumption</span> <span class="o">==</span> <span class="s1">&#39;poisson&#39;</span><span class="p">:</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_alg</span><span class="p">:</span>
-            <span class="n">rhs</span> <span class="o">+=</span> <span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">F</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.valence.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span>
-                    <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]])</span>
-    <span class="k">elif</span> <span class="n">assumption</span> <span class="o">==</span> <span class="s1">&#39;poisson_2d&#39;</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.cross_sectional_area&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_alg</span><span class="p">:</span>
-            <span class="n">rhs</span> <span class="o">+=</span> <span class="p">(</span><span class="n">s</span> <span class="o">*</span> <span class="n">F</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.valence.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span>
-                    <span class="o">*</span> <span class="n">e</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]])</span>
-    <span class="k">elif</span> <span class="n">assumption</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;electroneutrality&#39;</span><span class="p">,</span> <span class="s1">&#39;electroneutrality_2d&#39;</span><span class="p">]:</span>
-        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">e_alg</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="n">e</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-            <span class="n">network</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span>
-            <span class="n">am</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">g</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">)</span>
-            <span class="n">A</span> <span class="o">=</span> <span class="n">_spgr</span><span class="o">.</span><span class="n">laplacian</span><span class="p">(</span><span class="n">am</span><span class="p">)</span>
-            <span class="n">rhs</span> <span class="o">+=</span> <span class="o">-</span> <span class="n">F</span> <span class="o">*</span> <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.valence.&#39;</span><span class="o">+</span><span class="n">e</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">assumption</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;laplace&#39;</span><span class="p">,</span> <span class="s1">&#39;laplace_2d&#39;</span><span class="p">]:</span>
-        <span class="k">pass</span>  <span class="c1"># rhs should remain 0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown keyword for charge_conservation, pick from:&#39;</span>
-                        <span class="o">+</span> <span class="s1">&#39; poisson, poisson_2d, laplace, laplace2d,&#39;</span>
-                        <span class="o">+</span> <span class="s1">&#39; electroneutrality or electroneutrality_2d&#39;</span><span class="p">)</span>
-    <span class="n">S1</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">p_alg</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;S1&#39;</span><span class="p">:</span> <span class="n">S1</span><span class="p">,</span> <span class="s1">&#39;S2&#39;</span><span class="p">:</span> <span class="n">rhs</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">:</span> <span class="n">rhs</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">values</span></div>
 
 
 <div class="viewcode-block" id="standard_kinetics"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.source_terms.standard_kinetics.html#openpnm.models.physics.source_terms.standard_kinetics">[docs]</a><span class="nd">@_doctxt</span>
@@ -1030,7 +940,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

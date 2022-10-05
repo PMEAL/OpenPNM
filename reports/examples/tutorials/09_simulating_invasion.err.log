@@ -1,0 +1,41 @@
+Traceback (most recent call last):
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 1204, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+    return future.result()
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 663, in async_execute
+    await self.async_execute_cell(
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/nbclient/client.py", line 862, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+ax = op.visualization.plot_coordinates(network=pn, color_by=clusters, s=40, cmap=plt.cm.nipy_spectral)
+ax = op.visualization.plot_connections(network=pn, c='lightgrey', ax=ax);
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mAttributeError[0m                            Traceback (most recent call last)
+Cell [0;32mIn [5], line 2[0m
+[1;32m      1[0m ax [38;5;241m=[39m op[38;5;241m.[39mvisualization[38;5;241m.[39mplot_coordinates(network[38;5;241m=[39mpn, color_by[38;5;241m=[39mclusters, s[38;5;241m=[39m[38;5;241m40[39m, cmap[38;5;241m=[39mplt[38;5;241m.[39mcm[38;5;241m.[39mnipy_spectral)
+[0;32m----> 2[0m ax [38;5;241m=[39m op[38;5;241m.[39mvisualization[38;5;241m.[39mplot_connections(network[38;5;241m=[39mpn, c[38;5;241m=[39m[38;5;124m'[39m[38;5;124mlightgrey[39m[38;5;124m'[39m, ax[38;5;241m=[39max)
+
+File [0;32m~/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:163[0m, in [0;36mplot_connections[0;34m(network, throats, ax, size_by, color_by, cmap, color, alpha, linestyle, linewidth, **kwargs)[0m
+[1;32m    159[0m [38;5;28;01melse[39;00m:
+[1;32m    160[0m     lc [38;5;241m=[39m LineCollection(throat_pos, colors[38;5;241m=[39mcolor, cmap[38;5;241m=[39mcmap,
+[1;32m    161[0m                         linestyles[38;5;241m=[39mlinestyle, linewidths[38;5;241m=[39mlinewidth,
+[1;32m    162[0m                         antialiaseds[38;5;241m=[39mnp[38;5;241m.[39mones_like(network[38;5;241m.[39mTs), [38;5;241m*[39m[38;5;241m*[39mkwargs)
+[0;32m--> 163[0m [43max[49m[38;5;241;43m.[39;49m[43madd_collection[49m(lc)
+[1;32m    165[0m [38;5;28;01mif[39;00m np[38;5;241m.[39msize(Ts) [38;5;241m>[39m [38;5;241m0[39m:
+[1;32m    166[0m     _scale_axes(ax[38;5;241m=[39max, X[38;5;241m=[39mX, Y[38;5;241m=[39mY, Z[38;5;241m=[39mZ)
+
+[0;31mAttributeError[0m: 'PathCollection' object has no attribute 'add_collection'
+AttributeError: 'PathCollection' object has no attribute 'add_collection'
+

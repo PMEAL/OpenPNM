@@ -22,7 +22,6 @@ diffusive\_conductance
    
       generic_diffusive
       mixed_diffusion
-      multiphase_diffusion
       ordinary_diffusion
       taylor_aris_diffusion
    

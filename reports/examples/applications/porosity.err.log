@@ -21,7 +21,7 @@ import numpy as np
 import openpnm as op
 import porespy as ps
 import matplotlib.pyplot as plt
-%config InlineBackend.figure_formats = ['svg']
+op.visualization.set_mpl_style()
 np.random.seed(10)
 %matplotlib inline
 np.set_printoptions(precision=5)
@@ -34,7 +34,7 @@ Cell [0;32mIn [1], line 3[0m
 [1;32m      2[0m [38;5;28;01mimport[39;00m [38;5;21;01mopenpnm[39;00m [38;5;28;01mas[39;00m [38;5;21;01mop[39;00m
 [0;32m----> 3[0m [38;5;28;01mimport[39;00m [38;5;21;01mporespy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mps[39;00m
 [1;32m      4[0m [38;5;28;01mimport[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mas[39;00m [38;5;21;01mplt[39;00m
-[1;32m      5[0m get_ipython()[38;5;241m.[39mrun_line_magic([38;5;124m'[39m[38;5;124mconfig[39m[38;5;124m'[39m, [38;5;124m"[39m[38;5;124mInlineBackend.figure_formats = [[39m[38;5;124m'[39m[38;5;124msvg[39m[38;5;124m'[39m[38;5;124m][39m[38;5;124m"[39m)
+[1;32m      5[0m op[38;5;241m.[39mvisualization[38;5;241m.[39mset_mpl_style()
 
 [0;31mModuleNotFoundError[0m: No module named 'porespy'
 ModuleNotFoundError: No module named 'porespy'

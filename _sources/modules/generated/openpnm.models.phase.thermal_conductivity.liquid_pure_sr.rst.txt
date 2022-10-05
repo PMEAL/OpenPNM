@@ -1,0 +1,6 @@
+liquid\_pure\_sr
+================
+
+.. currentmodule:: openpnm.models.phase.thermal_conductivity
+
+.. autofunction:: liquid_pure_sr

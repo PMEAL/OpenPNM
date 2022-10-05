@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
@@ -27,8 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
 
@@ -40,14 +39,10 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
     <script src="../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -332,7 +327,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/reactive_transport.html">
-     Basic Transport
+     Reactive Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -342,7 +337,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../reference/simulations/transient_transport.html">
-     Basic Transport
+     Transient Transport
     </a>
    </li>
   </ul>
@@ -462,6 +457,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -504,7 +500,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e6c43e1780f81164632f5f2cc0333c0c062ba6a58d152ec76921d2a77a2aab7c.png" src="../../_images/e6c43e1780f81164632f5f2cc0333c0c062ba6a58d152ec76921d2a77a2aab7c.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda3/envs/test/lib/python3.8/site-packages/IPython/core/pylabtools.py:151: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="../../_images/7e8d7fb63d52498e6fb28432b4eef59bf1cd80af82fb9c4a8f958746fa36e7df.png" src="../../_images/7e8d7fb63d52498e6fb28432b4eef59bf1cd80af82fb9c4a8f958746fa36e7df.png" />
 </div>
 </div>
 <p>There are a few notable features to point out:</p>
@@ -533,10 +533,10 @@
   (1, 3)	1
   (2, 4)	1
   (3, 5)	1
-  (0, 3)	1
-  (2, 5)	1
-  (1, 2)	1
-  (3, 4)	1
+  (3, 0)	1
+  (5, 2)	1
+  (2, 1)	1
+  (4, 3)	1
 </pre></div>
 </div>
 </div>
@@ -557,10 +557,10 @@
   (1, 3)	4
   (2, 4)	5
   (3, 5)	6
-  (0, 3)	7
-  (2, 5)	8
-  (1, 2)	9
-  (3, 4)	10
+  (3, 0)	7
+  (5, 2)	8
+  (2, 1)	9
+  (4, 3)	10
 </pre></div>
 </div>
 </div>
@@ -705,7 +705,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/515dffef8e1eda301f625988bd004a9d8e50d5b9624d84ac638b610d7324844b.png" src="../../_images/515dffef8e1eda301f625988bd004a9d8e50d5b9624d84ac638b610d7324844b.png" />
+<img alt="../../_images/55311d98d92b2b93245f1205adbe889f02c829fb0fd7b3ad6a174e60a8ba8f59.png" src="../../_images/55311d98d92b2b93245f1205adbe889f02c829fb0fd7b3ad6a174e60a8ba8f59.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode='or'</span></code> finds all pores with one or more connections to the input pores</p>
@@ -741,7 +741,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dd51608f64fd4b6dae160fa1c9290b2a245b64484b7cc624b55574241d56fba5.png" src="../../_images/dd51608f64fd4b6dae160fa1c9290b2a245b64484b7cc624b55574241d56fba5.png" />
+<img alt="../../_images/4e187208c62c4d9e607240e1e19f91e735da65e0cfbb32a9602f3ff790d7ac92.png" src="../../_images/4e187208c62c4d9e607240e1e19f91e735da65e0cfbb32a9602f3ff790d7ac92.png" />
 </div>
 </div>
 <p>`mode=’xor’ finds all pores with exactly one connection to the input pores</p>
@@ -777,7 +777,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a2e2986e16672b5e58ad422b1ad7871380d8ded61f04035072f412164855ec1c.png" src="../../_images/a2e2986e16672b5e58ad422b1ad7871380d8ded61f04035072f412164855ec1c.png" />
+<img alt="../../_images/3a51c990514bd16ffeedbeda45bb9f3037bef428ba0dd53e26a2bee868e545cd.png" src="../../_images/3a51c990514bd16ffeedbeda45bb9f3037bef428ba0dd53e26a2bee868e545cd.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode='xnor'</span></code> finds all the pores with 2 or more connections to the input pores</p>
@@ -813,7 +813,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3d9af74fc5b56b784dc2d1103cbc69e0958b4558c926cab51b689d314b6c5716.png" src="../../_images/3d9af74fc5b56b784dc2d1103cbc69e0958b4558c926cab51b689d314b6c5716.png" />
+<img alt="../../_images/376f6495181f71f539e46552aa19497b999f68d35db4663c3a525a023038865c.png" src="../../_images/376f6495181f71f539e46552aa19497b999f68d35db4663c3a525a023038865c.png" />
 </div>
 </div>
 </section>
@@ -843,7 +843,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9891ea97f9abb06c35e0b067936e247a81b705c6633d0bc979a206e06e90ffdd.png" src="../../_images/9891ea97f9abb06c35e0b067936e247a81b705c6633d0bc979a206e06e90ffdd.png" />
+<img alt="../../_images/3c10b0cc70858e0dfd979cbd5482175b3d80bb0851705b9acf3c45474dab8a5f.png" src="../../_images/3c10b0cc70858e0dfd979cbd5482175b3d80bb0851705b9acf3c45474dab8a5f.png" />
 </div>
 </div>
 <p>`mode=’xnor’ finds throats shared by input pores only</p>
@@ -869,7 +869,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/043b43273f01677971c401c9969fb65a4fe031d223df369ad65db5186c260aa0.png" src="../../_images/043b43273f01677971c401c9969fb65a4fe031d223df369ad65db5186c260aa0.png" />
+<img alt="../../_images/eb6f049a4593ec848462bdb8f0c7e6547eddd1b530c49a903ccc82ab5f1554c9.png" src="../../_images/eb6f049a4593ec848462bdb8f0c7e6547eddd1b530c49a903ccc82ab5f1554c9.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode=xor</span></code> finds throats that are only connected to one input pore</p>
@@ -895,7 +895,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/adbfcd33ce4b669af7e19c3912a1afd5c176a26e6058f436310846a1a642709b.png" src="../../_images/adbfcd33ce4b669af7e19c3912a1afd5c176a26e6058f436310846a1a642709b.png" />
+<img alt="../../_images/cce8840cb9cde571db6d8e8ceef655b8d0b289c2438df646ca54f83900e7cf90.png" src="../../_images/cce8840cb9cde571db6d8e8ceef655b8d0b289c2438df646ca54f83900e7cf90.png" />
 </div>
 </div>
 </section>
@@ -931,7 +931,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f2df9f3e24e65071c6f2c06f3faae5451dbb6edff36f88148129e31c655cd918.png" src="../../_images/f2df9f3e24e65071c6f2c06f3faae5451dbb6edff36f88148129e31c655cd918.png" />
+<img alt="../../_images/14f186a796ff649e0b7f5f064e1b519a6bac02d3a0b0a3f90fd50830a6011cc0.png" src="../../_images/14f186a796ff649e0b7f5f064e1b519a6bac02d3a0b0a3f90fd50830a6011cc0.png" />
 </div>
 </div>
 <p>This function assumes that <code class="docutils literal notranslate"><span class="pre">P1</span></code> and <code class="docutils literal notranslate"><span class="pre">P2</span></code> are lined up, so that finds the connections between each pore <code class="docutils literal notranslate"><span class="pre">i</span></code>.  If there are no connections, then <code class="docutils literal notranslate"><span class="pre">nans</span></code> are returned (which also means that any valid connections are converted to <code class="docutils literal notranslate"><span class="pre">float</span></code>):</p>
@@ -1025,7 +1025,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa1a06fbe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1058,7 +1058,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa1a06fbe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1088,7 +1088,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa1a06fbe00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1119,7 +1119,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c838ea1b64e479866c384bd664669ec4fec253a1ffde261dd659ff7457369c27.png" src="../../_images/c838ea1b64e479866c384bd664669ec4fec253a1ffde261dd659ff7457369c27.png" />
+<img alt="../../_images/0757a016b8c1aff328d268ed9cecc78321fb386b4c804705154084996b67a4de.png" src="../../_images/0757a016b8c1aff328d268ed9cecc78321fb386b4c804705154084996b67a4de.png" />
 </div>
 </div>
 </section>
@@ -1198,7 +1198,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b20736090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f4b206c9b80&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa1a09bcc20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1236,7 +1236,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206c9b80&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2a9c5602b6835f63d943aa3c556889a26a390029a1249ddb4a839a44533558c3.png" src="../../_images/2a9c5602b6835f63d943aa3c556889a26a390029a1249ddb4a839a44533558c3.png" />
+<img alt="../../_images/73ae8fb70e86faf787627189132d61ef4b1b3a44eff4eb0d4bd61019398f5521.png" src="../../_images/73ae8fb70e86faf787627189132d61ef4b1b3a44eff4eb0d4bd61019398f5521.png" />
 </div>
 </div>
 <p>Of course, the easy way is just to use <code class="docutils literal notranslate"><span class="pre">trim</span></code> directly:</p>
@@ -1252,7 +1252,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206c9b80&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2a9c5602b6835f63d943aa3c556889a26a390029a1249ddb4a839a44533558c3.png" src="../../_images/2a9c5602b6835f63d943aa3c556889a26a390029a1249ddb4a839a44533558c3.png" />
+<img alt="../../_images/73ae8fb70e86faf787627189132d61ef4b1b3a44eff4eb0d4bd61019398f5521.png" src="../../_images/73ae8fb70e86faf787627189132d61ef4b1b3a44eff4eb0d4bd61019398f5521.png" />
 </div>
 </div>
 </section>
@@ -1272,7 +1272,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206c9b80&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f4b206557c0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fa1a0ca34a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1312,7 +1312,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206557c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/28875742eb615c4cfcb11e56f3ba3c8bb0de95d1ad78706966519c2ec17f41d6.png" src="../../_images/28875742eb615c4cfcb11e56f3ba3c8bb0de95d1ad78706966519c2ec17f41d6.png" />
+<img alt="../../_images/f9153c666af66f00cd244142896093635cd22219eb46c35c17c1b20a1cb4512c.png" src="../../_images/f9153c666af66f00cd244142896093635cd22219eb46c35c17c1b20a1cb4512c.png" />
 </div>
 </div>
 <p>Now let’s add throats to these new pores:</p>
@@ -1335,7 +1335,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206557c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5fa55f2942be8c9b93c711283a9f8bd338ffc9526570c5224c39d3aa0f6d3b66.png" src="../../_images/5fa55f2942be8c9b93c711283a9f8bd338ffc9526570c5224c39d3aa0f6d3b66.png" />
+<img alt="../../_images/cb43c7c8140a772fd5c0a5469165000644500cfcb5d7e1c909ba7a5e49fb6d2a.png" src="../../_images/cb43c7c8140a772fd5c0a5469165000644500cfcb5d7e1c909ba7a5e49fb6d2a.png" />
 </div>
 </div>
 <p>Obviously, in practice we’d like to use OpenPNM’s <code class="docutils literal notranslate"><span class="pre">extend</span></code> method instead:</p>
@@ -1360,7 +1360,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206557c0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5fa55f2942be8c9b93c711283a9f8bd338ffc9526570c5224c39d3aa0f6d3b66.png" src="../../_images/5fa55f2942be8c9b93c711283a9f8bd338ffc9526570c5224c39d3aa0f6d3b66.png" />
+<img alt="../../_images/cb43c7c8140a772fd5c0a5469165000644500cfcb5d7e1c909ba7a5e49fb6d2a.png" src="../../_images/cb43c7c8140a772fd5c0a5469165000644500cfcb5d7e1c909ba7a5e49fb6d2a.png" />
 </div>
 </div>
 </section>
@@ -1391,7 +1391,7 @@ net : &lt;openpnm.network.Cubic at 0x7f4b206557c0&gt;
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

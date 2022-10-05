@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Steady State Transport &#8212; OpenPNM 2.8.2.dev111144 documentation</title>
 <script>
@@ -27,8 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
@@ -40,14 +39,10 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/custom.js"></script>
@@ -334,7 +329,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="reactive_transport.html">
-     Basic Transport
+     Reactive Transport
     </a>
    </li>
    <li class="toctree-l2">
@@ -344,7 +339,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="transient_transport.html">
-     Basic Transport
+     Transient Transport
     </a>
    </li>
   </ul>
@@ -423,6 +418,8 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+
 <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 <span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 <span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
@@ -449,10 +446,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-0.42862942  0.41365671  0.01497271  0.        ]
- [ 0.41365671 -0.45905282  0.          0.04539611]
- [ 0.01497271  0.         -0.9527663   0.93779359]
- [ 0.          0.04539611  0.93779359 -0.9831897 ]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.722826    0.78291962  0.93990638  0.        ]
+ [ 0.78291962 -1.75545129  0.          0.97253167]
+ [ 0.93990638  0.         -1.2196117   0.27970531]
+ [ 0.          0.97253167  0.27970531 -1.25223698]]
 </pre></div>
 </div>
 </div>
@@ -482,9 +479,9 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.41365671 -0.45905282  0.          0.04539611]
- [ 0.01497271  0.         -0.9527663   0.93779359]
- [ 0.          0.04539611  0.93779359 -0.9831897 ]]
+ [ 0.78291962 -1.75545129  0.          0.97253167]
+ [ 0.93990638  0.         -1.2196117   0.27970531]
+ [ 0.          0.97253167  0.27970531 -1.25223698]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -504,7 +501,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 2.          1.11140152 -6.84444233 -6.98565173]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.57338192 1.82339482 1.22994048]
 </pre></div>
 </div>
 </div>
@@ -590,9 +587,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.41365671 -0.45905282  0.          0.04539611]
- [ 0.01497271  0.         -0.9527663   0.93779359]
- [ 0.          0.04539611  0.93779359 -0.9831897 ]]
+ [ 0.78291962 -1.75545129  0.          0.97253167]
+ [ 0.93990638  0.         -1.2196117   0.27970531]
+ [ 0.          0.97253167  0.27970531 -1.25223698]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -609,7 +606,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[ 2.          1.11140152 -6.84444233 -6.98565173]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.57338192 1.82339482 1.22994048]
 </pre></div>
 </div>
 </div>
@@ -643,7 +640,7 @@ The b matrix is:
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

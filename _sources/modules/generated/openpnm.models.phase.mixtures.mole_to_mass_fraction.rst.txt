@@ -1,0 +1,6 @@
+mole\_to\_mass\_fraction
+========================
+
+.. currentmodule:: openpnm.models.phase.mixtures
+
+.. autofunction:: mole_to_mass_fraction

@@ -43,7 +43,8 @@
    "outputs": [],
    "source": [
     "import openpnm as op\n",
-    "import numpy as np"
+    "import numpy as np\n",
+    "op.visualization.set_mpl_style()"
    ]
   },
   {

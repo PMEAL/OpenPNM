@@ -21,9 +21,6 @@ capillary\_pressure
       :toctree:
    
       purcell
-      purcell_bidirectional
-      ransohoff_snap_off
-      sinusoidal_bidirectional
       washburn
    
    

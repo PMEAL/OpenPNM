@@ -26,8 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../../_static/togglebutton.js"></script>
     <script src="../../../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -200,7 +195,6 @@
     <span class="s1">&#39;water_correlation&#39;</span><span class="p">,</span>
     <span class="s1">&#39;gas_pure_st&#39;</span><span class="p">,</span>
     <span class="s1">&#39;gas_pure_gesmr&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;gas_pure_cls&#39;</span><span class="p">,</span>
     <span class="s1">&#39;gas_mixture_hz&#39;</span><span class="p">,</span>
     <span class="s1">&#39;liquid_pure_ls&#39;</span><span class="p">,</span>
     <span class="s1">&#39;liquid_mixture_xweighted&#39;</span><span class="p">,</span>
@@ -406,55 +400,6 @@
     <span class="k">return</span> <span class="n">mu</span></div>
 
 
-<div class="viewcode-block" id="gas_pure_cls"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_pure_cls.html#openpnm.models.phase.viscosity.gas_pure_cls">[docs]</a><span class="nd">@_phasedocs</span>
-<span class="k">def</span> <span class="nf">gas_pure_cls</span><span class="p">(</span>
-    <span class="n">phase</span><span class="p">,</span>
-    <span class="n">T</span><span class="o">=</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">,</span>
-    <span class="n">MW</span><span class="o">=</span><span class="s1">&#39;param.molecular_weight&#39;</span><span class="p">,</span>
-    <span class="n">Tc</span><span class="o">=</span><span class="s1">&#39;param.critical_temperature&#39;</span><span class="p">,</span>
-    <span class="n">Vc</span><span class="o">=</span><span class="s1">&#39;param.critical_volume&#39;</span>
-<span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the viscosity of a pure gas using the correlation of [1]</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(phase)s</span>
-<span class="sd">    %(T)s</span>
-<span class="sd">    %(Tc)s</span>
-<span class="sd">    %(Pc)s</span>
-<span class="sd">    %(MW)s</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    value : ndarray</span>
-<span class="sd">        Array containing viscosity values based on Chung model in [Pa.s].</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas</span>
-<span class="sd">        Theories and Multiparameter Correlation for Prediction of Dilute Gas</span>
-<span class="sd">        Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
-    <span class="n">MW</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">MW</span><span class="p">]</span>
-    <span class="n">Tc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Tc</span><span class="p">]</span>
-    <span class="n">Vc</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">Vc</span><span class="p">]</span>
-    <span class="n">Tr</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">Tc</span>
-    <span class="n">Tstar</span> <span class="o">=</span> <span class="mf">1.2593</span><span class="o">*</span><span class="n">Tr</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="mf">1.161415</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="mf">0.14874</span>
-    <span class="n">C</span> <span class="o">=</span> <span class="mf">0.52487</span>
-    <span class="n">D</span> <span class="o">=</span> <span class="mf">0.77320</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="mf">2.16178</span>
-    <span class="n">F</span> <span class="o">=</span> <span class="mf">2.43787</span>
-    <span class="n">omega</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="n">Tstar</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">B</span><span class="p">))</span> <span class="o">+</span> <span class="n">C</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">D</span><span class="o">*</span><span class="n">Tstar</span><span class="p">))</span> <span class="o">+</span> <span class="n">E</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">F</span><span class="o">*</span><span class="n">Tstar</span><span class="p">))</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.809</span><span class="o">*</span><span class="p">(</span><span class="n">Vc</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
-    <span class="n">value</span> <span class="o">=</span> <span class="mf">26.69E-9</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">MW</span><span class="o">*</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">omega</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">value</span></div>
-
-
 <div class="viewcode-block" id="gas_mixture_hz"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.phase.viscosity.gas_mixture_hz.html#openpnm.models.phase.viscosity.gas_mixture_hz">[docs]</a><span class="nd">@_phasedocs</span>
 <span class="k">def</span> <span class="nf">gas_mixture_hz</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
@@ -573,7 +518,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

@@ -22,7 +22,6 @@ source\_terms
    
       butler_volmer_conc
       butler_volmer_voltage
-      charge_conservation
       exponential
       general_symbolic
       linear

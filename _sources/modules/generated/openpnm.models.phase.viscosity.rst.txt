@@ -21,7 +21,6 @@ viscosity
       :toctree:
    
       gas_mixture_hz
-      gas_pure_cls
       gas_pure_gesmr
       gas_pure_st
       liquid_mixture_xweighted

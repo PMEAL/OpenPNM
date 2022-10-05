@@ -1,6 +1,0 @@
-gas\_pure\_cls
-==============
-
-.. currentmodule:: openpnm.models.phase.viscosity
-
-.. autofunction:: gas_pure_cls

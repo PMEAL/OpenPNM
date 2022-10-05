@@ -26,8 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../../_static/togglebutton.js"></script>
     <script src="../../../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -202,7 +197,6 @@
     <span class="s2">&quot;ordinary_diffusion&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mixed_diffusion&quot;</span><span class="p">,</span>
     <span class="s2">&quot;taylor_aris_diffusion&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multiphase_diffusion&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -388,62 +382,6 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">gtot</span> <span class="o">=</span> <span class="n">Dt</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">Pet</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">192</span><span class="p">)</span> <span class="o">*</span> <span class="n">F</span>
     <span class="k">return</span> <span class="n">gtot</span></div>
-
-
-<div class="viewcode-block" id="multiphase_diffusion"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.physics.diffusive_conductance.multiphase_diffusion.html#openpnm.models.physics.diffusive_conductance.multiphase_diffusion">[docs]</a><span class="nd">@_doctxt</span>
-<span class="k">def</span> <span class="nf">multiphase_diffusion</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span>
-                         <span class="n">pore_diffusivity</span><span class="o">=</span><span class="s2">&quot;pore.diffusivity&quot;</span><span class="p">,</span>
-                         <span class="n">throat_diffusivity</span><span class="o">=</span><span class="s2">&quot;throat.diffusivity&quot;</span><span class="p">,</span>
-                         <span class="n">size_factors</span><span class="o">=</span><span class="s2">&quot;throat.diffusive_size_factors&quot;</span><span class="p">,</span>
-                         <span class="n">partition_coef_global</span><span class="o">=</span><span class="s2">&quot;throat.partition_coef.global&quot;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the diffusive conductance of conduits in network.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(phase)s</span>
-<span class="sd">    pore_diffusivity : str</span>
-<span class="sd">        %(dict_blurb)s pore diffusivity</span>
-<span class="sd">    throat_diffusivity : str</span>
-<span class="sd">        %(dict_blurb)s throat diffusivity</span>
-<span class="sd">    size_factors : str</span>
-<span class="sd">        %(dict_blurb)s conduit size factors</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    %(return_arr)s diffusive conductance</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This method assumes that ``phase[&quot;partition_coef&quot;]`` contains information</span>
-<span class="sd">    on binary phase partitioning. See ``MultiPhase`` class documentation for</span>
-<span class="sd">    more information.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">phase</span><span class="o">.</span><span class="n">network</span>
-    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span>
-    <span class="n">SF</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">size_factors</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">SF</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">F1</span><span class="p">,</span> <span class="n">Ft</span><span class="p">,</span> <span class="n">F2</span> <span class="o">=</span> <span class="n">SF</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">SF</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">F1</span><span class="p">,</span> <span class="n">Ft</span><span class="p">,</span> <span class="n">F2</span> <span class="o">=</span> <span class="n">SF</span><span class="o">.</span><span class="n">T</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">F1</span><span class="p">,</span> <span class="n">Ft</span><span class="p">,</span> <span class="n">F2</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">SF</span><span class="p">,</span> <span class="n">_np</span><span class="o">.</span><span class="n">inf</span>
-
-    <span class="c1"># Fetch model parameters</span>
-    <span class="n">D1</span><span class="p">,</span> <span class="n">D2</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">pore_diffusivity</span><span class="p">][</span><span class="n">cn</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">Dt</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">throat_diffusivity</span><span class="p">]</span>
-    <span class="n">g1</span> <span class="o">=</span> <span class="n">D1</span> <span class="o">*</span> <span class="n">F1</span>
-    <span class="n">gt</span> <span class="o">=</span> <span class="n">Dt</span> <span class="o">*</span> <span class="n">Ft</span>
-    <span class="n">g2</span> <span class="o">=</span> <span class="n">D2</span> <span class="o">*</span> <span class="n">F2</span>
-
-    <span class="c1"># Apply Henry&#39;s partitioning coefficient</span>
-    <span class="c1"># Note: m12 = (G21*c1 - G12*c2)  NOT  (G12*c1 - G21*c2)</span>
-    <span class="n">K12</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">partition_coef_global</span><span class="p">]</span>
-    <span class="n">G21</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">g1</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">/</span><span class="n">gt</span> <span class="o">+</span> <span class="n">K12</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">g2</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">/</span><span class="n">gt</span><span class="p">))</span> <span class="o">**</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">G12</span> <span class="o">=</span> <span class="n">K12</span> <span class="o">*</span> <span class="n">G21</span>
-
-    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">G12</span><span class="p">,</span> <span class="n">G21</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
 </pre></div>
 
               </article>
@@ -470,7 +408,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

@@ -33,7 +33,6 @@ utils
       is_valid_propname
       methods_to_table
       models_to_table
-      prettify_logger_message
       sanitize_dict
       struct_to_dict
    
