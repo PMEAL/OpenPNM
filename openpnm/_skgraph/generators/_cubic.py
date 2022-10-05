@@ -71,16 +71,11 @@ def cubic(shape, spacing=1, connectivity=6, node_prefix='node', edge_prefix='edg
         tails = np.concatenate((tails, T.flatten()))
         heads = np.concatenate((heads, H.flatten()))
     pairs = np.vstack([tails, heads]).T
-    pairs = np.sort(pairs, axis=1)
+    # NOTE: pairs is already sorted -> skipping np.sort() for performance
+    # pairs = np.sort(pairs, axis=1)
 
     d = {}
-    d[node_prefix+'.coords'] = points * spacing
-    d[edge_prefix+'.conns'] = pairs
-
-    # Label the various throat connections
-    # P1 = points[pairs[:, 0]]
-    # P2 = points[pairs[:, 1]]
-    # L = np.sqrt(np.sum((P1 - P2)**2, axis=1))
-    # d[edge_prefix+'.spacing'] = L
+    d[f"{node_prefix}.coords"] = points * spacing
+    d[f"{edge_prefix}.conns"] = pairs
 
     return d
