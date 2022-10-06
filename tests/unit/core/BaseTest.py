@@ -339,6 +339,13 @@ class BaseTest:
         b = [i for i in a if self.net[i].dtype == bool]
         assert a == b
 
+    def test_keys_model_models(self):
+        self.net.regenerate_models()
+        a = self.net.keys(mode='models')
+        assert 'dict_keys' not in str(type(a))
+        b = [i for i in a if self.net[i].dtype != bool]
+        assert set(a) == set(b)
+
     # def test_keys_element_pores_mode_all(self):
     #     a = self.net.keys(element='pores', mode='all')
     #     b = [i.split('.')[0] for i in a]
