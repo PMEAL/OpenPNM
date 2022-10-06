@@ -247,25 +247,12 @@ class ModelWrapper(dict):
     """
 
     def __call__(self):
-        target = self._find_target()
         model = self['model']
         kwargs = {}
         for k, v in self.items():
             if k not in ['model', 'regen_mode']:
                 kwargs[k] = v
-        return model(target, **kwargs)
-
-    def _find_parent(self):
-        r"""
-        Finds and returns the parent object to self.
-        """
-        for proj in ws.values():
-            for obj in proj:
-                if hasattr(obj, "models"):
-                    for mod in obj.models.keys():
-                        if obj.models[mod] is self:
-                            return obj
-        raise Exception("No parent object found!")
+        return model(self.target, **kwargs)
 
     @property
     def name(self):
@@ -302,9 +289,10 @@ class ModelWrapper(dict):
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
-    def _find_target(self):
+    @property
+    def target(self):
         """
-        Finds and returns the parent object to self
+        Finds and returns the object to which this model is assigned
         """
         for proj in ws.values():
             for obj in proj:
