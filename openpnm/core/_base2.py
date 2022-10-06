@@ -160,18 +160,6 @@ class Base2(dict):
             except KeyError:
                 return self.network._params[key]
 
-        # If key starts with 'conduit.', then call the get_conduit_data method
-        # to build an Nt-by-3 array of pore1-throat-pore2 values
-        if key.startswith('conduit'):
-            domain = None
-            if '@' in key:
-                key, domain = key.split('@')
-            vals = self.get_conduit_data(propname=key.split('.', 1)[1])
-            if domain is not None:
-                locs = self['throat.'+domain]
-                vals = vals[locs]
-            return vals
-
         # If key contains an @ symbol then return a subset of values at the
         # requested locations, by recursively calling __getitem__
         if '@' in key:
