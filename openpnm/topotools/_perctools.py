@@ -5,13 +5,14 @@ from scipy.sparse import csgraph
 from openpnm.utils import PrintableDict, Workspace
 from openpnm._skgraph import simulations
 from openpnm._skgraph import queries
+from collections import namedtuple
 
 
 logger = logging.getLogger(__name__)
 ws = Workspace()
 __all__ = [
     'ispercolating',
-    'remove_isolated_clusters',
+    'find_isolated_clusters',
     'site_percolation',
     'bond_percolation',
     'find_clusters',
@@ -43,12 +44,6 @@ def ispercolating(network, inlets, outlets):
 ispercolating.__doc__ = simulations.ispercolating.__doc__
 
 
-def remove_isolated_clusters(**kwargs):
-    return simulations.remove_isolated_clusters(**kwargs)
-
-
-remove_isolated_clusters.__doc__ = simulations.remove_isolated_clusters.__doc__
-
 
 def site_percolation(network, occupied_sites):
     return simulations.site_percolation(network.conns, occupied_sites)
@@ -72,6 +67,35 @@ trim_disconnected_clusters.__doc__ = \
     simulations.trim_disconnected_clusters.__doc__
 
 
+def find_isolated_clusters(network, mask, inlets):
+    r"""
+    Identifies pores and throats that are invaded but not connected to the inlets
+
+    Parameters
+    ----------
+    network : dict
+        The OpenPNM Network
+    mask : ndarray
+        A boolean mask of either Nt or Np length with ``True`` values
+        indicating invaded bonds or sites. If this array is Nt-long then
+        then bond percolation is used to identify clusters, whereas site
+        percolation is used if it is Np-long.
+    inlets : ndarray
+        A array containing indices of the pores which define the inlets. Any
+        clusters not connected to these sites are considered isolated.
+
+    Returns
+    -------
+    sites : ndarray
+        An ndarray containing the indices of invaded pores which are not
+        connected to the given ``inlets``.
+    """
+    labels = find_clusters(network=network, mask=mask)
+    isolated = np.in1d(labels.pore_labels, labels.pore_labels[inlets], invert=True)
+    isolated = np.where(isolated)[0]
+    return isolated
+
+
 def find_clusters(network, mask=[]):
     r"""
     Identify connected clusters of pores and throats in the network.
@@ -84,15 +108,15 @@ def find_clusters(network, mask=[]):
     network : Network
         The network
     mask : array_like, boolean
-        A list of open bonds or sites (throats or pores).  If the mask is
-        Np long, then the method will perform a site percolation to identify
-        clusters, and if the mask is Nt long bond percolation will be
+        A list of open bonds or sites (throats or pores). If the mask is
+        Np-long, then the method will perform a site percolation to identify
+        clusters, and if the mask is Nt-long bond percolation will be
         performed.
 
     Returns
     -------
     p_labels, t_labels : tuple of ndarrays
-        A tuple containing an Np long arraY of pore cluster labels, and an
+        A tuple containing an Np-long array of pore cluster labels, and an
         Nt-long array of throat cluster labels. The label numbers correspond
         such that pores and throats with the same label are part of the same
         cluster. Uninvaded locations are set to -1.
@@ -112,4 +136,7 @@ def find_clusters(network, mask=[]):
             simulations.bond_percolation(network.conns, mask)
     else:
         raise Exception('Mask received was neither Nt nor Np long')
-    return (p_clusters, t_clusters)
+    result = namedtuple('result', ('pore_labels', 'throat_labels'))
+    result.pore_labels = p_clusters
+    result.throat_labels = t_clusters
+    return result

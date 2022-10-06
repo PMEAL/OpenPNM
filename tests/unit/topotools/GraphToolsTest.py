@@ -420,24 +420,6 @@ class GraphToolsTest:
         im = net.create_incidence_matrix()
         assert not topotools.issymmetric(im)
 
-    def test_find_clusters_sites(self):
-        net = op.network.Cubic(shape=[10, 10, 10])
-        net['pore.seed'] = np.random.rand(net.Np)
-        net['throat.seed'] = np.random.rand(net.Nt)
-        clusters = topotools.find_clusters(network=net,
-                                           mask=net['pore.seed'] < 0.5)
-        assert len(clusters[0]) == net.Np
-        assert len(clusters[1]) == net.Nt
-
-    def test_find_clusters_bonds(self):
-        net = op.network.Cubic(shape=[10, 10, 10])
-        net['pore.seed'] = np.random.rand(net.Np)
-        net['throat.seed'] = np.random.rand(net.Nt)
-        clusters = topotools.find_clusters(network=net,
-                                           mask=net['throat.seed'] < 0.5)
-        assert len(clusters[0]) == net.Np
-        assert len(clusters[1]) == net.Nt
-
     def test_drop_sites(self):
         am = self.net.create_adjacency_matrix(fmt='coo')
         assert np.all(am.shape == (6, 6))

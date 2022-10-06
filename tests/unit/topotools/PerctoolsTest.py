@@ -50,13 +50,44 @@ class PerctoolsTest:
             outlets=pn.pores('right'))
         assert not flag
 
-    def test_find_isolated_clusters(self):
+    def test_find_isolated_clusters_pore_mask(self):
         pn = op.network.Demo(shape=[4, 4, 1])
-        plabels = np.zeros_like(pn.Ps)
-        tlabels = np.zeros_like(pn.Ts)
-        labels = op.topotools.remove_isolated_clusters(
+        plabels = np.zeros_like(pn.Ps, dtype=bool)
+        np.random.seed(0)
+        hits = np.random.randint(0, pn.Np, 8)
+        plabels[hits] = True
+        labels = op.topotools.find_isolated_clusters(
+            network=pn,
+            mask=plabels,
+            inlets=pn.pores('left')
+        )
+        assert np.all(labels == [5, 12])
+        # ax = op.visualization.plot_coordinates(pn, pores=labels,
+        #                                        s=50, c='r')
+        # ax = op.visualization.plot_coordinates(pn, pores=plabels,
+        #                                        s=50, marker='x', c='b', ax=ax)
+        # ax = op.visualization.plot_coordinates(pn, pores=pn.pores('left'),
+        #                                        s=50, marker='x', c='g', ax=ax)
 
-            )
+    def test_find_isolated_clusters_throat_mask(self):
+        pn = op.network.Demo(shape=[4, 4, 1])
+        mask = np.zeros_like(pn.Ts, dtype=bool)
+        np.random.seed(0)
+        hits = np.random.randint(0, pn.Nt, 8)
+        mask[hits] = True
+        inlets = pn.pores('left')
+        labels = op.topotools.find_isolated_clusters(
+            network=pn,
+            mask=mask,
+            inlets=inlets
+        )
+        # ax = op.visualization.plot_connections(pn, throats=mask)
+        # ax = op.visualization.plot_coordinates(pn, pores=labels,
+        #                                         s=50, c='r', ax=ax)
+        # ax = op.visualization.plot_coordinates(pn, pores=plabels,
+        #                                         s=50, marker='x', c='b', ax=ax)
+        # ax = op.visualization.plot_coordinates(pn, pores=pn.pores('left'),
+        #                                         s=50, marker='x', c='g', ax=ax)
 
     def test_site_percolation(self):
         pass
@@ -67,9 +98,31 @@ class PerctoolsTest:
     def test_trim_disconnected_clusters(self):
         pass
 
-    def test_find_clusters(self):
-        pass
+    def test_find_clusters_sites(self):
+        net = op.network.Cubic(shape=[10, 10, 1])
+        net['pore.seed'] = np.random.rand(net.Np)
+        net['throat.seed'] = np.random.rand(net.Nt)
+        clusters = topotools.find_clusters(network=net,
+                                           mask=net['pore.seed'] < 0.5)
+        assert len(clusters.pore_labels) == net.Np
+        assert len(clusters.throat_labels) == net.Nt
+        # Ensure neighboring pores have same label, unless one is -1
+        L = clusters.pore_labels[net.conns]
+        hits = np.all(L >= 0, axis=1)
+        assert np.all(L[:, 0][hits] == L[:, 1][hits])
 
+    def test_find_clusters_bonds(self):
+        net = op.network.Cubic(shape=[10, 10, 1])
+        net['pore.seed'] = np.random.rand(net.Np)
+        net['throat.seed'] = np.random.rand(net.Nt)
+        clusters = topotools.find_clusters(network=net,
+                                           mask=net['throat.seed'] < 0.5)
+        assert len(clusters.pore_labels) == net.Np
+        assert len(clusters.throat_labels) == net.Nt
+        # Ensure neighboring pores have same label, if throat is invaded
+        L = clusters.pore_labels[net.conns]
+        hits = net['throat.seed'] < 0.5
+        assert np.all(L[:, 0][hits] == L[:, 1][hits])
 
 
 if __name__ == '__main__':
