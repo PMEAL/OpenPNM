@@ -339,22 +339,22 @@ class BaseTest:
         b = [i for i in a if self.net[i].dtype == bool]
         assert a == b
 
-    def test_keys_model_models(self):
+    def test_keys_mode_models(self):
         self.net.regenerate_models()
         a = self.net.keys(mode='models')
         assert 'dict_keys' not in str(type(a))
-        b = [i for i in a if self.net[i].dtype != bool]
+        b = [i.split('@')[0] for i in self.net.models.keys() if
+             i.split('@')[0] in self.net.keys()]
         assert set(a) == set(b)
 
-    # def test_keys_element_pores_mode_all(self):
-    #     a = self.net.keys(element='pores', mode='all')
-    #     b = [i.split('.')[0] for i in a]
-    #     assert set(b) == {'pore'}
-
-    # def test_keys_element_throats_mode_all(self):
-    #     a = self.net.keys(element='throats', mode='all')
-    #     b = [i.split('.')[0] for i in a]
-    #     assert set(b) == {'throat'}
+    def test_keys_mode_constants(self):
+        self.net.regenerate_models()
+        a = self.net.keys(mode='constants')
+        assert 'dict_keys' not in str(type(a))
+        mods = [i.split('@')[0] for i in self.net.models.keys()]
+        b = [i for i in self.net.keys() if
+             ((i not in mods) and (self.net[i].dtype != 'bool'))]
+        assert set(a) == set(b)
 
     def test_keys_mode_props_and_labels(self):
         a = self.net.keys(mode=['props', 'labels'])
