@@ -491,11 +491,6 @@ class Base2(dict):
             for pore1, throat, and pore2 respectively.
 
         """
-        # If requested data is already in the form of conduit data, return it
-        if propname in self.keys():
-            vals = self[propname]
-            if (vals.ndim == 2) and (vals.shape[1] == self.Nt):
-                return vals
         poreprop = 'pore.' + propname.split('.', 1)[-1]
         throatprop = 'throat.' + propname.split('.', 1)[-1]
         conns = self.network.conns
