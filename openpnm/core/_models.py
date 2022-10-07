@@ -175,7 +175,7 @@ class ModelsDict(PrintableDict):
         return ax
 
     @property
-    def _info(self):
+    def _info(self):  # Pragma: no cover
         r"""
         Prints a nicely formatted list of model names and the domain to which
         they apply.
@@ -191,7 +191,7 @@ class ModelsDict(PrintableDict):
                 names[name] = []
             names[name].append(domain)
         D = PrintableDict(names, key='Model', value='Domain')
-        return D
+        print(D)
 
     def __str__(self):  # pragma: no cover
         horizontal_rule = '―' * 85

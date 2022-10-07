@@ -29,6 +29,19 @@ class ModelsTest:
         a = 'pore.all'
         assert a == self.net.models['pore.diameter@all'].domain
 
+    def test_run_model(self):
+        a = self.net['pore.seed'].copy()
+        b = self.net['pore.diameter'].copy()
+        self.net.run_model('pore.seed')
+        c = self.net['pore.seed'].copy()
+        d = self.net['pore.diameter'].copy()
+        assert not np.any(a == c)
+        assert np.all(b == d)
+        self.net.run_model('pore.diameter')
+        e = self.net['pore.diameter'].copy()
+        assert not np.any(b == e)
+
+
 
 
 if __name__ == '__main__':
