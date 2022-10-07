@@ -11,8 +11,7 @@ class IPTest:
             op.models.collections.geometry.spheres_and_cylinders)
         self.net.regenerate_models()
         self.water = op.phase.Water(network=self.net)
-        self.water.add_model_collection(
-            op.models.collections.physics.basic)
+        self.water.add_model_collection(op.models.collections.physics.basic)
         self.water.regenerate_models()
         mod = op.models.physics.capillary_pressure.washburn
         self.water.add_model(propname="throat.entry_pressure", model=mod)
@@ -27,6 +26,13 @@ class IPTest:
 
         alg.set_inlet_BC(mode='remove')
         assert np.sum(alg["pore.bc.inlet"] == True) == 0
+
+        alg.set_inlet_BC(pores=self.net.pores("top"), mode='add')
+        with pytest.raises(Exception):
+            alg.set_outlet_BC(pores=self.net.pores("top"), mode='add')
+        assert np.sum(alg["pore.bc.outlet"] == True) == 0
+        alg.set_outlet_BC(pores=self.net.pores("top"), mode='overwrite')
+        assert np.sum(alg["pore.bc.outlet"] == True) == 100
 
     def test_run(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
@@ -46,15 +52,10 @@ class IPTest:
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlet_BC(pores=self.net.pores("top"))
         alg.run()
-        Vp = self.net["pore.volume"]
-        Vt = self.net["throat.volume"]
-        Vtot = Vp.sum() + Vt.sum()
-        Vp_inv = Vp[alg["pore.invasion_sequence"] >= 0].sum()
-        Vt_inv = Vt[alg["throat.invasion_sequence"] >= 0].sum()
-        S = (Vp_inv + Vt_inv) / (Vtot)
-        # Ensure saturation is close to requested value
-        # assert S < 0.6
-        # assert S > 0.4
+        assert alg['pore.invasion_sequence'].max() == 2696
+        assert alg['pore.invasion_sequence'].min() == 0
+        assert alg['pore.invasion_pressure'].max() == 1965.7264736507695
+        assert alg['pore.invasion_pressure'].min() == 0
 
     def test_trapping(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
@@ -67,12 +68,13 @@ class IPTest:
     def test_plot_pc_curve(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlet_BC(pores=self.net.pores("top"))
-        with pytest.raises(Exception):
-            alg.plot_intrusion_curve()
+        with pytest.raises(KeyError):
+            alg.pc_curve()
         alg.run()
         pc = alg.pc_curve()
         assert len(pc) == 2
         assert len(pc.pc) == 3700
+        assert max(pc.snwp == 1.0)
 
 
 if __name__ == "__main__":
