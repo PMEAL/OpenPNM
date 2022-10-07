@@ -31,15 +31,15 @@ class MixtureTest:
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
         # Ensure models are NOT run during init (no point without mol fracs)
-        m = vodka.models._info.keys()
+        m = vodka.models.keys()
         for item in m:
-            assert item not in vodka.keys()
+            assert item.split('@')[0] not in vodka.keys()
         # Make sure models run without complaining
         vodka.regenerate_models()
         # Make sure all models were actually run
-        m = vodka.models._info.keys()
+        m = vodka.models.keys()
         for item in m:
-            assert item in vodka.keys()
+            assert item.split('@')[0] in vodka.keys()
 
         vodka.add_model(propname='pore.diffusivity',
                         model=op.models.phase.diffusivity.liquid_mixture_tc)
@@ -52,15 +52,15 @@ class MixtureTest:
         air.y(A.name, 0.21)
         air.y(B.name, 0.79)
         # Ensure models are NOT run during init (no point without mol fracs)
-        m = air.models._info.keys()
+        m = air.models.keys()
         for item in m:
-            assert item not in air.keys()
+            assert item.split('@')[0] not in air.keys()
         # Make sure models run without complaining
         air.regenerate_models()
         # Make sure all models were actually run
-        m = air.models._info.keys()
+        m = air.models.keys()
         for item in m:
-            assert item in air.keys()
+            assert item.split('@')[0] in air.keys()
 
         air.add_model(propname='pore.diffusivity',
                       model=op.models.phase.diffusivity.gas_mixture_ce)
