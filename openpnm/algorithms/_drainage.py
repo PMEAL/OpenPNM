@@ -6,7 +6,6 @@ from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
     site_percolation,
-    mixed_percolation,
     find_connected_clusters,
 )
 

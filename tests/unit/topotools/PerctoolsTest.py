@@ -90,13 +90,55 @@ class PerctoolsTest:
         #                                         s=50, marker='x', c='g', ax=ax)
 
     def test_site_percolation(self):
-        pass
+        pn = op.network.Demo(shape=[4, 4, 1])
+        np.random.seed(0)
+        sp = op.topotools.site_percolation
+        mask = np.random.permutation(pn.Np)
+        for i in range(pn.Np):
+            plabels, tlabels = sp(network=pn, occupied_sites=mask < i)
+            assert np.unique(plabels).size >= np.unique(tlabels).size
+        # plabels, tlabels = sp(network=pn, occupied_sites=mask < 5)
+        # ax = op.visualization.plot_connections(pn, throats=tlabels >= 0)
+        # ax = op.visualization.plot_coordinates(pn, pores=plabels >= 0,
+        #                                        s=50, c='r', ax=ax)
 
     def test_bond_percolation(self):
-        pass
+        pn = op.network.Demo(shape=[4, 4, 1])
+        np.random.seed(0)
+        bp = op.topotools.bond_percolation
+        mask = np.random.permutation(pn.Nt)
+        for i in range(pn.Nt):
+            plabels, tlabels = bp(network=pn, occupied_bonds=mask < i)
+            assert np.unique(plabels).size <= np.unique(tlabels).size
+            assert np.all(plabels[pn.conns][:, 0][mask < i]
+                          == plabels[pn.conns][:, 1][mask < i])
+        # plabels, tlabels = bp(network=pn, occupied_bonds=mask < 10)
+        # ax = op.visualization.plot_connections(pn, throats=tlabels >= 0)
+        # ax = op.visualization.plot_coordinates(pn, pores=plabels >= 0,
+        #                                        s=50, c='r', ax=ax)
 
-    def test_trim_disconnected_clusters(self):
-        pass
+    def test_trim_disconnected_clusters_bond_perc(self):
+        pn = op.network.Demo(shape=[4, 4, 1])
+        np.random.seed(0)
+        bp = op.topotools.bond_percolation
+        mask = np.random.permutation(pn.Nt) < 9
+        plabels, tlabels = bp(network=pn, occupied_bonds=mask)
+        assert len(np.unique(plabels)) == 5
+        assert len(np.unique(tlabels)) == 5
+        # ax = op.visualization.plot_connections(pn, throats=tlabels >= 0)
+        # ax = op.visualization.plot_coordinates(pn, pores=plabels >= 0,
+        #                                         s=50, c='r', ax=ax)
+        # Now apply the trim function
+        plabels, tlabels = op.topotools.trim_disconnected_clusters(
+            b_labels=tlabels,
+            s_labels=plabels,
+            inlets=pn.pores('left')
+        )
+        assert len(np.unique(plabels)) == 4
+        assert len(np.unique(tlabels)) == 4
+        # ax = op.visualization.plot_connections(pn, throats=tlabels >= 0)
+        # ax = op.visualization.plot_coordinates(pn, pores=plabels >= 0,
+        #                                         s=50, c='r', ax=ax)
 
     def test_find_clusters_sites(self):
         net = op.network.Cubic(shape=[10, 10, 1])

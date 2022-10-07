@@ -13,6 +13,7 @@ ws = Workspace()
 __all__ = [
     'ispercolating',
     'find_isolated_clusters',
+    'trim_disconnected_clusters',
     'site_percolation',
     'bond_percolation',
     'find_clusters',
@@ -42,7 +43,6 @@ def ispercolating(network, inlets, outlets):
 
 
 ispercolating.__doc__ = simulations.ispercolating.__doc__
-
 
 
 def site_percolation(network, occupied_sites):

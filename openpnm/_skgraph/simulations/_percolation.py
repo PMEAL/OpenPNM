@@ -11,7 +11,6 @@ __all__ = [
     'remove_isolated_clusters',
     'bond_percolation',
     'site_percolation',
-    'mixed_percolation',
     'find_connected_clusters',
     'find_trapped_bonds',
     'find_trapped_sites',
@@ -22,7 +21,7 @@ __all__ = [
 def bond_percolation(conns, occupied_bonds):
     r"""
     Assigns cluster numbers to sites and bonds acccording to a bond
-    percolation process given a list of occupied bonds.
+    percolation process, given a list of occupied bonds.
 
     Parameters
     ----------
@@ -37,7 +36,7 @@ def bond_percolation(conns, occupied_bonds):
     Returns
     -------
     A tuple containing a list of site and bond labels, indicating which
-    cluster each belongs to.  A value of -1 indicates uninvaded.
+    cluster each belongs to. A value of -1 indicates uninvaded.
 
     Notes
     -----
@@ -69,7 +68,7 @@ def bond_percolation(conns, occupied_bonds):
 def site_percolation(conns, occupied_sites):
     r"""
     Assigns cluster numbers to sites and bonds acccording to a site
-    percolation process given a list of occupied site.
+    percolation process, given a list of occupied sites.
 
     Parameters
     ----------
@@ -176,9 +175,9 @@ def trim_disconnected_clusters(b_labels, s_labels, inlets):
     Returns
     -------
     occupancy : tuple of ndarrays
-        The returned tuple contains boolean arrays of ``occupied_sites``
-        and ``occupied_bonds``, after accounting for connection to the
-        ``inlets``.
+        The returned tuple containing arrays of cluster numbers of
+        ``occupied_sites`` and ``occupied_bonds``, after accounting for
+        connection to the ``inlets``.
 
     Notes
     -----
@@ -188,9 +187,10 @@ def trim_disconnected_clusters(b_labels, s_labels, inlets):
     """
     hits = np.unique(s_labels[inlets])
     hits = hits[hits >= 0]
-    occupied_bonds = np.isin(b_labels, hits)
-    occupied_sites = np.isin(s_labels, hits)
-    return occupied_sites, occupied_bonds
+    occupied_bonds = np.isin(b_labels, hits)*(b_labels + 1) - 1
+    occupied_sites = np.isin(s_labels, hits)*(s_labels + 1) - 1
+    r = namedtuple('cluster_labels', ('site_labels', 'bond_labels'))
+    return r(occupied_sites, occupied_bonds)
 
 
 def remove_isolated_clusters(labels, inlets):
@@ -227,7 +227,7 @@ def remove_isolated_clusters(labels, inlets):
 
 def ispercolating(conns, occupied, inlets, outlets):
     r"""
-    Determines if a percolating clusters exists in the network spanning
+    Determines if a percolating cluster exists in the network spanning
     the given inlet and outlet nodes
 
     Parameters

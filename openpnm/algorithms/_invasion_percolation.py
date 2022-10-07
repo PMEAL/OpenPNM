@@ -9,7 +9,6 @@ from openpnm.algorithms import Algorithm
 from openpnm._skgraph.simulations import (
     bond_percolation,
     site_percolation,
-    mixed_percolation,
 )
 from openpnm._skgraph.queries import (
     qupc_initialize,
@@ -276,10 +275,6 @@ class InvasionPercolation(Algorithm):
             elif mode == 'site':
                 s, b = site_percolation(conns=self.network.conns,
                                         occupied_sites=pseq > i)
-            elif mode == 'mixed':
-                s, b = mixed_percolation(conns=self.network.conns,
-                                         occupied_sites=pseq > i,
-                                         occupied_bonds=tseq > i)
             clusters = np.unique(s[self['pore.bc.outlet']])
             self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
             self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
