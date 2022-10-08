@@ -1,11 +1,13 @@
 import pytest
 import numpy as np
+from numpy.testing import assert_approx_equal
 import openpnm as op
 import matplotlib.pyplot as plt
 
 
 class IPTest:
     def setup_class(self):
+        np.random.seed(0)
         self.net = op.network.Cubic(shape=[10, 10, 10], spacing=0.0005)
         self.net.add_model_collection(
             op.models.collections.geometry.spheres_and_cylinders)
@@ -52,9 +54,9 @@ class IPTest:
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
         alg.set_inlet_BC(pores=self.net.pores("top"))
         alg.run()
-        assert alg['pore.invasion_sequence'].max() == 2696
+        assert alg['pore.invasion_sequence'].max() == 2695
         assert alg['pore.invasion_sequence'].min() == 0
-        assert alg['pore.invasion_pressure'].max() == 1965.7264736507695
+        assert alg['pore.invasion_pressure'].max() == 1967.223145872192
         assert alg['pore.invasion_pressure'].min() == 0
 
     def test_trapping(self):
@@ -74,7 +76,7 @@ class IPTest:
         pc = alg.pc_curve()
         assert len(pc) == 2
         assert len(pc.pc) == 3700
-        assert max(pc.snwp == 1.0)
+        assert_approx_equal(pc.snwp.max(), 1.000000)
 
 
 if __name__ == "__main__":
