@@ -2,67 +2,10 @@ import numpy as _np
 from openpnm.models.geometry import _geodocs
 
 
-__all__ = ["compactness",
-           "mason_morrow",
-           "jenkins_rao"]
-
-
-@_geodocs
-def compactness(
-    network,
-    throat_perimeter='throat.perimeter',
-    throat_area='throat.cross_sectional_area',
-):
-    r"""
-    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance
-    is linearly dependent on the compactness. Defined as perimeter^2/area.
-    The dependence is not universal as shapes with sharp corners provide more
-    resistance than those that are more elliptical. Count the number of
-    vertices and apply the right correction.
-
-    Parameters
-    ----------
-    %(network)s
-    %(Pt)s
-    %(At)s
-
-    Returns
-    -------
-    alpha : NumPy ndarray
-        Array containing throat compactness values.
-
-    References
-    ----------
-    Mortensen N.A, Okkels F., and Bruus H. Reexamination of Hagen-Poiseuille
-    flow: Shape dependence of the hydraulic resistance in microchannels.
-    Physical Review E, v.71, pp.057301 (2005).
-
-    """
-    # Only apply to throats with an area
-    ts = network.throats()[network[throat_area] > 0]
-    P = network[throat_perimeter]
-    A = network[throat_area]
-    C = _np.ones(network.num_throats())
-    C[ts] = P[ts]**2/A[ts]
-    alpha = _np.ones_like(C)*8*_np.pi
-    if 'throat.offset_vertices' in network.props():
-        verts = network['throat.offset_vertices']
-        for i in ts:
-            if ~_np.any(_np.isnan(verts[i])):
-                if len(verts[i]) == 3:
-                    # Triangular Correction
-                    alpha[i] = C[i]*(25/17) + (40*_np.sqrt(3)/17)
-                elif len(verts[i]) == 4:
-                    # Rectangular Correction
-                    alpha[i] = C[i]*(22/7) - (65/3)
-                elif len(verts[i]) > 4:
-                    # Approximate Elliptical Correction
-                    alpha[i] = C[i]*(8/3) - (8*_np.pi/3)
-    # For a perfect circle alpha = 8*pi so normalize by this
-    alpha /= 8*_np.pi
-    # Very small throats could have values less than one
-    alpha[alpha < 1.0] = 1.0
-    return alpha
+__all__ = [
+    "mason_morrow",
+    "jenkins_rao",
+]
 
 
 @_geodocs
