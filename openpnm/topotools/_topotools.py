@@ -724,6 +724,7 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         The network is operated on 'in-place' so nothing is returned.
 
     """
+    raise NotImplementedError()
     from openpnm.network import Delaunay
     pores1 = network._parse_indices(pores1)
     pores2 = network._parse_indices(pores2)
