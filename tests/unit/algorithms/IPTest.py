@@ -56,7 +56,7 @@ class IPTest:
         alg.run()
         assert alg['pore.invasion_sequence'].max() == 2695
         assert alg['pore.invasion_sequence'].min() == 0
-        assert alg['pore.invasion_pressure'].max() == 1967.223145872192
+        assert_approx_equal(alg['pore.invasion_pressure'].max(), 1967.22314587)
         assert alg['pore.invasion_pressure'].min() == 0
 
     def test_trapping(self):
