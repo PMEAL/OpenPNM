@@ -64,131 +64,131 @@ class GraphToolsTest:
         self.ws.clear()
 
     def test_find_connected_sites(self):
-        Ps = topotools.find_connected_sites(bonds=[0], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[0],network=self.net, flatten=True)
         assert np.all(Ps == [0, 1])
-        Ps = topotools.find_connected_sites(bonds=[1], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[1], network=self.net, flatten=True)
         assert np.all(Ps == [0, 3])
-        Ps = topotools.find_connected_sites(bonds=[2], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[2], network=self.net, flatten=True)
         assert np.all(Ps == [1, 3])
-        Ps = topotools.find_connected_sites(bonds=[3], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[3], network=self.net, flatten=True)
         assert np.all(Ps == [1, 2])
-        Ps = topotools.find_connected_sites(bonds=[4], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[4], network=self.net, flatten=True)
         assert np.all(Ps == [3, 4])
-        Ps = topotools.find_connected_sites(bonds=[5], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[5], network=self.net, flatten=True)
         assert np.all(Ps == [1, 4])
-        Ps = topotools.find_connected_sites(bonds=[6], g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[6], network=self.net, flatten=True)
         assert np.all(Ps == [4, 5])
 
     def test_find_connected_sites_unflattened(self):
         Ps = topotools.find_connected_sites(bonds=[0, 5],
-                                            g=self.net,
+                                            network=self.net,
                                             flatten=False,
                                             logic="xnor")
         x = np.array([[np.nan, 1], [1, np.nan]])
         assert ((x == Ps) | (np.isnan(x) & np.isnan(Ps))).all()
         Ps = topotools.find_connected_sites(bonds=[0, 1, 5],
-                                            g=self.net,
+                                            network=self.net,
                                             logic="and",
                                             flatten=False)
         assert np.allclose(Ps, [np.array([], dtype="int64")] * 3)
 
     def test_find_connected_sites_single(self):
-        Ps = topotools.find_connected_sites(bonds=0, g=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=0, network=self.net, flatten=True)
         assert np.all(Ps == [0, 1])
 
     def test_find_connected_sites_with_logic_flattened(self):
         a = topotools.find_connected_sites(bonds=[0, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='or',
                                            flatten=True)
         assert np.all(a == [0, 1, 3])
         a = topotools.find_connected_sites(bonds=[0, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='and',
                                            flatten=True)
         assert np.all(a == [])
         a = topotools.find_connected_sites(bonds=[0, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='xor',
                                            flatten=True)
         assert np.all(a == [0, 3])
         a = topotools.find_connected_sites(bonds=[0, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='xnor',
                                            flatten=True)
         assert np.all(a == [1])
         with pytest.raises(Exception):
             topotools.find_neighbor_bonds(bonds=[0],
-                                          g=self.net,
+                                          network=self.net,
                                           logic='nor')
         with pytest.raises(Exception):
             topotools.find_neighbor_bonds(bonds=[0],
-                                          g=self.net,
+                                          network=self.net,
                                           logic='nand')
 
     def test_find_connecting_bonds(self):
-        T = topotools.find_connecting_bonds(sites=[0, 1], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[0, 1], network=self.net)
         assert np.all(T == [0])
-        T = topotools.find_connecting_bonds(sites=[0, 3], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[0, 3], network=self.net)
         assert np.all(T == [1])
-        T = topotools.find_connecting_bonds(sites=[1, 3], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[1, 3], network=self.net)
         assert np.all(T == [2])
-        T = topotools.find_connecting_bonds(sites=[1, 2], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[1, 2], network=self.net)
         assert np.all(T == [3])
-        T = topotools.find_connecting_bonds(sites=[3, 4], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[3, 4], network=self.net)
         assert np.all(T == [4])
-        T = topotools.find_connecting_bonds(sites=[1, 4], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[1, 4], network=self.net)
         assert np.all(T == [5])
-        T = topotools.find_connecting_bonds(sites=[4, 5], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[4, 5], network=self.net)
         assert np.all(T == [6])
 
     def test_find_connecting_bonds_multiple_sites(self):
-        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3]], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3]], network=self.net)
         assert np.all(T == [0, 1])
         T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 3], [4, 5]],
-                                            g=self.net)
+                                            network=self.net)
         assert np.all(T == [0, 1, 6])
 
     def test_find_connecting_bonds_no_sites(self):
-        T = topotools.find_connecting_bonds(sites=[], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[], network=self.net)
         assert T == []
-        T = topotools.find_connecting_bonds(sites=[[], []], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[[], []], network=self.net)
         assert T == []
 
     def test_find_connecting_bonds_nonexistant_connections(self):
-        T = topotools.find_connecting_bonds(sites=[0, 5], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[0, 5], network=self.net)
         assert np.isnan(T).sum() == 1
-        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 5]], g=self.net)
+        T = topotools.find_connecting_bonds(sites=[[0, 1], [0, 5]], network=self.net)
         assert np.isnan(T).sum() == 1
 
     def test_find_neighbor_bonds(self):
-        Ts = topotools.find_neighbor_bonds(sites=[0], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[0], network=self.net)
         assert np.all(Ts == [0, 1])
-        Ts = topotools.find_neighbor_bonds(sites=[1], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[1], network=self.net)
         assert np.all(Ts == [0, 2, 3, 5])
-        Ts = topotools.find_neighbor_bonds(sites=[2], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[2], network=self.net)
         assert np.all(Ts == [3])
-        Ts = topotools.find_neighbor_bonds(sites=[3], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[3], network=self.net)
         assert np.all(Ts == [1, 2, 4])
-        Ts = topotools.find_neighbor_bonds(sites=[4], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[4], network=self.net)
         assert np.all(Ts == [4, 5, 6])
-        Ts = topotools.find_neighbor_bonds(sites=[5], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[5], network=self.net)
         assert np.all(Ts == [6])
-        Ts = topotools.find_neighbor_bonds(sites=[], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[], network=self.net)
         assert np.all(Ts == [])
 
     def test_find_neighbr_bonds_unflattened(self):
         Ts = topotools.find_neighbor_bonds(sites=[0, 1, 5],
                                            logic="and",
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=False)
         assert np.allclose(Ts, [np.array([], dtype="int64")] * 3)
 
     def test_find_neighbor_bonds_given_am(self):
-        Ts = topotools.find_neighbor_bonds(sites=[0], g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=[0], network=self.net)
         assert np.all(Ts == [0, 1])
         with pytest.raises(Exception):
-            _ = topotools.find_neighbor_bonds(sites=[0], g=self.net,
+            _ = topotools.find_neighbor_bonds(sites=[0], network=self.net,
                                               logic="unsupported_logic")
 
     def test_find_neighbor_bonds_missing_both_am_and_im(self):
@@ -196,49 +196,49 @@ class GraphToolsTest:
             _ = topotools.find_neighbor_bonds(sites=[0])
 
     def test_find_neighbor_bonds_single(self):
-        Ts = topotools.find_neighbor_bonds(sites=0, g=self.net)
+        Ts = topotools.find_neighbor_bonds(sites=0, network=self.net)
         assert np.all(Ts == [0, 1])
 
     def test_find_neighbor_bonds_with_logic(self):
-        a = topotools.find_neighbor_bonds(sites=[0, 2], g=self.net, logic='or')
+        a = topotools.find_neighbor_bonds(sites=[0, 2], network=self.net, logic='or')
         assert np.all(a == [0, 1, 3])
-        a = topotools.find_neighbor_bonds(sites=[0], g=self.net, logic='xor')
+        a = topotools.find_neighbor_bonds(sites=[0], network=self.net, logic='xor')
         assert np.all(a == [0, 1])
-        a = topotools.find_neighbor_bonds(sites=[0], g=self.net, logic='xnor')
+        a = topotools.find_neighbor_bonds(sites=[0], network=self.net, logic='xnor')
         assert np.all(a == [])
         with pytest.raises(Exception):
-            topotools.find_neighbor_bonds(sites=[0], g=self.net, logic='nor')
+            topotools.find_neighbor_bonds(sites=[0], network=self.net, logic='nor')
         with pytest.raises(Exception):
-            topotools.find_neighbor_bonds(sites=[0], g=self.net, logic='nand')
+            topotools.find_neighbor_bonds(sites=[0], network=self.net, logic='nand')
 
     def test_find_neighbor_sites(self):
-        Ps = topotools.find_neighbor_sites(sites=[0], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[0], network=self.net)
         assert np.all(Ps == [1, 3])
-        Ps = topotools.find_neighbor_sites(sites=[1], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[1], network=self.net)
         assert np.all(Ps == [0, 2, 3, 4])
-        Ps = topotools.find_neighbor_sites(sites=[2], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[2], network=self.net)
         assert np.all(Ps == [1])
-        Ps = topotools.find_neighbor_sites(sites=[3], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[3], network=self.net)
         assert np.all(Ps == [0, 1, 4])
-        Ps = topotools.find_neighbor_sites(sites=[4], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[4], network=self.net)
         assert np.all(Ps == [1, 3, 5])
-        Ps = topotools.find_neighbor_sites(sites=[5], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[5], network=self.net)
         assert np.all(Ps == [4])
-        Ps = topotools.find_neighbor_sites(sites=[], g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=[], network=self.net)
         assert Ps == []
 
     def test_find_neighbor_sites_unsupported_logic(self):
         with pytest.raises(Exception):
-            _ = topotools.find_neighbor_sites(sites=[0], g=self.net,
+            _ = topotools.find_neighbor_sites(sites=[0], network=self.net,
                                               logic="unsupported_logic")
 
     def test_find_neighbor_sites_single(self):
-        Ps = topotools.find_neighbor_sites(sites=0, g=self.net)
+        Ps = topotools.find_neighbor_sites(sites=0, network=self.net)
         assert np.all(Ps == [1, 3])
 
     def test_find_neighbor_sites_unflattened_or(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='or',
                                            flatten=False,
                                            include_input=True)
@@ -249,7 +249,7 @@ class GraphToolsTest:
 
     def test_find_neighbor_sites_unflattened_xor(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='xor',
                                            flatten=False,
                                            include_input=True)
@@ -260,7 +260,7 @@ class GraphToolsTest:
 
     def test_find_neighbor_sites_unflattened_and(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='and',
                                            flatten=False,
                                            include_input=True)
@@ -270,7 +270,7 @@ class GraphToolsTest:
 
     def test_find_neighbor_sites_unflattened_xnor(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='xnor',
                                            flatten=False,
                                            include_input=True)
@@ -281,7 +281,7 @@ class GraphToolsTest:
 
     def test_find_neighbor_sites_unflattened_xor_empty_set(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='or',
                                            flatten=False,
                                            include_input=True)
@@ -292,7 +292,7 @@ class GraphToolsTest:
 
     def test_find_neighbor_sites_unflattened_and_empty_set(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            logic='and',
                                            flatten=False,
                                            include_input=False)
@@ -303,22 +303,22 @@ class GraphToolsTest:
 
     def test_find_neighbor_sites_flattened_with_logic(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1],
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=True,
                                            logic='or')
         assert np.all(Ps == [2, 3, 4])
         Ps = topotools.find_neighbor_sites(sites=[0, 1],
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=True,
                                            logic='and')
         assert np.all(Ps == [3])
         Ps = topotools.find_neighbor_sites(sites=[0, 1],
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=True,
                                            logic='xor')
         assert np.all(Ps == [2, 4])
         Ps = topotools.find_neighbor_sites(sites=[0, 2],
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=True,
                                            logic='xnor')
         assert np.all(Ps == [1])
@@ -326,19 +326,19 @@ class GraphToolsTest:
     def test_find_neighbor_sites_with_bad_logic(self):
         with pytest.raises(Exception):
             topotools.find_neighbor_sites(sites=[0, 1],
-                                          g=self.net,
+                                          network=self.net,
                                           flatten=True,
                                           logic='foobar')
 
     def test_find_neighbor_sites_include_inputs(self):
         Ps = topotools.find_neighbor_sites(sites=[0, 1],
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=True,
                                            logic='or',
                                            include_input=True)
         assert (Ps == [0, 1, 2, 3, 4]).all()
         Ps = topotools.find_neighbor_sites(sites=[0, 1],
-                                           g=self.net,
+                                           network=self.net,
                                            flatten=True,
                                            logic='or',
                                            include_input=False)

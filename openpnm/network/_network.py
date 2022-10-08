@@ -432,7 +432,7 @@ class Network(Domain):
 
         """
         Ts = self._parse_indices(throats)
-        pores = topotools.find_connected_sites(bonds=Ts, g=self,
+        pores = topotools.find_connected_sites(bonds=Ts, network=self,
                                                flatten=flatten, logic=mode)
         return pores
 
@@ -472,7 +472,7 @@ class Network(Domain):
 
         """
         sites = np.vstack((P1, P2)).T
-        Ts = topotools.find_connecting_bonds(sites=sites, g=self)
+        Ts = topotools.find_connecting_bonds(sites=sites, network=self)
         return Ts
 
     def find_neighbor_pores(self, pores, mode='or', flatten=True,
@@ -567,7 +567,7 @@ class Network(Domain):
         if np.size(pores) == 0:
             return np.array([], ndmin=1, dtype=int)
         neighbors = topotools.find_neighbor_sites(sites=pores, logic=mode,
-                                                  g=self,
+                                                  network=self,
                                                   flatten=flatten,
                                                   include_input=include_input)
         if asmask is False:
@@ -652,11 +652,11 @@ class Network(Domain):
             return np.array([], ndmin=1, dtype=int)
         if flatten is False:
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      g=self,
+                                                      network=self,
                                                       flatten=flatten)
         else:
             neighbors = topotools.find_neighbor_bonds(sites=pores, logic=mode,
-                                                      g=self, flatten=True)
+                                                      network=self, flatten=True)
         if asmask is False:
             return neighbors
         elif flatten is True:

@@ -22,7 +22,7 @@ __all__ = [
 
 
 def find_path(network, pore_pairs, weights=None):
-    return queries.find_path(g=network, pairs=pore_pairs, weights=weights)
+    return queries.find_path(network=network, pairs=pore_pairs, weights=weights)
 
 
 find_path.__doc__ = queries.find_path.__doc__
