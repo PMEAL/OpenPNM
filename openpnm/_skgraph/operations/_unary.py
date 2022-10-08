@@ -26,7 +26,7 @@ def add_nodes(network, new_coords):
 
     Returns
     -------
-    g : dict
+    network : dict
         The network dictionary with the new nodes added to the end. Note that
         any existing node attributes are also extended and filled with default
         values specified in ``settings.default_values``
@@ -137,7 +137,7 @@ def trim_nodes(network, inds):
 
     Parameters
     ----------
-    g : dictionary
+    network : dict
         A dictionary containing coords, conns and other attributes
     inds : array_like
         The node indices to be trimmed in the form of a 1D list or boolean
@@ -145,31 +145,30 @@ def trim_nodes(network, inds):
 
     Returns
     -------
-    g : dict
+    network : dict
         The dictionary with all nodes arrays trimmed accordingly, all edges
         trimmed that were connected to the trimmed nodes, and the 'edge.conns'
         array renumbered so edges point to the updated node indices.
 
     """
-    g = network
-    node_prefix = tools.get_node_prefix(g)
-    edge_prefix = tools.get_edge_prefix(g)
-    N_sites = g[node_prefix+'.coords'].shape[0]
+    node_prefix = tools.get_node_prefix(network)
+    edge_prefix = tools.get_edge_prefix(network)
+    N_sites = network[node_prefix+'.coords'].shape[0]
     inds = np.atleast_1d(inds)
     if inds.dtype == bool:
         inds = np.where(inds)[0]
     keep = np.ones(N_sites, dtype=bool)
     keep[inds] = False
-    for k, v in g.items():
+    for k, v in network.items():
         if k.startswith(node_prefix):
-            g[k] = v[keep]
+            network[k] = v[keep]
     # Remove edges
-    edges = np.any(np.isin(g[edge_prefix+'.conns'], inds), axis=1)
-    g = trim_edges(network=g, inds=edges)
+    edges = np.any(np.isin(network[edge_prefix+'.conns'], inds), axis=1)
+    network = trim_edges(network, inds=edges)
     # Renumber conns
     remapping = np.cumsum(keep) - 1
-    g[edge_prefix+'.conns'] = remapping[g[edge_prefix+'.conns']]
-    return g
+    network[edge_prefix+'.conns'] = remapping[network[edge_prefix+'.conns']]
+    return network
 
 
 def drop_nodes_from_am(am, inds):

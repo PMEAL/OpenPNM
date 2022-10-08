@@ -39,14 +39,14 @@ __all__ = [
 ]
 
 
-def get_edge_prefix(g):
+def get_edge_prefix(network):
     r"""
     Determines the prefix used for edge arrays from ``<edge_prefix>.conns``
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
@@ -62,7 +62,7 @@ def get_edge_prefix(g):
     However, since all ``dict`` are now sorted in Python, it may be helpful
     to ensure the ``'conns'`` array is near the beginning of the list.
     """
-    for item in g.keys():
+    for item in network.keys():
         if item.endswith('.conns'):
             return item.split('.')[0]
 
@@ -269,8 +269,8 @@ def find_coincident_nodes(network):
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
@@ -842,7 +842,7 @@ def to_triu(network):
 
     Returns
     -------
-    g : dict
+    network : dict
         The graph dictionary with edge connections updated
 
     Notes

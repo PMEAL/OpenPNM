@@ -44,7 +44,7 @@ def add_all_label(network):
 
     Returns
     -------
-    g : dict
+    network : dict
         The supplied dictionary with the 'all' labels added
 
     Notes
@@ -52,14 +52,13 @@ def add_all_label(network):
     This function is helpful for working with OpenPNM
 
     """
-    g = network
-    node_prefix = tools.get_node_prefix(g)
-    edge_prefix = tools.get_edge_prefix(g)
-    coords = g[node_prefix+'.coords']
-    conns = g[edge_prefix+'.conns']
-    g['pore.all'] = np.ones(coords.shape[0], dtype=bool)
-    g['throat.all'] = np.ones(conns.shape[0], dtype=bool)
-    return g
+    node_prefix = tools.get_node_prefix(network)
+    edge_prefix = tools.get_edge_prefix(network)
+    coords = network[node_prefix+'.coords']
+    conns = network[edge_prefix+'.conns']
+    network['pore.all'] = np.ones(coords.shape[0], dtype=bool)
+    network['throat.all'] = np.ones(conns.shape[0], dtype=bool)
+    return network
 
 
 def label_faces_cubic(network, rtol=0.0):
@@ -69,7 +68,7 @@ def label_faces_cubic(network, rtol=0.0):
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The network dictionary contain 'node.coords'
     rtol : float
         Controls how closely a node must be to a face to be counted. It is
@@ -79,25 +78,24 @@ def label_faces_cubic(network, rtol=0.0):
 
     Returns
     -------
-    g : dict
+    network : dict
         The network dictionary with the face labels added
 
     """
-    g = network
-    node_prefix = tools.get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
-    dims = tools.dimensionality(g)
+    node_prefix = tools.get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
+    dims = tools.dimensionality(network)
     coords = np.around(coords, decimals=10)
     min_labels = ['left', 'front', 'bottom']
     max_labels = ['right', 'back', 'top']
     min_coords = np.amin(coords, axis=0)
     max_coords = np.amax(coords, axis=0)
     for ax in np.where(dims)[0]:
-        g[node_prefix + '.' + min_labels[ax]] = \
+        network[node_prefix + '.' + min_labels[ax]] = \
             abs((coords[:, ax]-min_coords[ax])/max_coords[ax]) <= rtol
-        g[node_prefix + '.' + max_labels[ax]] = \
+        network[node_prefix + '.' + max_labels[ax]] = \
             abs(1-coords[:, ax]/max_coords[ax]) <= rtol
-    return g
+    return network
 
 
 def _template_sphere_disc(dim, outer_radius, inner_radius):
