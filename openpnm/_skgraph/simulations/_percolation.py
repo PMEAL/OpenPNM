@@ -11,9 +11,9 @@ __all__ = [
     'remove_isolated_clusters',
     'bond_percolation',
     'site_percolation',
-    'find_connected_clusters',
-    'find_trapped_bonds',
-    'find_trapped_sites',
+    # 'find_connected_clusters',
+    # 'find_trapped_bonds',
+    # 'find_trapped_sites',
     'find_connected_clusters',
 ]
 
@@ -110,7 +110,7 @@ def site_percolation(conns, occupied_sites):
     return tup(s_labels, b_labels)
 
 
-def mixed_percolation(conns, occupied_sites, occupied_bonds):
+def mixed_percolation(conns, occupied_sites, occupied_bonds):  # pragma: no cover
     r"""
     """
     new_conns = split_edges(conns)[0]
@@ -121,7 +121,7 @@ def mixed_percolation(conns, occupied_sites, occupied_bonds):
     return s_labels, b_labels
 
 
-def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
+def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):  # pragma: no cover
     hits = np.unique(site_labels[inlets])
     hits = hits[hits >= 0]
     occupied_bonds = np.isin(bond_labels, hits)
@@ -132,7 +132,7 @@ def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):
     return occupied_sites, occupied_bonds
 
 
-def find_trapped_bonds(conns, outlets, occupied_bonds):
+def find_trapped_bonds(conns, outlets, occupied_bonds):  # pragma: no cover
     s_labels, b_labels = bond_percolation(conns, ~occupied_bonds)
     s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
                                                    outlets, asmask=False)
@@ -142,7 +142,7 @@ def find_trapped_bonds(conns, outlets, occupied_bonds):
     return s_labels, b_labels
 
 
-def find_trapped_sites(conns, outlets, occupied_sites):
+def find_trapped_sites(conns, outlets, occupied_sites):  # pragma: no cover
     s_labels, b_labels = site_percolation(conns, ~occupied_sites)
     s_labels2, b_labels2 = find_connected_clusters(b_labels, s_labels,
                                                    outlets, asmask=False)
