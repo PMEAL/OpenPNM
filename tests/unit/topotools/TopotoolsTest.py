@@ -88,15 +88,6 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             topotools.find_surface_pores(network=net, markers=markers)
 
-    def test_find_pore_to_pore_distance(self):
-        net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)
-        dm = topotools.find_pore_to_pore_distance(network=net,
-                                                  pores1=net.pores('left'),
-                                                  pores2=net.pores('right'))
-        a = np.unique(dm)
-        b = np.array([2., 2.23606798, 2.44948974, 2.82842712, 3., 3.46410162])
-        # assert np.allclose(a, b)
-
     def test_template_sphere_shell(self):
         im = topotools.template_sphere_shell(r_outer=4, r_inner=2)
         net = op.network.CubicTemplate(template=im, spacing=1)
@@ -324,28 +315,6 @@ class TopotoolsTest:
         dims = op.topotools.dimensionality(pn)
         assert np.allclose(dims, np.array([False, False, True]))
 
-    def test_stitch_pores(self):
-        np.random.seed(0)
-        pts = np.random.rand(100, 3)
-        pn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
-        Ps = (pn.coords[:, 0] > 0.3) * (pn.coords[:, 0] < 0.6)
-        assert pn.Np == 100
-        op.topotools.trim(network=pn, pores=Ps)
-        assert pn.Np == 73
-        pores1 = pn.coords[:, 0] < 0.3
-        pores2 = pn.coords[:, 0] > 0.6
-        # assert pn.Nt == 352
-        # op.topotools.stitch_pores(network=pn,
-        #                           pores1=pores1,
-        #                           pores2=pores2, mode='gabriel')
-        # assert pn.Nt == 373
-        # op.topotools.trim(network=pn, throats=pn.throats('stitched'))
-        # assert pn.Nt == 352
-        # op.topotools.stitch_pores(network=pn,
-        #                           pores1=pores1,
-        #                           pores2=pores2, mode='delaunay')
-        # assert pn.Nt == 436
-
     def test_is_fully_connected(self):
         pn = op.network.Cubic(shape=[4, 4, 1])
         op.topotools.trim(network=pn, pores=[1, 5, 9, 13])
@@ -511,6 +480,48 @@ class TopotoolsTest:
         P2 = net.pores('surface')
         Ts_int = op.topotools.find_interface_throats(net, P1, P2)
         assert_allclose(Ts_int, np.array([0, 3]))
+
+    def test_get_domain_area(self):
+        net = op.network.Cubic([5, 4, 3])
+        area = op.topotools.get_domain_area(
+            network=net,
+            inlets=net.pores('left'),
+            outlets=net.pores('right')
+        )
+        assert area == 6.0
+        area = op.topotools.get_domain_area(
+            network=net,
+            inlets=net.pores('top'),
+            outlets=net.pores('bottom')
+        )
+        assert area == 12.0
+        area = op.topotools.get_domain_area(
+            network=net,
+            inlets=net.pores('front'),
+            outlets=net.pores('back')
+        )
+        assert area == 8.0
+
+    def test_get_domain_length(self):
+        net = op.network.Cubic([5, 4, 3])
+        length = op.topotools.get_domain_length(
+            network=net,
+            inlets=net.pores('left'),
+            outlets=net.pores('right')
+        )
+        assert length == 4.0
+        length = op.topotools.get_domain_length(
+            network=net,
+            inlets=net.pores('top'),
+            outlets=net.pores('bottom')
+        )
+        assert length == 2.0
+        length = op.topotools.get_domain_length(
+            network=net,
+            inlets=net.pores('front'),
+            outlets=net.pores('back')
+        )
+        assert length == 3.0
 
 
 if __name__ == '__main__':

@@ -22,9 +22,7 @@ __all__ = [
     'clone_pores',
     'merge_networks',
     'stitch',
-    'stitch_pores',
     'connect_pores',
-    'find_pore_to_pore_distance',
     'merge_pores',
     'hull_centroid',
     'template_sphere_shell',
@@ -133,14 +131,6 @@ def dimensionality(network=None):
 
 
 dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
-
-
-def find_pore_to_pore_distance(network, pores1, pores2):
-    return skgr.tools.internode_distance(network, pores1, pores1)
-
-
-find_pore_to_pore_distance.__doc__ = \
-    skgr.tools.internode_distance.__doc__
 
 
 def trim(network, pores=[], throats=[]):
@@ -725,7 +715,6 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         ===========  ==========================================================
         mode         meaning
         ===========  ==========================================================
-        'gabriel'    Uses the gabriel tesselation method
         'delaunay'   Uses the delaunay tesselation method
         ===========  ==========================================================
 
@@ -735,16 +724,17 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         The network is operated on 'in-place' so nothing is returned.
 
     """
-    from openpnm.network import Delaunay, Gabriel
+    from openpnm.network import Delaunay
     pores1 = network._parse_indices(pores1)
     pores2 = network._parse_indices(pores2)
     C1 = network.coords[pores1, :]
     C2 = network.coords[pores2, :]
     crds = np.vstack((C1, C2))
     if mode == 'delaunay':
-        net = Delaunay(points=crds)
-    if mode == 'gabriel':
-        net = Gabriel(points=crds)
+        shape = get_shape(network) * dimensionality(network)
+        net = Delaunay(points=crds, shape=shape)
+    else:
+        raise Exception('Unsupported mode')
     net.set_label(pores=range(len(pores1)), label='pore.one')
     net.set_label(pores=range(len(pores2)), label='pore.two')
     Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')
