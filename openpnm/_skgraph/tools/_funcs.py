@@ -67,14 +67,14 @@ def get_edge_prefix(g):
             return item.split('.')[0]
 
 
-def get_node_prefix(g):
+def get_node_prefix(network):
     r"""
     Determines the prefix used for node arrays from ``<edge_prefix>.coords``
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
@@ -90,18 +90,18 @@ def get_node_prefix(g):
     However, since all ``dict`` are now sorted in Python, it may be helpful
     to ensure the ``'conns'`` array is near the beginning of the list.
     """
-    for item in g.keys():
+    for item in network.keys():
         if item.endswith('.coords'):
             return item.split('.')[0]
 
 
-def change_prefix(g, old_prefix, new_prefix):
+def change_prefix(network, old_prefix, new_prefix):
     r"""
     Changes the prefix used when generating the graph
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The network graph
     old_prefix : str
         The current prefix to change, can either be a node or an edge prefix
@@ -110,24 +110,24 @@ def change_prefix(g, old_prefix, new_prefix):
 
     Returns
     -------
-    g : dict
+    network : dict
         The graph dictionary will arrays assigned to new keys
     """
-    for key in list(g.keys()):
+    for key in list(network.keys()):
         if key.startswith(old_prefix):
             temp = key.split('.', 1)[1]
-            g[new_prefix + '.' + temp] = g.pop(key)
-    return g
+            network[new_prefix + '.' + temp] = network.pop(key)
+    return network
 
 
-def isoutside(g, shape, rtol=0.0):
+def isoutside(network, shape, rtol=0.0):
     r"""
     Identifies sites that lie outside the specified shape
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     shape : array_like
         The shape of the domain beyond which points are considered "outside".
         The argument is treated as follows:
@@ -166,11 +166,8 @@ def isoutside(g, shape, rtol=0.0):
     of ``shape`` should be set to 0.
 
     """
-    try:
-        node_prefix = get_node_prefix(g)
-        coords = g[node_prefix+'.coords']
-    except AttributeError:
-        coords = g
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     shape = np.array(shape, dtype=float)
     if np.isscalar(rtol):
         tolerance = np.array([rtol]*len(shape))
@@ -202,14 +199,14 @@ def isoutside(g, shape, rtol=0.0):
     return Ps
 
 
-def dimensionality(g, cache=True):
+def dimensionality(network, cache=True):
     r"""
     Checks the dimensionality of the network
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     cache : boolean, optional (default is True)
         If ``False`` then the dimensionality is recalculated even if it has
         already been calculated and stored in the graph dictionary.
@@ -224,27 +221,27 @@ def dimensionality(g, cache=True):
     """
     if cache:
         try:
-            return g.params["dimensionality"]
+            return network.params["dimensionality"]
         # union of KeyErroa and AttributeError
         except (KeyError, AttributeError):
             pass
-    n = get_node_prefix(g)
-    coords = g[n+'.coords']
+    n = get_node_prefix(network)
+    coords = network[n+'.coords']
     eps = np.finfo(float).resolution
     dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
     if cache:
-        g["params.dimensionality"] = np.array(dims_unique)
+        network["params.dimensionality"] = np.array(dims_unique)
     return np.array(dims_unique)
 
 
-def find_surface_nodes_cubic(g):
+def find_surface_nodes_cubic(network):
     r"""
     Identifies nodes on the outer surface of the domain assuming a cubic domain
     to save time
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The graph dictionary
 
     Returns
@@ -253,10 +250,10 @@ def find_surface_nodes_cubic(g):
         A boolean array of ``True`` values indicating which nodes were found
         on the surfaces.
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     hits = np.zeros(coords.shape[0], dtype=bool)
-    dims = dimensionality(g)
+    dims = dimensionality(network)
     for d in range(3):
         if dims[d]:
             hi = np.where(coords[:, d] == coords[:, d].max())[0]
@@ -266,7 +263,7 @@ def find_surface_nodes_cubic(g):
     return hits
 
 
-def find_coincident_nodes(g):
+def find_coincident_nodes(network):
     r"""
     Finds nodes with identical coordinates
 
@@ -288,8 +285,8 @@ def find_coincident_nodes(g):
     but they occassionally "collide", meaning nodes may be identified as
     coincident that are not.
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     hashed = [hash(row.tobytes()) for row in coords]
     uniq, counts = np.unique(hashed, return_counts=True)
     hits = np.where(counts > 1)[0]
@@ -299,15 +296,15 @@ def find_coincident_nodes(g):
     return dupes
 
 
-def find_surface_nodes(g):
+def find_surface_nodes(network):
     r"""
     Identifies nodes on the outer surface of the domain using a Delaunay
     tessellation
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
@@ -323,14 +320,14 @@ def find_surface_nodes(g):
     node.
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = np.copy(g[node_prefix+'.coords'])
+    node_prefix = get_node_prefix(network)
+    coords = np.copy(network[node_prefix+'.coords'])
     shift = np.mean(coords, axis=0)
     coords = coords - shift
     tmp = cart2sph(*coords.T)
     hits = np.zeros(coords.shape[0], dtype=bool)
     r = 2*tmp[0].max()
-    dims = dimensionality(g)
+    dims = dimensionality(network)
     if sum(dims) == 1:
         hi = np.where(coords[:, dims] == coords[:, dims].max())[0]
         lo = np.where(coords[:, dims] == coords[:, dims].min())[0]
@@ -352,14 +349,14 @@ def find_surface_nodes(g):
     return hits
 
 
-def internode_distance(g, inds_1=None, inds_2=None):
+def internode_distance(network, inds_1=None, inds_2=None):
     r"""
     Find the distance between all nodes on set 1 to each node in set 2
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inds_1 : array_like
         A list containing the indices of the first set of nodes
     inds_2 : array_Like
@@ -380,21 +377,21 @@ def internode_distance(g, inds_1=None, inds_2=None):
     which is available in ``scipy.spatial``.
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     p1 = np.array(inds_1, ndmin=1)
     p2 = np.array(inds_2, ndmin=1)
     return distance_matrix(coords[p1], coords[p2])
 
 
-def iscoplanar(coords):
+def iscoplanar(network):
     r"""
     Determines if specified nodes are coplanar with each other
 
     Parameters
     ----------
-    coords : ndarray
-        An N by 3 array of node coordinations
+    network : dict
+        The graph dictionary
 
     Returns
     -------
@@ -403,6 +400,8 @@ def iscoplanar(coords):
         not (``False``)
 
     """
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix + '.coords']
     if np.shape(coords)[0] < 3:
         raise Exception('At least 3 input pores are required')
 
@@ -439,14 +438,14 @@ def iscoplanar(coords):
     return bool(np.sum(np.absolute(n_dot)) == 0)
 
 
-def is_fully_connected(g, inds=None):
+def is_fully_connected(network, inds=None):
     r"""
     Checks whether graph is fully connected, i.e. not clustered
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inds : array_like (optional)
         The indices of boundary nodes (i.e. inlets/outlets). If this is given
         the multiple sample spanning clusters will count as fully connected.
@@ -459,7 +458,7 @@ def is_fully_connected(g, inds=None):
         ``inds`` is given, then returns ``True`` only if all clusters
         are connected to the given boundary nodes.
     """
-    am = dict_to_am(g)
+    am = dict_to_am(network)
     am = am.tolil()
     inds = np.array(inds)
     temp = csgraph.connected_components(am, directed=False)[1]
@@ -476,13 +475,13 @@ def is_fully_connected(g, inds=None):
     return is_connected
 
 
-def get_cubic_spacing(g):
+def get_cubic_spacing(network):
     r"""
     Determine spacing of a cubic network
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The network dictionary
 
     Returns
@@ -491,16 +490,16 @@ def get_cubic_spacing(g):
         An array containing the spacing between nodes in each direction
 
     """
-    node_prefix = get_node_prefix(g)
-    edge_prefix = get_edge_prefix(g)
-    coords = g[node_prefix+'.coords']
-    conns = g[edge_prefix+'.conns']
+    node_prefix = get_node_prefix(network)
+    edge_prefix = get_edge_prefix(network)
+    coords = network[node_prefix+'.coords']
+    conns = network[edge_prefix+'.conns']
     # Find Network spacing
     C12 = coords[conns]
     mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
     unit_vec = np.around(np.squeeze(np.diff(C12, axis=1)) / mag, decimals=14)
     spacing = [0, 0, 0]
-    dims = dimensionality(g)
+    dims = dimensionality(network)
     # Ensure vectors point in n-dims unique directions
     c = {tuple(row): 1 for row in unit_vec}
     mag = np.atleast_1d(mag.squeeze()).astype(float)
@@ -519,13 +518,13 @@ def get_cubic_spacing(g):
     return np.array(spacing)
 
 
-def get_cubic_shape(g):
+def get_cubic_shape(network):
     r"""
     Determine shape of a cubic network
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The network dictionary
 
     Returns
@@ -534,24 +533,24 @@ def get_cubic_shape(g):
         An array containing the shape of the network each direction
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     L = np.ptp(coords, axis=0)
     mask = L.astype(bool)
-    S = get_cubic_spacing(g)
+    S = get_cubic_spacing(network)
     shape = np.array([1, 1, 1], int)
     shape[mask] = L[mask] / S[mask] + 1
     return shape
 
 
-def get_domain_area(g, inlets=None, outlets=None):
+def get_domain_area(network, inlets=None, outlets=None):
     r"""
     Determine the cross sectional area relative to the inlets/outlets.
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inlets : array_like
         The indices of the inlets
     outlets : array_Like
@@ -563,10 +562,10 @@ def get_domain_area(g, inlets=None, outlets=None):
         The cross sectional area relative to the inlets/outlets.
 
     """
-    if dimensionality(g).sum() != 3:
+    if dimensionality(network).sum() != 3:
         raise Exception('The network is not 3D, specify area manually')
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     inlets = coords[inlets]
     outlets = coords[outlets]
     if not iscoplanar(inlets):
@@ -587,14 +586,14 @@ def get_domain_area(g, inlets=None, outlets=None):
     return area
 
 
-def get_domain_length(g, inlets=None, outlets=None):
+def get_domain_length(network, inlets=None, outlets=None):
     r"""
     Determine the domain length relative to the inlets/outlets.
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inlets : array_like
         The pore indices of the inlets.
     outlets : array_Like
@@ -606,8 +605,8 @@ def get_domain_length(g, inlets=None, outlets=None):
         The domain length relative to the inlets/outlets.
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     inlets = coords[inlets]
     outlets = coords[outlets]
     if not iscoplanar(inlets):
@@ -701,14 +700,14 @@ def vor_to_am(vor):
     return am
 
 
-def dict_to_am(g, weights=None):
+def dict_to_am(network, weights=None):
     r"""
     Convert a graph dictionary into a ``scipy.sparse`` adjacency matrix in
     COO format
 
     Parameters
     ----------
-    g : dict
+    network : dict
         A network dictionary
     weights : ndarray, optional
         The weight values to use for the connections. If not provided
@@ -732,13 +731,13 @@ def dict_to_am(g, weights=None):
     called frequently.
 
     """
-    edge_prefix = get_edge_prefix(g)
-    node_prefix = get_node_prefix(g)
-    conns = np.copy(g[edge_prefix+'.conns'])
-    shape = [g[node_prefix+'.coords'].shape[0]]*2
+    edge_prefix = get_edge_prefix(network)
+    node_prefix = get_node_prefix(network)
+    conns = np.copy(network[edge_prefix+'.conns'])
+    shape = [network[node_prefix+'.coords'].shape[0]]*2
     if weights is None:
         weights = np.ones_like(conns[:, 0], dtype=int)
-    if isgtriu(g):  # If graph is triu, then it is assumed to be undirected
+    if isgtriu(network):  # If graph is triu, then it is assumed to be undirected
         conns = np.vstack((conns, np.fliplr(conns)))  # Reflect to tril
         data = np.ones_like(conns[:, 0], dtype=int)  # Generate fake data
         am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
@@ -748,14 +747,14 @@ def dict_to_am(g, weights=None):
     return am
 
 
-def dict_to_im(g):
+def dict_to_im(network):
     r"""
     Convert a graph dictionary into a ``scipy.sparse`` incidence matrix in COO
     format
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The network dictionary
 
     Returns
@@ -771,11 +770,11 @@ def dict_to_im(g):
     whose locations indicate which edges are directly connected to the
     corresponding node.
     """
-    edge_prefix = get_edge_prefix(g)
-    node_prefix = get_node_prefix(g)
-    conns = g[edge_prefix+'.conns']
-    coords = g[node_prefix+'.coords']
-    if isgtriu(g):
+    edge_prefix = get_edge_prefix(network)
+    node_prefix = get_node_prefix(network)
+    conns = network[edge_prefix+'.conns']
+    coords = network[node_prefix+'.coords']
+    if isgtriu(network):
         data = np.ones(2*conns.shape[0], dtype=int)
         shape = (coords.shape[0], conns.shape[0])
         temp = np.arange(conns.shape[0])
@@ -787,14 +786,14 @@ def dict_to_im(g):
     return im
 
 
-def ismultigraph(g):
+def ismultigraph(network):
     r"""
     Checks if graph contains multiple connections between any pair of nodes
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
@@ -802,10 +801,10 @@ def ismultigraph(g):
         Returns ``True`` if any pair of nodes is connected by more than one
         edge.
     """
-    edge_prefix = get_edge_prefix(g)
-    node_prefix = get_node_prefix(g)
-    conns = g[edge_prefix+'.conns']
-    coords = g[node_prefix+'.coords']
+    edge_prefix = get_edge_prefix(network)
+    node_prefix = get_node_prefix(network)
+    conns = network[edge_prefix+'.conns']
+    coords = network[node_prefix+'.coords']
     data = np.ones_like(conns[:, 0], dtype=int)
     shape = 2*[coords.shape[0]]
     am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
@@ -813,33 +812,33 @@ def ismultigraph(g):
     return np.any(am.data > 1)
 
 
-def isgtriu(g):
+def isgtriu(network):
     r"""
     Determines if graph connections are in upper triangular format
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
     flag : bool
         Returns ``True`` if *all* rows in "conns" are ordered as [lo, hi]
     """
-    edge_prefix = get_edge_prefix(g)
-    conns = g[edge_prefix+'.conns']
+    edge_prefix = get_edge_prefix(network)
+    conns = network[edge_prefix+'.conns']
     return np.all(conns[:, 0] < conns[:, 1])
 
 
-def to_triu(g):
+def to_triu(network):
     r"""
     Adjusts conns array to force into upper triangular form
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
 
     Returns
     -------
@@ -850,10 +849,10 @@ def to_triu(g):
     -----
     This does not check for the creation of duplicate connections
     """
-    edge_prefix = get_edge_prefix(g)
-    conns = g[edge_prefix+'.conns']
-    g[edge_prefix+'.conns'] = np.sort(conns, axis=1)
-    return g
+    edge_prefix = get_edge_prefix(network)
+    conns = network[edge_prefix+'.conns']
+    network[edge_prefix+'.conns'] = np.sort(conns, axis=1)
+    return network
 
 
 def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,

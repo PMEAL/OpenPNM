@@ -13,15 +13,15 @@ __all__ = [
 ]
 
 
-def add_nodes(g, coords):
+def add_nodes(network, new_coords):
     r"""
     Given a list of node coordinates, add them to the network
 
     Parameters
     ----------
-    g : dict
+    network : dict
         A dictionary containing the node and edge attributes as ndarrays
-    coords : ndarray
+    new_coords : ndarray
         The N-by-3 array of coordinates of the new nodes
 
     Returns
@@ -39,9 +39,9 @@ def add_nodes(g, coords):
     # stuff it's trickier. For instance ``np.array([[], []])`` has a shape
     # of (2, 0) so the empty dimension is the wrong one since all the array
     # extending in this function occurs on the 1st axis.
-
+    g = network
     node_prefix = tools.get_node_prefix(g)
-    coords = np.atleast_2d(coords)
+    coords = np.atleast_2d(new_coords)
     Nnew = coords.shape[0]
     for k, v in g.items():
         if k.startswith(node_prefix):
@@ -57,7 +57,7 @@ def add_nodes(g, coords):
     return g
 
 
-def add_edges(g, conns):
+def add_edges(network, new_conns):
     r"""
     Given a list of edge connections, add them to the network
 
@@ -65,12 +65,12 @@ def add_edges(g, conns):
     ----------
     network : dict
         A dictionary containing the node and edge attributes as ndarrays
-    conns : ndarray
+    new_conns : ndarray
         The N-by-2 array of connections betwween existing nodes
 
     Returns
     -------
-    g : dict
+    network : dict
         The network dictionary with the new edges added to the end. Note that
         any existing edge attributes are also extended and filled with default
         values specified in ``settings.default_values``.
@@ -83,9 +83,9 @@ def add_edges(g, conns):
     # stuff it's trickier. For instance ``np.array([[], []])`` has a shape
     # of (2, 0) so the empty dimension is the wrong one since all the array
     # extending in this function occurs on the 1st axis.
-
+    g = network
     edge_prefix = tools.get_edge_prefix(g)
-    conns = np.atleast_2d(conns)
+    conns = np.atleast_2d(new_conns)
     Nnew = conns.shape[0]
     for k, v in g.items():
         if k.startswith(edge_prefix):
@@ -101,13 +101,13 @@ def add_edges(g, conns):
     return g
 
 
-def trim_edges(g, inds):
+def trim_edges(network, inds):
     r"""
     Removes given edges from a graph or network
 
     Parameters
     ----------
-    g : dictionary
+    network : dictionary
         A dictionary containing coords, conns and other attributes
     inds : array_like
         The edge indices to be trimmed in the form of a 1D list or boolean
@@ -115,10 +115,11 @@ def trim_edges(g, inds):
 
     Returns
     -------
-    g : dict
+    network : dict
         The dictionary with all edge arrays trimmed accordingly
 
     """
+    g = network
     edge_prefix = tools.get_edge_prefix(g)
     N_bonds = g[edge_prefix+'.conns'].shape[0]
     inds = np.atleast_1d(inds)
@@ -130,7 +131,7 @@ def trim_edges(g, inds):
     return g
 
 
-def trim_nodes(g, inds):
+def trim_nodes(network, inds):
     r"""
     Removes given nodes and any connected edges from a graph or network
 
@@ -150,6 +151,7 @@ def trim_nodes(g, inds):
         array renumbered so edges point to the updated node indices.
 
     """
+    g = network
     node_prefix = tools.get_node_prefix(g)
     edge_prefix = tools.get_edge_prefix(g)
     N_sites = g[node_prefix+'.coords'].shape[0]
@@ -163,7 +165,7 @@ def trim_nodes(g, inds):
             g[k] = v[keep]
     # Remove edges
     edges = np.any(np.isin(g[edge_prefix+'.conns'], inds), axis=1)
-    g = trim_edges(g, inds=edges)
+    g = trim_edges(network=g, inds=edges)
     # Renumber conns
     remapping = np.cumsum(keep) - 1
     g[edge_prefix+'.conns'] = remapping[g[edge_prefix+'.conns']]
@@ -207,14 +209,14 @@ def drop_nodes_from_am(am, inds):
     return am, edge_mask
 
 
-def split_edges(conns, coords=None):
+def split_edges(network):
     r"""
     Inserts an new node between each existing node and joins with new edges
 
     Parameters
     ----------
-    conns : ndarray
-        The sparse adjacency matrix in COO format
+    network : dict
+        The dictionary containing the network connections and coordinates
 
     Returns
     -------
@@ -237,6 +239,11 @@ def split_edges(conns, coords=None):
         ============== ========================================================
 
     """
+    g = network
+    node_prefix = tools.get_node_prefix(g)
+    edge_prefix = tools.get_edge_prefix(g)
+    conns = g[edge_prefix + '.conns']
+    coords = g[node_prefix + '.coords']
     Nt = conns.shape[0]
     Np = conns.max() + 1
     new_conns = np.zeros([2*Nt, 2], dtype=int)

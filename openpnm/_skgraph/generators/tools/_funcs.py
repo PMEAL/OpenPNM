@@ -33,13 +33,13 @@ def parse_points(shape, points, reflect=False):
     return points
 
 
-def add_all_label(g):
+def add_all_label(network):
     r"""
     Add 'node.all' and 'edge.all' to network dictionary
 
     Parameters
     ----------
-    g : dict
+    network : dict
         The network dictionary, containing 'node.coords' and 'edge.conns'
 
     Returns
@@ -52,6 +52,7 @@ def add_all_label(g):
     This function is helpful for working with OpenPNM
 
     """
+    g = network
     node_prefix = tools.get_node_prefix(g)
     edge_prefix = tools.get_edge_prefix(g)
     coords = g[node_prefix+'.coords']
@@ -61,7 +62,7 @@ def add_all_label(g):
     return g
 
 
-def label_faces_cubic(g, rtol=0.0):
+def label_faces_cubic(network, rtol=0.0):
     r"""
     Label the nodes sitting on the faces of the domain assuming the domain
     is cubic
@@ -82,6 +83,7 @@ def label_faces_cubic(g, rtol=0.0):
         The network dictionary with the face labels added
 
     """
+    g = network
     node_prefix = tools.get_node_prefix(g)
     coords = g[node_prefix+'.coords']
     dims = tools.dimensionality(g)

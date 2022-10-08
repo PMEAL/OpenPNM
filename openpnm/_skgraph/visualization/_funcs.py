@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def plot_edges(g,
+def plot_edges(network,
                edges=None,
                ax=None,
                size_by=None,
@@ -34,8 +34,8 @@ def plot_edges(g,
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     edges : array_like (optional)
         The list of edges to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no edges are
@@ -143,7 +143,7 @@ def plot_edges(g,
     return lc
 
 
-def plot_nodes(g,
+def plot_nodes(network,
                nodes=None,
                ax=None,
                size_by=None,
@@ -159,8 +159,8 @@ def plot_nodes(g,
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     nodes : array_like (optional)
         The list of nodes to plot if only a sub-sample is desired. This is
         useful for inspecting a small region of the network. If no nodes
