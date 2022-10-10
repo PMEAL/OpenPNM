@@ -110,13 +110,11 @@ class SKGROperationsTest:
     def test_split_edges(self):
         net = gen.cubic([4, 4, 1])
         net['edge.label'] = np.ones(24, dtype=bool)
-        conns = ops.split_edges(net['edge.conns'])[0]
+        conns = ops.split_edges(net)[0]
         assert conns.shape[0] == 2*net['edge.conns'].shape[0]
-        conns, coords = ops.split_edges(net['edge.conns'], net['node.coords'])
+        conns, coords = ops.split_edges(net)
         assert coords.shape[0] == (net['node.coords'].shape[0]
                                    + net['edge.conns'].shape[0])
-        # net['edge.conns'] = conns
-        # net['node.coords'] = coords
         # ax = plot_edges(net, color_by=np.arange(conns.shape[0]))
         # ax = plot_nodes(net, ax=ax)
 

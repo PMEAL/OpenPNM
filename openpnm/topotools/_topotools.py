@@ -117,14 +117,14 @@ get_shape.__doc__ = skgr.tools.get_cubic_shape.__doc__
 
 
 def filter_pores_by_z(network, pores, z):
-    return skgr.queries.filter_by_z(g=network, inds=pores, z=z)
+    return skgr.queries.filter_by_z(network=network, inds=pores, z=z)
 
 
 filter_pores_by_z.__doc__ = skgr.queries.filter_by_z.__doc__
 
 
 def find_interface_throats(network, P1, P2):
-    return skgr.queries.find_common_edges(g=network, inds_1=P1, inds_2=P2)
+    return skgr.queries.find_common_edges(network=network, inds_1=P1, inds_2=P2)
 
 
 find_interface_throats.__doc__ = skgr.queries.find_common_edges.__doc__

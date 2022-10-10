@@ -23,7 +23,10 @@ class VoronoiTest:
         assert net.Np > 30
 
     def test_voronoi_delaunay_dual(self):
+        np.random.seed(0)
         dual = op.network.DelaunayVoronoiDual(points=100, shape=[1, 1, 1])
+        assert dual.num_pores('delaunay') == 100
+        assert dual.num_pores('voronoi') == 567
 
     def test_find_throat_facets(self):
         np.random.seed(0)

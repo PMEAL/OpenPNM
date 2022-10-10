@@ -86,12 +86,12 @@ def plot_edges(network,
     plot_coordinates
 
     """
-    node_prefix = get_node_prefix(g)
-    edge_prefix = get_edge_prefix(g)
-    conns = g[edge_prefix+'.conns']
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    edge_prefix = get_edge_prefix(network)
+    conns = network[edge_prefix+'.conns']
+    coords = network[node_prefix+'.coords']
     Ts = np.arange(conns.shape[0]) if edges is None else edges
-    dim = dimensionality(g)
+    dim = dimensionality(network)
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
@@ -209,11 +209,10 @@ def plot_nodes(network,
     plot_edges
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     Ps = np.arange(coords.shape[0]) if nodes is None else nodes
-
-    dim = dimensionality(g)
+    dim = dimensionality(network)
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:

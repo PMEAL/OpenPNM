@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 def network_from_networkx(G):
     r"""
-    Add data to an OpenPNM Network from a undirected NetworkX graph object.
+    Creates an OpenPNM Network from a undirected NetworkX graph object
 
     Parameters
     ----------
