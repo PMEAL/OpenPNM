@@ -12,7 +12,7 @@ is_linux = sys.platform.startswith('linux')
 condition = is_python_38 and is_linux
 
 
-@pytest.mark.skip(condition, reason="Strange error coming from numba/chemicals")
+@pytest.mark.skipif(condition, reason="Strange error coming from numba/chemicals")
 class VaporPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
