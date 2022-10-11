@@ -223,6 +223,33 @@ class Project(SimpleList):
     def workspace(self):
         return ws
 
+    def get_locations(self, label):
+        r"""
+        Find locations indicated by the given label regardless of which object
+        it is defined on
+
+        Parameters
+        ----------
+        label : str
+            The label whose locations are sought, such as 'pore.left'
+
+        Returns
+        -------
+        locations : ndarray
+            A boolean array with ``True`` values indicating which locations
+            have the given label
+
+        Notes
+        -----
+        The returns the first instance of ``label`` that it finds
+        """
+        for item in self:
+            try:
+                return item[label]
+            except KeyError:
+                pass
+        raise KeyError(label)
+
     def __str__(self):  # pragma: no cover
         hr = '―'*78
         s = '═'*78 + '\n'
