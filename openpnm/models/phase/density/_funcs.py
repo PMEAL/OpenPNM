@@ -236,7 +236,7 @@ def mass_to_molar(
         A numpy ndrray containing molar density values [mol/m3]
 
     """
-    MW = phase[MW]
+    MW = phase[MW]/1000
     rho = phase[rho]
     value = rho/MW
     return value

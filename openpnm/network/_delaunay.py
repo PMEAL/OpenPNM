@@ -57,7 +57,7 @@ class Delaunay(Network):
                                               trim=trim,
                                               node_prefix='pore',
                                               edge_prefix='throat')
-        net = trim_nodes(g=net, inds=np.where(net['pore.voronoi'])[0])
+        net = trim_nodes(network=net, inds=np.where(net['pore.voronoi'])[0])
         self.update(net)
 
 

@@ -285,7 +285,7 @@ class Workspace(dict):
         proj = Project(name=name)
         return proj
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         hr = '―'*78
         s = hr + '\n'
         for item in self.values():

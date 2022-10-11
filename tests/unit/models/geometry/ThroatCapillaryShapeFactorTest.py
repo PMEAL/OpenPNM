@@ -11,9 +11,6 @@ class ThroatCapillaryShapeFactorTest:
         self.net['throat.perimeter'] = np.pi
         self.net['throat.diameter'] = (4 / np.pi)**(0.5)
 
-    def test_compactness(self):
-        pass
-
     def test_mason_morrow(self):
         mod = op.models.geometry.throat_capillary_shape_factor.mason_morrow
         self.net.add_model(propname='throat.capillary_shape_factor',

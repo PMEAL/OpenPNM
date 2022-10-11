@@ -9,6 +9,12 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
+__all__ = [
+    'MultiPhase',
+    'multiphase_diffusion',
+]
+
+
 @docstr.dedent
 class MultiPhaseSettings:
     """
@@ -289,3 +295,58 @@ class MultiPhase(Phase):
                            model=misc.from_neighbor_pores,
                            prop=f"pore.occupancy.{phase.name}",
                            mode=mode)
+
+
+def multiphase_diffusion(phase,
+                         pore_diffusivity="pore.diffusivity",
+                         throat_diffusivity="throat.diffusivity",
+                         size_factors="throat.diffusive_size_factors",
+                         partition_coef_global="throat.partition_coef.global"):
+    r"""
+    Calculates the diffusive conductance of conduits in network.
+
+    Parameters
+    ----------
+    %(phase)s
+    pore_diffusivity : str
+        %(dict_blurb)s pore diffusivity
+    throat_diffusivity : str
+        %(dict_blurb)s throat diffusivity
+    size_factors : str
+        %(dict_blurb)s conduit size factors
+
+    Returns
+    -------
+    %(return_arr)s diffusive conductance
+
+    Notes
+    -----
+    This method assumes that ``phase["partition_coef"]`` contains information
+    on binary phase partitioning. See ``MultiPhase`` class documentation for
+    more information.
+
+    """
+    network = phase.network
+    cn = network.conns
+    SF = network[size_factors]
+    if isinstance(SF, dict):
+        F1, Ft, F2 = SF.values()
+    elif SF.ndim > 1:
+        F1, Ft, F2 = SF.T
+    else:
+        F1, Ft, F2 = np.inf, SF, np.inf
+
+    # Fetch model parameters
+    D1, D2 = phase[pore_diffusivity][cn].T
+    Dt = phase[throat_diffusivity]
+    g1 = D1 * F1
+    gt = Dt * Ft
+    g2 = D2 * F2
+
+    # Apply Henry's partitioning coefficient
+    # Note: m12 = (G21*c1 - G12*c2)  NOT  (G12*c1 - G21*c2)
+    K12 = phase[partition_coef_global]
+    G21 = (1/g1 + 0.5/gt + K12 * (1/g2 + 0.5/gt)) ** -1
+    G12 = K12 * G21
+
+    return np.vstack((G12, G21)).T

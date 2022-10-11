@@ -4,7 +4,7 @@ import scipy as sp
 from scipy.spatial import cKDTree
 from scipy.sparse import csgraph
 from scipy.spatial import ConvexHull
-from openpnm.utils import Workspace, prettify_logger_message
+from openpnm.utils import Workspace
 import openpnm._skgraph as skgr
 
 
@@ -22,9 +22,7 @@ __all__ = [
     'clone_pores',
     'merge_networks',
     'stitch',
-    'stitch_pores',
     'connect_pores',
-    'find_pore_to_pore_distance',
     'merge_pores',
     'hull_centroid',
     'template_sphere_shell',
@@ -68,32 +66,36 @@ def shear_coords(network, **kwargs):
 shear_coords.__doc__ = skgr.tools.shear_coords.__doc__
 
 
-def template_sphere_shell(**kwargs):
-    return skgr.generators.tools.template_sphere_shell(**kwargs)
+def template_sphere_shell(r_outer, r_inner=0):
+    return skgr.generators.tools.template_sphere_shell(r_outer, r_inner)
 
 
 template_sphere_shell.__doc__ = \
     skgr.generators.tools.template_sphere_shell.__doc__
 
 
-def template_cylinder_annulus(**kwargs):
-    return skgr.generators.tools.template_cylinder_annulus(**kwargs)
+def template_cylinder_annulus(z, r_outer, r_inner=0):
+    return skgr.generators.tools.template_cylinder_annulus(z, r_outer, r_inner)
 
 
 template_cylinder_annulus.__doc__ = \
     skgr.generators.tools.template_cylinder_annulus.__doc__
 
 
-def generate_base_points(**kwargs):
-    return skgr.generators.tools.generate_base_points(**kwargs)
+def generate_base_points(num_points, domain_size, reflect=True):
+    return skgr.generators.tools.generate_base_points(
+        num_points,
+        domain_size,
+        reflect,
+    )
 
 
 generate_base_points.__doc__ = \
     skgr.generators.tools.generate_base_points.__doc__
 
 
-def reflect_base_points(**kwargs):
-    return skgr.generators.tools.reflect_base_points(**kwargs)
+def reflect_base_points(points, domain_size):
+    return skgr.generators.tools.reflect_base_points(points, domain_size)
 
 
 reflect_base_points.__doc__ = \
@@ -115,32 +117,41 @@ get_shape.__doc__ = skgr.tools.get_cubic_shape.__doc__
 
 
 def filter_pores_by_z(network, pores, z):
-    return skgr.queries.filter_by_z(g=network, inds=pores, z=z)
+    return skgr.queries.filter_by_z(network=network, inds=pores, z=z)
 
 
 filter_pores_by_z.__doc__ = skgr.queries.filter_by_z.__doc__
 
 
 def find_interface_throats(network, P1, P2):
-    return skgr.queries.find_common_edges(g=network, inds_1=P1, inds_2=P2)
+    return skgr.queries.find_common_edges(network=network, inds_1=P1, inds_2=P2)
 
 
 find_interface_throats.__doc__ = skgr.queries.find_common_edges.__doc__
 
 
-def dimensionality(network=None):
+def dimensionality(network):
+    r"""
+    Determines whether a network is 1D, 2D or 3D, and in which dimensions
+
+    Parameters
+    ----------
+    network : dict
+        The OpenPNM network of interest
+
+    Returns
+    -------
+    dims : boolean mask
+        A 3 x 1 array of booleans with ``True`` indicating if any
+        dimensionality exists on each axis.
+
+    Notes
+    -----
+    This function looks at the coordinates of each pore and if any axes all
+    have the same values that axis is considered non-dimensional.
+
+    """
     return skgr.tools.dimensionality(network)
-
-
-dimensionality.__doc__ = skgr.tools.dimensionality.__doc__
-
-
-def find_pore_to_pore_distance(network, pores1, pores2):
-    return skgr.tools.internode_distance(network, pores1, pores1)
-
-
-find_pore_to_pore_distance.__doc__ = \
-    skgr.tools.internode_distance.__doc__
 
 
 def trim(network, pores=[], throats=[]):
@@ -154,20 +165,6 @@ def trim(network, pores=[], throats=[]):
     pores (or throats) : array_like
         The indices of the of the pores or throats to be removed from the
         network.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> pn.Np
-    125
-    >>> pn.Nt
-    300
-    >>> op.topotools.trim(network=pn, pores=[1])
-    >>> pn.Np
-    124
-    >>> pn.Nt
-    296
 
     """
     pores = network._parse_indices(pores)
@@ -398,19 +395,6 @@ def find_surface_pores(network, markers=None, label='surface'):
     If this method fails to mark some surface pores, consider sending more
     markers on each face.
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> net = op.network.Cubic(shape=[5, 5, 5])
-    >>> op.topotools.find_surface_pores(network=net)
-    >>> net.num_pores('surface')
-    98
-
-    When cubic networks are created, the surfaces are already labeled:
-
-    >>> net.num_pores(['top','bottom', 'left', 'right', 'front','back'])
-    98
-
     """
     import scipy.spatial as sptl
     dims = dimensionality(network)
@@ -527,10 +511,7 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
 def merge_networks(network, donor=[]):
     r"""
-    Combine multiple networks into one
-
-    This does not attempt any topological manipulations (such as stiching
-    nearby pores to each other).
+    Combine multiple networks into one without making any topological connections
 
     Parameters
     ----------
@@ -650,22 +631,6 @@ def stitch(network, donor, P_network, P_donor, method='nearest',
     one of the Networks so that it is positioned correctly relative to the
     other.  This is illustrated in the example below.
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> pn2 = op.network.Cubic(shape=[5, 5, 5])
-    >>> [pn.Np, pn.Nt]
-    [125, 300]
-    >>> [pn2.Np, pn2.Nt]
-    [125, 300]
-    >>> pn2['pore.coords'][:, 2] += 5.0
-    >>> op.topotools.stitch(network=pn, donor=pn2, P_network=pn.pores('top'),
-    ...                     P_donor=pn2.pores('bottom'), method='radius',
-    ...                     len_max=1.0)
-    >>> [pn.Np, pn.Nt]
-    [250, 625]
-
     """
     # Parse inputs
     if isinstance(label_stitches, str):
@@ -725,7 +690,6 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         ===========  ==========================================================
         mode         meaning
         ===========  ==========================================================
-        'gabriel'    Uses the gabriel tesselation method
         'delaunay'   Uses the delaunay tesselation method
         ===========  ==========================================================
 
@@ -735,16 +699,18 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
         The network is operated on 'in-place' so nothing is returned.
 
     """
-    from openpnm.network import Delaunay, Gabriel
+    raise NotImplementedError()
+    from openpnm.network import Delaunay
     pores1 = network._parse_indices(pores1)
     pores2 = network._parse_indices(pores2)
     C1 = network.coords[pores1, :]
     C2 = network.coords[pores2, :]
     crds = np.vstack((C1, C2))
     if mode == 'delaunay':
-        net = Delaunay(points=crds)
-    if mode == 'gabriel':
-        net = Gabriel(points=crds)
+        shape = get_shape(network) * dimensionality(network)
+        net = Delaunay(points=crds, shape=shape)
+    else:
+        raise Exception('Unsupported mode')
     net.set_label(pores=range(len(pores1)), label='pore.one')
     net.set_label(pores=range(len(pores2)), label='pore.two')
     Ts = net.find_neighbor_throats(pores=net.pores('one'), mode='xor')
@@ -755,12 +721,9 @@ def stitch_pores(network, pores1, pores2, mode='gabriel'):
     extend(network=network, conns=mapped_conns, labels='stitched')
 
 
-def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
+def connect_pores(network, pores1, pores2, labels=['new_conns']):
     r"""
-    Returns the possible connections between two groups of pores, and optionally
-    makes the connections.
-
-    See ``Notes`` for advanced usage.
+    Returns the possible connections between two groups of pores
 
     Parameters
     ----------
@@ -771,16 +734,11 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
     pores2 : array_like
         The second group of pores on the network
     labels : list of strings
-        The labels to apply to the new throats.  This argument is only needed
-        if ``add_conns`` is True.
-    add_conns : bool
-        Indicates whether the connections should be added to the supplied
-        network (default is True).  Otherwise, the connections are returned
-        as an Nt x 2 array that can be passed directly to ``extend``.
+        The labels to apply to the new throats. The default is ``'new_conns'``.
 
     Notes
     -----
-    (1) The method also works if ``pores1`` and ``pores2`` are list of lists,
+    The method also works if ``pores1`` and ``pores2`` are list of lists,
     in which case it consecutively connects corresponding members of the two
     lists in a 1-to-1 fashion. Example: pores1 = [[0, 1], [2, 3]] and
     pores2 = [[5], [7, 9]] leads to creation of the following connections:
@@ -790,30 +748,8 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         0 --> 5     2 --> 7     3 --> 7
         1 --> 5     2 --> 9     3 --> 9
 
-    (2) If you want to use the batch functionality, make sure that each element
+    If you want to use the batch functionality, make sure that each element
     within ``pores1`` and ``pores2`` are of type list or ndarray.
-
-    (3) It creates the connections in a format which is acceptable by
-    the default OpenPNM connections ('throat.conns') and either adds them to
-    the network or returns them.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> pn.Nt
-    300
-    >>> op.topotools.connect_pores(network=pn, pores1=[22, 32],
-    ...                            pores2=[16, 80, 68])
-    >>> pn.Nt
-    306
-    >>> pn['throat.conns'][300:306]
-    array([[16, 22],
-           [22, 80],
-           [22, 68],
-           [16, 32],
-           [32, 80],
-           [32, 68]])
 
     """
     # Assert that `pores1` and `pores2` are list of lists
@@ -837,10 +773,7 @@ def connect_pores(network, pores1, pores2, labels=[], add_conns=True):
         arr1.append(np.repeat(ps1, size2))
         arr2.append(np.tile(ps2, size1))
     conns = np.vstack([np.concatenate(arr1), np.concatenate(arr2)]).T
-    if add_conns:
-        extend(network=network, throat_conns=conns, labels=labels)
-    else:
-        return conns
+    extend(network=network, throat_conns=conns, labels=labels)
 
 
 def merge_pores(network, pores, labels=['merged']):
@@ -866,19 +799,6 @@ def merge_pores(network, pores, labels=['merged']):
     to use the ``find_nearby_pores`` method to find all pores within a
     certain distance of a given pore, and these can then be merged without
     causing any abnormal connections.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[20, 20, 1])
-    >>> Ps = pn.find_nearby_pores(pores=111, r=5, flatten=True)
-    >>> op.topotools.merge_pores(network=pn, pores=Ps, labels=['merged'])
-    >>> print(pn.Np)
-    321
-    >>> pn.pores('merged')
-    array([320])
-    >>> pn.num_throats('merged')
-    32
 
     """
     # Assert that `pores` is list of lists
@@ -967,17 +887,6 @@ def add_boundary_pores(network, pores, offset=None, move_to=None,
     apply_label : str
         This label is applied to the boundary pores.  Default is
         'boundary'.
-
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[5, 5, 5])
-    >>> print(pn.Np)  # Confirm initial Network size
-    125
-    >>> Ps = pn.pores('top')  # Select pores on top face
-    >>> pn.add_boundary_pores(labels=['top'])
-    >>> print(pn.Np)  # Confirm addition of 25 new pores
-    150
 
     """
     # Parse the input pores
@@ -1083,6 +992,7 @@ def is_fully_connected(network, pores_BC=None):
         the entire network is connected to the same cluster. If
         ``pores_BC`` is given, then returns ``True`` only if all clusters
         are connected to the given boundary condition pores.
+
     """
     am = network.get_adjacency_matrix(fmt='lil').copy()
     temp = csgraph.connected_components(am, directed=False)[1]
@@ -1161,7 +1071,7 @@ def get_domain_length(network, inlets=None, outlets=None):
     """
     msg = ('Attempting to estimate domain length...could be low if'
            ' boundary pores were not added')
-    logger.warning(prettify_logger_message(msg))
+    logger.warning(msg)
     inlets = network.coords[inlets]
     outlets = network.coords[outlets]
     if not iscoplanar(inlets):

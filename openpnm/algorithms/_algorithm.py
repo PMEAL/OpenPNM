@@ -117,10 +117,7 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
             when ``mode='remove'``.
         bctype : str
             Specifies the type or the name of boundary condition to apply. This
-            can be anything, but normal options are 'rate' and 'value'. If a
-            list of strings is provided, then each mode in the list is
-            handled in order, so if ``mode='remove' and ``bctype=['value',
-            'rate']`` then these two bc arrays will be set to all ``nans`. If
+            can be anything, but normal options are 'rate' and 'value'. If
             an empty list is provided, then all bc types will be assumed. This
             is useful for clearing all bcs if ``mode='remove'`` and ``pores=
             None``.

@@ -166,7 +166,7 @@ class Transport(Algorithm):
             self.A.setdiag(datadiag)
             self.A.eliminate_zeros()
 
-    def run(self, solver=None, x0=None, verbose=True):
+    def run(self, solver=None, x0=None, verbose=False):
         r"""
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
@@ -190,7 +190,8 @@ class Transport(Algorithm):
             solver = getattr(solvers, ws.settings.default_solver)()
         # Perform pre-solve validations
         self._validate_settings()
-        self._validate_data_health()
+        self._validate_topology_health()
+        self._validate_linear_system()
         # Write x0 to algorithm (needed by _update_iterative_props)
         self.x = x0 = np.zeros_like(self.b) if x0 is None else x0.copy()
         self["pore.initial_guess"] = x0
@@ -205,7 +206,8 @@ class Transport(Algorithm):
 
     def _run_special(self, solver, x0, w=1.0, verbose=None):
         # Make sure A,b are STILL well-defined
-        self._validate_data_health()
+        self._validate_topology_health()
+        self._validate_linear_system()
         # Solve and apply under-relaxation
         x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
         self.x = w * x_new + (1 - w) * self.x
@@ -249,89 +251,16 @@ class Transport(Algorithm):
         """
         Ps = ~np.isnan(self['pore.bc.rate']) + ~np.isnan(self['pore.bc.value'])
         if not is_fully_connected(network=self.network, pores_BC=Ps):
-            msg = ("Your network is clustered. Run h = net.check_network_health()"
-                   " followed by op.topotools.trim(net, pores=h['disconnected_pores'])"
-                   " to make your network fully connected.")
+            msg = ("Your network is clustered, making Ax = b ill-conditioned")
             raise Exception(msg)
 
-    def _validate_conductance_model_health(self):
+    def _validate_linear_system(self):
         """
-        Ensures all throats have a conductance model assigned.
+        Ensures the linear system Ax = b doesn't contain any nans/infs.
         """
-        conductance = self.settings.conductance
-        g = self.project[self.settings.phase][conductance]
-        try:
-            Ts_nan = self.Ts[~np.isfinite(g)]
-        except IndexError:
-            Ts_nan = self.Ts[np.any(~np.isfinite(g), axis=1)]
-        Ts_with_model = []
-        for obj in self.project:
-            if conductance in obj.keys():
-                Ts_with_model.extend(obj.throats())
-        if not np.in1d(Ts_nan, Ts_with_model).all():
-            msg = ("Found nans in A matrix, possibly because some throats"
-                   f" don't have conductance model assigned: {conductance}")
-            raise Exception(msg)
-
-    def _validate_data_health(self):
-        """
-        Checks whether A and b are well-defined, i.e. doesn't contain nans.
-        """
-        import networkx as nx
-        from pandas import unique
-
-        # Validate network topology health
-        self._validate_topology_health()
-        # Short-circuit subsequent checks if data are healthy
         if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
-            return True
-
-        # Fetch phase/geometries/physics
-        phase = self.project[self.settings.phase]
-
-        # Locate the root of NaNs
-        unaccounted_nans = []
-        objs = [phase]
-        # Generate global dependency graph
-        dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in objs])
-        d = {}  # maps prop -> obj.name
-        for obj in objs:
-            for k, v in check_data_health(obj).items():
-                if "Has NaNs" in v:
-                    # FIXME: The next line doesn't cover multi-level props
-                    base_prop = ".".join(k.split(".")[:2])
-                    if base_prop in dg.nodes:
-                        d[base_prop] = obj.name
-                    else:
-                        unaccounted_nans.append(base_prop)
-        # Generate dependency subgraph for props with NaNs
-        dg_nans = nx.subgraph(dg, d.keys())
-        # Find prop(s)/object(s) from which NaNs have propagated
-        root_props = [n for n in d.keys() if not nx.ancestors(dg_nans, n)]
-        root_objs = unique([d[x] for x in nx.topological_sort(dg_nans)])
-        # Throw error with helpful info on how to resolve the issue
-        if root_props:
-            msg = ("Found nans in A matrix, possibly caused by nans in"
-                   f" {', '.join(root_props)}. The issue might get resolved"
-                   " if you call `regenerate_models` on the following"
-                   f" object(s): {', '.join(root_objs)}")
-            raise Exception(msg)
-
-        # Raise Exception for throats without an assigned conductance model
-        self._validate_conductance_model_health()
-
-        # Raise Exception for unaccounted properties
-        if unaccounted_nans:
-            msg = ("Found nans in A matrix, possibly caused by nans in"
-                   f" {', '.join(unaccounted_nans)}.")
-            raise Exception(msg)
-
-        # Raise Exception otherwise if root cannot be found
-        msg = ("Found nans in A matrix but couldn't locate the root cause."
-               " It's likely that disabling caching of A matrix via"
-               " `alg.settings['cache'] = False` after instantiating the"
-               " algorithm object fixes the problem.")
-        raise Exception(msg)
+            return
+        raise Exception("A or b contains inf/nan values")
 
     def rate(self, pores=[], throats=[], mode='group'):
         r"""

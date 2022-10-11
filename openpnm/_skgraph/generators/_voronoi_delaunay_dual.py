@@ -115,13 +115,13 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
         inside_all = ~isoutside(network, shape=shape)
         inside_delaunay = inside_all*network[node_prefix+'.delaunay']
         outside_delaunay = (~inside_all)*network[node_prefix+'.delaunay']
-        neighbors = find_neighbor_nodes(g=network,
+        neighbors = find_neighbor_nodes(network=network,
                                         inds=np.where(inside_delaunay)[0],
                                         include_input=True)
         trim = np.ones([network[node_prefix+'.coords'].shape[0], ], dtype=bool)
         trim[neighbors] = False  # Keep all neighbors to internal delaunay nodes
         trim[outside_delaunay] = True  # Re-add external delaunay nodes to trim
-        network = trim_nodes(g=network, inds=np.where(trim)[0])
+        network = trim_nodes(network=network, inds=np.where(trim)[0])
 
     return network, vor, tri
 

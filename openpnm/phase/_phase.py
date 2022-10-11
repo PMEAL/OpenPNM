@@ -35,7 +35,7 @@ class PhaseSettings:
 class Phase(Domain):
     r"""
     This class produces an empty object with no pore-scale models for
-    calculating any thermophysical properties.  Users must add models and
+    calculating any thermophysical properties. Users must add models and
     specify parameters for all the properties they require.
 
     Parameters
@@ -52,6 +52,22 @@ class Phase(Domain):
         self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+
+    def __setitem__(self, key, value):
+        if '@' not in key:
+            super().__setitem__(key, value)
+        else:
+            propname, domain = key.split('@')
+            element, prop = propname.split('.', 1)
+            # Fetch array from self
+            try:
+                temp = self[element + '.' + prop]
+            except KeyError:
+                temp = self._initialize_empty_array_like(value, element)
+                self[element + '.' + prop] = temp
+            # Insert values into masked locations
+            mask = self.project._get_locations(element + '.' + domain)
+            temp[mask] = value
 
     def __getitem__(self, key):
         try:  # If key exists, just get it
@@ -78,8 +94,6 @@ class Phase(Domain):
         # Next get the data arrays, this is the case if @ notation was used
         if element + '.' + prop in self.keys():
             vals = super().__getitem__(element + '.' + prop)
-        # elif element + '.' + prop in self.network.keys():
-        #     vals = self.network[element + '.' + prop]
         else:  # If above are not triggered then try to interpolate
             if self.settings['auto_interpolate']:
                 if (element == 'pore') and ('throat.'+prop not in self.keys()):
@@ -93,27 +107,7 @@ class Phase(Domain):
         # Finally get locs
         if domain == 'all':
             locs = np.ones(self._count(element), dtype=bool)
-        elif element + '.' + domain in self.keys():
-            locs = super().__getitem__(element + '.' + domain)
-        elif element + '.' + domain in self.network.keys():
-            locs = self.network[element + '.' + domain]
         else:
-            raise KeyError(element + '.' + domain)
+            locs = self.project._get_locations(element + '.' + domain)
 
-        # Next get the data arrays
-        if element + '.' + prop in self.keys():
-            vals = super().__getitem__(element + '.' + prop)
-        # elif element + '.' + prop in self.network.keys():
-        #     vals = self.network[element + '.' + prop]
-        else:
-            if self.settings['auto_interpolate']:
-                if (element == 'pore') and ('throat.'+prop not in self.keys()):
-                    msg = f"'throat.{prop}' not found, cannot interpolate '{element+'.'+prop}'"
-                    raise KeyError(msg)
-                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                    msg = f"'pore.{prop}', cannot interpolate '{element}.{prop}'"
-                    raise KeyError(msg)
-                vals = self.interpolate_data(element + '.' + prop)
-            else:
-                raise KeyError(key)
         return vals[locs]

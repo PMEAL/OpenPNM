@@ -81,7 +81,7 @@ class Base2(dict):
     def __eq__(self, other):
         return hex(id(self)) == hex(id(other))
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         module = self.__module__
         module = ".".join([x for x in module.split(".") if not x.startswith("_")])
         cname = self.__class__.__name__
@@ -108,12 +108,7 @@ class Base2(dict):
                 self[f'{element}.{prop}'] = vals
             except KeyError:
                 value = np.array(value)
-                if value.dtype == bool:
-                    temp = np.zeros([self._count(element), *value.shape[1:]],
-                                    dtype=bool)
-                else:
-                    temp = np.zeros([self._count(element), *value.shape[1:]],
-                                    dtype=float)*np.nan
+                temp = self._initialize_empty_array_like(value, element)
                 self.__setitem__(f'{element}.{prop}', temp)
                 self[f'{element}.{prop}'][locs] = value
             return
@@ -159,18 +154,6 @@ class Base2(dict):
                 return self._params[key]
             except KeyError:
                 return self.network._params[key]
-
-        # If key starts with 'conduit.', then call the get_conduit_data method
-        # to build an Nt-by-3 array of pore1-throat-pore2 values
-        if key.startswith('conduit'):
-            domain = None
-            if '@' in key:
-                key, domain = key.split('@')
-            vals = self.get_conduit_data(propname=key.split('.', 1)[1])
-            if domain is not None:
-                locs = self['throat.'+domain]
-                vals = vals[locs]
-            return vals
 
         # If key contains an @ symbol then return a subset of values at the
         # requested locations, by recursively calling __getitem__
@@ -503,11 +486,6 @@ class Base2(dict):
             for pore1, throat, and pore2 respectively.
 
         """
-        # If requested data is already in the form of conduit data, return it
-        if propname in self.keys():
-            vals = self[propname]
-            if (vals.ndim == 2) and (vals.shape[1] == self.Nt):
-                return vals
         poreprop = 'pore.' + propname.split('.', 1)[-1]
         throatprop = 'throat.' + propname.split('.', 1)[-1]
         conns = self.network.conns
@@ -527,7 +505,7 @@ class Base2(dict):
             raise KeyError(f'{propname} not found')
         return vals
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         hr = '―' * 78
         lines = ''
         lines += '\n' + "═"*78 + '\n' + self.__repr__() + '\n' + hr + '\n'
@@ -536,6 +514,17 @@ class Base2(dict):
         lines += get_printable_labels(self)
         lines += '\n' + hr
         return lines
+
+    def _initialize_empty_array_like(self, value, element):
+        element = element.split('.', 1)[0]
+        value = np.array(value)
+        if value.dtype == bool:
+            temp = np.zeros([self._count(element), *value.shape[1:]],
+                            dtype=bool)
+        else:
+            temp = np.zeros([self._count(element), *value.shape[1:]],
+                            dtype=float)*np.nan
+        return temp
 
 
 class Domain(ParserMixin, LabelMixin, ModelsMixin2, Base2):

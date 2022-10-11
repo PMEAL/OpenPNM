@@ -25,7 +25,7 @@ class SimpleList:
         else:
             self._list = list()
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return self._list.__repr__()
 
     def __len__(self):
@@ -40,7 +40,7 @@ class SimpleList:
     def __delitem__(self, ii):
         del self._list[ii]
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return str(self._list)
 
     def __iter__(self):
@@ -223,7 +223,34 @@ class Project(SimpleList):
     def workspace(self):
         return ws
 
-    def __str__(self):
+    def _get_locations(self, label):
+        r"""
+        Find locations indicated by the given label regardless of which object
+        it is defined on
+
+        Parameters
+        ----------
+        label : str
+            The label whose locations are sought, such as 'pore.left'
+
+        Returns
+        -------
+        locations : ndarray
+            A boolean array with ``True`` values indicating which locations
+            have the given label
+
+        Notes
+        -----
+        The returns the first instance of ``label`` that it finds
+        """
+        for item in self:
+            try:
+                return item[label]
+            except KeyError:
+                pass
+        raise KeyError(label)
+
+    def __str__(self):  # pragma: no cover
         hr = '―'*78
         s = '═'*78 + '\n'
         s += 'Object Name : Object Class and ID' + '\n'

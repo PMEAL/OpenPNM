@@ -1,5 +1,7 @@
 import openpnm as op
 import chemicals
+import inspect
+import numpy as np
 from thermo import Chemical
 from numpy.testing import assert_array_almost_equal, assert_allclose
 from openpnm.utils import get_mixture_model_args
@@ -109,6 +111,39 @@ class ViscosityTest:
             f = getattr(chemicals.viscosity, m)
             mu.append(op.models.phase.chemicals_wrapper(phase=h2o, f=f).mean())
         assert_allclose(mu, 0.000621, rtol=0.02)
+
+    def test_pure_gas_viscosity_models(self):
+        pn = op.network.Demo()
+        phase = op.phase.Species(network=pn, species='oxygen')
+        argmap = op.models.phase.default_argmap
+        vals = {
+            'Stiel_Thodos': op.models.phase.viscosity.gas_pure_st,
+            'viscosity_gas_Gharagheizi': op.models.phase.viscosity.gas_pure_gesmr,
+        }
+        for k, v in vals.items():
+            print(f'Testing {k}')
+            f = getattr(chemicals.viscosity, k)
+            args = inspect.getfullargspec(f)[0]
+            kwargs = {i: np.atleast_1d(phase[argmap[i]])[0] for i in args}
+            ref = f(**kwargs)
+            val = v(phase)[0]
+            assert_allclose(ref, val, rtol=1e-13)
+
+    def test_pure_liquid_viscosity_models(self):
+        pn = op.network.Demo()
+        phase = op.phase.Species(network=pn, species='oxygen')
+        argmap = op.models.phase.default_argmap
+        vals = {
+            'Letsou_Stiel': op.models.phase.viscosity.liquid_pure_ls,
+        }
+        for k, v in vals.items():
+            print(f'Testing {k}')
+            f = getattr(chemicals.viscosity, k)
+            args = inspect.getfullargspec(f)[0]
+            kwargs = {i: np.atleast_1d(phase[argmap[i]])[0] for i in args}
+            ref = f(**kwargs)
+            val = v(phase)[0]
+            assert_allclose(ref, val, rtol=1e-13)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,6 @@ __all__ = [
     'water_correlation',
     'gas_pure_st',
     'gas_pure_gesmr',
-    'gas_pure_cls',
     'gas_mixture_hz',
     'liquid_pure_ls',
     'liquid_mixture_xweighted',
@@ -211,55 +210,6 @@ def gas_pure_gesmr(
     mu = mu*1e-7
     mu = np.clip(mu, a_min=1e-7, a_max=np.inf)
     return mu
-
-
-@_phasedocs
-def gas_pure_cls(
-    phase,
-    T='pore.temperature',
-    MW='param.molecular_weight',
-    Tc='param.critical_temperature',
-    Vc='param.critical_volume'
-):
-    r"""
-    Calculates the viscosity of a pure gas using the correlation of [1]
-
-    Parameters
-    ----------
-    %(phase)s
-    %(T)s
-    %(Tc)s
-    %(Pc)s
-    %(MW)s
-
-    Returns
-    -------
-    value : ndarray
-        Array containing viscosity values based on Chung model in [Pa.s].
-
-    References
-    ----------
-    [1] Chung, T.H., Lee, L.L., and Starling, K.E., Applications of Kinetic Gas
-        Theories and Multiparameter Correlation for Prediction of Dilute Gas
-        Viscosity and Thermal Conductivity”, Ind. Eng. Chem. Fundam.23:8, 1984.
-
-    """
-    T = phase[T]
-    MW = phase[MW]
-    Tc = phase[Tc]
-    Vc = phase[Vc]
-    Tr = T / Tc
-    Tstar = 1.2593*Tr
-    A = 1.161415
-    B = 0.14874
-    C = 0.52487
-    D = 0.77320
-    E = 2.16178
-    F = 2.43787
-    omega = (A*(Tstar)**(-B)) + C*(np.exp(-D*Tstar)) + E*(np.exp(-F*Tstar))
-    sigma = 0.809*(Vc**(1/3))
-    value = 26.69E-9*np.sqrt(MW*T)/(omega*sigma**2)
-    return value
 
 
 @_phasedocs

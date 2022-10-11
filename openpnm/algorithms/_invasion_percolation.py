@@ -2,14 +2,13 @@ import logging
 import heapq as hq
 import numpy as np
 from numba import njit, jit
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from collections import namedtuple
 from openpnm.utils import Docorator
 from openpnm.algorithms import Algorithm
 from openpnm._skgraph.simulations import (
     bond_percolation,
     site_percolation,
-    mixed_percolation,
 )
 from openpnm._skgraph.queries import (
     qupc_initialize,
@@ -87,7 +86,7 @@ class InvasionPercolation(Algorithm):
         # self['pore.residual'] = False
         # self['throat.residual'] = False
 
-    def _set_residual(self, pores=None, throats=None, mode='add'):
+    def _set_residual(self, pores=None, throats=None, mode='add'):  # pragma: no cover
         raise NotImplementedError("The ability to add residual nwp is not ready yet")
         if mode == 'add':
             if pores is not None:
@@ -113,11 +112,79 @@ class InvasionPercolation(Algorithm):
                 self['throat.residual'][throats] = True
 
     def set_inlet_BC(self, pores=None, mode='add'):
+        r"""
+        Specifies which pores are treated as inlets for the invading phase
+
+        Parameters
+        ----------
+        pores : ndarray
+            The indices of the pores from which the invading fluid invasion
+            should start
+        mode : str or list of str, optional
+            Controls how the boundary conditions are applied. Options are:
+
+            ============ =====================================================
+            mode         meaning
+            ============ =====================================================
+            'add'        (default) Adds the supplied boundary conditions to
+                         the given locations. Raises an exception if values
+                         of any type already exist in the given locations.
+            'overwrite'  Adds supplied boundary conditions to the given
+                         locations, including overwriting conditions of the
+                         given type or any other type that may be present in
+                         the given locations.
+            'remove'     Removes boundary conditions of the specified type
+                         from the specified locations. If ``bctype`` is not
+                         specified then *all* types are removed. If no
+                         locations are given then values are remvoed from
+                         *all* locations.
+            ============ =====================================================
+
+            If a list of strings is provided, then each mode in the list is
+            handled in order, so that ``['remove', 'add']`` will give the same
+            results add ``'overwrite'``.
+
+        """
         self.set_BC(pores=pores, bcvalues=True, bctype='inlet', mode=mode)
         self.reset()
         self['pore.invasion_sequence'][self['pore.bc.inlet']] = 0
 
     def set_outlet_BC(self, pores=None, mode='add'):
+        r"""
+        Specifies which pores are treated as outlets for the defending phase
+
+        This must be specified if trapping is to be considered.
+
+        Parameters
+        ----------
+        pores : ndarray
+            The indices of the pores from which the defending fluid exits the
+            domain
+        mode : str or list of str, optional
+            Controls how the boundary conditions are applied. Options are:
+
+            ============ =====================================================
+            mode         meaning
+            ============ =====================================================
+            'add'        (default) Adds the supplied boundary conditions to
+                         the given locations. Raises an exception if values
+                         of any type already exist in the given locations.
+            'overwrite'  Adds supplied boundary conditions to the given
+                         locations, including overwriting conditions of the
+                         given type or any other type that may be present in
+                         the given locations.
+            'remove'     Removes boundary conditions of the specified type
+                         from the specified locations. If ``bctype`` is not
+                         specified then *all* types are removed. If no
+                         locations are given then values are remvoed from
+                         *all* locations.
+            ============ =====================================================
+
+            If a list of strings is provided, then each mode in the list is
+            handled in order, so that ``['remove', 'add']`` will give the same
+            results add ``'overwrite'``.
+
+        """
         self.set_BC(pores=pores, bcvalues=True, bctype='outlet', mode=mode)
 
     def run(self):
@@ -179,8 +246,8 @@ class InvasionPercolation(Algorithm):
 
     def pc_curve(self):
         r"""
-        Get the percolation data as the invader volume vs the capillary
-        pressure.
+        Get the percolation data as the non-wetting phase saturation vs the
+        capillary pressure.
 
         """
         net = self.project.network
@@ -191,8 +258,8 @@ class InvasionPercolation(Algorithm):
         pvols /= tot_vol
         tvols /= tot_vol
         # Remove trapped volume
-        pmask = self['pore.invasion_sequence'] > -1
-        tmask = self['throat.invasion_sequence'] > -1
+        pmask = self['pore.invasion_sequence'] >= 0
+        tmask = self['throat.invasion_sequence'] >= 0
         pvols = pvols[pmask]
         tvols = tvols[tmask]
         pseq = self['pore.invasion_sequence'][pmask]
@@ -262,7 +329,8 @@ class InvasionPercolation(Algorithm):
             self['throat.invasion_sequence'].astype(float)
         self['throat.invasion_sequence'][Tmask] = np.inf
 
-    def _apply_trapping_slow(self, step_size=1, mode='mixed'):
+    def _apply_trapping_slow(self, step_size=1, mode='mixed'):  # pragma: no cover
+        # TODO: Make sure this function actually works and keep it for debugging
         N = self['throat.invasion_sequence'].max()
         pseq = self['pore.invasion_sequence']
         tseq = self['throat.invasion_sequence']
@@ -275,10 +343,6 @@ class InvasionPercolation(Algorithm):
             elif mode == 'site':
                 s, b = site_percolation(conns=self.network.conns,
                                         occupied_sites=pseq > i)
-            elif mode == 'mixed':
-                s, b = mixed_percolation(conns=self.network.conns,
-                                         occupied_sites=pseq > i,
-                                         occupied_bonds=tseq > i)
             clusters = np.unique(s[self['pore.bc.outlet']])
             self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
             self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
@@ -291,7 +355,7 @@ class InvasionPercolation(Algorithm):
 
 
 @jit
-def _find_trapped_pores(inv_seq, indices, indptr, outlets):
+def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
     Np = len(inv_seq)
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
@@ -352,7 +416,7 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):
 
 @njit
 def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
-                     conns, idx, indptr, n_steps):
+                     conns, idx, indptr, n_steps):  # pragma: no cover
     r"""
     Numba-jitted run method for InvasionPercolation class.
 
@@ -374,7 +438,7 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
     queue = list(t_start)
     hq.heapify(queue)
     count = 1
-    while (len(queue) > 0) and (count < (n_steps + 1)):
+    while count < (n_steps + 1):
         # Find throat at the top of the queue
         t = hq.heappop(queue)
         # Extract actual throat number
@@ -400,6 +464,8 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
             for i in Ts:  # Add throat to the queue
                 hq.heappush(queue, t_order[i])
         count += 1
+        if len(queue) == 0:
+            break
     return t_inv, p_inv, p_inv_t
 
 

@@ -54,17 +54,6 @@ class Mixture(Phase):
         self.components = components
 
     def __getitem__(self, key):
-        # Provisional support for hashtag notation
-        if type(key) == str:
-            delim = '#'
-            if delim in key:
-                comps = self.components
-                if key[-1] in [delim, '*']:  # Wildcard, get all comps as dict
-                    vals = self.get_comp_vals(key.split(delim)[0])
-                else:
-                    vals = comps[key.split(delim)[-1]][key.split(delim)[0]]
-                return vals
-        # Below is the original support using the ".*" notation
         try:
             vals = super().__getitem__(key)
         except KeyError:
@@ -80,17 +69,6 @@ class Mixture(Phase):
             else:
                 raise KeyError(key)
         return vals
-
-    # def __setitem__(self, key, value):
-    #     if key == 'pore.mole_fraction':
-    #         raise Exception("Cannot write a mole fraction without a .<compname>")
-    #     element, propname = key.split('.', 1)
-    #     if propname.split('.')[-1] in self.components.keys():
-    #         obj = self.components[key.split('.')[-1]]
-    #         key = '.'.join(key.split('.')[:-1])
-    #         obj[key] = value
-    #     else:
-    #         super().__setitem__(key, value)
 
     def regenerate_models(self, **kwargs):
         for c in self.components.values():
@@ -175,21 +153,8 @@ class Mixture(Phase):
             z = z**(1/power)
         return z
 
-    # def __str__(self):
-    #     hr = '―' * 78
-    #     lines = '\n' + 'Component Phases'
-    #     for item in self.components.values():
-    #         lines += '\n' + "═"*78 + '\n' + item.__repr__() + '\n' + hr + '\n'
-    #         lines += get_printable_props(item, suffix=item.name)
-    #         lines += '\n' + hr + '\n'
-    #         lines += get_printable_labels(item, suffix=item.name)
-    #     temp = super().__str__().split(hr)
-    #     temp.insert(-1, lines + '\n')
-    #     lines = hr.join(temp)
-    #     return lines
-
     @property
-    def info(self):
+    def info(self):  # pragma: no cover
         hr = '―' * 78
         lines = '\n' + 'Component Phases'
         for item in self.components.values():

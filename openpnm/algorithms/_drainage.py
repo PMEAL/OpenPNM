@@ -1,12 +1,11 @@
 import numpy as np
-from tqdm import tqdm
+from tqdm.auto import tqdm
 from collections import namedtuple
 from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator, TypedSet
 from openpnm._skgraph.simulations import (
     bond_percolation,
     site_percolation,
-    mixed_percolation,
     find_connected_clusters,
 )
 
@@ -67,7 +66,7 @@ class Drainage(Algorithm):
         self['pore.invasion_sequence'] = -1
         self['throat.invasion_sequence'] = -1
 
-    def _set_residual(self, pores=None, throats=None, mode='add'):
+    def _set_residual(self, pores=None, throats=None, mode='add'):  # pragma: no cover
         raise NotImplementedError("The ability to add residual nwp is not ready yet")
         if pores is not None:
             self['pore.invaded'][pores] = True
@@ -270,38 +269,6 @@ class Drainage(Algorithm):
         pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
         data = pc_curve(np.array(pc), np.array(s))
         return data
-
-
-def late_filling(target,
-                 pc='pore.pressure',
-                 pc_star='pore.pc_star',
-                 eta=1,
-                 swp_star=0.2):
-    r"""
-    Computes the saturation of each pore at the given pressure
-
-    Parameters
-    ----------
-    target : dict
-        The algorithm dictionary
-    pnwp : str
-        The name of the array containing the capillary pressure defined as the
-        pressure difference between the non-wetting and wetting phases. A value
-        less than 0 indicates that the element is not invaded.
-
-    """
-    pc = target[pc]
-    pc_star = target[pc_star]
-    swp = np.ones_like(pc)
-    # Skip calc for
-    mask = pc > pc_star
-    if np.any(mask):
-        temp = swp_star*(pc_star/pc)**eta
-        swp[mask] = temp[mask]
-    mask = (pc < pc_star) * (pc > 0)
-    swp[mask] = swp_star
-    snwp = 1 - swp
-    return snwp
 
 
 # %%

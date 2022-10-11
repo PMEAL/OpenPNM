@@ -88,15 +88,6 @@ class TopotoolsTest:
         with pytest.raises(Exception):
             topotools.find_surface_pores(network=net, markers=markers)
 
-    def test_find_pore_to_pore_distance(self):
-        net = op.network.Cubic(shape=[3, 3, 3], connectivity=6)
-        dm = topotools.find_pore_to_pore_distance(network=net,
-                                                  pores1=net.pores('left'),
-                                                  pores2=net.pores('right'))
-        a = np.unique(dm)
-        b = np.array([2., 2.23606798, 2.44948974, 2.82842712, 3., 3.46410162])
-        # assert np.allclose(a, b)
-
     def test_template_sphere_shell(self):
         im = topotools.template_sphere_shell(r_outer=4, r_inner=2)
         net = op.network.CubicTemplate(template=im, spacing=1)
@@ -188,38 +179,6 @@ class TopotoolsTest:
         topotools.merge_pores(testnet, to_merge)
         assert testnet.Np == 998
 
-    # This test is commented since the subdivide method is gone in v3
-    # def test_merge_pores_coords(self):
-    #     r"""
-    #     Coordinates of merged pores should be centroid of the enclosing convex
-    #     hull.
-
-    #     This test verifies that if one subdivides a pore and then merge it
-    #     with a bunch of other pores, the coordinates of the new pore should be
-    #     exactly the same as when one merges the same pores without subdiving.
-
-    #     """
-    #     # Subdivide first, then merge
-    #     testnet = op.network.Cubic(shape=[1, 10, 10])
-    #     testnet["pore.to_merge"] = False
-    #     testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
-    #     topotools.subdivide(testnet, pores=15, shape=[1, 10, 10],
-    #                         labels="subdivided")
-    #     topotools.merge_pores(testnet, labels="new_pore",
-    #                           pores=testnet.pores(["subdivided", "to_merge"]))
-    #     xyz_w_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
-
-    #     # No subdivide, only merge
-    #     testnet = op.network.Cubic(shape=[1, 10, 10])
-    #     testnet["pore.to_merge"] = False
-    #     testnet["pore.to_merge"][[14, 15, 16, 24, 25, 26, 34, 35, 36]] = True
-    #     topotools.merge_pores(testnet, labels="new_pore",
-    #                           pores=testnet.pores("to_merge"))
-    #     xyz_wo_subdivide = testnet['pore.coords'][testnet.pores("new_pore")]
-
-    #     # Compare the two coords
-    #     assert_allclose(xyz_w_subdivide, xyz_wo_subdivide)
-
     def test_connect_pores(self):
         testnet = op.network.Cubic(shape=[10, 10, 10])
         Nt_old = testnet.Nt
@@ -237,19 +196,6 @@ class TopotoolsTest:
         assert am[23, 555] == 1
         assert am[65, 982] == 1
         assert am[65, 555] == 1
-
-    def test_ispercolating(self):
-        net = op.network.Cubic(shape=[10, 10, 10], connectivity=26)
-        tmask = net['throat.all']
-        Pin = net.pores('left')
-        Pout = net.pores('right')
-        am = net.create_adjacency_matrix(weights=tmask, fmt='coo')
-        val = topotools.ispercolating(am=am, mode='bond',
-                                      inlets=Pin, outlets=Pout)
-        assert val
-        val = topotools.ispercolating(am=am, mode='site',
-                                      inlets=Pin, outlets=Pout)
-        assert val
 
     def test_trim_pores(self):
         np.random.seed(1)
@@ -304,29 +250,6 @@ class TopotoolsTest:
         assert np.any(np.isnan(pn['pore.test_float']))
         assert np.any(np.isnan(pn['pore.test_int']))
         assert pn['pore.test_bool'].sum() < pn['pore.test_bool'].size
-
-    # def test_extend_geometry_present(self):
-    #     pn = op.network.Cubic(shape=[2, 2, 1])
-    #     geo['pore.test_float'] = 1.0
-    #     geo['pore.test_int'] = 1
-    #     geo['pore.test_bool'] = True
-    #     op.topotools.extend(network=pn, pore_coords=[[3, 3, 3], [3, 3, 4]])
-    #     assert ~np.any(np.isnan(geo['pore.test_float']))
-    #     assert ~np.any(np.isnan(geo['pore.test_int']))
-    #     assert geo['pore.test_bool'].sum() == geo['pore.test_bool'].size
-
-    # def test_extend_phase_present(self):
-    #     pn = op.network.Cubic(shape=[2, 2, 1])
-    #     air = op.phase.Air(network=pn)
-    #     air['pore.test_float'] = 1.0
-    #     air['pore.test_int'] = 1
-    #     air['pore.test_bool'] = True
-    #     Np = air.Np
-    #     Nt = air.Nt
-    #     op.topotools.extend(network=pn, coords=[[3, 3, 3], [3, 3, 4]])
-    #     assert air.Np == (Np + 2)
-    #     op.topotools.extend(network=pn, conns=[[0, 4], [1, 5]])
-    #     assert air.Nt == (Nt + 2)
 
     def test_stitch_radius_no_connections(self):
         Nx, Ny, Nz = (10, 10, 1)
@@ -392,28 +315,6 @@ class TopotoolsTest:
         dims = op.topotools.dimensionality(pn)
         assert np.allclose(dims, np.array([False, False, True]))
 
-    def test_stitch_pores(self):
-        np.random.seed(0)
-        pts = np.random.rand(100, 3)
-        pn = op.network.Delaunay(points=pts, shape=[1, 1, 1])
-        Ps = (pn.coords[:, 0] > 0.3) * (pn.coords[:, 0] < 0.6)
-        assert pn.Np == 100
-        op.topotools.trim(network=pn, pores=Ps)
-        assert pn.Np == 73
-        pores1 = pn.coords[:, 0] < 0.3
-        pores2 = pn.coords[:, 0] > 0.6
-        # assert pn.Nt == 352
-        # op.topotools.stitch_pores(network=pn,
-        #                           pores1=pores1,
-        #                           pores2=pores2, mode='gabriel')
-        # assert pn.Nt == 373
-        # op.topotools.trim(network=pn, throats=pn.throats('stitched'))
-        # assert pn.Nt == 352
-        # op.topotools.stitch_pores(network=pn,
-        #                           pores1=pores1,
-        #                           pores2=pores2, mode='delaunay')
-        # assert pn.Nt == 436
-
     def test_is_fully_connected(self):
         pn = op.network.Cubic(shape=[4, 4, 1])
         op.topotools.trim(network=pn, pores=[1, 5, 9, 13])
@@ -471,7 +372,7 @@ class TopotoolsTest:
         net = op.network.Cubic(shape=[5, 1, 1])
         assert np.all(op.topotools.get_shape(net) == [5, 1, 1])
         net = op.network.Cubic(shape=[1, 1, 5])
-        assert np.all(op.topotools.get_shape(net)== [1, 1, 5])
+        assert np.all(op.topotools.get_shape(net) == [1, 1, 5])
         net = op.network.Cubic(shape=[1, 5, 1])
         assert np.all(op.topotools.get_shape(net) == [1, 5, 1])
         net = op.network.Cubic(shape=5)
@@ -579,6 +480,48 @@ class TopotoolsTest:
         P2 = net.pores('surface')
         Ts_int = op.topotools.find_interface_throats(net, P1, P2)
         assert_allclose(Ts_int, np.array([0, 3]))
+
+    def test_get_domain_area(self):
+        net = op.network.Cubic([5, 4, 3])
+        area = op.topotools.get_domain_area(
+            network=net,
+            inlets=net.pores('left'),
+            outlets=net.pores('right')
+        )
+        assert area == 6.0
+        area = op.topotools.get_domain_area(
+            network=net,
+            inlets=net.pores('top'),
+            outlets=net.pores('bottom')
+        )
+        assert area == 12.0
+        area = op.topotools.get_domain_area(
+            network=net,
+            inlets=net.pores('front'),
+            outlets=net.pores('back')
+        )
+        assert area == 8.0
+
+    def test_get_domain_length(self):
+        net = op.network.Cubic([5, 4, 3])
+        length = op.topotools.get_domain_length(
+            network=net,
+            inlets=net.pores('left'),
+            outlets=net.pores('right')
+        )
+        assert length == 4.0
+        length = op.topotools.get_domain_length(
+            network=net,
+            inlets=net.pores('top'),
+            outlets=net.pores('bottom')
+        )
+        assert length == 2.0
+        length = op.topotools.get_domain_length(
+            network=net,
+            inlets=net.pores('front'),
+            outlets=net.pores('back')
+        )
+        assert length == 3.0
 
 
 if __name__ == '__main__':

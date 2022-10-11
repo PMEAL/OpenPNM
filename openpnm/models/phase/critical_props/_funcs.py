@@ -11,10 +11,10 @@ __all__ = [
 def liquid_mixture_Vc_XXX(
     phase,
     Vcs='pore.critical_volume.*',
-):
+):  # pragma: no cover
     r"""
     Calculates the critical volume of a liquid mixture using the correlation
-    in [1]
+    in [1]_
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ def liquid_mixture_Vc_XXX(
 
     References
     ----------
-    [1] tbd
+    .. [1] tbd
 
     """
     raise NotImplementedError("This function is not ready yet")
@@ -46,10 +46,10 @@ def liquid_mixture_Tc_XXX(
     Vm='pore.molar_volume',
     Vcs='pore.critical_volume.*',
     Tcs='pore.critical_temperature.*',
-):
+):  # pragma: no cover
     r"""
     Calculates the critical temperature of a liquid mixture using the
-    correlation in [1]
+    correlation in [1]_
 
     Parameters
     ----------
@@ -63,7 +63,7 @@ def liquid_mixture_Tc_XXX(
 
     References
     ----------
-    [1] tbd
+    .. [1] tbd
 
     """
     raise NotImplementedError("This function is not ready yet")
@@ -84,10 +84,10 @@ def liquid_mixture_Tc_XXX(
 def liquid_mixture_acentric_factor_XXX(
     phase,
     omegas='param.acentric_factor.*',
-):
+):  # pragma: no cover
     r"""
     Calculates the accentric factor of a liquid mixture using the correlation
-    in [1]
+    in [1]_
 
     Parameters
     ----------
@@ -99,7 +99,7 @@ def liquid_mixture_acentric_factor_XXX(
 
     References
     ----------
-    [1] tbd
+    .. [1] tbd
 
     """
     raise NotImplementedError("This function is not ready yet")

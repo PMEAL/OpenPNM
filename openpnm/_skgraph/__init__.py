@@ -60,8 +60,11 @@ from . import tools
 from . import visualization
 
 
-def info(g):
-    d = _pdict(g)
+def info(network):
+    r"""
+    Prints an overview of the network dictionary
+    """
+    d = _pdict(network)
     d._key = 'Attribute'
     d._value = 'Description'
     print(d)
@@ -69,15 +72,3 @@ def info(g):
 
 from .tools import get_edge_prefix
 from .tools import get_node_prefix
-
-
-
-
-
-
-
-
-
-
-
-

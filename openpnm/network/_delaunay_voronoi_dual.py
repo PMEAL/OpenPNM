@@ -127,35 +127,3 @@ class DelaunayVoronoiDual(Network):
             Ps = am.rows[p]
             temp.append(Ps)
         return np.array(temp, dtype=object)
-
-    def add_boundary_pores(self, labels=['top', 'bottom', 'front', 'back',
-                                         'left', 'right'], offset=None):
-        r"""
-        Add boundary pores to the specified faces of the network.
-
-        Pores are offset from the faces of the domain.
-
-        Parameters
-        ----------
-        labels : str or list[str]
-            The labels indicating the pores defining each face where
-            boundary pores are to be added (e.g. 'left' or ['left', 'right'])
-        offset : scalar or array_like
-            The spacing of the network (e.g. [1, 1, 1]).  This must be
-            given since it can be quite difficult to infer from the
-            network, for instance if boundary pores have already added to
-            other faces.
-
-        """
-        offset = np.array(offset)
-        if offset.size == 1:
-            offset = np.ones(3)*offset
-        for item in labels:
-            Ps = self.pores(item)
-            coords = np.absolute(self['pore.coords'][Ps])
-            axis = np.count_nonzero(np.diff(coords, axis=0), axis=0) == 0
-            ax_off = np.array(axis, dtype=int)*offset
-            if np.amin(coords) == np.amin(coords[:, np.where(axis)[0]]):
-                ax_off = -1*ax_off
-            topotools.add_boundary_pores(network=self, pores=Ps, offset=ax_off,
-                                         apply_label=item + '_boundary')

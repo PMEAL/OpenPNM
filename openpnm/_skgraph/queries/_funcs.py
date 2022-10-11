@@ -20,16 +20,16 @@ __all__ = [
 ]
 
 
-def find_complementary_edges(inds, g, asmask=False):
+def find_complementary_edges(network, inds, asmask=False):
     r"""
     Finds the complementary edges to a given set of inputs
 
     Parameters
     ----------
+    network : dict
+        The network dictionary
     inds : array_like
         A list of edge indices for which the complement is sought
-    g : dict
-        Graph dictionary
     asmask : bool
         If set to ``True`` the result is returned as a boolean mask of the
         correct length with ``True`` values indicate the complements.  The
@@ -41,9 +41,9 @@ def find_complementary_edges(inds, g, asmask=False):
     list
 
     """
-    edge_prefix = get_edge_prefix(g)
+    edge_prefix = get_edge_prefix(network)
     inds = np.unique(inds)
-    N = g[edge_prefix+'.conns'].shape[0]
+    N = network[edge_prefix+'.conns'].shape[0]
     mask = np.ones(shape=N, dtype=bool)
     mask[inds] = False
     if asmask:
@@ -52,16 +52,16 @@ def find_complementary_edges(inds, g, asmask=False):
         return np.arange(N)[mask]
 
 
-def find_complementary_nodes(inds, g, asmask=False):
+def find_complementary_nodes(network, inds, asmask=False):
     r"""
     Finds the complementary nodes to a given set of inputs
 
     Parameters
     ----------
+    network : dict
+        The network dictionary
     inds : array_like (optional)
         A list of indices for which the complement is sought
-    g : dict
-        Graph dictionary
     asmask : bool
         If set to ``True`` the result is returned as a boolean mask of the
         correct length with ``True`` values indicate the complements. The
@@ -73,9 +73,9 @@ def find_complementary_nodes(inds, g, asmask=False):
     list
 
     """
-    node_prefix = get_node_prefix(g)
+    node_prefix = get_node_prefix(network)
     inds = np.unique(inds)
-    N = g[node_prefix+'.coords'].shape[0]
+    N = network[node_prefix+'.coords'].shape[0]
     mask = np.ones(shape=N, dtype=bool)
     mask[inds] = False
     if asmask:
@@ -84,14 +84,14 @@ def find_complementary_nodes(inds, g, asmask=False):
         return np.arange(N)[mask]
 
 
-def find_connected_nodes(g, inds, flatten=True, logic='or'):
+def find_connected_nodes(network, inds, flatten=True, logic='or'):
     r"""
     Finds which nodes are connected to a given set of edges
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inds : array_like
         A list of edges indices whose connected nodes are sought
     flatten : bool (default is ``True``)
@@ -131,12 +131,12 @@ def find_connected_nodes(g, inds, flatten=True, logic='or'):
     array is of type ``float`` and is not suitable for indexing.
 
     """
-    if not isgtriu(g):
+    if not isgtriu(network):
         raise Exception("This function is not implemented for directed networks")
     edges = np.array(inds, ndmin=1)
     if len(edges) == 0:  # Short-circuit this function if edges is empty
         return []
-    am = dict_to_am(g)
+    am = dict_to_am(network)
     neighbors = np.hstack((am.row[edges], am.col[edges]))
     if neighbors.size > 0:
         n_sites = np.amax(neighbors)
@@ -171,16 +171,16 @@ def find_connected_nodes(g, inds, flatten=True, logic='or'):
     return neighbors
 
 
-def find_neighbor_edges(inds, g, flatten=True, logic='or'):
+def find_neighbor_edges(network, inds, flatten=True, logic='or'):
     r"""
     Finds all edges that are connected to the given input nodes
 
     Parameters
     ----------
+    network : dict
+        The network dictionary
     inds : array_like (optional)
         A list of node indices whose neighbor edges are sought
-    g : dict
-        The graph dictionary
     flatten : bool (default is ``True``)
         Indicates whether the returned result is a compressed array of all
         neighbors, or a list of lists with each sub-list containing the
@@ -225,10 +225,10 @@ def find_neighbor_edges(inds, g, flatten=True, logic='or'):
 
     """
     if flatten == False:
-        im = dict_to_im(g)
+        im = dict_to_im(network)
         am = None
     else:
-        am = dict_to_am(g)
+        am = dict_to_am(network)
         im = None
     if im is not None:
         if im.format != 'lil':
@@ -266,7 +266,7 @@ def find_neighbor_edges(inds, g, flatten=True, logic='or'):
             am = am.tocoo(copy=False)
         if flatten is False:
             raise Exception('flatten cannot be used with an adjacency matrix')
-        if isgtriu(g):
+        if isgtriu(network):
             am = sprs.triu(am, k=1)
         Ps = np.zeros(am.shape[0], dtype=bool)
         Ps[inds] = True
@@ -287,15 +287,15 @@ def find_neighbor_edges(inds, g, flatten=True, logic='or'):
         raise Exception('Either the incidence or the adjacency matrix must be specified')
 
 
-def find_neighbor_nodes(g, inds, flatten=True, include_input=False,
+def find_neighbor_nodes(network, inds, flatten=True, include_input=False,
                         logic='or'):
     r"""
     Ginds all nodes that are directly connected to the input nodes
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inds : array_like
         A list of node indices whose neighbors are sought
     flatten : bool
@@ -345,6 +345,7 @@ def find_neighbor_nodes(g, inds, flatten=True, include_input=False,
     nodes are considered.
 
     """
+    g = network
     nodes = np.array(inds, ndmin=1)
     # Short-circuit the function if the input list is already empty
     if len(nodes) == 0:
@@ -387,7 +388,7 @@ def find_neighbor_nodes(g, inds, flatten=True, include_input=False,
     return neighbors
 
 
-def find_connecting_edges(inds, g=None, am=None):
+def find_connecting_edges(inds, network=None, am=None):
     r"""
     Finds the edge that connects each pair of given nodes
 
@@ -395,8 +396,8 @@ def find_connecting_edges(inds, g=None, am=None):
     ----------
     inds : array_like
         A 2-column vector containing pairs of node indices
-    g : dict, optional
-        The graph dictionary.  Either this or ``am`` must be provided
+    network : dict, optional
+        The network dictionary.  Either this or ``am`` must be provided
     am : scipy.sparse matrix, optional
         The adjacency matrix of the network. Must be symmetrical such that if
         nodes *i* and *j* are connected, the matrix contains non-zero values
@@ -416,13 +417,16 @@ def find_connecting_edges(inds, g=None, am=None):
     save time.
 
     """
-    edge_prefix = get_edge_prefix(g)
     nodes = np.array(inds, ndmin=2)
     # Short-circuit function if nodes is an empty list
     if nodes.size == 0:
         return []
-    if g is not None:
-        am = dict_to_am(g, weights=np.arange(g[edge_prefix+'.conns'].shape[0]))
+    if network is not None:
+        edge_prefix = get_edge_prefix(network)
+        am = dict_to_am(
+            network,
+            weights=np.arange(network[edge_prefix+'.conns'].shape[0])
+        )
     elif am is not None:
         pass
     else:
@@ -434,14 +438,14 @@ def find_connecting_edges(inds, g=None, am=None):
     return neighbors
 
 
-def find_common_edges(g, inds_1, inds_2):
+def find_common_edges(network, inds_1, inds_2):
     """
     Finds edges shared between two sets of nodes
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inds_1 : array_like
         A list of indices defining the first set of nodes
     inds_2 : array_like
@@ -455,21 +459,21 @@ def find_common_edges(g, inds_1, inds_2):
     """
     if np.intersect1d(inds_1, inds_2).size != 0:
         raise Exception("inds_1 and inds_2 must not share any nodes")
-    if not isgtriu(g):
+    if not isgtriu(network):
         raise Exception("This function is not implemented for directed graphs")
-    edges_1 = find_neighbor_edges(inds=inds_1, g=g, logic="xor")
-    edges_2 = find_neighbor_edges(inds=inds_2, g=g, logic="xor")
+    edges_1 = find_neighbor_edges(inds=inds_1, network=network, logic="xor")
+    edges_2 = find_neighbor_edges(inds=inds_2, network=network, logic="xor")
     return np.intersect1d(edges_1, edges_2)
 
 
-def filter_by_z(g, inds, z=1):
+def filter_by_z(network, inds, z=1):
     r"""
     Filters a list of nodes to those with a given number of neighbors
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     inds : array_like
         A list containing the indices of the nodes to be filtered
     z : int
@@ -482,20 +486,20 @@ def filter_by_z(g, inds, z=1):
 
     """
     inds = np.array(inds)
-    coordination = find_coordination(g)
+    coordination = find_coordination(network)
     hits = coordination == z
     inds = inds[hits[inds]]
     return inds
 
 
-def find_coordination(g, nodes=None):
+def find_coordination(network, nodes=None):
     r"""
     Find the coordination number of nodes
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     nodes : array_like, optional
         The nodes for which coordination is sought. If not provided then
         coordination for *all* nodes is returned
@@ -510,7 +514,7 @@ def find_coordination(g, nodes=None):
     Supports directed and undirected graphs
 
     """
-    am = dict_to_am(g)
+    am = dict_to_am(network)
     z = am.getnnz(axis=1)
     if nodes is None:
         return z
@@ -518,14 +522,14 @@ def find_coordination(g, nodes=None):
         return z[np.array(nodes)]
 
 
-def find_path(g, pairs, weights=None):
+def find_path(network, pairs, weights=None):
     r"""
     Find the shortest path between pairs of nodes
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     pairs : array_like
         An N x 2 array containing N pairs of nodes between which the shortest
         path is sought
@@ -547,13 +551,13 @@ def find_path(g, pairs, weights=None):
     ``scipy.sparse.csgraph`` module
 
     """
-    am = dict_to_am(g)
+    am = dict_to_am(network)
     if weights is not None:
         am.data = np.ones_like(am.row, dtype=int)
     pairs = np.array(pairs, ndmin=2)
     paths = csgraph.dijkstra(csgraph=am, indices=pairs[:, 0],
                              return_predecessors=True, min_only=False)[1]
-    if isgtriu(g):
+    if isgtriu(network):
         am.data = np.hstack(2*[np.arange(am.data.size/2)]).astype(int)
     else:
         am.data = np.arange(am.data.size).astype(int)

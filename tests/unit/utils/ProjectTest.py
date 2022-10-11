@@ -27,6 +27,14 @@ class ProjectTest:
         proj = pn.project
         assert 'bob' in proj.names
 
+    def test_get_locations(self):
+        pn = op.network.Cubic([3, 3, 3], name='bob')
+        air = op.phase.Air(network=pn)
+        assert air.project._get_locations('pore.left').sum() == 9
+        assert pn.project._get_locations('pore.left').sum() == 9
+        with pytest.raises(KeyError):
+            air.project._get_locations('pore.foo')
+
     # def test_change_simulation_name_by_moving_in_dict(self):
     #     proj = self.ws.new_project()
     #     old_name = proj.name
@@ -314,12 +322,6 @@ class ProjectTest:
         a = self.proj[0]
         b = self.proj[a.name]
         assert a is b
-
-    # def test_print(self):
-    #     proj = self.proj
-    #     s = proj.__str__()
-    #     # 13 rows
-    #     assert len(s.split('\n')) == 13
 
     # def test_save_and_load_object(self):
     #     proj = self.proj

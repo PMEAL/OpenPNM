@@ -98,7 +98,6 @@ def liquid_pure_lk(
 def liquid_pure_antoine(
     phase,
     T='pore.temperature',
-    Tc='param.critical_temperature',
 ):
     r"""
     Calculates the vapor pressure of a pure liquid using Antoine's equation
@@ -125,19 +124,9 @@ def liquid_pure_antoine(
     """
     # either antoine or extended antoine using constants from RPP
     CAS = phase.params['CAS']
-    Tc = phase[Tc]
     T = phase[T]
-    try:
-        from chemicals.vapor_pressure import Psat_data_AntoineExtended
-        coeffs = Psat_data_AntoineExtended.loc[CAS]
-        _, A, B, C, Tc, to, n, E, F, Tmin, Tmax = coeffs
-        # Pvap = TRC_Antoine_extended(T, A, B, C, n, E, F)
-        x = (T - to - 273.15)/Tc
-        x = np.clip(x, 0, None)
-        Pvap = 10**(A - B/(T+C) + 0.43429*(x**n) + E*(x**8) + F*(x**12))
-    except KeyError:
-        from chemicals.vapor_pressure import Psat_data_AntoinePoling
-        coeffs = Psat_data_AntoinePoling.loc[CAS]
-        _, A, B, C, Tmin, Tmax = coeffs
-        Pvap = 10**(A - B/(T + C))
+    from chemicals.vapor_pressure import Psat_data_AntoinePoling
+    coeffs = Psat_data_AntoinePoling.loc[CAS]
+    _, A, B, C, Tmin, Tmax = coeffs
+    Pvap = 10**(A - B/(T + C))
     return Pvap

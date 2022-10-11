@@ -29,4 +29,4 @@ _np.seterr(divide='ignore', invalid='ignore')
 
 __version__ = utils._get_version()
 
-utils._setup_logger()
+utils._setup_logger_rich()

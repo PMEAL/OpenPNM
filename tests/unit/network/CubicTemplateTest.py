@@ -28,7 +28,7 @@ class CubicTemplateTest:
              [1, 0, 0, 0, 1],
              [1, 1, 0, 1, 1]]
         )
-        net = op.network.CubicTemplate(template=template)
+        net = op.network.CubicTemplate(template=template, label_surface_pores=True)
         # Test "surface" label
         Ps_surf_desired = np.array([0, 1, 2, 3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 16, 17])
         Ps_surf = net.pores("surface")
@@ -46,5 +46,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

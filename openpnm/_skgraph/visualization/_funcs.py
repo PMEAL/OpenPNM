@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def plot_edges(g,
+def plot_edges(network,
                edges=None,
                ax=None,
                size_by=None,
@@ -34,8 +34,8 @@ def plot_edges(g,
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     edges : array_like (optional)
         The list of edges to plot if only a sub-sample is desired.  This is
         useful for inspecting a small region of the network.  If no edges are
@@ -86,12 +86,12 @@ def plot_edges(g,
     plot_coordinates
 
     """
-    node_prefix = get_node_prefix(g)
-    edge_prefix = get_edge_prefix(g)
-    conns = g[edge_prefix+'.conns']
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    edge_prefix = get_edge_prefix(network)
+    conns = network[edge_prefix+'.conns']
+    coords = network[node_prefix+'.coords']
     Ts = np.arange(conns.shape[0]) if edges is None else edges
-    dim = dimensionality(g)
+    dim = dimensionality(network)
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:
@@ -143,7 +143,7 @@ def plot_edges(g,
     return lc
 
 
-def plot_nodes(g,
+def plot_nodes(network,
                nodes=None,
                ax=None,
                size_by=None,
@@ -159,8 +159,8 @@ def plot_nodes(g,
 
     Parameters
     ----------
-    g : dict
-        The graph dictionary
+    network : dict
+        The network dictionary
     nodes : array_like (optional)
         The list of nodes to plot if only a sub-sample is desired. This is
         useful for inspecting a small region of the network. If no nodes
@@ -209,11 +209,10 @@ def plot_nodes(g,
     plot_edges
 
     """
-    node_prefix = get_node_prefix(g)
-    coords = g[node_prefix+'.coords']
+    node_prefix = get_node_prefix(network)
+    coords = network[node_prefix+'.coords']
     Ps = np.arange(coords.shape[0]) if nodes is None else nodes
-
-    dim = dimensionality(g)
+    dim = dimensionality(network)
     ThreeD = True if dim.sum() == 3 else False
     # Add a dummy axis for 1D networks
     if dim.sum() == 1:

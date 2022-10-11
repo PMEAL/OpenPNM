@@ -35,7 +35,7 @@ def cubic_template(template, spacing=1, connectivity=6,
     temp[node_prefix+'.template_coords'] = coords
     temp[node_prefix+'.template_indices'] = np.arange(Np)
     # Trim pores not present in template
-    temp = trim_nodes(g=temp, inds=~template.flatten())
+    temp = trim_nodes(network=temp, inds=~template.flatten())
     return temp
 
 

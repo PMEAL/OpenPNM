@@ -30,6 +30,19 @@ class SKGROperationsTest:
         g3 = ops.join(g1, g2, L_max=1.9)
         assert g3['edge.conns'].shape[0] == 157
 
+        g1 = gen.cubic([3, 3, 3])
+        g1['node.num'] = np.arange(27)
+        g2 = gen.cubic([3, 3, 3])
+        g2['node.coords'] += np.array([0, 0, 3])
+        g2['node.flag'] = np.ones(27, dtype=bool)
+        g2['edge.flag'] = np.ones(54, dtype=bool)
+        g3 = ops.join(g1, g2, 1.1)
+        assert np.any(np.isnan(g3['node.num']))
+        assert not np.all(g3['node.flag'])
+        assert not np.all(g3['edge.flag'])
+        # ax = plot_edges(g3)
+        # ax = plot_nodes(g3, ax=ax)
+
     def test_add_nodes(self):
         g = gen.cubic([3, 3, 3])
         g = ops.add_nodes(g, [4, 4, 4])
@@ -93,6 +106,17 @@ class SKGROperationsTest:
         assert net['edge.label'].shape[0] == 15
         # ax = plot_edges(net['edge.conns'], net['node.coords'])
         # ax = plot_nodes(net['node.coords'], ax=ax)
+
+    def test_split_edges(self):
+        net = gen.cubic([4, 4, 1])
+        net['edge.label'] = np.ones(24, dtype=bool)
+        conns = ops.split_edges(net)[0]
+        assert conns.shape[0] == 2*net['edge.conns'].shape[0]
+        conns, coords = ops.split_edges(net)
+        assert coords.shape[0] == (net['node.coords'].shape[0]
+                                   + net['edge.conns'].shape[0])
+        # ax = plot_edges(net, color_by=np.arange(conns.shape[0]))
+        # ax = plot_nodes(net, ax=ax)
 
 
 if __name__ == '__main__':

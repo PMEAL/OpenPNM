@@ -81,7 +81,8 @@ class TransientMultiPhysics(Algorithm):
         for i, alg in enumerate(self._algs):
             # Perform pre-solve validations
             alg._validate_settings()
-            alg._validate_data_health()
+            alg._validate_topology_health()
+            alg._validate_linear_system()
             # Write x0 to algorithm the obj (needed by _update_iterative_props)
             x0_i = self._get_x0(x0, i)
             alg['pore.ic'] = x0_i = np.ones(alg.Np, dtype=float) * x0_i

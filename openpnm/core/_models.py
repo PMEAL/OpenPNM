@@ -7,7 +7,6 @@ from openpnm.utils import (
     PrintableDict,
     Workspace,
     is_valid_propname,
-    prettify_logger_message,
 )
 
 
@@ -176,7 +175,7 @@ class ModelsDict(PrintableDict):
         return ax
 
     @property
-    def _info(self):
+    def _info(self):  # Pragma: no cover
         r"""
         Prints a nicely formatted list of model names and the domain to which
         they apply.
@@ -192,9 +191,9 @@ class ModelsDict(PrintableDict):
                 names[name] = []
             names[name].append(domain)
         D = PrintableDict(names, key='Model', value='Domain')
-        return D
+        print(D)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         horizontal_rule = '―' * 85
         lines = [horizontal_rule]
         strg = '{0:<3s} {1:<35s} {2:<25s} {3}'
@@ -248,25 +247,12 @@ class ModelWrapper(dict):
     """
 
     def __call__(self):
-        target = self._find_target()
         model = self['model']
         kwargs = {}
         for k, v in self.items():
             if k not in ['model', 'regen_mode']:
                 kwargs[k] = v
-        return model(target, **kwargs)
-
-    def _find_parent(self):
-        r"""
-        Finds and returns the parent object to self.
-        """
-        for proj in ws.values():
-            for obj in proj:
-                if hasattr(obj, "models"):
-                    for mod in obj.models.keys():
-                        if obj.models[mod] is self:
-                            return obj
-        raise Exception("No parent object found!")
+        return model(self.target, **kwargs)
 
     @property
     def name(self):
@@ -287,7 +273,7 @@ class ModelWrapper(dict):
         prop, domain = prop.split('@')
         return element + '.' + domain
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         horizontal_rule = '―' * 78
         lines = [horizontal_rule]
         strg = '{0:<25s} {1:<25s} {2}'
@@ -303,9 +289,10 @@ class ModelWrapper(dict):
         lines.append(horizontal_rule)
         return '\n'.join(lines)
 
-    def _find_target(self):
+    @property
+    def target(self):
         """
-        Finds and returns the parent object to self
+        Finds and returns the object to which this model is assigned
         """
         for proj in ws.values():
             for obj in proj:
@@ -406,13 +393,6 @@ class ModelsMixin2:
         elif domain is None:
             domain = self.settings['default_domain']
         element, prop = propname.split('.', 1)
-        if (element + '.' + domain not in self.keys()) and (domain != 'all'):
-            try:
-                N = self._count(element)
-                self[element + '.' + domain] = True
-            except:
-                logger.warning(f'Could not define {element}.{domain} since '
-                               f'number of {element}s is not defined yet')
         domain = domain.split('.', 1)[-1]
 
         # Add model and regen_mode to kwargs dictionary
@@ -497,7 +477,7 @@ class ModelsMixin2:
             except KeyError as e:
                 msg = (f"{item} was not run since the following property"
                        f" is missing: {e}")
-                logger.warning(prettify_logger_message(msg))
+                logger.warning(msg)
                 self.models[item]['regen_mode'] = 'deferred'
 
     def run_model(self, propname, domain=None):
@@ -554,14 +534,12 @@ class ModelsMixin2:
             # Finally add model results to self
             if isinstance(vals, np.ndarray):  # If model returns single array
                 if propname not in self.keys():
-                    # Create empty array if not found
-                    self[propname] = np.nan*np.ones([self._count(element),
-                                                     *vals.shape[1:]])
+                    temp = self._initialize_empty_array_like(vals, element)
+                    self[f'{element}.{prop}'] = temp
                 self[propname][self[f'{element}.{domain}']] = vals
             elif isinstance(vals, dict):  # If model returns a dict of arrays
                 for k, v in vals.items():
                     if f'{propname}.{k}' not in self.keys():
-                        # Create empty array if not found
-                        self[f'{propname}.{k}'] = \
-                            np.nan*np.ones([self._count(element), *v.shape[1:]])
+                        temp = self._initialize_empty_array_like(v, element)
+                        self[f'{propname}.{k}'] = temp
                     self[f'{propname}.{k}'][self[f'{element}.{domain}']] = v

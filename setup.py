@@ -59,6 +59,7 @@ setup(
         'numpy',
         'pandas',
         'pypardiso',
+        'rich',
         'scikit-image',
         'scipy',
         'sympy',

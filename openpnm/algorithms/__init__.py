@@ -17,6 +17,3 @@ from ._ohmic_conduction import *
 
 from ._drainage import *
 from ._invasion_percolation import *
-
-from ._ionic_conduction import *
-from ._transient_ionic_conduction import *

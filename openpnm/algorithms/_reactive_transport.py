@@ -5,7 +5,7 @@ from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
 from openpnm.algorithms import Transport
 from openpnm.utils import TypedList, Docorator
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 __all__ = ['ReactiveTransport']
@@ -146,7 +146,7 @@ class ReactiveTransport(Transport):
         except KeyError:
             pass
 
-    def _run_special(self, solver, x0, verbose=True):
+    def _run_special(self, solver, x0, verbose=None):
         r"""
         Repeatedly updates ``A``, ``b``, and the solution guess within
         according to the applied source term then calls ``_solve`` to

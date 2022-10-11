@@ -49,5 +49,5 @@ class Voronoi(Network):
                                               trim=trim,
                                               node_prefix='pore',
                                               edge_prefix='throat')
-        net = trim_nodes(g=net, inds=np.where(net['pore.delaunay'])[0])
+        net = trim_nodes(network=net, inds=np.where(net['pore.delaunay'])[0])
         self.update(net)

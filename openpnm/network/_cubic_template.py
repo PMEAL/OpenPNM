@@ -38,12 +38,16 @@ class CubicTemplate(Network):
 
     """
 
-    def __init__(self, template, spacing=[1, 1, 1], **kwargs):
+    def __init__(self, template, spacing=[1, 1, 1], label_surface_pores=False, **kwargs):
         super().__init__(**kwargs)
         template = np.atleast_3d(template)
-        net = cubic_template(template=template, spacing=spacing,
-                             node_prefix='pore', edge_prefix='throat')
+        net = cubic_template(template=template,
+                             spacing=spacing,
+                             node_prefix='pore',
+                             edge_prefix='throat')
         self.update(net)
+        if not label_surface_pores:
+            return
         self['pore.surface'] = find_surface_nodes(self)
         ndims = dimensionality(self).sum()
         max_neighbors = 6 if ndims == 3 else 4

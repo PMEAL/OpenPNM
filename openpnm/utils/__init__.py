@@ -7,6 +7,7 @@ as well as a number of helper classes.
 
 """
 
+from re import L
 from ._misc import *
 from ._settings import *
 from ._workspace import *
@@ -46,3 +47,13 @@ def _setup_logger():
 
     logging.basicConfig(level=logging.WARNING, format=log_format)
     del log_format
+
+
+def _setup_logger_rich():
+    import logging
+    from rich.logging import RichHandler
+
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        format=FORMAT, datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
+    )

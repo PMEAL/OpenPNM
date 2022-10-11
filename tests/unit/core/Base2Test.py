@@ -121,10 +121,14 @@ class Base2Test:
         del g['pore.nested']
         assert 'pore.nested.name2' not in g.keys()
         # More fun
-        c = g['conduit.seed']
+        c = g.get_conduit_data('seed')
         assert c.shape == (12, 3)
         assert 'throat.seed' not in g
         assert np.isnan(c[:, 1]).sum() == g.Nt
+        with pytest.raises(Exception):
+            g.get_conduit_data('conns')
+        with pytest.raises(Exception):
+            g.get_conduit_data('xyz')
         # Run model that returns a dict to all pores
         g.run_model('pore.dict2')
         assert len(g['pore.dict2']) == 3
