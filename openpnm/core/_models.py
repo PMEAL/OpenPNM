@@ -393,13 +393,6 @@ class ModelsMixin2:
         elif domain is None:
             domain = self.settings['default_domain']
         element, prop = propname.split('.', 1)
-        if (element + '.' + domain not in self.keys()) and (domain != 'all'):
-            try:
-                N = self._count(element)
-                self[element + '.' + domain] = True
-            except:
-                logger.warning(f'Could not define {element}.{domain} since '
-                               f'number of {element}s is not defined yet')
         domain = domain.split('.', 1)[-1]
 
         # Add model and regen_mode to kwargs dictionary
