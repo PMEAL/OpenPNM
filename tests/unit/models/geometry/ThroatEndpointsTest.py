@@ -1,6 +1,7 @@
 import openpnm as op
 import openpnm.models.geometry as gm
 import numpy as np
+from numpy.testing import assert_array_almost_equal
 
 
 class ThroatEndpointsTest:
@@ -17,7 +18,7 @@ class ThroatEndpointsTest:
                  - self.net['throat.endpoints']['head'])[:, 0]
         self.net.add_model(propname='throat.length',
                            model=gm.throat_length.circles_and_rectangles)
-        assert delta[0] == self.net['throat.length'][0]
+        assert_array_almost_equal(delta, self.net['throat.length'], decimal=10)
 
 
 if __name__ == '__main__':
