@@ -25,8 +25,6 @@ class TransportTest:
         alg = op.algorithms.Transport(network=net, phase=phase)
         alg.settings._update({"quantity": "pore.concentration",
                               "conductance": "throat.conductance"})
-        # with pytest.raises(Exception):
-        #     alg.run()
 
     def test_remove_boundary_conditions(self):
         alg = op.algorithms.Transport(network=self.net, phase=self.phase)
@@ -49,6 +47,69 @@ class TransportTest:
         quantity = alg.settings['quantity']
         # Ensure solution object is attached to the algorithm
         assert isinstance(alg.soln[quantity], SteadyStateSolution)
+
+    def test_ill_defined_topology(self):
+        net = op.network.Cubic(shape=[5, 1, 1])
+        op.topotools.trim(net, pores=[2])
+        phase = op.phase.Phase(network=net)
+        phase["throat.diffusive_conductance"] = 1.0
+        alg = op.algorithms.Transport(network=net, phase=phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_value_BC(pores=net.pores('left'), values=1)
+        with pytest.raises(Exception):
+            alg.run()
+
+    def test_linear_system_with_nans_or_infs(self):
+        net = op.network.Cubic(shape=[5, 1, 1])
+        phase = op.phase.Phase(network=net)
+        phase["throat.diffusive_conductance"] = 1.0
+        alg = op.algorithms.Transport(network=net, phase=phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_value_BC(pores=net.pores('left'), values=1)
+        # A contains nan
+        with pytest.raises(Exception):
+            phase["throat.diffusive_conductance"][1] = np.inf
+            alg.run()
+        phase["throat.diffusive_conductance"] = 1.0
+        # A contains inf
+        with pytest.raises(Exception):
+            phase["throat.diffusive_conductance"][1] = np.inf
+            alg.run()
+        phase["throat.diffusive_conductance"] = 1.0
+        # b contains nan
+        with pytest.raises(Exception):
+            phase["throat.diffusive_conductance"][1] = np.inf
+            alg.run()
+        phase["throat.diffusive_conductance"] = 1.0
+        # b contains inf
+        with pytest.raises(Exception):
+            phase["throat.diffusive_conductance"][1] = np.inf
+            alg.run()
+
+    def test_ill_defined_settings(self):
+        net = op.network.Cubic(shape=[5, 1, 1])
+        phase = op.phase.Phase(network=net)
+        phase["throat.diffusive_conductance"] = 1.0
+        alg = op.algorithms.Transport(network=net, phase=phase)
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        alg.set_value_BC(pores=net.pores('left'), values=1)
+        # conductance is not defined
+        with pytest.raises(Exception):
+            alg.settings['conductance'] = None
+            alg.run()
+        alg.settings['conductance'] = 'throat.diffusive_conductance'
+        # quantity is not defined
+        with pytest.raises(Exception):
+            alg.settings['quantity'] = None
+            alg.run()
+        alg.settings['quantity'] = 'pore.mole_fraction'
+        # phase is not defined
+        with pytest.raises(Exception):
+            alg.settings['phase'] = None
+            alg.run()
 
     def test_two_value_conditions(self):
         alg = op.algorithms.Transport(network=self.net,

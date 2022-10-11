@@ -992,6 +992,7 @@ def is_fully_connected(network, pores_BC=None):
         the entire network is connected to the same cluster. If
         ``pores_BC`` is given, then returns ``True`` only if all clusters
         are connected to the given boundary condition pores.
+
     """
     am = network.get_adjacency_matrix(fmt='lil').copy()
     temp = csgraph.connected_components(am, directed=False)[1]

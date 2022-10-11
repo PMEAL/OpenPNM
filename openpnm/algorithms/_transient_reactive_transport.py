@@ -85,7 +85,8 @@ class TransientReactiveTransport(ReactiveTransport):
         integrator = ScipyRK45() if integrator is None else integrator
         # Perform pre-solve validations
         self._validate_settings()
-        self._validate_data_health()
+        self._validate_topology_health()
+        self._validate_linear_system()
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
         self['pore.ic'] = x0 = np.ones(self.Np, dtype=float) * x0
         self._merge_inital_and_boundary_values()
