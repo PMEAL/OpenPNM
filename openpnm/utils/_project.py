@@ -223,7 +223,7 @@ class Project(SimpleList):
     def workspace(self):
         return ws
 
-    def get_locations(self, label):
+    def _get_locations(self, label):
         r"""
         Find locations indicated by the given label regardless of which object
         it is defined on

@@ -66,7 +66,7 @@ class Phase(Domain):
                 temp = self._initialize_empty_array_like(value, element)
                 self[element + '.' + prop] = temp
             # Insert values into masked locations
-            mask = self.project.get_locations(element + '.' + domain)
+            mask = self.project._get_locations(element + '.' + domain)
             temp[mask] = value
 
     def __getitem__(self, key):
@@ -108,6 +108,6 @@ class Phase(Domain):
         if domain == 'all':
             locs = np.ones(self._count(element), dtype=bool)
         else:
-            locs = self.project.get_locations(element + '.' + domain)
+            locs = self.project._get_locations(element + '.' + domain)
 
         return vals[locs]

@@ -30,10 +30,10 @@ class ProjectTest:
     def test_get_locations(self):
         pn = op.network.Cubic([3, 3, 3], name='bob')
         air = op.phase.Air(network=pn)
-        assert air.project.get_locations('pore.left').sum() == 9
-        assert pn.project.get_locations('pore.left').sum() == 9
+        assert air.project._get_locations('pore.left').sum() == 9
+        assert pn.project._get_locations('pore.left').sum() == 9
         with pytest.raises(KeyError):
-            air.project.get_locations('pore.foo')
+            air.project._get_locations('pore.foo')
 
     # def test_change_simulation_name_by_moving_in_dict(self):
     #     proj = self.ws.new_project()
