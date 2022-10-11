@@ -8,15 +8,14 @@ equations. Computers & Geosciences, 104505.
 
 """
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import numpy as np
 
 
 ws = op.Workspace()
 proj = ws.new_project()
-export = False
 
-# network, geometry, phase
+# Create network, geometry, phase
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[23, 15, 1], spacing=1e-6, project=proj)
@@ -34,8 +33,7 @@ np.random.seed(0)
 op.topotools.reduce_coordination(net, 3)
 
 np.random.seed(0)
-geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
-
+geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 sw = mixtures.SalineWater(network=net)
 # Retrieve handles to each species for use below
@@ -79,12 +77,12 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
                pore_pressure='pore.pressure', model=ad_dif_mig_Cl,
                ion=Cl.name, s_scheme=scheme)
 
-# settings for algorithms
+# Settings for algorithms
 setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
-          'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
-setts2 = {'g_tol': 1e-4, 'g_max_iter': 100}
+          'nlin_max_iter': 10, 'cache': False}
+setts2 = {'g_tol': 1e-4, 'g_max_iter': 50}
 
-# algorithms
+# Algorithms
 sf = op.algorithms.StokesFlow(network=net, phase=sw, settings=setts1)
 sf.set_value_BC(pores=net.pores('back'), values=11)
 sf.set_value_BC(pores=net.pores('front'), values=10)
@@ -94,7 +92,7 @@ sw.update(sf.results())
 p = op.algorithms.IonicConduction(network=net, phase=sw, settings=setts1)
 p.set_value_BC(pores=net.pores('left'), values=0.02)
 p.set_value_BC(pores=net.pores('right'), values=0.01)
-p.settings['charge_conservation'] = 'electroneutrality'
+p.settings['charge_conservation'] = 'poisson'
 
 eA = op.algorithms.NernstPlanck(network=net, phase=sw, ion=Na.name,
                                 settings=setts1)
@@ -108,7 +106,8 @@ eB.set_value_BC(pores=net.pores('front'), values=10)
 
 pnp = op.algorithms.NernstPlanckMultiphysicsSolver(network=net, phase=sw,
                                                    settings=setts2)
-pnp.setup(potential_field=p.name, ions=[eA.name, eB.name])
+pnp.settings['potential_field'] = p.name
+pnp.settings['ions'] = [eA.name, eB.name]
 pnp.run()
 
 sw.update(sf.results())
@@ -117,5 +116,4 @@ sw.update(eA.results())
 sw.update(eB.results())
 
 # output data to Paraview
-if export:
-    proj.export_data(phases=[sw], filename='out', filetype='xdmf')
+proj.export_data(phases=[sw], filename='out', filetype='xdmf')

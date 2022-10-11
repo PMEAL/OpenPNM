@@ -3,20 +3,20 @@ import sys
 from os.path import realpath
 from pathlib import Path
 import openpnm as op
+import pytest
 
 
-class ParaViewTest():
+@pytest.mark.skip(reason="Installing paraview takes forever!")
+class ParaViewTest:
 
     def setup_class(self):
         self.path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
     def test_export_data(self):
         pn = op.network.Cubic(shape=[30, 40])
-        geo = op.geometry.StickAndBall(network=pn, pores=pn.Ps, throats=pn.Ts)
-        water = op.phases.Water(network=pn)
-        _ = op.physics.Standard(network=pn, phase=water, geometry=geo)
-        op.io.VTK.save(pn, water, 'test.vtp')
-        op.io.ParaView.export_data(pn, filename='test.vtp')
+        _ = op.phase.Water(network=pn)
+        op.io.project_to_vtk(project=pn.project, filename='test.vtp')
+        op.io.project_to_paraview(project=pn.project, filename='test.vtp')
         os.remove('test.pvsm')
         os.remove('test.vtp')
 

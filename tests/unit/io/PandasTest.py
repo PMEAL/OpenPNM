@@ -1,8 +1,5 @@
 import openpnm as op
-import pytest
-import py
-import os
-from openpnm.io.Pandas import Pandas
+import numpy as np
 
 
 class PandasTest:
@@ -10,65 +7,41 @@ class PandasTest:
     def setup_class(self):
         ws = op.Workspace()
         ws.settings['local_data'] = True
-        self.net = op.network.Cubic(shape=[2, 2, 2])
-        Ps = [0, 1, 2, 3]
-        Ts = self.net.find_neighbor_throats(pores=Ps)
-        self.geo_1 = op.geometry.GenericGeometry(network=self.net,
-                                                 pores=Ps, throats=Ts)
-        self.geo_1['pore.boo'] = 1
-        self.geo_1['throat.boo'] = 1
-        Ps = [4, 5, 6, 7]
-        Ts = self.net.find_neighbor_throats(pores=Ps, mode='xnor')
-        self.geo_2 = op.geometry.GenericGeometry(network=self.net,
-                                                 pores=Ps, throats=Ts)
-        self.geo_2['pore.boo'] = 1
-        self.geo_2['throat.boo'] = 1
-
-        self.phase_1 = op.phases.GenericPhase(network=self.net)
+        self.net = op.network.Cubic(shape=[2, 2, 2], name='bob')
+        self.net['pore.boo'] = 1
+        self.net['throat.boo'] = 1
+        self.phase_1 = op.phase.Phase(network=self.net)
         self.phase_1['pore.bar'] = 2
         self.phase_1['throat.bar'] = 2
-        self.phase_2 = op.phases.GenericPhase(network=self.net)
+        self.phase_2 = op.phase.Phase(network=self.net)
         self.phase_2['pore.bar'] = 2
         self.phase_2['throat.bar'] = 2
-
-        self.phys_1 = op.physics.GenericPhysics(network=self.net,
-                                                phase=self.phase_1,
-                                                geometry=self.geo_1)
-        self.phys_1['pore.baz'] = 11
-        self.phys_1['throat.baz'] = 11
-
-        self.phys_2 = op.physics.GenericPhysics(network=self.net,
-                                                phase=self.phase_1,
-                                                geometry=self.geo_2)
-        self.phys_2['pore.baz'] = 12
-        self.phys_2['throat.baz'] = 12
-
-        self.phys_3 = op.physics.GenericPhysics(network=self.net,
-                                                phase=self.phase_2,
-                                                geometry=self.geo_1)
-        self.phys_3['pore.baz'] = 21
-        self.phys_3['throat.baz'] = 21
-
-        self.phys_4 = op.physics.GenericPhysics(network=self.net,
-                                                phase=self.phase_2,
-                                                geometry=self.geo_2)
-        self.phys_4['pore.baz'] = 22
-        self.phys_4['throat.baz'] = 22
+        self.phase_1['pore.baz'] = 11
+        self.phase_1['throat.baz'] = 11
+        self.phase_2['pore.baz'] = 12
+        self.phase_2['throat.baz'] = 12
 
     def teardown_class(self):
         ws = op.Workspace()
         ws.clear()
 
-    def test_to_dataframe_not_joined(self):
-        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
-                                 join=False)
-        assert len(df.pore.keys()) == 23
-        assert len(df.throat.keys()) == 14
+    def test_project_to_dataframe_not_joined(self):
+        df = op.io.project_to_pandas(project=self.net.project,
+                                     join=False)
+        assert len(df['pore'].keys()) == 21
+        assert len(df['throat'].keys()) == 10
 
-    def test_to_dataframe_joined(self):
-        df = Pandas.to_dataframe(network=self.net, phases=[self.phase_1],
-                                 join=True)
-        assert len(df.keys()) == 37
+    def test_project_to_dataframe_joined(self):
+        df = op.io.project_to_pandas(project=self.net.project,
+                                     join=True)
+        assert len(df.keys()) == 31
+        assert np.isnan(df['bob.pore.coords[0]']).sum() > 0
+
+    def test_network_to_dataframe(self):
+        df = op.io.network_to_pandas(network=self.net)
+        assert len(df.keys()) == 2
+        assert len(df['pore'].keys()) == 11
+        assert len(df['throat'].keys()) == 4
 
 
 if __name__ == '__main__':
@@ -77,8 +50,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
-            try:
-                t.__getattribute__(item)()
-            except TypeError:
-                t.__getattribute__(item)(tmpdir=py.path.local())
+            print(f'Running test: {item}')
+            t.__getattribute__(item)()

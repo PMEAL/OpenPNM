@@ -1,9 +1,0 @@
-ipympl
-jupyterlab_widgets
-nbsphinx
-nbsphinx-link
-pandoc
-pydata-sphinx-theme
-sphinx
-sphinx-copybutton
-sphinx-panels

@@ -1,0 +1,10 @@
+codecov
+jupyter
+nbval
+netgen-mesher
+porespy
+pytest
+pytest-cache
+pytest-codestyle
+pytest-cov
+thermo

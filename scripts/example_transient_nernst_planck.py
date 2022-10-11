@@ -8,7 +8,7 @@ equations. Computers & Geosciences, 104505.
 
 """
 import openpnm as op
-from openpnm.phases import mixtures
+from openpnm.phase import mixtures
 import numpy as np
 
 
@@ -20,14 +20,14 @@ export = False
 np.random.seed(0)
 
 net = op.network.Cubic(shape=[8, 8, 1], spacing=9e-4, project=proj)
-prs = (net['pore.back'] * net['pore.right'] + net['pore.back']
-       * net['pore.left'] + net['pore.front'] * net['pore.right']
-       + net['pore.front'] * net['pore.left'])
-thrts = net['throat.surface']
-op.topotools.trim(network=net, pores=net.Ps[prs], throats=net.Ts[thrts])
+Ps = (net['pore.back']  * net['pore.right']
+    + net['pore.back']  * net['pore.left']
+    + net['pore.front'] * net['pore.right']
+    + net['pore.front'] * net['pore.left'])
+Ts = net['throat.surface']
+op.topotools.trim(network=net, pores=net.Ps[Ps], throats=net.Ts[Ts])
 
-
-geo = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 pore_d = op.models.misc.constant
 throat_d = op.models.misc.constant
 geo.add_model(propname='pore.diameter', model=pore_d, value=1.5e-4)
@@ -78,7 +78,7 @@ phys.add_model(propname='throat.ad_dif_mig_conductance.' + Cl.name,
 
 # settings for algorithms
 setts1 = {'solver_max_iter': 5, 'solver_tol': 1e-08, 'solver_rtol': 1e-08,
-          'nlin_max_iter': 10, 'cache_A': False, 'cache_b': False}
+          'nlin_max_iter': 10, 'cache': False}
 setts2 = {'g_tol': 1e-4, 'g_max_iter': 4, 't_output': 5000, 't_step': 500,
           't_final': 20000, 't_scheme': 'implicit'}
 
@@ -108,7 +108,8 @@ eB.set_value_BC(pores=net.pores('front'), values=90)
 it = op.algorithms.TransientNernstPlanckMultiphysicsSolver(network=net,
                                                            phase=sw,
                                                            settings=setts2)
-it.setup(potential_field=p.name, ions=[eA.name, eB.name])
+it.settings["potential_field"] = p.name
+it.settings["ions"] = [eA.name, eB.name]
 it.run()
 
 sw.update(sf.results())

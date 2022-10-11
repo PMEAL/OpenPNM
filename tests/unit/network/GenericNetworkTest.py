@@ -1,8 +1,9 @@
 import numpy as np
 import openpnm as op
+import pytest
 
 
-class GenericNetworkTest:
+class NetworkTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[10, 10, 10])
 
@@ -57,6 +58,15 @@ class GenericNetworkTest:
         a = self.net.find_neighbor_pores(pores=[0, 1], mode='or',
                                          include_input=True)
         assert np.all(a == [0, 1, 2, 10, 11, 100, 101])
+
+    def test_find_neighbor_pores_asmask(self):
+        a = self.net.find_neighbor_pores(pores=[0, 2], flatten=True, asmask=True)
+        assert sum(a) == 6
+        assert a.dtype == 'bool'
+
+    def tes_find_neighbor_pores_asmask_unflattened(self):
+        with pytest.raises():
+            a = self.net.find_neighbor_pores(pores=[0, 2], flatten=False, asmask=True)
 
     def test_find_neighbor_pores_numeric_intersection_include_input(self):
         a = self.net.find_neighbor_pores(pores=[0, 2], mode='and',
@@ -170,10 +180,32 @@ class GenericNetworkTest:
         assert np.size(a) == 17
         assert np.all(np.in1d([0, 1], a))
 
+    def test_get_incidence_matrix(self):
+        net = op.network.Demo([4, 4, 1])
+        assert net._im == {}
+        im = net.get_incidence_matrix(fmt='coo')
+        assert im.shape == (16, 24)
+        assert im.data.shape == (48,)
+        assert len(net._im) == 1
+        im = net.get_incidence_matrix(fmt='dok')
+        assert len(im.keys()) == 48
+        assert len(net._im) == 2
+
+    def test_get_adjacency_matrix(self):
+        net = op.network.Demo([4, 4, 1])
+        assert net._am == {}
+        im = net.get_adjacency_matrix(fmt='coo')
+        assert im.shape == (16, 16)
+        assert im.data.shape == (48,)
+        assert len(net._am) == 1
+        am = net.get_adjacency_matrix(fmt='dok')
+        assert len(am.keys()) == 48
+        assert len(net._am) == 2
+
 
 if __name__ == '__main__':
 
-    t = GenericNetworkTest()
+    t = NetworkTest()
     t.setup_class()
     self = t
     for item in t.__dir__():

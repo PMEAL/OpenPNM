@@ -14,15 +14,15 @@ np.random.seed(10)
 
 # Define network and geometry
 net = op.network.Cubic(shape=[10, 1, 1])
-geom = op.geometry.StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Define constituent phases
-air = op.phases.Air(network=net, name="air")
-water = op.phases.Water(network=net, name="water")
+air = op.phase.Air(network=net, name="air")
+water = op.phase.Water(network=net, name="water")
 water["pore.diffusivity"] = air["pore.diffusivity"] * 0.2
 
 # Define MultiPhase object
-mphase = op.phases.MultiPhase(network=net, phases=[air, water])
+mphase = op.contrib.MultiPhase(network=net, phases=[air, water])
 mphase._set_automatic_throat_occupancy()
 mphase.set_occupancy(phase=air, pores=[0, 1, 2, 3, 4])
 mphase.set_occupancy(phase=water, pores=[5, 6, 7, 8, 9])

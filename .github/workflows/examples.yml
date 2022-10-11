@@ -1,22 +1,20 @@
 name: Examples
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
 
-    if: (! contains(github.event.head_commit.message, 'ci min'))
-
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash
 
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
         python-version: [3.8]
-        operating-system: [ubuntu-latest]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -25,43 +23,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache conda
-        uses: actions/cache@v1
-        env:
-          CACHE_NUMBER: 1  # increase value -> force reset cache
+      - name: Cache pip
+        uses: actions/cache@v2
         with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          mamba-version: "*"
-          allow-softlinks: true
-          use-only-tar-bz2: true
-          show-channel-urls: false
-          auto-activate-base: true
-          channel-priority: flexible
-          channels: conda-forge,defaults
-          condarc-file: requirements/.condarc
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies (conda)
+      - name: Install dependencies (pip)
         run: |
-          cat requirements/conda_requirements.txt >> requirements.txt
-          cat requirements/test_requirements.txt >> requirements.txt
-          cat requirements/optional_requirements.txt >> requirements.txt
-          printf "pyamg\n" >> requirements.txt
-          mamba install --file requirements.txt
-          # Install OpenPNM from the checked-out branch
-          pip install -e . --no-deps
-          # Install PoreSpy, required in some notebooks
-          mamba install --file requirements/porespy_requirements.txt
-          mamba install porespy --no-deps
+          pip install \
+            -r requirements.txt \
+            -r requirements/tests.txt
 
       - name: Running tests
         run:
           pytest examples/
             --nbval-lax
-            --ignore="examples/paper_recreations/Blunt et al. (2013)"
-            --ignore="examples/paper_recreations/Wu et al. (2010)"

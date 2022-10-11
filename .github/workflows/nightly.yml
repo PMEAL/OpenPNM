@@ -1,0 +1,54 @@
+name: Nightly Builds
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  nightly:
+
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      max-parallel: 9
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
+        # Add macos-latest to the next line once #2451 is fixed
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+        - os: windows-latest
+          path: ~\AppData\Local\pip\Cache
+
+    steps:
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.path }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies (pip)
+        run: |
+          pip install \
+            -r requirements.txt \
+            -r requirements/tests.txt
+
+      - name: Running tests
+        run:
+          pytest . --color=yes

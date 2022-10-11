@@ -1,6 +1,6 @@
 name: Verify pip-installability
 
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
   deploy:

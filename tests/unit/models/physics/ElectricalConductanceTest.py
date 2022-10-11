@@ -1,42 +1,32 @@
+import numpy as np
 import openpnm as op
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 
 
 class ElectricalConductanceTest:
+
     def setup_class(self):
         self.net = op.network.Cubic(shape=[4, 4, 4])
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.geo['pore.area'] = 1
-        self.geo['throat.area'] = 1
-        self.phase = op.phases.GenericPhase(network=self.net)
-        self.phase['pore.electrical_conductivity'] = 1
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
+        self.net['pore.diameter'] = 1.0
+        self.net['throat.diameter'] = 0.5
+        self.net['throat.diffusive_size_factors'] = \
+            np.ones([self.net.Nt, 3])*(0.123, 0.981, 0.551)
+        self.phase = op.phase.Phase(network=self.net)
+        self.phase['pore.electrical_conductivity'] = 1.0
 
-    def test_electrical_conductance(self):
-        self.geo['throat.conduit_lengths.pore1'] = 0.15
-        self.geo['throat.conduit_lengths.throat'] = 0.6
-        self.geo['throat.conduit_lengths.pore2'] = 0.25
-        mod = op.models.physics.electrical_conductance.series_resistors
-        self.phys.add_model(propname='throat.electrical_conductance',
-                            model=mod)
-        self.phys.regenerate_models()
-        actual = self.phys['throat.electrical_conductance'].mean()
-        assert_approx_equal(actual, desired=1.0)
+    def test_generic_electrical(self):
+        mod = op.models.physics.electrical_conductance.generic_electrical
+        self.phase.add_model(propname='throat.electrical_conductance', model=mod)
+        self.phase.regenerate_models()
+        actual = np.mean(self.phase['throat.electrical_conductance'])
+        assert_allclose(actual, desired=0.091205, rtol=1e-5)
 
-    def test_electrical_conductance_with_zero_length_throats(self):
-        self.geo['throat.conduit_lengths.pore1'] = 0.15
-        self.geo['throat.conduit_lengths.throat'] = 0.0
-        self.geo['throat.conduit_lengths.pore2'] = 0.25
+    def test_series_resistors(self):
         mod = op.models.physics.electrical_conductance.series_resistors
-        self.phys.add_model(propname='throat.electrical_conductance',
-                            model=mod)
-        self.phys.regenerate_models()
-        actual = self.phys['throat.electrical_conductance'].mean()
-        assert_approx_equal(actual, desired=2.5)
+        self.phase.add_model(propname='throat.electrical_conductance', model=mod)
+        self.phase.regenerate_models()
+        actual = np.mean(self.phase['throat.electrical_conductance'])
+        assert_allclose(actual, desired=0.091205, rtol=1e-5)
 
 
 if __name__ == '__main__':

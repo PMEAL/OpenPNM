@@ -1,65 +1,80 @@
 import openpnm as op
-import openpnm.models.geometry.throat_length as mods
+import openpnm.models.geometry as gm
+import openpnm.models.misc as mm
 import numpy as np
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_array_almost_equal
 
 
-class ThroatStraightTest:
+class ThroatLengthTest:
+
     def setup_class(self):
-        self.net = op.network.Cubic(shape=[1, 2, 1], spacing=1.0)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.base = np.array([0.5, 0.5, 0.5])
-        self.geo['throat.endpoints.head'] = np.array([[0, 0.2, 0]]) + self.base
-        self.geo['throat.endpoints.tail'] = np.array([[0, 0.7, 0]]) + self.base
+        np.random.seed(0)
+        self.net = op.network.Demo(shape=[5, 1, 1], spacing=1)
+        self.net.add_model(propname='pore.seed',
+                           model=mm.constant,
+                           value=0.5)
+        self.net.regenerate_models()
+        self.net['throat.coords'] = np.mean(self.net.coords[self.net.conns], axis=1)
 
-    def test_piecewise(self):
-        self.geo.add_model(propname='throat.length',
-                           model=mods.piecewise,
-                           regen_mode='normal')
-        actual = self.geo['throat.length'][0]
-        assert_approx_equal(actual, desired=0.5)
+    def test_circles_and_rectangles(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.circles_and_rectangles)
+        assert_array_almost_equal(self.net['throat.length'], 0.5669873)
 
-    def test_piecewise_with_centroid(self):
-        self.geo['throat.centroid'] = np.array([[0, 0.5, 0.5]]) + self.base
-        self.geo.add_model(propname='throat.length',
-                           model=mods.piecewise,
-                           regen_mode='normal')
-        actual = self.geo['throat.length'][0]
-        assert_approx_equal(actual, desired=1.1216117)
+    def test_trapezoids_and_rectangles(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.trapezoids_and_rectangles)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
 
-    def test_conduit_lengths_wo_centroid(self):
-        del self.geo["throat.centroid"]
-        self.geo['throat.length'] = 0.5
-        self.geo.add_model(propname='throat.conduit_lengths',
-                           model=mods.conduit_lengths,
-                           regen_mode='normal')
-        L1 = self.geo['throat.conduit_lengths.pore1'][0]
-        L2 = self.geo['throat.conduit_lengths.pore2'][0]
-        Lt = self.geo['throat.conduit_lengths.throat'][0]
-        assert_approx_equal(actual=L1, desired=0.2)
-        assert_approx_equal(actual=L2, desired=0.3)
-        assert_approx_equal(actual=Lt, desired=0.5)
+    def test_cubes_and_cuboids(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.cubes_and_cuboids)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
 
-    def test_conduit_lengths_w_centroid(self):
-        # Delete "throat.length" key, otherwise, it won't get re-calculated
-        del self.geo['throat.length']
-        self.geo["throat.centroid"] = np.array([[0, 0.5, 0.5]]) + self.base
-        self.geo.add_model(propname='throat.conduit_lengths',
-                           model=mods.conduit_lengths,
-                           regen_mode='normal')
-        L1 = self.geo['throat.conduit_lengths.pore1'][0]
-        L2 = self.geo['throat.conduit_lengths.pore2'][0]
-        Lt = self.geo['throat.conduit_lengths.throat'][0]
-        assert_approx_equal(actual=L1, desired=0.2)
-        assert_approx_equal(actual=L2, desired=0.3)
-        assert_approx_equal(actual=Lt, desired=1.12161167)
+    def test_squares_and_rectangles(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.squares_and_rectangles)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
+
+    def test_intersecting_cones(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.intersecting_cones)
+        assert_array_almost_equal(self.net['throat.length'], 0.0)
+
+    def test_intersecting_pyramids(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.intersecting_pyramids)
+        assert_array_almost_equal(self.net['throat.length'], 0.0)
+
+    def test_hybrid_cones_and_cylinders(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.cones_and_cylinders)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
+
+    def test_hybrid_hybrid_trapezoids_and_rectangles(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.hybrid_trapezoids_and_rectangles)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
+
+    def test_hybrid_pyramids_and_cuboids(self):
+        del self.net['throat.length']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.hybrid_pyramids_and_cuboids)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
+
 
 
 if __name__ == '__main__':
 
-    t = ThroatStraightTest()
+    t = ThroatLengthTest()
     self = t
     t.setup_class()
     for item in t.__dir__():

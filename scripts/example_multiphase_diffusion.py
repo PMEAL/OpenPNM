@@ -14,19 +14,20 @@ top and the bottom of the network.
 """
 import openpnm as op
 from openpnm.network import Cubic
-from openpnm.phases import Air, Water, MultiPhase
-from openpnm.geometry import StickAndBall
+from openpnm.phase import Air, Water
+from openpnm.contrib import MultiPhase
+from openpnm.geometry import SpheresAndCylinders
 from openpnm.physics import Standard
 from openpnm.models.misc import constant
-from openpnm.models.physics.generic_source_term import linear
+from openpnm.models.physics.source_terms import linear
 import matplotlib.pyplot as plt
 import numpy as np
 np.random.seed(10)
-export = False
 
 # Define network, geometry and constituent phases
-net = Cubic(shape=[100, 100, 1])
-geom = StickAndBall(network=net, pores=net.Ps, throats=net.Ts)
+shape = np.array([100, 100, 1])
+net = Cubic(shape=shape)
+geom = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 air = Air(network=net, name="air")
 water = Water(network=net, name="water")
 water["pore.diffusivity"] = air["pore.diffusivity"] * 0.05
@@ -57,7 +58,7 @@ phys.add_model(propname="throat.diffusive_conductance", model=mdiff)
 # Fickian diffusion
 fd = op.algorithms.FickianDiffusion(network=net, phase=mphase)
 # Set source term
-phys["pore.A1"] = -1e-8 * geom["pore.area"]
+phys["pore.A1"] = -1e-8 * geom["pore.cross_sectional_area"]
 phys["pore.A2"] = 0.0
 phys.add_model(
     propname="pore.rxn",
@@ -81,9 +82,8 @@ fd.run()
 # Post-processing
 mphase.update(fd.results())
 c = mphase["pore.concentration"]
-c2d = np.rot90(c.reshape(net._shape).squeeze())
+c2d = np.rot90(c.reshape(shape).squeeze())
 plt.imshow(c2d)
 plt.colorbar()
 
-if export:
-    op.io.XDMF.save(network=net, phases=mphase, filename="network")
+#op.io.XDMF.export_data(network=net, phases=mphase, filename="network")

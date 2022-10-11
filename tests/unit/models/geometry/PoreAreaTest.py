@@ -7,46 +7,40 @@ from numpy.testing import assert_approx_equal
 class PoreAreaTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[5, 5, 5], spacing=1.0)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.air = op.phases.Air(network=self.net)
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.air,
-                                              geometry=self.geo)
-        self.geo['pore.diameter'] = 1.0
-        self.geo['throat.area'] = 0.1
+        self.net.regenerate_models()
+        self.net['pore.diameter'] = 1.0
+        self.net['throat.cross_sectional_area'] = 0.1
 
     def test_sphere(self):
-        self.geo.add_model(propname='pore.area',
+        self.net.add_model(propname='pore.area',
                            model=mods.sphere,
                            regen_mode='normal')
         a = np.array([0.78539816])
-        b = np.unique(self.geo['pore.area'])
+        b = np.unique(self.net['pore.area'])
         assert_approx_equal(a, b)
 
     def test_cube(self):
-        self.geo.add_model(propname='pore.area',
+        self.net.add_model(propname='pore.area',
                            model=mods.cube,
                            regen_mode='normal')
         a = np.array([1.0])
-        b = np.unique(self.geo['pore.area'])
+        b = np.unique(self.net['pore.area'])
         assert_approx_equal(a, b)
 
     def test_circle(self):
-        self.geo.add_model(propname='pore.area',
+        self.net.add_model(propname='pore.area',
                            model=mods.circle,
                            regen_mode='normal')
         a = np.array([1.0])
-        b = np.unique(self.geo['pore.area'])
+        b = np.unique(self.net['pore.area'])
         assert_approx_equal(a, b)
 
     def test_square(self):
-        self.geo.add_model(propname='pore.area',
+        self.net.add_model(propname='pore.area',
                            model=mods.square,
                            regen_mode='normal')
         a = np.array([1.0])
-        b = np.unique(self.geo['pore.area'])
+        b = np.unique(self.net['pore.area'])
         assert_approx_equal(a, b)
 
 

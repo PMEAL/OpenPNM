@@ -1,48 +1,19 @@
-r"""
+from ._algorithm import *
+from ._transport import *
 
-**openpnm.algorithms**
+from ._reactive_transport import *
+from ._transient_reactive_transport import *
 
-----
+from ._stokes_flow import *
 
-The ``algorithms`` module contains classes for conducting transport simulations
-on pore networks.
+from ._fickian_diffusion import *
+from ._transient_fickian_diffusion import *
 
-"""
+from ._advection_diffusion import *
+from ._transient_advection_diffusion import *
 
-from .GenericAlgorithm import GenericAlgorithm
-from .GenericTransport import GenericTransport
+from ._fourier_conduction import *
+from ._ohmic_conduction import *
 
-from .ReactiveTransport import ReactiveTransport
-from .TransientReactiveTransport import TransientReactiveTransport
-
-from .StokesFlow import StokesFlow
-from .NonNewtonianStokesFlow import NonNewtonianStokesFlow
-
-from .FickianDiffusion import FickianDiffusion
-from .TransientFickianDiffusion import TransientFickianDiffusion
-
-from .AdvectionDiffusion import AdvectionDiffusion
-from .TransientAdvectionDiffusion import TransientAdvectionDiffusion
-
-from .FourierConduction import FourierConduction
-from .OhmicConduction import OhmicConduction
-
-from .OrdinaryPercolation import OrdinaryPercolation
-from .InvasionPercolation import InvasionPercolation
-from .MixedInvasionPercolation import MixedInvasionPercolation
-from .MixedInvasionPercolationCoop import MixedInvasionPercolationCoop
-
-from .Porosimetry import Porosimetry
-
-from .IonicConduction import IonicConduction
-from .TransientIonicConduction import TransientIonicConduction
-
-from .NernstPlanck import NernstPlanck
-from .TransientNernstPlanck import TransientNernstPlanck
-
-from .NernstPlanckMultiphysicsSolver import NernstPlanckMultiphysicsSolver
-from .TransientNernstPlanckMultiphysicsSolver import (
-    TransientNernstPlanckMultiphysicsSolver
-)
-
-from . import metrics
+from ._drainage import *
+from ._invasion_percolation import *

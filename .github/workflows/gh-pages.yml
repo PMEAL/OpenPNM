@@ -1,9 +1,10 @@
 name: Deploy Documentation
 
 on:
-  push:
+  workflow_dispatch:
+  pull_request:
     branches:
-    - "*"
+      - release
 
 jobs:
   deploy-docs:
@@ -16,22 +17,33 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Install dependencies
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
 
+      - name: Set up Mamba
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          mamba-version: "*"
+          miniforge-variant: Mambaforge
+          allow-softlinks: true
+          use-only-tar-bz2: true
+          show-channel-urls: false
+          auto-activate-base: true
+          channel-priority: strict
+          python-version: 3.8
+
       - name: Install dependencies
         run: |
-          pip install -r requirements/pip_requirements.txt
-          pip install -r requirements/doc_requirements.txt
-      # Build the documentation
+          mamba install --file requirements/docs.txt
+          pip install -r requirements.txt
+
       - name: Build the documentation
         run: |
           cd docs
           make html
-      # Push the documentation's HTML to github-pages
+
       - name: GitHub Pages action
         uses: peaceiris/actions-gh-pages@v3
         with:
