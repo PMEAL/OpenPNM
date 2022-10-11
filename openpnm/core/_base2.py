@@ -516,6 +516,7 @@ class Base2(dict):
         return lines
 
     def _initialize_empty_array_like(self, value, element):
+        element = element.split('.', 1)[0]
         value = np.array(value)
         if value.dtype == bool:
             temp = np.zeros([self._count(element), *value.shape[1:]],

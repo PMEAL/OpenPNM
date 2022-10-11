@@ -59,11 +59,6 @@ class Phase(Domain):
         else:
             propname, domain = key.split('@')
             element, prop = propname.split('.', 1)
-
-            if element + '.' + domain in self.keys():  # If label on self, get mask
-                mask = self[element + '.' + domain]
-            else:  # Else get mask from network
-                mask = self.network[element + '.' + domain]
             # Fetch array from self
             try:
                 temp = self[element + '.' + prop]
@@ -71,6 +66,7 @@ class Phase(Domain):
                 temp = self._initialize_empty_array_like(value, element)
                 self[element + '.' + prop] = temp
             # Insert values into masked locations
+            mask = self.project._get_locations(element + '.' + domain)
             temp[mask] = value
 
     def __getitem__(self, key):
@@ -111,11 +107,7 @@ class Phase(Domain):
         # Finally get locs
         if domain == 'all':
             locs = np.ones(self._count(element), dtype=bool)
-        elif element + '.' + domain in self.keys():
-            locs = super().__getitem__(element + '.' + domain)
-        elif element + '.' + domain in self.network.keys():
-            locs = self.network[element + '.' + domain]
         else:
-            raise KeyError(element + '.' + domain)
+            locs = self.project._get_locations(element + '.' + domain)
 
         return vals[locs]
