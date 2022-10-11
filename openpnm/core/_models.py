@@ -540,6 +540,6 @@ class ModelsMixin2:
             elif isinstance(vals, dict):  # If model returns a dict of arrays
                 for k, v in vals.items():
                     if f'{propname}.{k}' not in self.keys():
-                        temp = self._initialize_empty_array_like(vals, element)
+                        temp = self._initialize_empty_array_like(v, element)
                         self[f'{propname}.{k}'] = temp
                     self[f'{propname}.{k}'][self[f'{element}.{domain}']] = v
