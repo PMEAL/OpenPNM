@@ -541,14 +541,12 @@ class ModelsMixin2:
             # Finally add model results to self
             if isinstance(vals, np.ndarray):  # If model returns single array
                 if propname not in self.keys():
-                    # Create empty array if not found
-                    self[propname] = np.nan*np.ones([self._count(element),
-                                                     *vals.shape[1:]])
+                    temp = self._initialize_empty_array_like(vals, element)
+                    self[f'{element}.{prop}'] = temp
                 self[propname][self[f'{element}.{domain}']] = vals
             elif isinstance(vals, dict):  # If model returns a dict of arrays
                 for k, v in vals.items():
                     if f'{propname}.{k}' not in self.keys():
-                        # Create empty array if not found
-                        self[f'{propname}.{k}'] = \
-                            np.nan*np.ones([self._count(element), *v.shape[1:]])
+                        temp = self._initialize_empty_array_like(vals, element)
+                        self[f'{propname}.{k}'] = temp
                     self[f'{propname}.{k}'][self[f'{element}.{domain}']] = v

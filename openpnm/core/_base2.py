@@ -108,12 +108,7 @@ class Base2(dict):
                 self[f'{element}.{prop}'] = vals
             except KeyError:
                 value = np.array(value)
-                if value.dtype == bool:
-                    temp = np.zeros([self._count(element), *value.shape[1:]],
-                                    dtype=bool)
-                else:
-                    temp = np.zeros([self._count(element), *value.shape[1:]],
-                                    dtype=float)*np.nan
+                temp = self._initialize_empty_array_like(value, element)
                 self.__setitem__(f'{element}.{prop}', temp)
                 self[f'{element}.{prop}'][locs] = value
             return
@@ -519,6 +514,16 @@ class Base2(dict):
         lines += get_printable_labels(self)
         lines += '\n' + hr
         return lines
+
+    def _initialize_empty_array_like(self, value, element):
+        value = np.array(value)
+        if value.dtype == bool:
+            temp = np.zeros([self._count(element), *value.shape[1:]],
+                            dtype=bool)
+        else:
+            temp = np.zeros([self._count(element), *value.shape[1:]],
+                            dtype=float)*np.nan
+        return temp
 
 
 class Domain(ParserMixin, LabelMixin, ModelsMixin2, Base2):

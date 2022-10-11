@@ -35,7 +35,7 @@ class PhaseSettings:
 class Phase(Domain):
     r"""
     This class produces an empty object with no pore-scale models for
-    calculating any thermophysical properties.  Users must add models and
+    calculating any thermophysical properties. Users must add models and
     specify parameters for all the properties they require.
 
     Parameters
@@ -52,6 +52,26 @@ class Phase(Domain):
         self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
         self['pore.temperature'] = 298.0
         self['pore.pressure'] = 101325.0
+
+    def __setitem__(self, key, value):
+        if '@' not in key:
+            super().__setitem__(key, value)
+        else:
+            propname, domain = key.split('@')
+            element, prop = propname.split('.', 1)
+
+            if element + '.' + domain in self.keys():  # If label on self, get mask
+                mask = self[element + '.' + domain]
+            else:  # Else get mask from network
+                mask = self.network[element + '.' + domain]
+            # Fetch array from self
+            try:
+                temp = self[element + '.' + prop]
+            except KeyError:
+                temp = self._initialize_empty_array_like(value, element)
+                self[element + '.' + prop] = temp
+            # Insert values into masked locations
+            temp[mask] = value
 
     def __getitem__(self, key):
         try:  # If key exists, just get it
