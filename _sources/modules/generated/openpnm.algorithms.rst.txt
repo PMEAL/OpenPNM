@@ -32,13 +32,11 @@ algorithms
       FickianDiffusion
       FourierConduction
       InvasionPercolation
-      IonicConduction
       OhmicConduction
       ReactiveTransport
       StokesFlow
       TransientAdvectionDiffusion
       TransientFickianDiffusion
-      TransientIonicConduction
       TransientReactiveTransport
       Transport
    

@@ -434,14 +434,13 @@
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#the-conduit-prefix">
-   The
+  <a class="reference internal nav-link" href="#conduit-data">
    <code class="docutils literal notranslate">
     <span class="pre">
      conduit
     </span>
    </code>
-   prefix
+   data
   </a>
  </li>
 </ul>
@@ -639,7 +638,7 @@ Name: pore.volume, dtype: float64
 </div>
 </div>
 </div>
-<p>The pore or throat prefix is enforced so that OpenPNM knows how long an array should be. Attempting to write an array of the wrong length will result in a error:</p>
+<p>The pore or throat prefix is enforced so that OpenPNM knows how long an array should be. Attempting to write an array of the wrong length will result in an error:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -878,8 +877,7 @@ lattice_connectivity                6
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Use the “param” prefix
-It is possible use the <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix when reading and writing to the object’s dictionary. This intercepts the given key and dispatches the request to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute. This feature is particularly useful when passing arguments to pore-scale models (to be discussed in a later tutorial) since you can pass either <code class="docutils literal notranslate"><span class="pre">arg='param.value'</span></code> or <code class="docutils literal notranslate"><span class="pre">arg='pore.value'</span></code> and OpenPNM will be able to fetch the requested data by doing <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">pn[arg]</span></code> and both options will work.</p>
+<p><strong>Use the “param” prefix:</strong> It is possible use the <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix when reading and writing to the object’s dictionary. This intercepts the given key and dispatches the request to the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute. This feature is particularly useful when passing arguments to pore-scale models (to be discussed in a later tutorial) since you can pass either <code class="docutils literal notranslate"><span class="pre">arg='param.value'</span></code> or <code class="docutils literal notranslate"><span class="pre">arg='pore.value'</span></code> and OpenPNM will be able to fetch the requested data by doing <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">pn[arg]</span></code> and both options will work.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -918,7 +916,7 @@ test                                2
   fig.canvas.print_figure(bytes_io, **kw)
 </pre></div>
 </div>
-<img alt="../../_images/92e1f85cf241700848d967e747477c968c527d21ceb32a3ada048f20cffffdde.png" src="../../_images/92e1f85cf241700848d967e747477c968c527d21ceb32a3ada048f20cffffdde.png" />
+<img alt="../../_images/a0f7d2563ce70279f521f81c879cd3449a7b5cc5493d124211fc09ed6816ceed.png" src="../../_images/a0f7d2563ce70279f521f81c879cd3449a7b5cc5493d124211fc09ed6816ceed.png" />
 </div>
 </div>
 <p>The basic premise of how OpenPNM stores topology can be stated in 1 sentence:</p>
@@ -943,14 +941,13 @@ test                                2
 <p>Inspection of this <em>Nt-by-2</em> array shows that each row contains the pore indices corresponding to that throat.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Topology Rules</p>
-<p>OpenPNM requires that the following be true about the network:</p>
+<p><strong>Topology Rules</strong>: OpenPNM requires that the following be true about the network:</p>
 <ol class="arabic simple">
 <li><p>A throat is a connection between exactly two pores, no more and no less</p></li>
 <li><p>Throats are non-directional, meaning that flow in either direction is equal
 Other general, but non-essential rules are:</p></li>
 <li><p>Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.</p></li>
-<li><p>Two pores are generally connected by no more than one throat.  It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise.</p></li>
+<li><p>Two pores are generally connected by no more than one throat. It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise. For instance, when converting to CSR format the dual throats are merged into one, so re-converting back results in loss of such throats.</p></li>
 </ol>
 </div>
 <section id="adjacency-matrices-dense-vs-sparse">
@@ -997,7 +994,7 @@ Other general, but non-essential rules are:</p></li>
 <p>Thus the throat property called <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> is an <em>Nt</em>-by-2 array that gives the index of the two pores on either end of a given throat.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Additional Thoughts on Sparse Storage</p>
+<p><strong>Additional Thoughts on Sparse Storage:</strong></p>
 <ul class="simple">
 <li><p>In pore networks there is (usually) no difference between traversing from pore <em>i</em> to pore <em>j</em> or from pore <em>j</em> to pore <em>i</em>, so a 1 is also found at location (<em>j</em>, <em>i</em>) and the matrix is symmetrical.</p></li>
 <li><p>Since the adjacency matrix is symmetric, it is redundant to store the entire matrix when only the upper triangular part is necessary.  The <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array only stores the upper triangular information, and <em>i</em> is always less than <em>j</em>.</p></li>
@@ -1007,12 +1004,12 @@ Other general, but non-essential rules are:</p></li>
 </div>
 </section>
 </section>
-<section id="the-conduit-prefix">
-<h2>The <code class="docutils literal notranslate"><span class="pre">conduit</span></code> prefix<a class="headerlink" href="#the-conduit-prefix" title="Permalink to this heading">#</a></h2>
-<p>A <em>conduit</em> in OpenPNM refers to a ‘pore-throat-pore’ connection, where the pores and throats are each called <em>elements</em>. These <em>elements</em> act as resistors (or conductors) in series. Each <em>conduit</em> therefor contains exactly 1 throat and 2 pores. Transport within the network occurs via these interconnected <em>conduits</em>, so the geometric properties of these elements are often need for computing things like diffusive conductance. This is common enough that OpenPNM provides a short-cut for obtaining this data, as illustrated below:</p>
+<section id="conduit-data">
+<h2><code class="docutils literal notranslate"><span class="pre">conduit</span></code> data<a class="headerlink" href="#conduit-data" title="Permalink to this heading">#</a></h2>
+<p>A <em>conduit</em> in OpenPNM refers to a ‘pore-throat-pore’ connection, where the pores and throats are each called <em>elements</em>. These <em>elements</em> act as resistors (or conductors) in series. Each <em>conduit</em> therefor contains exactly 1 throat and 2 pores. Transport within the network occurs via these interconnected <em>conduits</em>, so the geometric properties of these elements are often need for computing things like diffusive conductance. This is common enough that OpenPNM V3 includes a new helper function for obtaining this data, as illustrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;conduit.diameter&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="s1">&#39;diameter&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1070,26 +1067,6 @@ Other general, but non-essential rules are:</p></li>
 </div>
 </div>
 <p>Which can be seen to match the diameter values in <code class="docutils literal notranslate"><span class="pre">D</span></code> above.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">conduit</span></code> prefix only works for <em>reading</em> data, and does not allow writing data.</p>
-</div>
-<p>There is also a methon on all OpenPNM object that allow for retrieval of contuit data:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.47440675 0.23720338 0.55759468]
- [0.55759468 0.25069084 0.50138169]
- [0.50138169 0.2362208  0.47244159]]
-</pre></div>
-</div>
-</div>
-</div>
 </section>
 </section>
 

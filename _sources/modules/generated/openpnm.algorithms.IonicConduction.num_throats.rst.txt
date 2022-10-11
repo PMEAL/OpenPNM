@@ -1,8 +1,0 @@
-:orphan:
-
-num_throats
-==============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: IonicConduction.num_throats

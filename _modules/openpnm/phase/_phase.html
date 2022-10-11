@@ -223,7 +223,7 @@
 <span class="k">class</span> <span class="nc">Phase</span><span class="p">(</span><span class="n">Domain</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class produces an empty object with no pore-scale models for</span>
-<span class="sd">    calculating any thermophysical properties.  Users must add models and</span>
+<span class="sd">    calculating any thermophysical properties. Users must add models and</span>
 <span class="sd">    specify parameters for all the properties they require.</span>
 
 <span class="sd">    Parameters</span>
@@ -240,6 +240,26 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">298.0</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">101325.0</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># If label on self, get mask</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Else get mask from network</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">domain</span><span class="p">]</span>
+            <span class="c1"># Fetch array from self</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_empty_array_like</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
+            <span class="c1"># Insert values into masked locations</span>
+            <span class="n">temp</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># If key exists, just get it</span>

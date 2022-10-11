@@ -1,8 +1,0 @@
-:orphan:
-
-clear_rate_BCs
-=================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: IonicConduction.clear_rate_BCs

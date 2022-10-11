@@ -439,13 +439,12 @@
   fig.canvas.print_figure(bytes_io, **kw)
 </pre></div>
 </div>
-<img alt="../../_images/c0b45e4212b070506e3bfe6b98c76debe0ea9799cc72474440266eb1139e641f.png" src="../../_images/c0b45e4212b070506e3bfe6b98c76debe0ea9799cc72474440266eb1139e641f.png" />
+<img alt="../../_images/72bc80b932c7eed152966d50d61953c3a15795bb779fd8a81343cf4637501f2b.png" src="../../_images/72bc80b932c7eed152966d50d61953c3a15795bb779fd8a81343cf4637501f2b.png" />
 </div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Quick Visualization in the IDE<br />
-The above block uses <code class="docutils literal notranslate"><span class="pre">op.visualization.plot_coordinates</span></code> and <code class="docutils literal notranslate"><span class="pre">op.visualization.plot_connections</span></code>. The options for visualization are explored late in this tutorial.</p>
+<p><strong>Quick Visualization in the IDE:</strong> The above block uses <code class="docutils literal notranslate"><span class="pre">op.visualization.plot_coordinates</span></code> and <code class="docutils literal notranslate"><span class="pre">op.visualization.plot_connections</span></code> which are designed for rough display of small networks. The options for visualization are explored later in this tutorial.</p>
 </div>
 <p>The shape and spacing of the network can both be altered:</p>
 <div class="cell docutils container">
@@ -457,7 +456,7 @@ The above block uses <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/db8e541223258ef7f7d6eb7c6ee4b7c1cf9bfb224c35fa1cb4169972a6f48218.png" src="../../_images/db8e541223258ef7f7d6eb7c6ee4b7c1cf9bfb224c35fa1cb4169972a6f48218.png" />
+<img alt="../../_images/93cc8267d33ff18a78ae88c1ead65768ed8d4b7687cfc40643f6e40eafb03f20.png" src="../../_images/93cc8267d33ff18a78ae88c1ead65768ed8d4b7687cfc40643f6e40eafb03f20.png" />
 </div>
 </div>
 <p>It is also possible to add more than just the standard 6 connections:</p>
@@ -470,7 +469,7 @@ The above block uses <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/417273564403421f6157149caa85a5bf405317db0d14d37326e7965d998b00a8.png" src="../../_images/417273564403421f6157149caa85a5bf405317db0d14d37326e7965d998b00a8.png" />
+<img alt="../../_images/4df3221d08a439d0e6ff82f50b7b2f55a7bf42be4b7826283b8a526d9e05b680.png" src="../../_images/4df3221d08a439d0e6ff82f50b7b2f55a7bf42be4b7826283b8a526d9e05b680.png" />
 </div>
 </div>
 <p>One of the uses of a 26-connreadd network is the removal of throats at random to create a more natural topology.  There is a more detailed description of how to manipulate networks in a following tutorial, but here we’ll introduce the <code class="docutils literal notranslate"><span class="pre">topotools</span></code> module, which contains the <code class="docutils literal notranslate"><span class="pre">trim</span></code> function which allows us to delete some throats or pores:</p>
@@ -486,13 +485,12 @@ The above block uses <code class="docutils literal notranslate"><span class="pre
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/aba4e645071ada48fe30f3f28b908204e234e71948f913906c5490ef13d5c06c.png" src="../../_images/aba4e645071ada48fe30f3f28b908204e234e71948f913906c5490ef13d5c06c.png" />
+<img alt="../../_images/df70c298ff79e42d5c14ed26c04f94cf718ac0474c73211b658ece58987dfc55.png" src="../../_images/df70c298ff79e42d5c14ed26c04f94cf718ac0474c73211b658ece58987dfc55.png" />
 </div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Printing objects to see their details
-It is very common practice to print the objects at the interactive prompt to see its details using <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code> for example</p>
+<p><strong>Printing objects to see their details:</strong> It is common practice to print the objects at the interactive prompt to see its details using <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code> for example. The displayed output shows all the arrays currently on the object, along with a few key details.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -502,7 +500,7 @@ It is very common practice to print the objects at the interactive prompt to see
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f83095f5400&gt;
+net : &lt;openpnm.network.Cubic at 0x7f3f399a04f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -574,7 +572,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/206ab0ef64e5321725cf299da02cf6ade4beb503468c6cc20c57b0def018cf9f.png" src="../../_images/206ab0ef64e5321725cf299da02cf6ade4beb503468c6cc20c57b0def018cf9f.png" />
+<img alt="../../_images/e50ac1b24d6e6389da5207822fa128b84da71add02d7d8212459259829c4c7c6.png" src="../../_images/e50ac1b24d6e6389da5207822fa128b84da71add02d7d8212459259829c4c7c6.png" />
 </div>
 </div>
 </section>
@@ -593,14 +591,13 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9f2fe6128247fdc484c8a0649431e59d4c629dcaac0b427db97161c02c4ac08d.png" src="../../_images/9f2fe6128247fdc484c8a0649431e59d4c629dcaac0b427db97161c02c4ac08d.png" />
-<img alt="../../_images/cae24fd37d81f4dbf053840850a9d94b049255f5e26db85bd8d39bfba2bb80c5.png" src="../../_images/cae24fd37d81f4dbf053840850a9d94b049255f5e26db85bd8d39bfba2bb80c5.png" />
+<img alt="../../_images/831c7dd5e440beb65b694d5b6f1a044e9ffdad410d4360bd9966d18b5487ead1.png" src="../../_images/831c7dd5e440beb65b694d5b6f1a044e9ffdad410d4360bd9966d18b5487ead1.png" />
+<img alt="../../_images/ea083685206666f61164c65e033c9315f9538b970762db33c1239d14edb53394.png" src="../../_images/ea083685206666f61164c65e033c9315f9538b970762db33c1239d14edb53394.png" />
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The meaning of shape in fcc and bcc lattices
-Note that the 4x4x4 spacing refers to the number of corner sites, so it’s basically the same size and shape as would be obtained using <code class="docutils literal notranslate"><span class="pre">Cubic</span></code>, but it has the extra nodes placed between the corner sites.</p>
+<p><strong>The meaning of shape in fcc and bcc lattices:</strong> Note that the 4x4x4 spacing refers to the number of corner sites, so it’s basically the same size and shape as would be obtained using <code class="docutils literal notranslate"><span class="pre">Cubic</span></code>, but it has the extra nodes placed between the corner sites.</p>
 </div>
 <p>The fcc and bcc lattices include labels indicating whether pores are are center, corner, or face pores, as well as labels for throats indidcating which type of pores they connect.  These labels can be used in the <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> and <code class="docutils literal notranslate"><span class="pre">plot_coordinates</span></code> functions to show only a portion of the pores and throats or to color them each differently.</p>
 <div class="cell docutils container">
@@ -611,7 +608,7 @@ Note that the 4x4x4 spacing refers to the number of corner sites, so it’s basi
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
+net : &lt;openpnm.network.BodyCenteredCubic at 0x7f3f398fef90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -645,7 +642,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/115c7969f1566157b1640141f0a33108386af19b6da6fbfd6a086c6b1f0247d2.png" src="../../_images/115c7969f1566157b1640141f0a33108386af19b6da6fbfd6a086c6b1f0247d2.png" />
+<img alt="../../_images/6ea8319f0b2d7bbe9369feccd6d1277ce04bdb9ebd89e1769990ff06d0a79fc5.png" src="../../_images/6ea8319f0b2d7bbe9369feccd6d1277ce04bdb9ebd89e1769990ff06d0a79fc5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -658,7 +655,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1d74fd6cfd1efa4a23af7890eaa696cb7550b0733821c1ce772c8c4265aca285.png" src="../../_images/1d74fd6cfd1efa4a23af7890eaa696cb7550b0733821c1ce772c8c4265aca285.png" />
+<img alt="../../_images/d5257cfb7d740b367cbda7888dcf29de0a891b1a9192500deb68c636d8b824ff.png" src="../../_images/d5257cfb7d740b367cbda7888dcf29de0a891b1a9192500deb68c636d8b824ff.png" />
 </div>
 </div>
 </section>
@@ -674,9 +671,10 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7e72d95df5c098ee7a3446745773d195f9cbc19c2b252b96a30213e5b24f69b2.png" src="../../_images/7e72d95df5c098ee7a3446745773d195f9cbc19c2b252b96a30213e5b24f69b2.png" />
+<img alt="../../_images/2d6a188d2757e703ade90bfcfcec4da8ad53f1d47800ddaaa26984522761e650.png" src="../../_images/2d6a188d2757e703ade90bfcfcec4da8ad53f1d47800ddaaa26984522761e650.png" />
 </div>
 </div>
+<p>And there is also the complementary Delaunay tessellation:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -686,9 +684,10 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/db7abad30e211eb1a8e5f5b573dac929be835aaebb7d48b066dcf2eeb5faedd0.png" src="../../_images/db7abad30e211eb1a8e5f5b573dac929be835aaebb7d48b066dcf2eeb5faedd0.png" />
+<img alt="../../_images/40b12a0ec502f2673199ebcdb6d46516b5cb103799ee15680fd152b748e0f08f.png" src="../../_images/40b12a0ec502f2673199ebcdb6d46516b5cb103799ee15680fd152b748e0f08f.png" />
 </div>
 </div>
+<p>And these can be combined in a dual network where the Voronoi and Delaunay networks interpenetrate each other and are connected by additional throats:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">DelaunayVoronoiDual</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
@@ -698,7 +697,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9c2d383a502e6fc0aa2540dd13792667fec0ba45842e43c2b2dcf4e7758ea93e.png" src="../../_images/9c2d383a502e6fc0aa2540dd13792667fec0ba45842e43c2b2dcf4e7758ea93e.png" />
+<img alt="../../_images/a8e78520311ee66ccd51d67990cb03a9b9d3043e93884a3755c0d5d3408be199.png" src="../../_images/a8e78520311ee66ccd51d67990cb03a9b9d3043e93884a3755c0d5d3408be199.png" />
 </div>
 </div>
 <p>It is also possible to create these lattices in cylindrical and spherical shapes.  This is done via the <code class="docutils literal notranslate"><span class="pre">shape</span></code> argument such that [x, y, z] assumes cartesian, [r, z] assumes cylindrical and [r] assumes spherical:</p>
@@ -711,7 +710,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/52f10d39740f9bbcab56087c09eb86f9bae6b813581cac18fa0496713401ed49.png" src="../../_images/52f10d39740f9bbcab56087c09eb86f9bae6b813581cac18fa0496713401ed49.png" />
+<img alt="../../_images/43da98e2964fd5a2ded97d26280b42d33f592f5b9ad1ec561a4f975196976e04.png" src="../../_images/43da98e2964fd5a2ded97d26280b42d33f592f5b9ad1ec561a4f975196976e04.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -723,13 +722,13 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d8e88d233aff67a0371b91dcd5a1af3991817ff173bcdc18cd05d979549b2306.png" src="../../_images/d8e88d233aff67a0371b91dcd5a1af3991817ff173bcdc18cd05d979549b2306.png" />
+<img alt="../../_images/c1c683fddd850ea5465465d6959b4f8a97e6bde7a29650a7e3f2fdb6f3fa423a.png" src="../../_images/c1c683fddd850ea5465465d6959b4f8a97e6bde7a29650a7e3f2fdb6f3fa423a.png" />
 </div>
 </div>
 </section>
 <section id="imported-networks">
 <h2>Imported Networks<a class="headerlink" href="#imported-networks" title="Permalink to this heading">#</a></h2>
-<p>Just as OpenPNM can handle random Voronoi networks, it can handle network extracted from images as well. This will be covered in a later tutorial, but the basic idea is that OpenPNM needs to know the [x, y, z] coordinates of each pore, and which pores are connected to which.  Let’s generate our own simple network just for fun:</p>
+<p>Just as OpenPNM can handle random Voronoi networks, it can handle network extracted from images as well. The basic idea is that OpenPNM needs to know the [x, y, z] coordinates of each pore, and which pores are connected to which.  Let’s generate our own simple network just for fun:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># coordinates for pore 0</span>
@@ -761,7 +760,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0e34145b02210369c2c5a1d10014a888671b91c37a03391e1f49323b9367e152.png" src="../../_images/0e34145b02210369c2c5a1d10014a888671b91c37a03391e1f49323b9367e152.png" />
+<img alt="../../_images/35d2f863a016ce7af58a6c68117a94a49b181de40eb6ab67ae4b38fb978e1e41.png" src="../../_images/35d2f863a016ce7af58a6c68117a94a49b181de40eb6ab67ae4b38fb978e1e41.png" />
 </div>
 </div>
 <p>Now let’s add the pore and throat diameter values. Note the naming convention of preceding the keys with <code class="docutils literal notranslate"><span class="pre">'pore.'</span></code> or <code class="docutils literal notranslate"><span class="pre">'throat.'</span></code>. This will be discussed in more depth in the next tutorial.</p>
@@ -782,10 +781,10 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f83095c7360&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/87ab512ba0173354cc4e97418e844c89a9f0a6de888d47c2cfc80c9837bfa79d.png" src="../../_images/87ab512ba0173354cc4e97418e844c89a9f0a6de888d47c2cfc80c9837bfa79d.png" />
+<img alt="../../_images/60d223632b61e56a3c70189d81938d2c4e6fa1555ec02d14c1302c9d3887bdf2.png" src="../../_images/60d223632b61e56a3c70189d81938d2c4e6fa1555ec02d14c1302c9d3887bdf2.png" />
 </div>
 </div>
-<p>For extracted networks it is not expected that a user would enter all the values by hand as done above. OpenPNM has an <code class="docutils literal notranslate"><span class="pre">io</span></code> module which contains functions for reading from a wide assortment of file formats, as well as outputting to a limited number.  This is covered in the final tutorial of this series.</p>
+<p>For extracted networks it is not expected that a user would enter all the values by hand as done above. OpenPNM has an <code class="docutils literal notranslate"><span class="pre">io</span></code> module which contains functions for reading from a wide assortment of file formats, as well as outputting to a limited number.</p>
 </section>
 </section>
 

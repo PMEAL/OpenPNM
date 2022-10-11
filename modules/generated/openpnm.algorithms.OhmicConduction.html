@@ -47,7 +47,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="clear_BCs" href="openpnm.algorithms.OhmicConduction.clear_BCs.html" />
-    <link rel="prev" title="to_mask" href="openpnm.algorithms.IonicConduction.to_mask.html" />
+    <link rel="prev" title="to_mask" href="openpnm.algorithms.InvasionPercolation.to_mask.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
   </head>
@@ -1404,11 +1404,6 @@
      </i>
     </label>
     <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_boundary_pores.html">
-       add_boundary_pores
-      </a>
-     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="openpnm.network.DelaunayVoronoiDual.add_model.html">
        add_model
@@ -4084,11 +4079,6 @@
       </label>
       <ul>
        <li class="toctree-l4">
-        <a class="reference internal" href="openpnm.models.geometry.throat_capillary_shape_factor.compactness.html">
-         compactness
-        </a>
-       </li>
-       <li class="toctree-l4">
         <a class="reference internal" href="openpnm.models.geometry.throat_capillary_shape_factor.jenkins_rao.html">
          jenkins_rao
         </a>
@@ -6016,8 +6006,18 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.set_inlet_BC.html">
+       set_inlet_BC
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.set_label.html">
        set_label
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.algorithms.InvasionPercolation.set_outlet_BC.html">
+       set_outlet_BC
       </a>
      </li>
      <li class="toctree-l3">
@@ -6037,129 +6037,12 @@
      </li>
     </ul>
    </li>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="openpnm.algorithms.IonicConduction.html">
-     IonicConduction
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-100" name="toctree-checkbox-100" type="checkbox"/>
-    <label for="toctree-checkbox-100">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.clear_BCs.html">
-       clear_BCs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.clear_rate_BCs.html">
-       clear_rate_BCs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.clear_value_BCs.html">
-       clear_value_BCs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.filter_by_label.html">
-       filter_by_label
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.get_conduit_data.html">
-       get_conduit_data
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.interpolate_data.html">
-       interpolate_data
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.labels.html">
-       labels
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.num_pores.html">
-       num_pores
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.num_throats.html">
-       num_throats
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.pores.html">
-       pores
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.props.html">
-       props
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.rate.html">
-       rate
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.run.html">
-       run
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_BC.html">
-       set_BC
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_label.html">
-       set_label
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_rate_BC.html">
-       set_rate_BC
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_source.html">
-       set_source
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.set_value_BC.html">
-       set_value_BC
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.throats.html">
-       throats
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.to_indices.html">
-       to_indices
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.IonicConduction.to_mask.html">
-       to_mask
-      </a>
-     </li>
-    </ul>
-   </li>
    <li class="toctree-l2 current active has-children">
     <a class="current reference internal" href="#">
      OhmicConduction
     </a>
-    <input checked="" class="toctree-checkbox" id="toctree-checkbox-101" name="toctree-checkbox-101" type="checkbox"/>
-    <label for="toctree-checkbox-101">
+    <input checked="" class="toctree-checkbox" id="toctree-checkbox-100" name="toctree-checkbox-100" type="checkbox"/>
+    <label for="toctree-checkbox-100">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -6275,8 +6158,8 @@
     <a class="reference internal" href="openpnm.algorithms.ReactiveTransport.html">
      ReactiveTransport
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-102" name="toctree-checkbox-102" type="checkbox"/>
-    <label for="toctree-checkbox-102">
+    <input class="toctree-checkbox" id="toctree-checkbox-101" name="toctree-checkbox-101" type="checkbox"/>
+    <label for="toctree-checkbox-101">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -6392,8 +6275,8 @@
     <a class="reference internal" href="openpnm.algorithms.StokesFlow.html">
      StokesFlow
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-103" name="toctree-checkbox-103" type="checkbox"/>
-    <label for="toctree-checkbox-103">
+    <input class="toctree-checkbox" id="toctree-checkbox-102" name="toctree-checkbox-102" type="checkbox"/>
+    <label for="toctree-checkbox-102">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -6509,8 +6392,8 @@
     <a class="reference internal" href="openpnm.algorithms.TransientAdvectionDiffusion.html">
      TransientAdvectionDiffusion
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-104" name="toctree-checkbox-104" type="checkbox"/>
-    <label for="toctree-checkbox-104">
+    <input class="toctree-checkbox" id="toctree-checkbox-103" name="toctree-checkbox-103" type="checkbox"/>
+    <label for="toctree-checkbox-103">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -6631,8 +6514,8 @@
     <a class="reference internal" href="openpnm.algorithms.TransientFickianDiffusion.html">
      TransientFickianDiffusion
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-105" name="toctree-checkbox-105" type="checkbox"/>
-    <label for="toctree-checkbox-105">
+    <input class="toctree-checkbox" id="toctree-checkbox-104" name="toctree-checkbox-104" type="checkbox"/>
+    <label for="toctree-checkbox-104">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -6745,128 +6628,11 @@
     </ul>
    </li>
    <li class="toctree-l2 has-children">
-    <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.html">
-     TransientIonicConduction
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-106" name="toctree-checkbox-106" type="checkbox"/>
-    <label for="toctree-checkbox-106">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.clear_BCs.html">
-       clear_BCs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.clear_rate_BCs.html">
-       clear_rate_BCs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.clear_value_BCs.html">
-       clear_value_BCs
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.filter_by_label.html">
-       filter_by_label
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.get_conduit_data.html">
-       get_conduit_data
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.interpolate_data.html">
-       interpolate_data
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.labels.html">
-       labels
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.num_pores.html">
-       num_pores
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.num_throats.html">
-       num_throats
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.pores.html">
-       pores
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.props.html">
-       props
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.rate.html">
-       rate
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.run.html">
-       run
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_BC.html">
-       set_BC
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_label.html">
-       set_label
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_rate_BC.html">
-       set_rate_BC
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_source.html">
-       set_source
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.set_value_BC.html">
-       set_value_BC
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.throats.html">
-       throats
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.to_indices.html">
-       to_indices
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="openpnm.algorithms.TransientIonicConduction.to_mask.html">
-       to_mask
-      </a>
-     </li>
-    </ul>
-   </li>
-   <li class="toctree-l2 has-children">
     <a class="reference internal" href="openpnm.algorithms.TransientReactiveTransport.html">
      TransientReactiveTransport
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-107" name="toctree-checkbox-107" type="checkbox"/>
-    <label for="toctree-checkbox-107">
+    <input class="toctree-checkbox" id="toctree-checkbox-105" name="toctree-checkbox-105" type="checkbox"/>
+    <label for="toctree-checkbox-105">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -6982,8 +6748,8 @@
     <a class="reference internal" href="openpnm.algorithms.Transport.html">
      Transport
     </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-108" name="toctree-checkbox-108" type="checkbox"/>
-    <label for="toctree-checkbox-108">
+    <input class="toctree-checkbox" id="toctree-checkbox-106" name="toctree-checkbox-106" type="checkbox"/>
+    <label for="toctree-checkbox-106">
      <i class="fas fa-chevron-down">
      </i>
     </label>
@@ -7096,8 +6862,8 @@
   <a class="reference internal" href="openpnm.topotools.html">
    topotools
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-109" name="toctree-checkbox-109" type="checkbox"/>
-  <label for="toctree-checkbox-109">
+  <input class="toctree-checkbox" id="toctree-checkbox-107" name="toctree-checkbox-107" type="checkbox"/>
+  <label for="toctree-checkbox-107">
    <i class="fas fa-chevron-down">
    </i>
   </label>
@@ -7173,6 +6939,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.topotools.find_isolated_clusters.html">
+     find_isolated_clusters
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.topotools.find_neighbor_bonds.html">
      find_neighbor_bonds
     </a>
@@ -7185,11 +6956,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="openpnm.topotools.find_path.html">
      find_path
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.topotools.find_pore_to_pore_distance.html">
-     find_pore_to_pore_distance
     </a>
    </li>
    <li class="toctree-l2">
@@ -7293,11 +7059,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.topotools.remove_isolated_clusters.html">
-     remove_isolated_clusters
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.topotools.rotate_coords.html">
      rotate_coords
     </a>
@@ -7315,11 +7076,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="openpnm.topotools.stitch.html">
      stitch
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="openpnm.topotools.stitch_pores.html">
-     stitch_pores
     </a>
    </li>
    <li class="toctree-l2">
@@ -7343,6 +7099,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="openpnm.topotools.trim_disconnected_clusters.html">
+     trim_disconnected_clusters
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="openpnm.topotools.vor_to_am.html">
      vor_to_am
     </a>
@@ -7353,8 +7114,8 @@
   <a class="reference internal" href="openpnm.io.html">
    io
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-110" name="toctree-checkbox-110" type="checkbox"/>
-  <label for="toctree-checkbox-110">
+  <input class="toctree-checkbox" id="toctree-checkbox-108" name="toctree-checkbox-108" type="checkbox"/>
+  <label for="toctree-checkbox-108">
    <i class="fas fa-chevron-down">
    </i>
   </label>

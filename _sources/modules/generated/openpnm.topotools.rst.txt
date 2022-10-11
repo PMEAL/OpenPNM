@@ -34,10 +34,10 @@ topotools
       find_connected_sites
       find_connecting_bonds
       find_interface_throats
+      find_isolated_clusters
       find_neighbor_bonds
       find_neighbor_sites
       find_path
-      find_pore_to_pore_distance
       find_surface_pores
       generate_base_points
       get_domain_area
@@ -58,16 +58,15 @@ topotools
       merge_pores
       reduce_coordination
       reflect_base_points
-      remove_isolated_clusters
       rotate_coords
       shear_coords
       site_percolation
       stitch
-      stitch_pores
       template_cylinder_annulus
       template_sphere_shell
       tri_to_am
       trim
+      trim_disconnected_clusters
       vor_to_am
    
    

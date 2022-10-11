@@ -197,7 +197,6 @@
 <span class="kn">from</span> <span class="nn">openpnm._skgraph.simulations</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">bond_percolation</span><span class="p">,</span>
     <span class="n">site_percolation</span><span class="p">,</span>
-    <span class="n">mixed_percolation</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">openpnm._skgraph.queries</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">qupc_initialize</span><span class="p">,</span>
@@ -301,11 +300,79 @@
                 <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.residual&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="InvasionPercolation.set_inlet_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.set_inlet_BC.html#openpnm.algorithms.InvasionPercolation.set_inlet_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlet_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specifies which pores are treated as inlets for the invading phase</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : ndarray</span>
+<span class="sd">            The indices of the pores from which the invading fluid invasion</span>
+<span class="sd">            should start</span>
+<span class="sd">        mode : str or list of str, optional</span>
+<span class="sd">            Controls how the boundary conditions are applied. Options are:</span>
+
+<span class="sd">            ============ =====================================================</span>
+<span class="sd">            mode         meaning</span>
+<span class="sd">            ============ =====================================================</span>
+<span class="sd">            &#39;add&#39;        (default) Adds the supplied boundary conditions to</span>
+<span class="sd">                         the given locations. Raises an exception if values</span>
+<span class="sd">                         of any type already exist in the given locations.</span>
+<span class="sd">            &#39;overwrite&#39;  Adds supplied boundary conditions to the given</span>
+<span class="sd">                         locations, including overwriting conditions of the</span>
+<span class="sd">                         given type or any other type that may be present in</span>
+<span class="sd">                         the given locations.</span>
+<span class="sd">            &#39;remove&#39;     Removes boundary conditions of the specified type</span>
+<span class="sd">                         from the specified locations. If ``bctype`` is not</span>
+<span class="sd">                         specified then *all* types are removed. If no</span>
+<span class="sd">                         locations are given then values are remvoed from</span>
+<span class="sd">                         *all* locations.</span>
+<span class="sd">            ============ =====================================================</span>
+
+<span class="sd">            If a list of strings is provided, then each mode in the list is</span>
+<span class="sd">            handled in order, so that ``[&#39;remove&#39;, &#39;add&#39;]`` will give the same</span>
+<span class="sd">            results add ``&#39;overwrite&#39;``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;inlet&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc.inlet&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.set_outlet_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.set_outlet_BC.html#openpnm.algorithms.InvasionPercolation.set_outlet_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_outlet_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specifies which pores are treated as outlets for the defending phase</span>
+
+<span class="sd">        This must be specified if trapping is to be considered.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pores : ndarray</span>
+<span class="sd">            The indices of the pores from which the defending fluid exits the</span>
+<span class="sd">            domain</span>
+<span class="sd">        mode : str or list of str, optional</span>
+<span class="sd">            Controls how the boundary conditions are applied. Options are:</span>
+
+<span class="sd">            ============ =====================================================</span>
+<span class="sd">            mode         meaning</span>
+<span class="sd">            ============ =====================================================</span>
+<span class="sd">            &#39;add&#39;        (default) Adds the supplied boundary conditions to</span>
+<span class="sd">                         the given locations. Raises an exception if values</span>
+<span class="sd">                         of any type already exist in the given locations.</span>
+<span class="sd">            &#39;overwrite&#39;  Adds supplied boundary conditions to the given</span>
+<span class="sd">                         locations, including overwriting conditions of the</span>
+<span class="sd">                         given type or any other type that may be present in</span>
+<span class="sd">                         the given locations.</span>
+<span class="sd">            &#39;remove&#39;     Removes boundary conditions of the specified type</span>
+<span class="sd">                         from the specified locations. If ``bctype`` is not</span>
+<span class="sd">                         specified then *all* types are removed. If no</span>
+<span class="sd">                         locations are given then values are remvoed from</span>
+<span class="sd">                         *all* locations.</span>
+<span class="sd">            ============ =====================================================</span>
+
+<span class="sd">            If a list of strings is provided, then each mode in the list is</span>
+<span class="sd">            handled in order, so that ``[&#39;remove&#39;, &#39;add&#39;]`` will give the same</span>
+<span class="sd">            results add ``&#39;overwrite&#39;``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;outlet&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.run"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.run.html#openpnm.algorithms.InvasionPercolation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -367,8 +434,8 @@
 
 <div class="viewcode-block" id="InvasionPercolation.pc_curve"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.pc_curve.html#openpnm.algorithms.InvasionPercolation.pc_curve">[docs]</a>    <span class="k">def</span> <span class="nf">pc_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the percolation data as the invader volume vs the capillary</span>
-<span class="sd">        pressure.</span>
+<span class="sd">        Get the percolation data as the non-wetting phase saturation vs the</span>
+<span class="sd">        capillary pressure.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">network</span>
@@ -379,8 +446,8 @@
         <span class="n">pvols</span> <span class="o">/=</span> <span class="n">tot_vol</span>
         <span class="n">tvols</span> <span class="o">/=</span> <span class="n">tot_vol</span>
         <span class="c1"># Remove trapped volume</span>
-        <span class="n">pmask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="n">tmask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">pmask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="n">tmask</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span>
         <span class="n">pvols</span> <span class="o">=</span> <span class="n">pvols</span><span class="p">[</span><span class="n">pmask</span><span class="p">]</span>
         <span class="n">tvols</span> <span class="o">=</span> <span class="n">tvols</span><span class="p">[</span><span class="n">tmask</span><span class="p">]</span>
         <span class="n">pseq</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="n">pmask</span><span class="p">]</span>
@@ -464,10 +531,6 @@
             <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;site&#39;</span><span class="p">:</span>
                 <span class="n">s</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">site_percolation</span><span class="p">(</span><span class="n">conns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">,</span>
                                         <span class="n">occupied_sites</span><span class="o">=</span><span class="n">pseq</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;mixed&#39;</span><span class="p">:</span>
-                <span class="n">s</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">mixed_percolation</span><span class="p">(</span><span class="n">conns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">,</span>
-                                         <span class="n">occupied_sites</span><span class="o">=</span><span class="n">pseq</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">,</span>
-                                         <span class="n">occupied_bonds</span><span class="o">=</span><span class="n">tseq</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span>
             <span class="n">clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc.outlet&#39;</span><span class="p">]])</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.trapped&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">clusters</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">pseq</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.trapped&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">clusters</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">tseq</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span>
@@ -480,7 +543,7 @@
 
 
 <span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">_find_trapped_pores</span><span class="p">(</span><span class="n">inv_seq</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">,</span> <span class="n">outlets</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_find_trapped_pores</span><span class="p">(</span><span class="n">inv_seq</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">,</span> <span class="n">outlets</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">Np</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inv_seq</span><span class="p">)</span>
     <span class="n">sorted_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">inv_seq</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
     <span class="n">sorted_seq</span> <span class="o">=</span> <span class="n">sorted_seq</span><span class="p">[</span><span class="n">sorted_seq</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -541,7 +604,7 @@
 
 <span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">_run_accelerated</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span> <span class="n">t_sorted</span><span class="p">,</span> <span class="n">t_order</span><span class="p">,</span> <span class="n">t_inv</span><span class="p">,</span> <span class="n">p_inv</span><span class="p">,</span> <span class="n">p_inv_t</span><span class="p">,</span>
-                     <span class="n">conns</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">indptr</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">):</span>
+                     <span class="n">conns</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">indptr</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Numba-jitted run method for InvasionPercolation class.</span>
 
@@ -563,7 +626,7 @@
     <span class="n">queue</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">t_start</span><span class="p">)</span>
     <span class="n">hq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># Find throat at the top of the queue</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">hq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span>
         <span class="c1"># Extract actual throat number</span>
@@ -589,6 +652,8 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Ts</span><span class="p">:</span>  <span class="c1"># Add throat to the queue</span>
                 <span class="n">hq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">t_order</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
     <span class="k">return</span> <span class="n">t_inv</span><span class="p">,</span> <span class="n">p_inv</span><span class="p">,</span> <span class="n">p_inv_t</span>
 
 

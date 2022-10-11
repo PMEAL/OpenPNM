@@ -193,13 +193,15 @@
 <span class="kn">from</span> <span class="nn">openpnm.utils</span> <span class="kn">import</span> <span class="n">PrintableDict</span><span class="p">,</span> <span class="n">Workspace</span>
 <span class="kn">from</span> <span class="nn">openpnm._skgraph</span> <span class="kn">import</span> <span class="n">simulations</span>
 <span class="kn">from</span> <span class="nn">openpnm._skgraph</span> <span class="kn">import</span> <span class="n">queries</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ws</span> <span class="o">=</span> <span class="n">Workspace</span><span class="p">()</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;ispercolating&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;remove_isolated_clusters&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;find_isolated_clusters&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;trim_disconnected_clusters&#39;</span><span class="p">,</span>
     <span class="s1">&#39;site_percolation&#39;</span><span class="p">,</span>
     <span class="s1">&#39;bond_percolation&#39;</span><span class="p">,</span>
     <span class="s1">&#39;find_clusters&#39;</span><span class="p">,</span>
@@ -208,7 +210,7 @@
 
 
 <div class="viewcode-block" id="find_path"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_path.html#openpnm.topotools.find_path">[docs]</a><span class="k">def</span> <span class="nf">find_path</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_pairs</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_path</span><span class="p">(</span><span class="n">g</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">pairs</span><span class="o">=</span><span class="n">pore_pairs</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_path</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">pairs</span><span class="o">=</span><span class="n">pore_pairs</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span></div>
 
 
 <span class="n">find_path</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_path</span><span class="o">.</span><span class="vm">__doc__</span>
@@ -231,13 +233,6 @@
 <span class="n">ispercolating</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">simulations</span><span class="o">.</span><span class="n">ispercolating</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
-<div class="viewcode-block" id="remove_isolated_clusters"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.remove_isolated_clusters.html#openpnm.topotools.remove_isolated_clusters">[docs]</a><span class="k">def</span> <span class="nf">remove_isolated_clusters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">simulations</span><span class="o">.</span><span class="n">remove_isolated_clusters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
-
-<span class="n">remove_isolated_clusters</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">simulations</span><span class="o">.</span><span class="n">remove_isolated_clusters</span><span class="o">.</span><span class="vm">__doc__</span>
-
-
 <div class="viewcode-block" id="site_percolation"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.site_percolation.html#openpnm.topotools.site_percolation">[docs]</a><span class="k">def</span> <span class="nf">site_percolation</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">occupied_sites</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">simulations</span><span class="o">.</span><span class="n">site_percolation</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">,</span> <span class="n">occupied_sites</span><span class="p">)</span></div>
 
@@ -252,12 +247,41 @@
 <span class="n">bond_percolation</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">simulations</span><span class="o">.</span><span class="n">bond_percolation</span><span class="o">.</span><span class="vm">__doc__</span>
 
 
-<span class="k">def</span> <span class="nf">trim_disconnected_clusters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">simulations</span><span class="o">.</span><span class="n">trim_disconnected_clusters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="viewcode-block" id="trim_disconnected_clusters"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.trim_disconnected_clusters.html#openpnm.topotools.trim_disconnected_clusters">[docs]</a><span class="k">def</span> <span class="nf">trim_disconnected_clusters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">simulations</span><span class="o">.</span><span class="n">trim_disconnected_clusters</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="n">trim_disconnected_clusters</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> \
     <span class="n">simulations</span><span class="o">.</span><span class="n">trim_disconnected_clusters</span><span class="o">.</span><span class="vm">__doc__</span>
+
+
+<div class="viewcode-block" id="find_isolated_clusters"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_isolated_clusters.html#openpnm.topotools.find_isolated_clusters">[docs]</a><span class="k">def</span> <span class="nf">find_isolated_clusters</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">inlets</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Identifies pores and throats that are invaded but not connected to the inlets</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : dict</span>
+<span class="sd">        The OpenPNM Network</span>
+<span class="sd">    mask : ndarray</span>
+<span class="sd">        A boolean mask of either Nt or Np length with ``True`` values</span>
+<span class="sd">        indicating invaded bonds or sites. If this array is Nt-long then</span>
+<span class="sd">        then bond percolation is used to identify clusters, whereas site</span>
+<span class="sd">        percolation is used if it is Np-long.</span>
+<span class="sd">    inlets : ndarray</span>
+<span class="sd">        A array containing indices of the pores which define the inlets. Any</span>
+<span class="sd">        clusters not connected to these sites are considered isolated.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sites : ndarray</span>
+<span class="sd">        An ndarray containing the indices of invaded pores which are not</span>
+<span class="sd">        connected to the given ``inlets``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">find_clusters</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">isolated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">pore_labels</span><span class="p">,</span> <span class="n">labels</span><span class="o">.</span><span class="n">pore_labels</span><span class="p">[</span><span class="n">inlets</span><span class="p">],</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">isolated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">isolated</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">isolated</span></div>
 
 
 <div class="viewcode-block" id="find_clusters"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_clusters.html#openpnm.topotools.find_clusters">[docs]</a><span class="k">def</span> <span class="nf">find_clusters</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="p">[]):</span>
@@ -272,15 +296,15 @@
 <span class="sd">    network : Network</span>
 <span class="sd">        The network</span>
 <span class="sd">    mask : array_like, boolean</span>
-<span class="sd">        A list of open bonds or sites (throats or pores).  If the mask is</span>
-<span class="sd">        Np long, then the method will perform a site percolation to identify</span>
-<span class="sd">        clusters, and if the mask is Nt long bond percolation will be</span>
+<span class="sd">        A list of open bonds or sites (throats or pores). If the mask is</span>
+<span class="sd">        Np-long, then the method will perform a site percolation to identify</span>
+<span class="sd">        clusters, and if the mask is Nt-long bond percolation will be</span>
 <span class="sd">        performed.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    p_labels, t_labels : tuple of ndarrays</span>
-<span class="sd">        A tuple containing an Np long arraY of pore cluster labels, and an</span>
+<span class="sd">        A tuple containing an Np-long array of pore cluster labels, and an</span>
 <span class="sd">        Nt-long array of throat cluster labels. The label numbers correspond</span>
 <span class="sd">        such that pores and throats with the same label are part of the same</span>
 <span class="sd">        cluster. Uninvaded locations are set to -1.</span>
@@ -300,7 +324,10 @@
             <span class="n">simulations</span><span class="o">.</span><span class="n">bond_percolation</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Mask received was neither Nt nor Np long&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">p_clusters</span><span class="p">,</span> <span class="n">t_clusters</span><span class="p">)</span></div>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;pore_labels&#39;</span><span class="p">,</span> <span class="s1">&#39;throat_labels&#39;</span><span class="p">))</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">pore_labels</span> <span class="o">=</span> <span class="n">p_clusters</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">throat_labels</span> <span class="o">=</span> <span class="n">t_clusters</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 
               </article>

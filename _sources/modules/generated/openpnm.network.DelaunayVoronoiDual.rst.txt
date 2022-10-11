@@ -14,7 +14,6 @@ DelaunayVoronoiDual
       .. autosummary::
          :toctree:
          
-            DelaunayVoronoiDual.add_boundary_pores
             DelaunayVoronoiDual.add_model
             DelaunayVoronoiDual.add_model_collection
             DelaunayVoronoiDual.clear

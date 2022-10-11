@@ -323,9 +323,9 @@
    "id": "f403af58",
    "metadata": {},
    "source": [
-    "```{tip} **Indexing pore properties by conns**\n",
+    "```{tip}\n",
     "\n",
-    "    Using the ``conns`` array to index into a pore property returns an Nt-by-2 array with the properties of the pores on the end of a throat in each column.  For instance, so see the diameter of the pore on each end of a throat, use ``pn['pore.diameter'][pn.conns]``.  This approach is very powerful.  If you ever feel tempted to use a for-loop to scan over each pore, then inspect the properties of the neighboring throats, consider instead if you can \"loop\" over the throats then interogate each pore.  If yes, then you can use this conns-indexing trick.\n",
+    " **Indexing pore properties by conns:** Using the `conns` array to index into a pore property returns an Nt-by-2 array with the properties of the pores on the end of a throat in each column.  For instance, so see the diameter of the pore on each end of a throat, use `pn['pore.diameter'][pn.conns]`.  This approach is very powerful.  If you ever feel tempted to use a for-loop to scan over each pore, then inspect the properties of the neighboring throats, consider instead if you can \"loop\" over the throats then interogate each pore.  If yes, then you can use this conns-indexing trick.\n",
     "    \n",
     "```"
    ]
@@ -665,9 +665,9 @@
    "id": "9421fc7f",
    "metadata": {},
    "source": [
-    "```{note} **Where do models go?**\n",
+    "```{note} **Where do models go?**  \n",
     "\n",
-    "    We'll look more closely at models later in this tutorial, but it's worth pointing out that the `add_model` method collects all the arguments provided and stores them in the `models` attribute of the object. Later, when `regenerate_models` is called, it looks into the `models` attribute and fetches the model (`f`) and the given arguments, calls the function, collects the returned result, and stores them in `pn[propname]`. You can see a list of models applied to the object with `print(pn.models)`. \n",
+    "  We'll look more closely at models later in this tutorial, but it's worth pointing out that the `add_model` method collects all the arguments provided and stores them in the `models` attribute of the object. Later, when `regenerate_models` is called, it looks into the `models` attribute and fetches the model (`f`) and the given arguments, calls the function, collects the returned result, and stores them in `pn[propname]`. You can see a list of models applied to the object with `print(pn.models)`. \n",
     "```"
    ]
   },
@@ -698,7 +698,7 @@
    "id": "72d55b9b",
    "metadata": {},
    "source": [
-    "```{tip} **Using shift-tab to see the docstring**\n",
+    "```{tip} **Using shift-tab to see the docstring** \n",
     "\n",
     "  In the above two code blocks the models were assigned to `f` first, then `f` was passed to the `model` argument. This is helpful for two reasons.  (1) It helps keep the line length below Python's preferred limit of 78 characters, and (2) it makes it possible to see the docstring of the model by putting the cursor at the end of the first line and hitting `shift-tab`. Seeing the docstring really helps to understand what a model does and what arguments are required.\n",
     "```"
@@ -811,7 +811,7 @@
    "source": [
     "```{warning} **Spherical pores overlap with their throats**\n",
     "\n",
-    "    A spherical pore will always have a region of overlap with it's connected throats. The volume of this region will be double counted if an extra step is not taken. \n",
+    "  A spherical pore will always have a region of overlap with its connected throats. The volume of this region will be double counted if an extra step is not taken. \n",
     "```"
    ]
   },
@@ -1059,7 +1059,7 @@
    "source": [
     "```{note} **The @ Notation**\n",
     "\n",
-    "    The `'@all'` that has been added to the model name is new in Version 3 and means that this model should be applied to pore that have the label `'pore.dall'`. This will be explained in detail in the next tutorial. \n",
+    "  The `'@all'` that has been added to the model name is new in Version 3 and means that this model should be applied to pore that have the label `'pore.dall'`. This will be explained in detail in the next tutorial. \n",
     "```"
    ]
   },

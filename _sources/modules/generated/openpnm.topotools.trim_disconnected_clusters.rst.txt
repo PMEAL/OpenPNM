@@ -1,0 +1,6 @@
+trim\_disconnected\_clusters
+============================
+
+.. currentmodule:: openpnm.topotools
+
+.. autofunction:: trim_disconnected_clusters

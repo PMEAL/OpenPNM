@@ -1,8 +1,0 @@
-:orphan:
-
-labels
-==================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientIonicConduction.labels

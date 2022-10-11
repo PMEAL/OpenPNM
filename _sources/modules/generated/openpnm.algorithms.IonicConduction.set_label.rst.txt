@@ -1,8 +1,0 @@
-:orphan:
-
-set_label
-============================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: IonicConduction.set_label

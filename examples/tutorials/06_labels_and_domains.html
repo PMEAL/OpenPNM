@@ -370,6 +370,23 @@
   <a class="reference internal nav-link" href="#using-predefined-labels">
    Using Predefined Labels
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#the-pores-and-throats-methods">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     pores
+    </span>
+   </code>
+   and
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     throats
+    </span>
+   </code>
+   methods
+  </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#using-the-mode-argument-in-the-pores-and-throats-methods">
@@ -488,7 +505,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
+net : &lt;openpnm.network.Cubic at 0x7f32273d1f40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -538,7 +555,24 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 </div>
 </div>
-<p>OpenPNM objects all have a method for accessing such locations directly without calling <code class="docutils literal notranslate"><span class="pre">where</span></code>:</p>
+<p>One of the advantages of using boolean masks as labels is that its easy to use boolean logic to find pores and throats with a certain combination of labels.  For instance, to find all pores that are labelled both <code class="docutils literal notranslate"><span class="pre">'left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'top'</span></code> we just multiply these label arrays together:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">corner_pores</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.left&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.front&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">corner_pores</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-pores-and-throats-methods">
+<h2>The <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> methods<a class="headerlink" href="#the-pores-and-throats-methods" title="Permalink to this heading">#</a></h2>
+<p>OpenPNM objects all have method for accessing pore and throat locations by label without calling <code class="docutils literal notranslate"><span class="pre">where</span></code> or building your own boolean logic filters.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
@@ -576,7 +610,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 </div>
 </div>
-<p>The default mode is <code class="docutils literal notranslate"><span class="pre">'or'</span></code> which means “retrieve all pores that are label ‘left’ or ‘back’, or both”.  This list can be reduced to pores that are <em>both</em> left <em>and</em> back, by specifying <code class="docutils literal notranslate"><span class="pre">mode='and'</span></code>:</p>
+<p>The default mode is <code class="docutils literal notranslate"><span class="pre">'or'</span></code> which means “retrieve all pores that are labelled ‘left’ or ‘back’, or both”.  This list can be reduced to pores that are <em>both</em> left <em>and</em> back, by specifying <code class="docutils literal notranslate"><span class="pre">mode='and'</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
@@ -691,7 +725,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </section>
 <section id="using-set-label">
 <h3>Using <code class="docutils literal notranslate"><span class="pre">set_label</span></code><a class="headerlink" href="#using-set-label" title="Permalink to this heading">#</a></h3>
-<p>The process of creating an empty label array, then filling the <code class="docutils literal notranslate"><span class="pre">True</span></code> values is a bit annoying, so there is a helper/shortcut method on all OpenPNM objects.  It can be used to create a new label, or to add to an existing one.  Let’s label another corner pore as ‘pore.corner’:</p>
+<p>The process of creating an empty label array, then filling the <code class="docutils literal notranslate"><span class="pre">True</span></code> values is a bit annoying, so there is a helper/shortcut method on all OpenPNM objects.  It can be used to create a new label, or to edit an existing one.  Let’s label another corner pore as ‘pore.corner’:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
@@ -851,7 +885,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
+net : &lt;openpnm.network.Cubic at 0x7f32273d1f40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -895,7 +929,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
+net : &lt;openpnm.network.Cubic at 0x7f32273d1f40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -982,7 +1016,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
+net : &lt;openpnm.network.Cubic at 0x7f32273d1f40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1062,7 +1096,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
   fig.canvas.print_figure(bytes_io, **kw)
 </pre></div>
 </div>
-<img alt="../../_images/404000f2ca18c1068a1c4820a8b52854fd63a8b195596d8d792f703c6e5a5ba2.png" src="../../_images/404000f2ca18c1068a1c4820a8b52854fd63a8b195596d8d792f703c6e5a5ba2.png" />
+<img alt="../../_images/f97ca2192cafe5c32ae3ca4687f0336ab0c153ba240fec5e427390ab889a7197.png" src="../../_images/f97ca2192cafe5c32ae3ca4687f0336ab0c153ba240fec5e427390ab889a7197.png" />
 </div>
 </div>
 <p>And now we can apply a model to the full domain that computes the pore volume, using values of pore diameter that were computed uniquely for each domain:</p>
@@ -1086,7 +1120,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f2165e0a36f9a0717b7e865126a47fe8735c33af7bb7bd4db6584de7d7fdb9d5.png" src="../../_images/f2165e0a36f9a0717b7e865126a47fe8735c33af7bb7bd4db6584de7d7fdb9d5.png" />
+<img alt="../../_images/dec27f5c2f348c208e60cbb6c636350b4d96b9fd95def89184e2fa5c7ef8cd2f.png" src="../../_images/dec27f5c2f348c208e60cbb6c636350b4d96b9fd95def89184e2fa5c7ef8cd2f.png" />
 </div>
 </div>
 </section>
@@ -1126,7 +1160,7 @@ net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fc2a6df3040&gt;
+net : &lt;openpnm.network.Cubic at 0x7f32273d1f40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――

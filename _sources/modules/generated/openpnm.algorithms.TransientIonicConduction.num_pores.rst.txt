@@ -1,8 +1,0 @@
-:orphan:
-
-num_pores
-=====================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientIonicConduction.num_pores

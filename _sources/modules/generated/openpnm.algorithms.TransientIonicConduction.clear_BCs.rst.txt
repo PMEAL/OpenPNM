@@ -1,8 +1,0 @@
-:orphan:
-
-clear_BCs
-=====================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientIonicConduction.clear_BCs

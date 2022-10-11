@@ -1,8 +1,0 @@
-:orphan:
-
-set_BC
-==================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientIonicConduction.set_BC

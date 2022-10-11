@@ -314,39 +314,7 @@
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pores</span><span class="p">:</span>
             <span class="n">Ps</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="n">rows</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
             <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DelaunayVoronoiDual.add_boundary_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.DelaunayVoronoiDual.add_boundary_pores.html#openpnm.network.DelaunayVoronoiDual.add_boundary_pores">[docs]</a>    <span class="k">def</span> <span class="nf">add_boundary_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span>
-                                         <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">],</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add boundary pores to the specified faces of the network.</span>
-
-<span class="sd">        Pores are offset from the faces of the domain.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        labels : str or list[str]</span>
-<span class="sd">            The labels indicating the pores defining each face where</span>
-<span class="sd">            boundary pores are to be added (e.g. &#39;left&#39; or [&#39;left&#39;, &#39;right&#39;])</span>
-<span class="sd">        offset : scalar or array_like</span>
-<span class="sd">            The spacing of the network (e.g. [1, 1, 1]).  This must be</span>
-<span class="sd">            given since it can be quite difficult to infer from the</span>
-<span class="sd">            network, for instance if boundary pores have already added to</span>
-<span class="sd">            other faces.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">offset</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">offset</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
-            <span class="n">Ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][</span><span class="n">Ps</span><span class="p">])</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-            <span class="n">ax_off</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span><span class="o">*</span><span class="n">offset</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">axis</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]):</span>
-                <span class="n">ax_off</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">ax_off</span>
-            <span class="n">topotools</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">ax_off</span><span class="p">,</span>
-                                         <span class="n">apply_label</span><span class="o">=</span><span class="n">item</span> <span class="o">+</span> <span class="s1">&#39;_boundary&#39;</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span></div></div>
 </pre></div>
 
               </article>

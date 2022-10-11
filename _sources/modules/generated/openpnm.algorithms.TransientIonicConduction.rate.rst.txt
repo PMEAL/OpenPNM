@@ -1,8 +1,0 @@
-:orphan:
-
-rate
-================================================
-
-.. currentmodule:: openpnm.algorithms
-
-.. automethod:: TransientIonicConduction.rate

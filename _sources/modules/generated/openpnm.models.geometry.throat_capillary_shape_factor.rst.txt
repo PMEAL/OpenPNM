@@ -20,7 +20,6 @@ throat\_capillary\_shape\_factor
    .. autosummary::
       :toctree:
    
-      compactness
       jenkins_rao
       mason_morrow
    

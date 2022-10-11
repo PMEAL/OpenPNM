@@ -190,67 +190,10 @@
 <span class="kn">from</span> <span class="nn">openpnm.models.geometry</span> <span class="kn">import</span> <span class="n">_geodocs</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;compactness&quot;</span><span class="p">,</span>
-           <span class="s2">&quot;mason_morrow&quot;</span><span class="p">,</span>
-           <span class="s2">&quot;jenkins_rao&quot;</span><span class="p">]</span>
-
-
-<div class="viewcode-block" id="compactness"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.compactness.html#openpnm.models.geometry.throat_capillary_shape_factor.compactness">[docs]</a><span class="nd">@_geodocs</span>
-<span class="k">def</span> <span class="nf">compactness</span><span class="p">(</span>
-    <span class="n">network</span><span class="p">,</span>
-    <span class="n">throat_perimeter</span><span class="o">=</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">,</span>
-    <span class="n">throat_area</span><span class="o">=</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">,</span>
-<span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Mortensen et al. have shown that the Hagen-Poiseuille hydraluic resistance</span>
-<span class="sd">    is linearly dependent on the compactness. Defined as perimeter^2/area.</span>
-<span class="sd">    The dependence is not universal as shapes with sharp corners provide more</span>
-<span class="sd">    resistance than those that are more elliptical. Count the number of</span>
-<span class="sd">    vertices and apply the right correction.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    %(network)s</span>
-<span class="sd">    %(Pt)s</span>
-<span class="sd">    %(At)s</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    alpha : NumPy ndarray</span>
-<span class="sd">        Array containing throat compactness values.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    Mortensen N.A, Okkels F., and Bruus H. Reexamination of Hagen-Poiseuille</span>
-<span class="sd">    flow: Shape dependence of the hydraulic resistance in microchannels.</span>
-<span class="sd">    Physical Review E, v.71, pp.057301 (2005).</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Only apply to throats with an area</span>
-    <span class="n">ts</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">()[</span><span class="n">network</span><span class="p">[</span><span class="n">throat_area</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">P</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_perimeter</span><span class="p">]</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="n">throat_area</span><span class="p">]</span>
-    <span class="n">C</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">num_throats</span><span class="p">())</span>
-    <span class="n">C</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">A</span><span class="p">[</span><span class="n">ts</span><span class="p">]</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">C</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span>
-    <span class="k">if</span> <span class="s1">&#39;throat.offset_vertices&#39;</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">props</span><span class="p">():</span>
-        <span class="n">verts</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.offset_vertices&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ts</span><span class="p">:</span>
-            <span class="k">if</span> <span class="o">~</span><span class="n">_np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="c1"># Triangular Correction</span>
-                    <span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">25</span><span class="o">/</span><span class="mi">17</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">40</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">17</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-                    <span class="c1"># Rectangular Correction</span>
-                    <span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">22</span><span class="o">/</span><span class="mi">7</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">65</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">verts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
-                    <span class="c1"># Approximate Elliptical Correction</span>
-                    <span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">8</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
-    <span class="c1"># For a perfect circle alpha = 8*pi so normalize by this</span>
-    <span class="n">alpha</span> <span class="o">/=</span> <span class="mi">8</span><span class="o">*</span><span class="n">_np</span><span class="o">.</span><span class="n">pi</span>
-    <span class="c1"># Very small throats could have values less than one</span>
-    <span class="n">alpha</span><span class="p">[</span><span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="k">return</span> <span class="n">alpha</span></div>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;mason_morrow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;jenkins_rao&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="mason_morrow"><a class="viewcode-back" href="../../../../../modules/generated/openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow.html#openpnm.models.geometry.throat_capillary_shape_factor.mason_morrow">[docs]</a><span class="nd">@_geodocs</span>

@@ -620,7 +620,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-        <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                                                <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pores</span></div>
 
@@ -660,7 +660,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-        <span class="n">Ts</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connecting_bonds</span><span class="p">(</span><span class="n">sites</span><span class="o">=</span><span class="n">sites</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Ts</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connecting_bonds</span><span class="p">(</span><span class="n">sites</span><span class="o">=</span><span class="n">sites</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Ts</span></div>
 
 <div class="viewcode-block" id="Network.find_neighbor_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.find_neighbor_pores.html#openpnm.network.Network.find_neighbor_pores">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -755,7 +755,7 @@
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">pores</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">neighbors</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_neighbor_sites</span><span class="p">(</span><span class="n">sites</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                                                  <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                  <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                                                   <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span>
                                                   <span class="n">include_input</span><span class="o">=</span><span class="n">include_input</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">asmask</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
@@ -840,11 +840,11 @@
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">flatten</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="n">neighbors</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_neighbor_bonds</span><span class="p">(</span><span class="n">sites</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                                                      <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                                      <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                                                       <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">neighbors</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_neighbor_bonds</span><span class="p">(</span><span class="n">sites</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-                                                      <span class="n">g</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                                      <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">asmask</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">neighbors</span>
         <span class="k">elif</span> <span class="n">flatten</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
