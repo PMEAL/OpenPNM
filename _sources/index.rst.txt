@@ -3,11 +3,6 @@
 .. module:: openpnm
    :noindex:
 
-.. warning::
-
-   This documentation is under active development, and is not ready yet.
-   We aim to release OpenPNM v3 by mid September 2022.
-
 .. image:: ./_static/images/openpnm_logo.jpg
    :name: banner
 
