@@ -6,8 +6,6 @@
 
 -----
 
-> WARNING: The ``dev`` branch is now **highly backwards incompatible with V2**!  We have made some MAJOR changes that will dramatically improve the usage and maintainability of OpenPNM moving forward, but it required breaking things. Specifically, we have removed the concept of Geometry and Physics objects. All simulations now require just Networks and Phases.  We are working feverishly to get this transition finalized and to update the documentation accordingly, but remember we are a small team with lots of other things distracting us.  Thanks for your patience.
-
 # Overview of OpenPNM
 
 *OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
