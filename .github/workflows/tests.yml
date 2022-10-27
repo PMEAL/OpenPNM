@@ -77,4 +77,3 @@ jobs:
            exclude: "doc/,setup.py,scripts/,tests/"
            max-line-length: "90"
            path: ".."
-           plugins: "flake8-bugbear==22.1.11 flake8-black"
