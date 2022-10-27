@@ -1,4 +1,3 @@
-import py
 import os
 import openpnm as op
 from pathlib import Path
@@ -28,6 +27,7 @@ class MARockTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = MARockTest()
     self = t  # For interacting with the tests at the command line

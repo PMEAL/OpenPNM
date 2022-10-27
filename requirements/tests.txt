@@ -3,6 +3,7 @@ jupyter
 nbval
 netgen-mesher
 porespy
+pycodestyle
 pytest
 pytest-cache
 pytest-codestyle

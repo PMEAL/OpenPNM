@@ -1,5 +1,4 @@
 import os
-import py
 import numpy as np
 import openpnm as op
 import pytest
@@ -30,6 +29,7 @@ class COMSOLTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = COMSOLTest()
     self = t  # For interacting with the tests at the command line
