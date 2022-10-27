@@ -4,9 +4,8 @@ nbval
 netgen-mesher
 porespy
 py
-pycodestyle
 pytest
 pytest-cache
-pytest-codestyle
 pytest-cov
+pytest-flake8
 thermo
