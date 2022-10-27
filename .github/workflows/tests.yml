@@ -58,7 +58,6 @@ jobs:
             --cov=.
             --cov-report=xml
             --color=yes
-            --flake8
 
       - name: Upload coverage to Codecov
         if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')

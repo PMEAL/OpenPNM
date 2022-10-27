@@ -7,5 +7,4 @@ py
 pytest
 pytest-cache
 pytest-cov
-pytest-flake8
 thermo
