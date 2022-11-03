@@ -74,6 +74,6 @@ jobs:
         uses: py-actions/flake8@v2
         with:
            ignore: "D100,E226,E402,E712,E741,F401,F403,N806,W503,WPS111,WPS211,WPS237,WPS300,WPS305,WPS319,WPS347,WPS410,WPS437"
-           exclude: "docs/,scripts/,tests/,contrib/,setup.py,openpnm/models/_doctxt.py,openpnm/models/phase/_phasedocs.py,openpnm/models/geometry/_geodocs.py"
+           exclude: "docs/,scripts/,tests/,openpnm/contrib/,setup.py,openpnm/models/_doctxt.py,openpnm/models/phase/_phasedocs.py,openpnm/models/geometry/_geodocs.py"
            max-line-length: "90"
            path: ".."
