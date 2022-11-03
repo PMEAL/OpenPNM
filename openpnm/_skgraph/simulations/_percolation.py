@@ -51,7 +51,8 @@ def bond_percolation(conns, occupied_bonds):
     occupied_sites = np.zeros([Np, ], dtype=bool)
     occupied_sites[conns[occupied_bonds].flatten()] = True
     # Perform cluster labeling of network
-    adj_mat = sprs.csr_matrix((occupied_bonds.astype(int), (conns[:, 0], conns[:, 1])),
+    adj_mat = sprs.csr_matrix((occupied_bonds.astype(int),
+                               (conns[:, 0], conns[:, 1])),
                               shape=(Np, Np))
     adj_mat.eliminate_zeros()
     clusters = csgraph.connected_components(csgraph=adj_mat, directed=False)[1]
@@ -110,7 +111,11 @@ def site_percolation(conns, occupied_sites):
     return tup(s_labels, b_labels)
 
 
-def mixed_percolation(conns, occupied_sites, occupied_bonds):  # pragma: no cover
+def mixed_percolation(
+    conns,
+    occupied_sites,
+    occupied_bonds
+):  # pragma: no cover
     r"""
     """
     new_conns = split_edges(conns)[0]
@@ -121,7 +126,12 @@ def mixed_percolation(conns, occupied_sites, occupied_bonds):  # pragma: no cove
     return s_labels, b_labels
 
 
-def find_connected_clusters(bond_labels, site_labels, inlets, asmask=True):  # pragma: no cover
+def find_connected_clusters(
+    bond_labels,
+    site_labels,
+    inlets,
+    asmask=True
+):  # pragma: no cover
     hits = np.unique(site_labels[inlets])
     hits = hits[hits >= 0]
     occupied_bonds = np.isin(bond_labels, hits)
