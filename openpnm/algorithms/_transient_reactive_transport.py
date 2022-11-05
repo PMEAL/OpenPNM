@@ -126,7 +126,7 @@ class TransientReactiveTransport(ReactiveTransport):
         >>> air.add_model_collection(op.models.collections.physics.standard)
         >>> trt = op.algorithms.TransientReactiveTransport(network=net, phase=air)
         >>> func = lambda t, y: print(t)
-        >>> trt.set_callback(func)
+        >>> trt._set_callback(func)
 
         """
         if not callable(func):
