@@ -101,8 +101,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def _run_special(self, x0):
         pass
-        
-    def set_callback(self, func):
+
+    def _set_callback(self, func):
         """
         Stores the given function handle as a callback.
 
@@ -121,10 +121,9 @@ class TransientReactiveTransport(ReactiveTransport):
         Examples
         --------
         >>> import openpnm as op
-        >>> net = op.network.Cubic([1, 2, 3])
-        >>> geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
+        >>> net = op.network.Demo([1, 2, 3])
         >>> air = op.phases.Air(network=net)
-        >>> phys = op.physics.Standard(network=net, geometry=geo, phase=air)
+        >>> air.add_model_collection(op.models.collections.physics.standard)
         >>> trt = op.algorithms.TransientReactiveTransport(network=net, phase=air)
         >>> func = lambda t, y: print(t)
         >>> trt.set_callback(func)
@@ -133,8 +132,6 @@ class TransientReactiveTransport(ReactiveTransport):
         if not callable(func):
             raise Exception("'func' must be a function. See Examples section.")
         self._callbacks.append(func)
-
-    def _run_special(self, x0): ...
 
     def _build_rhs(self):
         """
