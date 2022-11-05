@@ -58,7 +58,6 @@ def project_to_vtk(project, filename="",
 
     """
     network = project.network
-    phases = project.phases
     algs = project.algorithms
     # Check if any of the phases has time series
     transient = is_transient(algs)

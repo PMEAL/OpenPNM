@@ -6,6 +6,8 @@
 
 -----
 
+> VERSION 3.0 of OpenPNM is now out. All the [examples on the website](https://openpnm.org/_examples/index.html) are now using the features and idioms of V3. For a description of the main changes please see our [recent blog post](http://pmeal.com/posts/2022-10-10-notebook-post/). 
+
 # Overview of OpenPNM
 
 *OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.

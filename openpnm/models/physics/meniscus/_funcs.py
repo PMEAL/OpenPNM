@@ -173,7 +173,7 @@ def general_toroidal(
         # Return the pressure at which a touch happens
         Pc_touch = Pc(x_touch, fa, fb, throatRad, contact, surface_tension)
         return Pc_touch
-    elif (mode == 'men') :
+    elif (mode == 'men'):
         if target_Pc is None:
             logger.error(msg='Please supply a target capillary pressure'
                          + ' when mode is "men", defaulting to 1.0e-6')

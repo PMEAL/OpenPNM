@@ -3,8 +3,8 @@ jupyter
 nbval
 netgen-mesher
 porespy
+py
 pytest
 pytest-cache
-pytest-codestyle
 pytest-cov
 thermo

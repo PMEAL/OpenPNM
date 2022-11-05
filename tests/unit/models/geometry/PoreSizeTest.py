@@ -1,4 +1,3 @@
-import py
 import numpy as np
 import openpnm as op
 import scipy.stats as spst
@@ -87,7 +86,7 @@ class PoreSizeTest:
 
 
 if __name__ == '__main__':
-
+    import py
     t = PoreSizeTest()
     self = t
     t.setup_class()

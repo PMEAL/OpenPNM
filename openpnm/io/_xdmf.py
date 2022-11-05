@@ -31,7 +31,6 @@ def project_to_xdmf(project, filename=''):
     """
 
     network = project.network
-    phases = project.phases
     algs = project.algorithms
 
     # Check if any of the phases has time series

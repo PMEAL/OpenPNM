@@ -106,7 +106,7 @@ def gas_mixture_ce(
     # Now apply RPP Eq.(11-3.2)
     try:
         sA, sB = phase.get_comp_vals(sigmas).values()
-    except:
+    except Exception:
         # Use correlation of Tee, Gotoh, & Stewart
         sA, sB = (2.3551 - 0.08847*omega)*(Tc/Pc)**(1/3)
     sAB = (sA + sB)/2
@@ -202,21 +202,21 @@ def gas_mixture_fw(
 
     """
     raise Exception('This function is not ready yet')
-    comps = list(phase.components.values())
-    values = {}
-    for i in range(len(comps)):
-        A = comps[i]
-        denom = 0.0
-        for j in range(len(comps)):
-            if i != j:
-                B = comps[j]
-                D = gas_mixture_fesg(phase=phase,
-                                     molecular_weight=MW_pair,
-                                     molar_diffusion_volume=Vdm_pair,
-                                     temperature=T,
-                                     pressure=P)
-                yB = phase['pore.mole_fraction.' + B.name]
-                denom += yB/D
-        yA = phase['pore.mole_fraction.' + A.name]
-        values[A.name] = (1 - yA)/denom
-    return values
+    # comps = list(phase.components.values())
+    # values = {}
+    # for i in range(len(comps)):
+    #     A = comps[i]
+    #     denom = 0.0
+    #     for j in range(len(comps)):
+    #         if i != j:
+    #             B = comps[j]
+    #             D = gas_mixture_fesg(phase=phase,
+    #                                  molecular_weight=MW_pair,
+    #                                  molar_diffusion_volume=Vdm_pair,
+    #                                  temperature=T,
+    #                                  pressure=P)
+    #             yB = phase['pore.mole_fraction.' + B.name]
+    #             denom += yB/D
+    #     yA = phase['pore.mole_fraction.' + A.name]
+    #     values[A.name] = (1 - yA)/denom
+    # return values
