@@ -122,7 +122,7 @@ class TransientReactiveTransport(ReactiveTransport):
         --------
         >>> import openpnm as op
         >>> net = op.network.Demo([1, 2, 3])
-        >>> air = op.phases.Air(network=net)
+        >>> air = op.phase.Air(network=net)
         >>> air.add_model_collection(op.models.collections.physics.standard)
         >>> trt = op.algorithms.TransientReactiveTransport(network=net, phase=air)
         >>> func = lambda t, y: print(t)
