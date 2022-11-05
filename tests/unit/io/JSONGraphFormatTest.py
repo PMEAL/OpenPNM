@@ -1,14 +1,13 @@
 import os
-import py
-import copy
 import json
 import pytest
 import numpy as np
 import openpnm as op
 from pathlib import Path
+from openpnm.io import network_from_jsongraph, network_to_jsongraph
 
 
-class JSONGraphFormatTest:
+class JSONGraphTest:
 
     def setup_class(self):
         ws = op.Workspace()
@@ -23,36 +22,26 @@ class JSONGraphFormatTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_validation_success(self):
-        json_obj = {'graph': {'nodes': [{'id': "0"}]}}  # 'id' is a string
-        jgf = op.io.JSONGraphFormat()
-        assert jgf.__validate_json__(json_obj)
+    # def test_save_failure(self, tmpdir):
+    #     path = Path(os.path.realpath(tmpdir),
+    #                 '../../../fixtures/JSONGraphFormat')
+    #     filename = Path(path.resolve(), 'save_failure.json')
 
-    def test_validation_failure(self):
-        json_obj = {'graph': {'nodes': [{'id': 0}]}}    # 'id' is not a string
-        jgf = op.io.JSONGraphFormat()
-        assert not jgf.__validate_json__(json_obj)
+    #     # Create a deep copy of network with one required property missing
+    #     net = copy.deepcopy(self.net)
+    #     net.pop('pore.diameter')
 
-    def test_save_failure(self):
-        path = Path(os.path.realpath(__file__),
-                    '../../../fixtures/JSONGraphFormat')
-        filename = Path(path.resolve(), 'save_failure.json')
-
-        # Create a deep copy of network with one required property missing
-        net = copy.deepcopy(self.net)
-        net.pop('pore.diameter')
-
-        # Ensure an exception was thrown
-        with pytest.raises(Exception) as e_info:
-            op.io.JSONGraphFormat.export_data(net, filename=filename)
-        expected_error = 'Error - network is missing one of:'
-        assert expected_error in str(e_info.value)
+    #     # Ensure an exception was thrown
+    #     with pytest.raises(Exception) as e_info:
+    #         op.io.network_to_jsongraph(net.project, filename=filename)
+    #     expected_error = 'Error - network is missing one of:'
+    #     assert expected_error in str(e_info.value)
 
     def test_save_success(self):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'save_success.json')
-        op.io.JSONGraphFormat.export_data(self.net, filename=filename)
+        op.io.network_to_jsongraph(self.net, filename=filename)
 
         # Read newly created file
         with open(filename, 'r') as file:
@@ -142,25 +131,22 @@ class JSONGraphFormatTest:
 
         # Ensure an exception was thrown
         with pytest.raises(Exception):
-            op.io.JSONGraphFormat.load(filename)
+            op.io.from_jsongraph(filename)
 
     def test_load_success(self):
         # Load JSON file and ensure project integrity
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/JSONGraphFormat')
         filename = Path(path.resolve(), 'valid.json')
-        project = op.io.JSONGraphFormat.import_data(filename)
-        assert len(project) == 2
+        net = op.io.network_from_jsongraph(filename)
+        assert hasattr(net, 'conns')
 
         # Ensure overal network properties
-        net = project.network
         assert net.Np == 2
         assert net.Nt == 1
 
         # Ensure correctness of pore properties
-        assert np.array_equal(net['pore.area'], np.array([0, 0]))
         assert np.array_equal(net['pore.index'], np.array([0, 1]))
-        assert np.array_equal(net['pore.volume'], np.array([0, 0]))
         assert np.array_equal(net['pore.diameter'], np.array([0, 0]))
         assert np.array_equal(net['pore.coords'][0], np.array([0, 0, 0]))
         assert np.array_equal(net['pore.coords'][1], np.array([1, 1, 1]))
@@ -169,18 +155,14 @@ class JSONGraphFormatTest:
         length = 1.73205080757
         squared_radius = 5.169298742047715
         assert net['throat.length'] == length
-        assert net['throat.cross_sectional_area'] == np.pi * squared_radius
         assert np.array_equal(net['throat.conns'], np.array([[0, 1]]))
         assert net['throat.diameter'] == 2.0 * np.sqrt(squared_radius)
-        assert net['throat.volume'] == np.pi * squared_radius * length
-        assert net['throat.perimeter'] == 2.0 * np.pi * np.sqrt(squared_radius)
-        assert net['throat.surface_area'] == 2.0 * \
-            np.sqrt(squared_radius) * np.pi * length
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
-    t = JSONGraphFormatTest()
+    t = JSONGraphTest()
     self = t  # For interacting with the tests at the command line
     tmpdir = py.path.local()
     t.setup_class()
@@ -190,4 +172,4 @@ if __name__ == '__main__':
             try:
                 t.__getattribute__(item)()
             except TypeError:
-                t.__getattribute__(item)(tmpdir=tmpdir)
+                t.__getattribute__(item)()

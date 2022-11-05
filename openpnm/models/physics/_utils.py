@@ -1,10 +1,16 @@
 r"""
 Pore-scale models for calculating the conductance of conduits.
 """
-__all__ = ["_poisson_conductance"]
+from numpy import vstack
 
 
-def _poisson_conductance(target,
+__all__ = [
+    '_poisson_conductance',
+    '_get_key_props',
+]
+
+
+def _poisson_conductance(phase,
                          pore_conductivity=None,
                          throat_conductivity=None,
                          size_factors=None):
@@ -14,7 +20,7 @@ def _poisson_conductance(target,
 
     Parameters
     ----------
-    target : GenericPhysics
+    phase : OpenPNM Phase
         The object which this model is associated with. This controls the
         length of the calculated array, and also provides access to other
         necessary properties.
@@ -37,27 +43,58 @@ def _poisson_conductance(target,
     already be calculated.
 
     """
-    network = target.network
-    domain = target._domain
-    throats = domain.throats(target.name)
-    phase = target.project.find_phase(target)
-    cn = network.conns[throats]
-    F = network[size_factors]
-    # TODO: Uncomment the following 2 lines once #2087 is merged
-    # Dt = phase[throat_conductivity][throats]
-    # D1, D2 = phase[pore_conductivity][cn].T
-    # TODO: Delete the following 2 lines once #2087 is merged
-    Dt = _parse_input(phase, throat_conductivity)[throats]
-    D1, D2 = _parse_input(phase, pore_conductivity)[cn].T
+    network = phase.network
+    cn = network.conns
+    Dt = phase[throat_conductivity]
+    D1, D2 = phase[pore_conductivity][cn].T
     # If individual size factors for conduit constiuents are known
-    if isinstance(F, dict):
-        g1 = D1 * F[f"{size_factors}.pore1"][throats]
-        gt = Dt * F[f"{size_factors}.throat"][throats]
-        g2 = D2 * F[f"{size_factors}.pore2"][throats]
+    SF = network[size_factors]
+    if SF.ndim == 2:
+        F1, Ft, F2 = SF.T
+        g1 = D1 * F1
+        gt = Dt * Ft
+        g2 = D2 * F2
         return 1 / (1 / g1 + 1 / gt + 1 / g2)
-    # Otherwise, i.e., the size factor for the entire conduit is only known
-    return Dt * F[throats]
+    else:
+        # Otherwise, i.e., the size factor for the entire conduit is only known
+        F = network[size_factors]
+        return Dt * F
 
 
-def _parse_input(obj, arg):
-    return obj[arg] if isinstance(arg, str) else arg
+def _get_key_props(phase=None,
+                   diameter="throat.diameter",
+                   surface_tension="throat.surface_tension",
+                   contact_angle="throat.contact_angle"):
+    """
+    Returns desired properties in the correct format! See Notes.
+
+    Notes
+    -----
+    Many of the methods are generic to pores and throats. Some information may
+    be stored on either the pore or throat and needs to be interpolated.
+    This is a helper method to return the properties in the correct format.
+
+    TODO: Check for method to convert throat to pore data
+
+    """
+    element = diameter.split(".")[0]
+    if element == "pore":
+        if "throat" in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if "throat" in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+    if element == "throat":
+        if "pore" in surface_tension:
+            sigma = phase.interpolate_data(propname=surface_tension)
+        else:
+            sigma = phase[surface_tension]
+        if "pore" in contact_angle:
+            theta = phase.interpolate_data(propname=contact_angle)
+        else:
+            theta = phase[contact_angle]
+
+    return element, sigma, theta

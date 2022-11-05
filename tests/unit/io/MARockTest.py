@@ -1,4 +1,3 @@
-import py
 import os
 import openpnm as op
 from pathlib import Path
@@ -14,13 +13,11 @@ class MARockTest:
         ws = op.Workspace()
         ws.clear()
 
-    def test_load_MARock(self, tmpdir):
+    def test_load_MARock(self):
         path = Path(os.path.realpath(__file__),
                     '../../../fixtures/3DMA-Castlegate')
-        project = op.io.MARock.import_data(path=path)
-        assert len(project) == 1
-        net = project.network
-        print(net.props())
+        net = op.io.network_from_marock(filename=path)
+        assert hasattr(net, 'conns')
         assert net.Np == 9915
         assert net.Nt == 21805
         a = {'pore.ID_number', 'pore.boundary_type', 'pore.coordination',
@@ -30,6 +27,7 @@ class MARockTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = MARockTest()
     self = t  # For interacting with the tests at the command line
@@ -37,7 +35,4 @@ if __name__ == '__main__':
     for item in t.__dir__():
         if item.startswith('test'):
             print('running test: '+item)
-            try:
-                t.__getattribute__(item)()
-            except TypeError:
-                t.__getattribute__(item)(tmpdir=py.path.local())
+            t.__getattribute__(item)()

@@ -154,6 +154,9 @@ public/
 
 # Sphinx docs
 **/generated
+docs/examples
 openpnm/core/.DS_Store
 */.DS_Store
 *.DS_Store
+*.nblink
+.idea

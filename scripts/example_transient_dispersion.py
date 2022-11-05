@@ -34,7 +34,7 @@ geo.add_model(propname='throat.diameter', model=mod, value=1e-4)
 geo.regenerate_models()
 
 # Create phase
-water = op.phases.Water(network=net)
+water = op.phase.Water(network=net)
 
 # Create physics
 phys = op.physics.GenericPhysics(network=net, phase=water, geometry=geo)

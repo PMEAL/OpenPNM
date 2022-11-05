@@ -17,7 +17,7 @@ class NernstPlanckTest:
         self.geo['throat.conduit_lengths.throat'] = 0.6
         self.geo['throat.conduit_lengths.pore2'] = 0.1
 
-        self.phase = op.phases.GenericPhase(network=self.net)
+        self.phase = op.phase.Phase(network=self.net)
         self.phase['pore.diffusivity.X'] = 1e-9
         self.phase['throat.valence.X'] = 1
 

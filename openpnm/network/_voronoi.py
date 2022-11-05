@@ -1,13 +1,17 @@
-from openpnm import topotools
-from openpnm.utils import logging
-from openpnm.network import DelaunayVoronoiDual
+import numpy as np
+from openpnm.network import Network
+from openpnm.utils import Docorator
+from openpnm._skgraph.generators import voronoi_delaunay_dual
+from openpnm._skgraph.generators.tools import parse_points
+from openpnm._skgraph.operations import trim_nodes
 
 
-logger = logging.getLogger(__name__)
+docstr = Docorator()
 __all__ = ['Voronoi']
 
 
-class Voronoi(DelaunayVoronoiDual):
+@docstr.dedent
+class Voronoi(Network):
     r"""
     Random network formed by Voronoi tessellation of arbitrary base points
 
@@ -26,9 +30,7 @@ class Voronoi(DelaunayVoronoiDual):
             [x, y, 0]
                 will produce a 2D square domain of size x by y
 
-    name : str
-        An optional name for the object to help identify it. If not given,
-        one will be generated.
+    %(Network.parameters)s
 
     Notes
     -----
@@ -38,12 +40,14 @@ class Voronoi(DelaunayVoronoiDual):
 
     """
 
-    def __init__(self, shape=[1, 1, 1], points=None, **kwargs):
+    def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
         # Clean-up input points
-        points = self._parse_points(shape=shape, points=points)
-        super().__init__(shape=shape, points=points, **kwargs)
-        # Initialize network object
-        topotools.trim(network=self, pores=self.pores('delaunay'))
-        pop = ['pore.delaunay', 'throat.delaunay', 'throat.interconnect']
-        for item in pop:
-            del self[item]
+        super().__init__(**kwargs)
+        points = parse_points(shape=shape, points=points, reflect=reflect)
+        net, vor, tri = voronoi_delaunay_dual(points=points,
+                                              shape=shape,
+                                              trim=trim,
+                                              node_prefix='pore',
+                                              edge_prefix='throat')
+        net = trim_nodes(network=net, inds=np.where(net['pore.delaunay'])[0])
+        self.update(net)

@@ -14,7 +14,7 @@ net = op.network.Cubic(shape=[51, 19, 1], spacing=1e-4, project=proj)
 geo = op.geometry.SpheresAndCylinders(network=net, pores=net.Ps, throats=net.Ts)
 
 # Phase
-phase = op.phases.Water(network=net)
+phase = op.phase.Water(network=net)
 
 # Physics
 phys = op.physics.GenericPhysics(network=net, phase=phase, geometry=geo)

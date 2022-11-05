@@ -1,6 +1,6 @@
 r"""
-throat_surface_area Models
--------------------------
+Throat Surface Area Models
+--------------------------
 
 This model contains a selection of functions for calcuating the
 throat surface area

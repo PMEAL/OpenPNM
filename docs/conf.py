@@ -25,13 +25,14 @@ author = 'OpenPNM Dev Team'
 from openpnm import __version__
 release = __version__
 
+# Copy examples folder from OpenPNM root to docs folder
+import shutil
+shutil.copytree('../examples', 'examples', dirs_exist_ok=True)
+
 #------------------------------------------------------------------------#
 # General config                                                         #
 #------------------------------------------------------------------------#
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -41,16 +42,22 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx_copybutton',
-    'sphinx_panels',
-    'nbsphinx',
-    'nbsphinx_link',
+    'sphinx_design',
+    'sphinx.ext.ifconfig',
+    'matplotlib.sphinxext.plot_directive',
+    'myst_nb',
     'numpydoc',
-    'matplotlib.sphinxext.plot_directive'
+]
+
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "html_image",
 ]
 
 autosummary_imported_members = True
-
-panels_add_bootstrap_css = False  # to fix narrow width
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -63,6 +70,7 @@ exclude_patterns = ['_build']
 numpydoc_show_inherited_class_members = True
 
 members_to_exclude = [
+    # NumPy methods we don't want to document
     'append', 'clear', 'copy', 'count', 'extend', 'fromkeys', 'get',
     'index', 'insert', 'items', 'keys', 'pop', 'popitem', 'remove',
     'reverse', 'setdefault', 'sort', 'update', 'values',
@@ -76,7 +84,7 @@ members_to_exclude = [
     'reshape', 'resize', 'round', 'searchsorted', 'setfield', 'setflags',
     'shape', 'size', 'sort', 'squeeze', 'std', 'strides', 'sum',
     'swapaxes', 'take', 'tobytes', 'tofile', 'tolist', 'tostring',
-    'trace', 'transpose', 'var', 'view', '__call__'
+    'trace', 'transpose', 'var', 'view', '__call__',
 ]
 
 autodoc_default_options = {
@@ -126,29 +134,17 @@ plt.ioff()
 #------------------------------------------------------------------------#
 
 html_theme = 'pydata_sphinx_theme'
-
+html_static_path = ['_static']
 html_js_files = ['js/custom.js']
 html_css_files = ['css/custom.css']
-
-html_logo = '_static/images/openpnm_logo.png'
+html_logo = '_static/images/openpnm_logo.jpg'
 
 html_theme_options = {
-    "logo_link": "https://www.openpnm.org",
     "icon_links": [
         {
             "name": "GitHub",
             "url": "https://github.com/PMEAL/OpenPNM",
             "icon": "fab fa-github-square",
-        },
-        {
-            "name": "Substack",
-            "url": "https://openpnm.substack.com/",
-            "icon": "fas fa-envelope-square",
-        },
-        {
-            "name": "Twitter",
-            "url": "https://twitter.com/OpenPNM",
-            "icon": "fab fa-twitter-square",
         },
     ],
     "external_links": [
@@ -163,17 +159,58 @@ html_theme_options = {
     "show_prev_next": False,
     "icon_links_label": "Quick Links",
     "use_edit_page_button": False,
-    "search_bar_position": "sidebar",
     "navbar_align": "left",
 }
 
 html_sidebars = {
-    "contributing": ["sidebar-search-bs.html"],
-    "changelog": [],
-    "examples/*": []
+    # "examples_index": [],
 }
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_js_files = ['js/custom.js']
+
+nbsphinx_execute = 'always'
+nbsphinx_prompt_width = "0"
+nbsphinx_allow_errors = True
+
+exclude_patterns = ['_build', '_templates']
+
+add_module_names = False
+
+autosummary_generate = True
+
+globaltoc_maxdepth = 3
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
+# The master toctree document.
+master_doc = 'index'
+
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This patterns also effect to html_static_path and html_extra_path
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'sphinx'
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = False
+
+# A list of ignored prefixes for module index sorting.
+modindex_common_prefix = ['openpnm']
+
+# If false, no module index is generated.
+html_domain_indices = True
+
+# If false, no index is generated.
+html_use_index = True
+
+# If true, the index is split into individual pages for each letter.
+html_split_index = False
+
+# If true, links to the reST sources are added to the pages.
+html_show_sourcelink = False
+
+# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
+html_show_sphinx = False

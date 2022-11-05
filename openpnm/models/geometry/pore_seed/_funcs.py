@@ -1,30 +1,36 @@
 import numpy as _np
 import scipy as _sp
 from openpnm.models import misc as _misc
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
+
 
 __all__ = ["random",
            "spatially_correlated"
            ]
 
-docstr = Docorator()
 
-
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target, element='pore', seed=seed, num_range=num_range)
+def random(network, seed=None, num_range=[0, 1]):
+    return _misc.random(network,
+                        element='pore',
+                        seed=seed,
+                        num_range=num_range)
 
 
 random.__doc__ = _misc.random.__doc__
 
 
-@docstr.dedent
-def spatially_correlated(target, weights=None, strel=None):
+@_geodocs
+def spatially_correlated(
+    network,
+    weights=None,
+    strel=None
+):
     r"""
     Generates pore seeds that are spatailly correlated with their neighbors.
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(network)s
     weights : list of ints, optional
         The [Nx, Ny, Nz] distances (in number of pores) in each direction that
         should be correlated.
@@ -66,19 +72,9 @@ def spatially_correlated(target, weights=None, strel=None):
            layers for polymer electrolyte membrane fuel cells. J Power Sources
            v173, pp277–290 (2007)
 
-    Examples
-    --------
-    >>> import openpnm as op
-    >>> pn = op.network.Cubic(shape=[10, 10, 10])
-    >>> Ps, Ts = pn.Ps, pn.Ts
-    >>> geom = op.geometry.GenericGeometry(network=pn, pores=Ps, throats=Ts)
-    >>> mod = op.models.geometry.pore_seed.spatially_correlated
-    >>> geom.add_model(propname='pore.seed', model=mod, weights=[2, 2, 2])
-
     """
     import scipy.ndimage as spim
     from openpnm.topotools import get_shape
-    network = target.project.network
     # The following will only work on Cubic networks
     x, y, z = get_shape(network)
     im = _np.random.rand(x, y, z)
@@ -97,5 +93,4 @@ def spatially_correlated(target, weights=None, strel=None):
     im = (im - _np.mean(im))/_np.std(im)
     im = 1/2*_sp.special.erfc(-im/_np.sqrt(2))
     values = im.flatten()
-    values = values[network.pores(target.name)]
     return values

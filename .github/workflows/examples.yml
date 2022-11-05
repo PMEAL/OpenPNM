@@ -27,17 +27,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install dependencies (pip)
         run: |
           pip install \
-            -r requirements/pip_requirements.txt \
-            -r requirements/test_requirements.txt
-          # Install openpnm from the checked-out branch
-          pip install -e . --no-deps
+            -r requirements.txt \
+            -r requirements/tests.txt
 
       - name: Running tests
         run:

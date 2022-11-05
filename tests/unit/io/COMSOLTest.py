@@ -1,5 +1,4 @@
 import os
-import py
 import numpy as np
 import openpnm as op
 import pytest
@@ -21,15 +20,16 @@ class COMSOLTest:
         os.remove(f"{self.net2d.name}.mphtxt")
 
     def test_export_data_2d_network(self):
-        op.io.COMSOL.export_data(network=self.net2d)
+        op.io.network_to_comsol(network=self.net2d)
         assert os.path.isfile(f"{self.net2d.name}.mphtxt")
 
     def test_export_data_3d_network(self):
         with pytest.raises(Exception):
-            op.io.COMSOL.export_data(network=self.net3d)
+            op.io.network_to_comsol(network=self.net3d)
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = COMSOLTest()
     self = t  # For interacting with the tests at the command line

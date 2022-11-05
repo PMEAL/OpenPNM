@@ -1,19 +1,18 @@
 from transforms3d import _gohlketransforms as tr
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
 
 
 __all__ = ["pore_to_pore"]
-docstr = Docorator()
 
 
-@docstr.dedent
-def pore_to_pore(target):
+@_geodocs
+def pore_to_pore(network):
     r"""
     Calculates throat vector as straight path between connected pores.
 
     Parameters
     ----------
-    %(models.target.parameters)s
+    %(network)s
 
     Returns
     -------
@@ -28,12 +27,10 @@ def pore_to_pore(target):
     'throat.conns' array as stored on the network.
 
     """
-    network = target.project.network
-    throats = network.throats(target.name)
     conns = network['throat.conns']
     P1 = conns[:, 0]
     P2 = conns[:, 1]
     coords = network['pore.coords']
     vec = coords[P2] - coords[P1]
     unit_vec = tr.unit_vector(vec, axis=1)
-    return unit_vec[throats]
+    return unit_vec

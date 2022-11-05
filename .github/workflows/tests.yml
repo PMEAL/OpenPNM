@@ -11,10 +11,12 @@ jobs:
         shell: bash
 
     strategy:
+      fail-fast: false
       max-parallel: 9
       matrix:
-        python-version: [3.7, 3.8, 3.9]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10']
+        # Add macos-latest to the next line once #2451 is fixed
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
@@ -28,7 +30,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -42,10 +44,13 @@ jobs:
       - name: Install dependencies (pip)
         run: |
           pip install \
-            -r requirements/pip_requirements.txt \
-            -r requirements/test_requirements.txt
-          # Install openpnm from the checked-out branch
-          pip install -e . --no-deps
+            -r requirements.txt \
+            -r requirements/tests.txt
+
+      - name: Disable numba JIT for codecov to include jitted methods
+        if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
+        run: |
+          echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
       - name: Running tests
         run:
@@ -55,10 +60,20 @@ jobs:
             --color=yes
 
       - name: Upload coverage to Codecov
-        if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
+        if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+
+
+      - name: flake8 Lint
+        if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
+        uses: py-actions/flake8@v2
+        with:
+           ignore: "D100,E226,E402,E712,E741,F401,F403,N806,W503,WPS111,WPS211,WPS237,WPS300,WPS305,WPS319,WPS347,WPS410,WPS437"
+           exclude: "docs/,scripts/,tests/,openpnm/contrib/,setup.py,openpnm/models/_doctxt.py,openpnm/models/phase/_phasedocs.py,openpnm/models/geometry/_geodocs.py"
+           max-line-length: "90"
+           path: ".."

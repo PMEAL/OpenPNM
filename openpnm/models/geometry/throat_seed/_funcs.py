@@ -5,16 +5,16 @@ __all__ = ["random",
            "from_neighbor_pores"]
 
 
-def random(target, seed=None, num_range=[0, 1]):
-    return _misc.random(target, element='throat', seed=seed,
+def random(network, seed=None, num_range=[0, 1]):
+    return _misc.random(network, element='throat', seed=seed,
                         num_range=num_range)
 
 
 random.__doc__ = _misc.random.__doc__
 
 
-def from_neighbor_pores(target, prop='pore.seed', mode='min'):
-    return _misc.from_neighbor_pores(target=target, prop=prop,
+def from_neighbor_pores(network, prop='pore.seed', mode='min'):
+    return _misc.from_neighbor_pores(network, prop=prop,
                                      mode=mode)
 
 

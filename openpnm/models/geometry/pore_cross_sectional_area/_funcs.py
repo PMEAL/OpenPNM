@@ -1,5 +1,6 @@
 from numpy import pi as _pi
-from openpnm.utils import Docorator
+from openpnm.models.geometry import _geodocs
+
 
 __all__ = [
     "cone",
@@ -9,21 +10,19 @@ __all__ = [
     "square"
 ]
 
-docstr = Docorator()
 
-
-@docstr.get_sections(base='models.geometry.pore_cross_section',
-                     sections=['Parameters', 'Returns'])
-@docstr.dedent
-def sphere(target, pore_diameter='pore.diameter'):
+@_geodocs
+def sphere(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate cross-sectional area assuming the pore body is a sphere
 
     Parameters
     ----------
-    %(models.target.parameters)s
-    %(models.geometry.pdia)s
-
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
@@ -31,55 +30,67 @@ def sphere(target, pore_diameter='pore.diameter'):
         A numpy ndarry containing pore cross-sectional area values
 
     """
-    D = target[pore_diameter]
+    D = network[pore_diameter]
     return _pi/4 * D**2
 
 
-def cone(target, pore_diameter='pore.diameter'):
+@_geodocs
+def cone(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate cross-sectional area assuming the pore body is a cone
 
     Parameters
     ----------
-    %(models.geometry.pore_cross_section.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_cross_section.returns)s
 
     """
-    D = target[pore_diameter]
+    D = network[pore_diameter]
     return _pi / 4 * D**2
 
 
-def cube(target, pore_diameter='pore.diameter'):
+@_geodocs
+def cube(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate cross-sectional area assuming the pore body is a cube
 
     Parameters
     ----------
-    %(models.geometry.pore_cross_section.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_cross_section.returns)s
 
     """
-    D = target[pore_diameter]
+    D = network[pore_diameter]
     return D**2
 
 
-def circle(target, pore_diameter='pore.diameter'):
+@_geodocs
+def circle(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate cross-sectional area assuming the pore body is a circle
 
     Parameters
     ----------
-    %(models.geometry.pore_cross_section.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_cross_section.returns)s
 
     Notes
     -----
@@ -87,20 +98,24 @@ def circle(target, pore_diameter='pore.diameter'):
     symmetry.
 
     """
-    return target[pore_diameter]
+    return network[pore_diameter]
 
 
-def square(target, pore_diameter='pore.diameter'):
+@_geodocs
+def square(
+    network,
+    pore_diameter='pore.diameter'
+):
     r"""
     Calculate cross-sectional area assuming the pore body is a square
 
     Parameters
     ----------
-    %(models.geometry.pore_cross_section.parameters)s
+    %(network)s
+    %(Dp)s
 
     Returns
     -------
-    %(models.geometry.pore_cross_section.returns)s
 
     Notes
     -----
@@ -108,4 +123,4 @@ def square(target, pore_diameter='pore.diameter'):
     symmetry.
 
     """
-    return target[pore_diameter]
+    return network[pore_diameter]

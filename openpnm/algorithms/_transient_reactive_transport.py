@@ -1,11 +1,16 @@
+import logging
 import numpy as np
 from openpnm.algorithms import ReactiveTransport
-from openpnm.utils import logging, Docorator, SettingsAttr
+from openpnm.utils import Docorator
 from openpnm.integrators import ScipyRK45
-docstr = Docorator()
-logger = logging.getLogger(__name__)
+from openpnm.algorithms._solution import SolutionContainer
+
 
 __all__ = ['TransientReactiveTransport']
+
+
+docstr = Docorator()
+logger = logging.getLogger(__name__)
 
 
 @docstr.get_sections(base='TransientReactiveTransportSettings',
@@ -28,7 +33,7 @@ class TransientReactiveTransport(ReactiveTransport):
 
     Parameters
     ----------
-    network : GenericNetwork
+    network : Network
         The Network with which this algorithm is associated.
 
     Notes
@@ -37,9 +42,9 @@ class TransientReactiveTransport(ReactiveTransport):
 
     """
 
-    def __init__(self, phase, settings=None, **kwargs):
-        self.settings = SettingsAttr(TransientReactiveTransportSettings, settings)
-        super().__init__(phase=phase, settings=self.settings, **kwargs)
+    def __init__(self, phase, name='trans_react_?', **kwargs):
+        super().__init__(phase=phase, name=name, **kwargs)
+        self.settings._update(TransientReactiveTransportSettings())
         self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan
         self._callbacks = []
@@ -74,21 +79,29 @@ class TransientReactiveTransport(ReactiveTransport):
         logger.info('Running TransientTransport')
         if np.isscalar(saveat):
             saveat = np.arange(*tspan, saveat)
+        # FIXME: why do we forcibly add tspan[1] to saveat even if the user
+        # didn't want to?
         if (saveat is not None) and (tspan[1] not in saveat):
             saveat = np.hstack((saveat, [tspan[1]]))
         integrator = ScipyRK45() if integrator is None else integrator
         # Perform pre-solve validations
         self._validate_settings()
-        self._validate_data_health()
+        self._validate_topology_health()
+        self._validate_linear_system()
         # Write x0 to algorithm the obj (needed by _update_iterative_props)
         self['pore.ic'] = x0 = np.ones(self.Np, dtype=float) * x0
         self._merge_inital_and_boundary_values()
         # Build RHS (dx/dt = RHS), then integrate the system of ODEs
         rhs = self._build_rhs()
         # Integrate RHS using the given solver
-        self.soln = integrator.solve(rhs, x0, tspan, saveat)
-        return self.soln
+        soln = integrator.solve(rhs, x0, tspan, saveat)
+        # Return solution as dictionary
+        self.soln = SolutionContainer()
+        self.soln[self.settings['quantity']] = soln
 
+    def _run_special(self, x0):
+        pass
+        
     def set_callback(self, func):
         """
         Stores the given function handle as a callback.
@@ -124,7 +137,15 @@ class TransientReactiveTransport(ReactiveTransport):
     def _run_special(self, x0): ...
 
     def _build_rhs(self):
+        """
+        Returns a function handle, which calculates dy/dt = rhs(y, t).
 
+        Notes
+        -----
+        ``y`` is the variable that the algorithms solves for, e.g., for
+        ``TransientFickianDiffusion``, it would be concentration.
+
+        """
         def ode_func(t, y):
             # TODO: add a cache mechanism
             self._apply_callbacks(t, y)
@@ -139,8 +160,8 @@ class TransientReactiveTransport(ReactiveTransport):
 
     def _merge_inital_and_boundary_values(self):
         x0 = self['pore.ic']
-        bc_pores = ~np.isnan(self['pore.bc_value'])
-        x0[bc_pores] = self['pore.bc_value'][bc_pores]
+        bc_pores = ~np.isnan(self['pore.bc.value'])
+        x0[bc_pores] = self['pore.bc.value'][bc_pores]
         quantity = self.settings['quantity']
         self[quantity] = x0
 

@@ -9,29 +9,23 @@ class TransientReactiveTransportTest:
     def setup_class(self):
         np.random.seed(0)
         self.net = op.network.Cubic(shape=[3, 3, 1], spacing=1e-6)
-        self.geo = op.geometry.GenericGeometry(network=self.net,
-                                               pores=self.net.Ps,
-                                               throats=self.net.Ts)
-        self.geo['pore.volume'] = 1e-12
-        self.phase = op.phases.GenericPhase(network=self.net)
-        self.phys = op.physics.GenericPhysics(network=self.net,
-                                              phase=self.phase,
-                                              geometry=self.geo)
-        self.phys['pore.A'] = -1e-13
-        self.phys['pore.k'] = 2
-        self.phys['throat.diffusive_conductance'] = 1e-12
-        mod = op.models.physics.generic_source_term.standard_kinetics
-        self.phys.add_model(propname='pore.reaction',
-                            model=mod,
-                            prefactor='pore.A',
-                            exponent='pore.k',
-                            X='pore.concentration',
-                            regen_mode='deferred')
-        self.settings = {'conductance': 'throat.diffusive_conductance',
-                         'quantity': 'pore.concentration'}
+        self.net.add_model_collection(
+            op.models.collections.geometry.spheres_and_cylinders)
+        self.net.regenerate_models()
+        self.net['pore.volume'] = 1e-12
+        self.phase = op.phase.Phase(network=self.net)
+        self.phase['pore.A'] = -1e-13
+        self.phase['pore.k'] = 2
+        self.phase['throat.diffusive_conductance'] = 1e-12
+        mod = op.models.physics.source_terms.standard_kinetics
+        self.phase.add_model(propname='pore.reaction',
+                             model=mod,
+                             prefactor='pore.A',
+                             exponent='pore.k',
+                             X='pore.concentration',
+                             regen_mode='deferred')
         self.alg = op.algorithms.TransientReactiveTransport(network=self.net,
-                                                            phase=self.phase,
-                                                            settings=self.settings)
+                                                            phase=self.phase)
         self.alg.settings._update({'quantity': 'pore.concentration',
                                    'conductance': 'throat.diffusive_conductance'})
         self.alg.set_value_BC(pores=self.net.pores('front'), values=2)
@@ -44,34 +38,35 @@ class TransientReactiveTransportTest:
         nt.assert_allclose(actual, desired, rtol=1e-5)
 
     def test_transient_solution(self):
-        out = self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
-        # Test datatype
+        self.alg.run(x0=0, tspan=(0, 1), saveat=0.1)
         from openpnm.algorithms._solution import TransientSolution
-        assert isinstance(out, TransientSolution)
+        quantity = self.alg.settings['quantity']
         # Ensure solution object is attached to the algorithm
-        assert isinstance(self.alg.soln, TransientSolution)
+        assert isinstance(self.alg.soln[quantity], TransientSolution)
         # Test shape
-        nt.assert_array_equal(self.alg.soln.shape, (self.alg.Np, 11))
+        nt.assert_array_equal(self.alg.soln[quantity].shape, (self.alg.Np, 11))
         # Test stored time points
-        nt.assert_array_equal(self.alg.soln.t, np.arange(0, 1.1, 0.1))
+        nt.assert_array_equal(self.alg.soln[quantity].t, np.arange(0, 1.1, 0.1))
         # Ensure solution is callable (i.e., interpolates intermediate times)
-        assert hasattr(out, "__call__")
+        assert hasattr(self.alg.soln[quantity], "__call__")
         # Test solution interpolation
-        f = interp1d(out.t, out)
-        nt.assert_allclose(f(0.05), out(0.05))
+        f = interp1d(self.alg.soln[quantity].t, self.alg.soln[quantity])
+        nt.assert_allclose(f(0.05), self.alg.soln[quantity](0.05))
         # Ensure no extrapolation
         with nt.assert_raises(Exception):
-            out(1.01)
+            self.alg.soln(1.01)
 
     def test_consecutive_runs_preserves_solution(self):
         # Integrate from 0 to 0.3 in two steps
         self.alg.run(x0=0, tspan=(0, 0.1))
-        out1 = self.alg.run(x0=self.alg.x, tspan=(0.1, 0.3))
+        self.alg.run(x0=self.alg.x, tspan=(0.1, 0.3))
+        out1 = self.alg.soln
         # Integrate from 0 to 0.3 in one go
-        out2 = self.alg.run(x0=0, tspan=(0, 0.3))
+        self.alg.run(x0=0, tspan=(0, 0.3))
+        out2 = self.alg.soln
         # Ensure the results match
-        nt.assert_allclose(out1(0.3), out2(0.3), rtol=1e-5)
-
+        quantity = self.alg.settings['quantity']
+        nt.assert_allclose(out1[quantity](0.3), out2[quantity](0.3), rtol=1e-5)
 
     def test_adding_bc_over_sources(self):
         with nt.assert_raises(Exception):

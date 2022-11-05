@@ -1,24 +1,25 @@
 from numpy import array
 from numpy.testing import assert_allclose
 import openpnm as op
+import numpy as np
 import openpnm.models.geometry.diffusive_size_factors as mods
+import openpnm.models.geometry as gm
 
 
 class ConduitDiffusiveSizeFactorsTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 1, 1], spacing=1.0)
-        self.geo = op.geometry.GenericGeometry(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts
-        )
-        self.air = op.phases.Air(network=self.net)
-        self.phys = op.physics.GenericPhysics(
-            network=self.net, phase=self.air, geometry=self.geo
-        )
-        self.geo["throat.diameter"] = 0.4
-        self.geo["pore.diameter"] = [1.2, 0.9, 0.7]
+        self.net.regenerate_models()
+        self.net["throat.diameter"] = 0.4
+        self.net["pore.diameter"] = [1.2, 0.9, 0.7]
+        self.air = op.phase.Air(network=self.net)
+        self.air.regenerate_models()
 
     def test_spheres_and_cylinders(self):
-        S_actual = mods.spheres_and_cylinders(self.geo)
+        SF = mods.spheres_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.93875728, 0.97459088]),
             'throat': array([1.25663706e+14, 4.05813214e-01]),
@@ -28,7 +29,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_circles_and_rectangles(self):
-        S_actual = mods.circles_and_rectangles(self.geo)
+        SF = mods.circles_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([1.53390798, 1.80140852]),
             'throat': array([4.00000000e+14, 1.29174358e+00]),
@@ -38,17 +42,23 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_cones_and_cylinders(self):
-        S_actual = mods.cones_and_cylinders(self.geo)
+        SF = mods.cones_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.65138854, 0.62831853]),
             'throat': array([1.25663706e+14, 6.28318531e-01]),
-            'pore2': array([0.6712008 , 0.62831853])
+            'pore2': array([0.6712008, 0.62831853])
         }
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
 
     def test_trapezoids_and_rectangles(self):
-        S_actual = mods.trapezoids_and_rectangles(self.geo)
+        SF = mods.trapezoids_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([1.25821405, 1.37016859]),
             'throat': array([4.e+14, 2.e+00]),
@@ -58,7 +68,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_pyramids_and_cuboids(self):
-        S_actual = mods.pyramids_and_cuboids(self.geo)
+        SF = mods.pyramids_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.82937365, 0.8]),
             'throat': array([1.6e+14, 8.0e-01]),
@@ -68,7 +81,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_cubes_and_cuboids(self):
-        S_actual = mods.cubes_and_cuboids(self.geo)
+        SF = mods.cubes_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([2.4, 1.8]),
             'throat': array([1.6e+14, 8.0e-01]),
@@ -78,7 +94,10 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_squares_and_rectangles(self):
-        S_actual = mods.squares_and_rectangles(self.geo)
+        SF = mods.squares_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([2., 2.]),
             'throat': array([4.e+14, 2.e+00]),
@@ -88,14 +107,113 @@ class ConduitDiffusiveSizeFactorsTest:
             assert_allclose(v, S_desired[k])
 
     def test_ncylinders_in_series(self):
-        S_actual = mods.ncylinders_in_series(self.geo)
+        SF = mods.ncylinders_in_series(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([0.49260457, 0.77443401]),
             'throat': array([1.25663706e+14, 4.05813214e-01]),
-            'pore2': array([0.563723  , 0.84600371])
+            'pore2': array([0.563723, 0.84600371])
         }
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
+
+    def test_intersecting_cones(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        SF = mods.intersecting_cones(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([0.75398224, 0.56548668]),
+            'throat': array([np.inf, np.inf]),
+            'pore2': array([0.56548668, 0.43982297])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k])
+
+    def test_hybrid_cones_and_cylinders(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        self.net["pore.diameter"][0] = 1.6
+        SF = mods.hybrid_cones_and_cylinders(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([1.00530965, 0.62831853]),
+            'throat': array([np.inf, 0.62831853]),
+            'pore2': array([0.56548668, 0.62831853])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k])
+        self.net["pore.diameter"][0] = 1.2
+
+    def test_intersecting_pyramids(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        SF = mods.intersecting_pyramids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([0.96, 0.72]),
+            'throat': array([np.inf, np.inf]),
+            'pore2': array([0.72, 0.56])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k])
+
+    def test_hybrid_pyramids_and_cuboids(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        self.net["pore.diameter"][0] = 1.6
+        SF = mods.hybrid_pyramids_and_cuboids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([1.28, 0.8]),
+            'throat': array([np.inf, 0.8]),
+            'pore2': array([0.72, 0.8])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k])
+        self.net["pore.diameter"][0] = 1.2
+
+    def test_intersecting_trapezoids(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        SF = mods.intersecting_trapezoids(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([1.45638276, 1.23315173]),
+            'throat': array([np.inf, np.inf]),
+            'pore2': array([1.23315173, 1.07216418])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k])
+
+    def test_hybrid_trapezoids_and_rectangles(self):
+        self.net.add_model(propname='throat.coords',
+                           model=gm.throat_centroid.pore_coords)
+        self.net["pore.diameter"][0] = 1.6
+        SF = mods.hybrid_trapezoids_and_rectangles(self.net)
+        S_actual = {'pore1': SF[:, 0],
+                    'throat': SF[:, 1],
+                    'pore2': SF[:, 2]}
+        S_desired = {
+            'pore1': array([1.73123405, 1.37016859]),
+            'throat': array([np.inf, 2.]),
+            'pore2': array([1.23315173, 1.53166311])
+        }
+        for k, v in S_actual.items():
+            assert_allclose(v, S_desired[k])
+        self.net["pore.diameter"][0] = 1.2
 
 
 if __name__ == '__main__':

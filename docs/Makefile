@@ -7,7 +7,7 @@ SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = OpenPNM
 SOURCEDIR     = docs
 BUILDDIR      = _build
-
+EXAMPLESDIR   = examples
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
@@ -40,7 +40,8 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 clean:
-	-rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/
+	rm -rf $(EXAMPLESDIR)/
 	find . -name "generated" | xargs rm -rf
 
 html:

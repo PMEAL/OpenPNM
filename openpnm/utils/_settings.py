@@ -1,16 +1,17 @@
 import logging
 from copy import deepcopy
-from traits.api import HasTraits, Trait
 from openpnm.utils import PrintableDict
 
 
 logger = logging.getLogger(__name__)
+
+
 __all__ = [
     'TypedMixin',
     'TypedSet',
     'TypedList',
     'SettingsAttr',
-    ]
+]
 
 
 class TypedMixin:
@@ -23,6 +24,8 @@ class TypedMixin:
             self._set_types()
 
     def _get_types(self):
+        if not hasattr(self, '_types'):
+            self._types = []
         if self._types == []:
             self._types = list(set([type(i) for i in self]))
         return self._types
@@ -37,8 +40,8 @@ class TypedMixin:
 
     def _check_type(self, value):
         if (type(value) not in self.types) and (len(self.types) > 0):
-            raise TypeError("This list cannot accept values of type " +
-                            f"{type(value)}")
+            raise TypeError("This list cannot accept values of type "
+                            + f"{type(value)}")
 
 
 class TypedSet(TypedMixin, set):
@@ -74,9 +77,23 @@ class TypedList(TypedMixin, list):
         super().insert(index, value)
 
 
+class SettingsDict(dict):
+    def update(self, d):
+        for k, v in d:
+            self[k] = v
+        if "Parameters" in d.__doc__:
+            pass
+
+    def __getattr__(self, key):
+        return self[key]
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
+
 class SettingsAttr:
     r"""
-    A custom data class that hold settings for objects.
+    A custom data class that holds settings for objects.
 
     The main function of this custom class is to enforce the datatype of
     values that are assigned to ensure they remain consistent.  For instance
@@ -103,9 +120,9 @@ class SettingsAttr:
                 else:  # Otherwise raise an error
                     old = type(getattr(self, attr))
                     new = type(value)
-                    raise TypeError(f"Attribute \'{attr}\' can only accept " +
-                                    f"values of type {old}, but the recieved" +
-                                    f" value was of type {new}")
+                    raise TypeError(f"Attribute \'{attr}\' can only accept "
+                                    + f"values of type {old}, but the recieved"
+                                    + f" value was of type {new}")
             else:
                 # If the current attr is None, let anything be written
                 super().__setattr__(attr, value)
@@ -117,9 +134,9 @@ class SettingsAttr:
         if settings is None:
             return
         if isinstance(settings, dict):
-            logger.warn('Specifying settings via dicts is deprecated')
             docs = False
             for k, v in settings.items():
+                v = deepcopy(v)
                 if override:
                     super().__setattr__(k, v)
                 else:
@@ -127,7 +144,7 @@ class SettingsAttr:
         else:  # Dataclass
             attrs = [i for i in dir(settings) if not i.startswith('_')]
             for k in attrs:
-                v = getattr(settings, k)
+                v = deepcopy(getattr(settings, k))
                 if override:
                     super().__setattr__(k, v)
                 else:
@@ -156,15 +173,13 @@ class SettingsAttr:
     def __setitem__(self, key, value):
         setattr(self, key, value)
 
-    def __str__(self):
-        d = PrintableDict()
-        d._key = 'Settings'
-        d._value = 'Values'
+    def __str__(self):  # pragma: no cover
+        d = PrintableDict(key="Settings", value="Values")
         d.update(self.__dict__)
         for item in self.__dir__():
             if not item.startswith('_'):
                 d[item] = getattr(self, item)
         return d.__str__()
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return self.__str__()
