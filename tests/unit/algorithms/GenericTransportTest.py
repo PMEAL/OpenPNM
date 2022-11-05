@@ -357,7 +357,7 @@ class TransportTest:
 
     def test_x0_is_nan(self):
         alg = op.algorithms.Transport(network=self.net,
-                                             phase=self.phase)
+                                      phase=self.phase)
         alg.settings['conductance'] = 'throat.diffusive_conductance'
         alg.settings['quantity'] = 'pore.mole_fraction'
         alg.set_value_BC(pores=self.net.pores('top'), values=1)
@@ -366,6 +366,13 @@ class TransportTest:
         x0[5] = np.nan
         with pytest.raises(Exception):
             alg.run(x0=x0)
+
+    def test_get_source_list(self):
+        alg = op.algorithms.Transport(network=self.net,
+                                      phase=self.phase)
+        assert alg['pore.source'] == {}
+        with pytest.raises(KeyError):
+            alg['pore.source_blah'] == {}
 
     def teardown_class(self):
         ws = op.Workspace()

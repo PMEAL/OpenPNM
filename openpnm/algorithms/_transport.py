@@ -73,6 +73,15 @@ class Transport(Algorithm):
         self._pure_b = None
         self.soln = {}
 
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            if key == 'pore.source':
+                return {}
+            else:
+                raise KeyError(key)
+
     @property
     def x(self):
         """Shortcut to the solution currently stored on the algorithm."""
