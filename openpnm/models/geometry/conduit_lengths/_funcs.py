@@ -45,7 +45,7 @@ def spheres_and_cylinders(
     """
     try:
         L_ctc = network['throat.spacing']
-    except:
+    except KeyError:
         P12 = network['throat.conns']
         C1 = network['pore.coords'][P12[:, 0]]
         C2 = network['pore.coords'][P12[:, 1]]
@@ -125,7 +125,7 @@ def cones_and_cylinders(
     """
     try:
         L_ctc = network['throat.spacing']
-    except:
+    except KeyError:
         P12 = network['throat.conns']
         C1 = network['pore.coords'][P12[:, 0]]
         C2 = network['pore.coords'][P12[:, 1]]
@@ -202,7 +202,7 @@ def hybrid_cones_and_cylinders(
     """
     try:
         L_ctc = network['throat.spacing']
-    except:
+    except KeyError:
         P12 = network['throat.conns']
         C1 = network['pore.coords'][P12[:, 0]]
         C2 = network['pore.coords'][P12[:, 1]]
@@ -414,7 +414,7 @@ def cubes_and_cuboids(
     """
     try:
         L_ctc = network['throat.spacing']
-    except:
+    except KeyError:
         P12 = network['throat.conns']
         C1 = network['pore.coords'][P12[:, 0]]
         C2 = network['pore.coords'][P12[:, 1]]

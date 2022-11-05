@@ -1,6 +1,4 @@
 import openpnm as op
-import pytest
-import py
 import os
 from pathlib import Path
 
@@ -47,6 +45,7 @@ class PerGeosTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = PerGeosTest()
     self = t  # For interacting with the tests at the command line

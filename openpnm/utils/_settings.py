@@ -40,8 +40,8 @@ class TypedMixin:
 
     def _check_type(self, value):
         if (type(value) not in self.types) and (len(self.types) > 0):
-            raise TypeError("This list cannot accept values of type " +
-                            f"{type(value)}")
+            raise TypeError("This list cannot accept values of type "
+                            + f"{type(value)}")
 
 
 class TypedSet(TypedMixin, set):
@@ -120,9 +120,9 @@ class SettingsAttr:
                 else:  # Otherwise raise an error
                     old = type(getattr(self, attr))
                     new = type(value)
-                    raise TypeError(f"Attribute \'{attr}\' can only accept " +
-                                    f"values of type {old}, but the recieved" +
-                                    f" value was of type {new}")
+                    raise TypeError(f"Attribute \'{attr}\' can only accept "
+                                    + f"values of type {old}, but the recieved"
+                                    + f" value was of type {new}")
             else:
                 # If the current attr is None, let anything be written
                 super().__setattr__(attr, value)

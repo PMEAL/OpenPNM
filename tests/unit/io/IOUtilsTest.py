@@ -1,5 +1,4 @@
 import os
-import py
 from pathlib import Path
 import openpnm as op
 
@@ -78,6 +77,7 @@ class IOUtilsTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = IOUtilsTest()
     self = t  # For interacting with the tests at the command line

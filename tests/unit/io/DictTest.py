@@ -1,5 +1,4 @@
 import openpnm as op
-import py
 
 
 class DictTest:
@@ -15,7 +14,7 @@ class DictTest:
 
 
 if __name__ == '__main__':
-
+    import py
     t = DictTest()
     self = t
     t.setup_class()

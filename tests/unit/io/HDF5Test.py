@@ -1,4 +1,3 @@
-import py
 import os
 import numpy as np
 import openpnm as op
@@ -44,6 +43,7 @@ class HDF5Test:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = HDF5Test()
     self = t  # For interacting with the tests at the command line

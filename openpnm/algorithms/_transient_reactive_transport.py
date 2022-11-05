@@ -98,7 +98,8 @@ class TransientReactiveTransport(ReactiveTransport):
         self.soln = SolutionContainer()
         self.soln[self.settings['quantity']] = soln
 
-    def _run_special(self, x0): ...
+    def _run_special(self, x0):
+        pass
 
     def _build_rhs(self):
         """

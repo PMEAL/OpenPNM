@@ -59,7 +59,6 @@ jobs:
             --cov-report=xml
             --color=yes
 
-
       - name: Upload coverage to Codecov
         if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
         uses: codecov/codecov-action@v2
@@ -68,3 +67,13 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+
+
+      - name: flake8 Lint
+        if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
+        uses: py-actions/flake8@v2
+        with:
+           ignore: "D100,E226,E402,E712,E741,F401,F403,N806,W503,WPS111,WPS211,WPS237,WPS300,WPS305,WPS319,WPS347,WPS410,WPS437"
+           exclude: "docs/,scripts/,tests/,openpnm/contrib/,setup.py,openpnm/models/_doctxt.py,openpnm/models/phase/_phasedocs.py,openpnm/models/geometry/_geodocs.py"
+           max-line-length: "90"
+           path: ".."

@@ -1,6 +1,4 @@
 import os
-import py
-import copy
 import json
 import pytest
 import numpy as np
@@ -162,6 +160,7 @@ class JSONGraphTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = JSONGraphTest()
     self = t  # For interacting with the tests at the command line

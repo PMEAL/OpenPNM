@@ -1,5 +1,4 @@
 import os
-import py
 import pytest
 import numpy as np
 import openpnm as op
@@ -29,6 +28,7 @@ class STLTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = STLTest()
     self = t  # For interacting with the tests at the command line

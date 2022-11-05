@@ -33,8 +33,6 @@ def project_to_hdf5(project, filename=''):
     d = pd.json_normalize(dct, sep='.').to_dict(orient='records')[0]
     for k in list(d.keys()):
         d[k.replace('.', '/')] = d.pop(k)
-
-
     f = hdfFile(filename, "w")
     for item in list(d.keys()):
         tempname = '_'.join(item.split('.'))
@@ -70,7 +68,7 @@ def print_hdf5(f, flat=False):
                 elif indent[-1] != ' ':
                     indent = indent + ''
                 p = indent + item + '\n' + p
-            return(p)
+            return p
         p = print_level(f)
         print(p)
     else:
