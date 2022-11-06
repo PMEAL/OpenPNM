@@ -1,8 +1,9 @@
-if __name__ == '__main__':
+import numpy as np
+import openpnm as op
+import matplotlib.pyplot as plt
 
-    import numpy as np
-    import openpnm as op
-    import matplotlib.pyplot as plt
+
+def test_callback_functionality():
 
     Nx = 101
     shape = [Nx, 1, 1]
