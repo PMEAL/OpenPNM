@@ -191,7 +191,6 @@ class ReactiveTransport(Transport):
 
         with tqdm(**tqdm_settings) as pbar:
             for i in range(maxiter):
-                self.soln.num_iter = i + 1
                 res = self._get_residual()
                 progress = self._get_progress(res)
                 pbar.update(progress - pbar.n)
@@ -205,6 +204,7 @@ class ReactiveTransport(Transport):
                 dx = self.x - xold
                 xold = self.x
                 logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
+                self.soln.num_iter = i + 1
 
         self.soln.is_converged = False
         logger.warning(f"{self.name} didn't converge after {maxiter} iterations")
