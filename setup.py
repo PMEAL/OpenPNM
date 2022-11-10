@@ -58,6 +58,7 @@ setup(
         'numba',
         'numpy',
         'pandas',
+        'pyamg',
         'pypardiso',
         'rich',
         'scikit-image',
