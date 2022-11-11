@@ -10,3 +10,4 @@ from ._base import *
 from ._scipy import *
 from ._pardiso import *
 from ._petsc import *
+from ._pyamg import *

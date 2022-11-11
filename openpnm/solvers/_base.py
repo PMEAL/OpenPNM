@@ -20,7 +20,7 @@ class DirectSolver(BaseSolver):
 
 class IterativeSolver(BaseSolver):
     """Base class for iterative solvers."""
-    def __init__(self, tol=1e-8, maxiter=999):
+    def __init__(self, tol=1e-8, maxiter=1000):
         self.tol = tol
         self.maxiter = maxiter
         self.atol = None        # needs to be evaluated later

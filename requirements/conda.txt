@@ -7,6 +7,7 @@ networkx
 numba
 numpy
 pandas
+pyamg
 pypardiso
 scikit-image
 scipy
