@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.topotools._topotools &#8212; OpenPNM 3.0.0.dev1 documentation</title>
+    <title>openpnm.topotools._topotools &#8212; OpenPNM 3.0.0.dev6 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -363,8 +363,8 @@
         <span class="n">Pkeep</span><span class="p">[</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">Pkeep</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot delete ALL pores&#39;</span><span class="p">)</span>
-        <span class="c1"># # Performing customized find_neighbor_throats which is much faster, but</span>
-        <span class="c1"># # not general for other types of queries</span>
+        <span class="c1"># # Performing customized find_neighbor_throats which is much faster,</span>
+        <span class="c1"># # but not general for other types of queries</span>
         <span class="c1"># temp = np.in1d(network[&#39;throat.conns&#39;].flatten(), pores)</span>
         <span class="c1"># temp = np.reshape(temp, (network.Nt, 2))</span>
         <span class="c1"># Ts = np.any(temp, axis=1)</span>
@@ -699,7 +699,8 @@
 
 <div class="viewcode-block" id="merge_networks"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.merge_networks.html#openpnm.topotools.merge_networks">[docs]</a><span class="k">def</span> <span class="nf">merge_networks</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">donor</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Combine multiple networks into one without making any topological connections</span>
+<span class="sd">    Combine multiple networks into one without making any topological</span>
+<span class="sd">    connections</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -999,7 +1000,9 @@
     <span class="n">NBs</span><span class="p">,</span> <span class="n">XYZs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">Ps</span> <span class="ow">in</span> <span class="n">pores</span><span class="p">:</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_neighbor_pores</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span>
+                                           <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">,</span>
+                                           <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                            <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">NBs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
         <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">temp</span><span class="p">,</span> <span class="n">Ps</span><span class="p">))</span>
@@ -1368,10 +1371,10 @@
         <span class="n">new_coord</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_coord</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">-</span> <span class="n">domain_half_length</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">coords</span><span class="p">[:,</span> <span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="n">ax</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">():</span>
         <span class="n">new_coord</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_coord</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">+</span> <span class="n">domain_half_length</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span>
-    <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Np</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Ps = np.arange(network.Np, network.Np + 1)</span>
     <span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="p">[</span><span class="n">new_coord</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;reservoir&#39;</span><span class="p">])</span>
     <span class="n">conns</span> <span class="o">=</span> <span class="p">[[</span><span class="n">P</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">P</span> <span class="ow">in</span> <span class="n">pores</span><span class="p">]</span>
-    <span class="n">Ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">Nt</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">conns</span><span class="p">))</span>
+    <span class="c1"># Ts = np.arange(network.Nt, network.Nt + len(conns))</span>
     <span class="n">extend</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">conns</span><span class="o">=</span><span class="n">conns</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;reservoir&#39;</span><span class="p">])</span>
     <span class="c1"># Compute the geometrical properties of the reservoir pore and throats</span>
     <span class="c1"># Confirm if network has any geometry props on it</span>

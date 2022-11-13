@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.phase._phase &#8212; OpenPNM 3.0.0.dev1 documentation</title>
+    <title>openpnm.phase._phase &#8212; OpenPNM 3.0.0.dev6 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -265,7 +265,7 @@
 
         <span class="k">try</span><span class="p">:</span>  <span class="c1"># Allow look-up from network mostly for label/domain info</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
             <span class="k">pass</span>
 
         <span class="c1"># Parse the key</span>

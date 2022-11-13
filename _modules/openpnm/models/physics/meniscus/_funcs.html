@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.physics.meniscus._funcs &#8212; OpenPNM 3.0.0.dev1 documentation</title>
+    <title>openpnm.models.physics.meniscus._funcs &#8212; OpenPNM 3.0.0.dev6 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -361,7 +361,7 @@
         <span class="c1"># Return the pressure at which a touch happens</span>
         <span class="n">Pc_touch</span> <span class="o">=</span> <span class="n">Pc</span><span class="p">(</span><span class="n">x_touch</span><span class="p">,</span> <span class="n">fa</span><span class="p">,</span> <span class="n">fb</span><span class="p">,</span> <span class="n">throatRad</span><span class="p">,</span> <span class="n">contact</span><span class="p">,</span> <span class="n">surface_tension</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Pc_touch</span>
-    <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;men&#39;</span><span class="p">)</span> <span class="p">:</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;men&#39;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">target_Pc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">=</span><span class="s1">&#39;Please supply a target capillary pressure&#39;</span>
                          <span class="o">+</span> <span class="s1">&#39; when mode is &quot;men&quot;, defaulting to 1.0e-6&#39;</span><span class="p">)</span>

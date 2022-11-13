@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Managing Clustered Networks &#8212; OpenPNM 3.0.0.dev1 documentation</title>
+    <title>Managing Clustered Networks &#8212; OpenPNM 3.0.0.dev6 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -420,8 +420,12 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span> <span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../../_images/371b728dd6c8eee88fbb8fcf88a2b3d4cead1fd985ea7870a451b2a0c655c991.png" src="../../../_images/371b728dd6c8eee88fbb8fcf88a2b3d4cead1fd985ea7870a451b2a0c655c991.png" />
 </div>
 </div>
 <section id="creating-a-clustered-network">
@@ -430,13 +434,12 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">])</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
-<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d457307ab2f36938c73ba7fa0a6f2debb2a63d8ee005ec0f9f3752d271c2ee81.png" src="../../../_images/d457307ab2f36938c73ba7fa0a6f2debb2a63d8ee005ec0f9f3752d271c2ee81.png" />
+<img alt="../../../_images/39dcd49bda94017b72cf7bd7b63591a0ef1f8046b02f20ee94489ebe3670b235.png" src="../../../_images/39dcd49bda94017b72cf7bd7b63591a0ef1f8046b02f20ee94489ebe3670b235.png" />
 </div>
 </div>
 <p>Now we can have 3 total “clusters”, two small clusters at the bottom plus one large cluster which constitutes the rest of the network.</p>
@@ -449,32 +452,6 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 <span class="n">w</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">hydraulic_conductance</span><span class="o">.</span><span class="n">generic_hydraulic</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Water at 0x7fdcb345f540&gt;
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  #  Properties                                                   Valid Values
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.temperature                                                  25 / 25
-  3  pore.pressure                                                     25 / 25
-  4  pore.contact_angle                                                25 / 25
-  5  pore.density                                                      25 / 25
-  6  pore.molar_density                                                25 / 25
-  7  pore.surface_tension                                              25 / 25
-  8  pore.thermal_conductivity                                         25 / 25
-  9  pore.vapor_pressure                                               25 / 25
- 10  pore.viscosity                                                    25 / 25
- 11  throat.hydraulic_conductance                                      32 / 32
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  #  Labels                                                 Assigned Locations
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                               25
-  3  throat.all                                                             32
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
@@ -500,15 +477,14 @@ phase_01 : &lt;openpnm.phase.Water at 0x7fdcb345f540&gt;
 <p>As we can see above, attempting to run <code class="docutils literal notranslate"><span class="pre">flow</span></code> resulted in an Exception with a message about the matrix being singular. Let’s see how a clustered network creates this problem. Let’s print the A matrix as an image:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fix</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x7fdca9068910&gt;
-</pre></div>
-</div>
-<img alt="../../../_images/ef263400f8058c8531b2c78134fc99cca1709e7d66d55f220238eff61ced612b.png" src="../../../_images/ef263400f8058c8531b2c78134fc99cca1709e7d66d55f220238eff61ced612b.png" />
+<img alt="../../../_images/21aaeb9f8cb43779edd6abc18c384c701078ce2daf4a2654889b93819ff07125.png" src="../../../_images/21aaeb9f8cb43779edd6abc18c384c701078ce2daf4a2654889b93819ff07125.png" />
 </div>
 </div>
 <p>Referring to the network visualization above we can see that pores 5 and 10 are connected to each other, but not to any other pores. Looking at the A matrix above we can this reflected in the pattern. We can see that on row 5 there is an entry in the diagonal (5, 5) and a second entry at column 10 (5, 10). Now looking at row 10 we see an entry on the diagonal (10, 10) and a entry at column 5 (10, 5). These off-diagonal entries represent the conductance values between pores 5 and 10 (and between 10 and 5). The key point to note is that NO OTHER entries are present on either row. This means that the mass balance equations for pores 5 and 10 are not coupled to the rest of the equations. Another way to say is that pores 5 and 10 form their own independent matrix which can be solved in isolation since they don’t exchange mass with any of the other pores…however, we can’t solve this ‘mini-system’ because we have not specified any boundary conditions for it.</p>
@@ -528,7 +504,7 @@ phase_01 : &lt;openpnm.phase.Water at 0x7fdcb345f540&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7fdcf434b270&gt;
+net : &lt;openpnm.network.Demo at 0x7efda636b180&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -598,13 +574,12 @@ net : &lt;openpnm.network.Demo at 0x7fdcf434b270&gt;
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.cluster_size&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">21</span>
 <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
-<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b1bd2aba9780ba9f42bc2b6c84678dca0afe894f96d61a5f8494e10f8e874a33.png" src="../../../_images/b1bd2aba9780ba9f42bc2b6c84678dca0afe894f96d61a5f8494e10f8e874a33.png" />
+<img alt="../../../_images/d7ee446b86fee0c26aa5a4830c1ff61eb4a38096426265224338ecf5c462f1da.png" src="../../../_images/d7ee446b86fee0c26aa5a4830c1ff61eb4a38096426265224338ecf5c462f1da.png" />
 </div>
 </div>
 <p>Now we can see only a single cluster.  Without even re-running the pore-scale models we can see that the pores with a cluster number other than 0 have been removed:</p>
@@ -619,6 +594,42 @@ net : &lt;openpnm.network.Demo at 0x7fdcf434b270&gt;
        0., 0., 0., 0.])
 </pre></div>
 </div>
+</div>
+</div>
+<p>Now we can run the <code class="docutils literal notranslate"><span class="pre">flow</span></code> algorithm without a problem, though note that we need to create a new algorithm since the previous one was created based on the number of pores and throats in the clustered network.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">200_000</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">flow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[200000.         200000.         200000.         200000.
+ 200000.         172596.27206452 176165.7712035  186483.37592466
+ 143135.39535214 145093.81274255 151817.55298479 100435.05008426
+ 107574.3464144  124045.40550979 135433.63607142 126394.62864637
+ 100000.         100000.         100000.         100000.
+ 100000.        ]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">))</span>
+<span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">color_by</span><span class="o">=</span><span class="n">flow</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7efd982e5fd0&gt;
+</pre></div>
+</div>
+<img alt="../../../_images/0eb75c88d20f5fd2f6dcb372545ca8b8bb4c64bde1ca1e2cb270fbd578de7cbe.png" src="../../../_images/0eb75c88d20f5fd2f6dcb372545ca8b8bb4c64bde1ca1e2cb270fbd578de7cbe.png" />
 </div>
 </div>
 </section>
