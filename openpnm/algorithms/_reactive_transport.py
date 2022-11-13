@@ -179,7 +179,7 @@ class ReactiveTransport(Transport):
         x_rtol = self.settings['x_rtol']
         xold = self.x
         dx = self.x - xold
-        condition = TerminationCondition(f_rtol=f_rtol, x_rtol=x_rtol)
+        condition = TerminationCondition(f_tol=np.inf, f_rtol=f_rtol, x_rtol=x_rtol, norm=norm)
 
         tqdm_settings = {
             "total": 100,
