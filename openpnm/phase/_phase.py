@@ -77,7 +77,7 @@ class Phase(Domain):
 
         try:  # Allow look-up from network mostly for label/domain info
             return self.network[key]
-        except:
+        except (KeyError, AttributeError):
             pass
 
         # Parse the key

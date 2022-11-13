@@ -39,11 +39,11 @@ def _setup_logger():
     column_width = terminal_width if terminal_width < 60 else 60
 
     log_format = \
-    '-' * column_width + '\n\
-  - %(levelname)-7s: %(message)s \n\
-  - SOURCE : %(name)s.%(funcName)s \n\
-  - TIME   : %(asctime)s\
-    \n' + '-' * column_width
+        '-' * column_width + '\n\
+        - %(levelname)-7s: %(message)s \n\
+        - SOURCE : %(name)s.%(funcName)s \n\
+        - TIME   : %(asctime)s\
+        \n' + '-' * column_width
 
     logging.basicConfig(level=logging.WARNING, format=log_format)
     del log_format

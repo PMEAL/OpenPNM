@@ -175,8 +175,8 @@ def trim(network, pores=[], throats=[]):
         Pkeep[pores] = False
         if not np.any(Pkeep):
             raise Exception('Cannot delete ALL pores')
-        # # Performing customized find_neighbor_throats which is much faster, but
-        # # not general for other types of queries
+        # # Performing customized find_neighbor_throats which is much faster,
+        # # but not general for other types of queries
         # temp = np.in1d(network['throat.conns'].flatten(), pores)
         # temp = np.reshape(temp, (network.Nt, 2))
         # Ts = np.any(temp, axis=1)
@@ -511,7 +511,8 @@ def clone_pores(network, pores, labels=['clone'], mode='parents'):
 
 def merge_networks(network, donor=[]):
     r"""
-    Combine multiple networks into one without making any topological connections
+    Combine multiple networks into one without making any topological
+    connections
 
     Parameters
     ----------
@@ -811,7 +812,9 @@ def merge_pores(network, pores, labels=['merged']):
     NBs, XYZs = [], []
 
     for Ps in pores:
-        temp = network.find_neighbor_pores(pores=Ps, mode='union', flatten=True,
+        temp = network.find_neighbor_pores(pores=Ps,
+                                           mode='union',
+                                           flatten=True,
                                            include_input=False)
         NBs.append(temp)
         points = np.concatenate((temp, Ps))
@@ -1180,10 +1183,10 @@ def add_reservoir_pore(cls, network, pores, offset=0.1):
         new_coord[ax] = new_coord[ax] - domain_half_length*(1 + offset)
     if coords[:, ax].mean() > network['pore.coords'][:, ax].mean():
         new_coord[ax] = new_coord[ax] + domain_half_length*(1 + offset)
-    Ps = np.arange(network.Np, network.Np + 1)
+    # Ps = np.arange(network.Np, network.Np + 1)
     extend(network=network, coords=[new_coord], labels=['reservoir'])
     conns = [[P, network.Np-1] for P in pores]
-    Ts = np.arange(network.Nt, network.Nt + len(conns))
+    # Ts = np.arange(network.Nt, network.Nt + len(conns))
     extend(network=network, conns=conns, labels=['reservoir'])
     # Compute the geometrical properties of the reservoir pore and throats
     # Confirm if network has any geometry props on it

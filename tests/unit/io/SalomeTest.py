@@ -1,5 +1,4 @@
 import os
-import py
 import numpy as np
 import openpnm as op
 from openpnm.models.misc import from_neighbor_pores
@@ -27,6 +26,7 @@ class SalomeTest:
 
 
 if __name__ == '__main__':
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = SalomeTest()
     self = t  # For interacting with the tests at the command line

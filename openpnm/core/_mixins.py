@@ -584,7 +584,7 @@ class LabelMixin:
             element = 'throat'
             locations = self._parse_indices(throats)
         else:
-            return(np.array([], dtype=int))
+            return np.array([], dtype=int)
         labels = self._parse_labels(labels=labels, element=element)
         labels = [element+'.'+item.split('.', 1)[-1] for item in labels]
         all_locs = self._get_indices(element=element, labels=labels, mode=mode)

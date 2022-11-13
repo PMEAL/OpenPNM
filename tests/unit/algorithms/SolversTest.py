@@ -37,6 +37,12 @@ class SolversTest:
         x = self.alg['pore.x']
         nt.assert_allclose(x.mean(), 0.624134, rtol=1e-5)
 
+    def test_pyamg_ruge_stuben_solver(self):
+        solver = op.solvers.PyamgRugeStubenSolver()
+        self.alg.run(solver=solver)
+        x = self.alg['pore.x']
+        nt.assert_allclose(x.mean(), 0.624134, rtol=1e-5)
+
 
 if __name__ == '__main__':
     t = SolversTest()

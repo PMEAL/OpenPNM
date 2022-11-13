@@ -6,7 +6,7 @@
 
 -----
 
-> WARNING: The ``dev`` branch is now **highly backwards incompatible with V2**!  We have made some MAJOR changes that will dramatically improve the usage and maintainability of OpenPNM moving forward, but it required breaking things. Specifically, we have removed the concept of Geometry and Physics objects. All simulations now require just Networks and Phases.  We are working feverishly to get this transition finalized and to update the documentation accordingly, but remember we are a small team with lots of other things distracting us.  Thanks for your patience.
+> VERSION 3.0 of OpenPNM is now out. All the [examples on the website](https://openpnm.org/_examples/index.html) are now using the features and idioms of V3. For a description of the main changes please see our [recent blog post](http://pmeal.com/posts/2022-10-10-notebook-post/). 
 
 # Overview of OpenPNM
 

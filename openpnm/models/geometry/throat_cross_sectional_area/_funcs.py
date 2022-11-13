@@ -9,7 +9,7 @@ __all__ = ["cylinder", "cuboid", "rectangle"]
 def cylinder(
     network,
     throat_diameter='throat.diameter',
-    ):
+):
     r"""
     Calculate throat cross-sectional area for a cylindrical throat
 

@@ -177,11 +177,7 @@ class ProjectTest:
     #         proj.append(1)
 
     def test_phases(self):
-        proj = self.ws.copy_project(self.net.project)
-        phases = proj.phases
-        # assert 'phase_01' in [p.name for p in phases]
-        # assert 'phase_02' in [p.name for p in phases]
-        assert len(phases) == 2
+        assert len(self.net.project.phases) == 2
 
     # def test_find_phase_from_physics(self):
     #     proj = self.ws.copy_project(self.net.project)

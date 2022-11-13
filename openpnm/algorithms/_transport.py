@@ -20,7 +20,7 @@ ws = Workspace()
 @docstr.get_sections(base='TransportSettings', sections=['Parameters'])
 @docstr.dedent
 class TransportSettings:
-    r"""
+    """
     Defines the settings for Transport algorithms
 
     Parameters
@@ -52,7 +52,7 @@ class TransportSettings:
 @docstr.get_sections(base='Transport', sections=['Parameters'])
 @docstr.dedent
 class Transport(Algorithm):
-    r"""
+    """
     This class implements steady-state linear transport calculations.
 
     Parameters
@@ -73,6 +73,15 @@ class Transport(Algorithm):
         self._pure_b = None
         self.soln = {}
 
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            if key == 'pore.source':
+                return {}
+            else:
+                raise KeyError(key)
+
     @property
     def x(self):
         """Shortcut to the solution currently stored on the algorithm."""
@@ -84,7 +93,7 @@ class Transport(Algorithm):
 
     @docstr.dedent
     def _build_A(self):
-        r"""
+        """
         Builds the coefficient matrix based on throat conductance values.
 
         Notes
@@ -106,11 +115,7 @@ class Transport(Algorithm):
         self.A = self._pure_A.copy()
 
     def _build_b(self):
-        r"""
-        Builds the RHS vector, without applying any boundary conditions or
-        source terms. This method is trivial as it just creates a column
-        vector of 0's.
-        """
+        """Initializes the RHS vector, b, with zeros."""
         b = np.zeros(self.Np, dtype=float)
         self._pure_b = b
         self.b = self._pure_b.copy()
@@ -138,10 +143,7 @@ class Transport(Algorithm):
         self._b = value
 
     def _apply_BCs(self):
-        r"""
-        Applies all the boundary conditions that have been specified, by
-        adding values to the *A* and *b* matrices.
-        """
+        """Applies specified boundary conditions by modifying A and b."""
         if 'pore.bc.rate' in self.keys():
             # Update b
             ind = np.isfinite(self['pore.bc.rate'])
@@ -167,7 +169,7 @@ class Transport(Algorithm):
             self.A.eliminate_zeros()
 
     def run(self, solver=None, x0=None, verbose=False):
-        r"""
+        """
         Builds the A and b matrices, and calls the solver specified in the
         ``settings`` attribute.
 
@@ -205,8 +207,7 @@ class Transport(Algorithm):
         self._run_special(solver=solver, x0=x0, verbose=verbose)
 
     def _run_special(self, solver, x0, w=1.0, verbose=None):
-        # Make sure A,b are STILL well-defined
-        self._validate_topology_health()
+        # Make sure A and b are 'still' well-defined
         self._validate_linear_system()
         # Solve and apply under-relaxation
         x_new, exit_code = solver.solve(A=self.A, b=self.b, x0=x0)
@@ -220,18 +221,13 @@ class Transport(Algorithm):
         self.soln.is_converged = not bool(exit_code)
 
     def _update_A_and_b(self):
-        r"""
-        Builds/updates A, b based on the recent solution on the algorithm
-        object.
-        """
+        """Builds A and b, and applies specified boundary conditions."""
         self._build_A()
         self._build_b()
         self._apply_BCs()
 
     def _validate_x0(self):
-        """
-        Ensures x0 doesn't contain any nans/infs.
-        """
+        """Ensures x0 doesn't contain any nans/infs."""
         x0 = self["pore.initial_guess"]
         if not np.isfinite(x0).all():
             raise Exception("x0 contains inf/nan values")
@@ -255,15 +251,13 @@ class Transport(Algorithm):
             raise Exception(msg)
 
     def _validate_linear_system(self):
-        """
-        Ensures the linear system Ax = b doesn't contain any nans/infs.
-        """
+        """Ensures the linear system Ax = b doesn't contain any nans/infs."""
         if np.isfinite(self.A.data).all() and np.isfinite(self.b).all():
             return
         raise Exception("A or b contains inf/nan values")
 
     def rate(self, pores=[], throats=[], mode='group'):
-        r"""
+        """
         Calculates the net rate of material moving into a given set of
         pores or throats
 
@@ -335,19 +329,15 @@ class Transport(Algorithm):
         return np.array(R, ndmin=1)
 
     def clear_value_BCs(self):
-        r"""
-        Clear all value BCs
-        """
+        """Clears all value BCs."""
         self.set_BC(pores=None, bctype='value', mode='remove')
 
     def clear_rate_BCs(self):
-        r"""
-        Clear all rate BCs
-        """
+        """Clears all rate BCs"""
         self.set_BC(pores=None, bctype='rate', mode='remove')
 
     def set_value_BC(self, pores=None, values=[], mode='add'):
-        r"""
+        """
         Applies constant value boundary conditons to the specified pores.
 
         These are sometimes referred to as Dirichlet conditions.
@@ -369,7 +359,7 @@ class Transport(Algorithm):
         self.set_BC(pores=pores, bctype='value', bcvalues=values, mode=mode)
 
     def set_rate_BC(self, pores=None, rates=[], mode='add'):
-        r"""
+        """
         Apply constant rate boundary conditons to the specified locations.
 
         Parameters
