@@ -1,21 +1,22 @@
-import sys
 import logging
+import sys
+
 import numpy as np
 from numpy.linalg import norm
 from scipy.optimize.nonlin import TerminationCondition
-from openpnm.algorithms import Transport
-from openpnm.utils import TypedList, Docorator
 from tqdm.auto import tqdm
 
+from openpnm.algorithms import Transport
+from openpnm.utils import Docorator, TypedList
 
-__all__ = ['ReactiveTransport']
+__all__ = ["ReactiveTransport"]
 
 
 docstr = Docorator()
 logger = logging.getLogger(__name__)
 
 
-@docstr.get_sections(base='ReactiveTransportSettings', sections=['Parameters'])
+@docstr.get_sections(base="ReactiveTransportSettings", sections=["Parameters"])
 @docstr.dedent
 class ReactiveTransportSettings:
     r"""
@@ -45,7 +46,7 @@ class ReactiveTransportSettings:
     x_rtol = 1e-6
 
 
-@docstr.get_sections(base='ReactiveTransport', sections=['Parameters'])
+@docstr.get_sections(base="ReactiveTransport", sections=["Parameters"])
 @docstr.dedent
 class ReactiveTransport(Transport):
     r"""
@@ -62,11 +63,11 @@ class ReactiveTransport(Transport):
 
     """
 
-    def __init__(self, name='react_trans_?', **kwargs):
+    def __init__(self, name="react_trans_?", **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(ReactiveTransportSettings())
 
-    def set_source(self, pores, propname, mode='add'):
+    def set_source(self, pores, propname, mode="add"):
         r"""
         Applies a given source term to the specified pores
 
@@ -105,21 +106,21 @@ class ReactiveTransport(Transport):
         propname = self._parse_prop(propname, "pore")
         # Check if any BC is already set in the same locations
         locs_BC = np.zeros(self.Np, dtype=bool)
-        for item in self['pore.bc'].keys():
-            locs_BC = np.isfinite(self[f'pore.bc.{item}'])
+        for item in self["pore.bc"].keys():
+            locs_BC = np.isfinite(self[f"pore.bc.{item}"])
         if np.any(locs_BC[pores]):
             raise Exception("BCs present in given pores, can't assign source term")
-        prop = 'pore.source.' + propname.split('.', 1)[1]
-        if mode == 'add':
+        prop = "pore.source." + propname.split(".", 1)[1]
+        if mode == "add":
             if prop not in self.keys():
                 self[prop] = False
             self[prop][pores] = True
-        elif mode == 'remove':
+        elif mode == "remove":
             self[prop][pores] = False
-        elif mode == 'clear':
+        elif mode == "clear":
             self[prop] = False
         else:
-            raise Exception(f'Unsupported mode {mode}')
+            raise Exception(f"Unsupported mode {mode}")
 
     def _apply_sources(self):
         """
@@ -134,9 +135,9 @@ class ReactiveTransport(Transport):
         """
         try:
             phase = self.project[self.settings.phase]
-            for item in self['pore.source'].keys():
+            for item in self["pore.source"].keys():
                 # Fetch linearized values of the source term
-                Ps = self['pore.source.' + item]
+                Ps = self["pore.source." + item]
                 S1, S2 = [phase[f"pore.{item}.{Si}"] for Si in ["S1", "S2"]]
                 # Modify A and b: diag(A) += -S1, b += S2
                 diag = self.A.diagonal()
@@ -173,20 +174,22 @@ class ReactiveTransport(Transport):
             Initial guess of the unknown variable
 
         """
-        w = self.settings['relaxation_factor']
-        maxiter = self.settings['newton_maxiter']
-        f_rtol = self.settings['f_rtol']
-        x_rtol = self.settings['x_rtol']
+        w = self.settings["relaxation_factor"]
+        maxiter = self.settings["newton_maxiter"]
+        f_rtol = self.settings["f_rtol"]
+        x_rtol = self.settings["x_rtol"]
         xold = self.x
         dx = self.x - xold
-        condition = TerminationCondition(f_tol=np.inf, f_rtol=f_rtol, x_rtol=x_rtol, norm=norm)
+        condition = TerminationCondition(
+            f_tol=np.inf, f_rtol=f_rtol, x_rtol=x_rtol, norm=norm
+        )
 
         tqdm_settings = {
             "total": 100,
             "desc": f"{self.name} : Newton iterations",
             "disable": not verbose,
             "file": sys.stdout,
-            "leave": False
+            "leave": False,
         }
 
         with tqdm(**tqdm_settings) as pbar:
@@ -198,12 +201,12 @@ class ReactiveTransport(Transport):
                 if is_converged:
                     pbar.update(100 - pbar.n)
                     self.soln.is_converged = is_converged
-                    logger.info(f'Solution converged, residual norm: {norm(res):.4e}')
+                    logger.info(f"Solution converged, residual norm: {norm(res):.4e}")
                     return
                 super()._run_special(solver=solver, x0=xold, w=w)
                 dx = self.x - xold
                 xold = self.x
-                logger.info(f'Iteration #{i:<4d} | Residual norm: {norm(res):.4e}')
+                logger.info(f"Iteration #{i:<4d} | Residual norm: {norm(res):.4e}")
                 self.soln.num_iter = i + 1
 
         self.soln.is_converged = False
@@ -217,7 +220,7 @@ class ReactiveTransport(Transport):
             self._f0_norm = norm(res)
         f_rtol = self.settings.f_rtol
         norm_reduction = norm(res) / self._f0_norm / f_rtol
-        progress = (1 - max(np.log10(norm_reduction), 0) / np.log10(1/f_rtol)) * 100
+        progress = (1 - max(np.log10(norm_reduction), 0) / np.log10(1 / f_rtol)) * 100
         return max(0, progress)
 
     def _update_A_and_b(self):
@@ -240,12 +243,12 @@ class ReactiveTransport(Transport):
             x = self.x
         return self.A * x - self.b
 
-    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='add'):
+    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode="add"):
         msg = "Source term already present in given pores, can't assign BCs"
         # Ensure that given pores do not have source terms already set
         try:
-            for item in self['pore.source'].keys():
-                if np.any(self['pore.source.'+item][pores]):
+            for item in self["pore.source"].keys():
+                if np.any(self["pore.source." + item][pores]):
                     raise Exception(msg)
         except KeyError:
             pass

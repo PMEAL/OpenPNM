@@ -1,20 +1,22 @@
-import numpy as _np
+import numpy as np
+
 from openpnm.models.geometry import _geodocs
 
-
-__all__ = ['spheres_and_cylinders',
-           'circles_and_rectangles',
-           'cones_and_cylinders',
-           'intersecting_cones',
-           'hybrid_cones_and_cylinders',
-           'trapezoids_and_rectangles',
-           'hybrid_trapezoids_and_rectangles',
-           'intersecting_trapezoids',
-           'pyramids_and_cuboids',
-           'intersecting_pyramids',
-           'hybrid_pyramids_and_cuboids',
-           'cubes_and_cuboids',
-           'squares_and_rectangles']
+__all__ = [
+    "spheres_and_cylinders",
+    "circles_and_rectangles",
+    "cones_and_cylinders",
+    "intersecting_cones",
+    "hybrid_cones_and_cylinders",
+    "trapezoids_and_rectangles",
+    "hybrid_trapezoids_and_rectangles",
+    "intersecting_trapezoids",
+    "pyramids_and_cuboids",
+    "intersecting_pyramids",
+    "hybrid_pyramids_and_cuboids",
+    "cubes_and_cuboids",
+    "squares_and_rectangles",
+]
 
 
 @_geodocs
@@ -43,35 +45,27 @@ def spheres_and_cylinders(
         ``[pore1, throat, pore2]``.
 
     """
-    try:
-        L_ctc = network['throat.spacing']
-    except KeyError:
-        P12 = network['throat.conns']
-        C1 = network['pore.coords'][P12[:, 0]]
-        C2 = network['pore.coords'][P12[:, 1]]
-        L_ctc = _np.linalg.norm(C1 - C2)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L_ctc = _get_L_ctc(network)
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
 
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
         _raise_incompatible_data()
-    L1 = _np.sqrt(D1**2 - Dt**2) / 2
-    L2 = _np.sqrt(D2**2 - Dt**2) / 2
+    L1 = np.sqrt(D1**2 - Dt**2) / 2
+    L2 = np.sqrt(D2**2 - Dt**2) / 2
 
     # Handle throats w/ overlapping pores
     _L1 = (4 * L_ctc**2 + D1**2 - D2**2) / (8 * L_ctc)
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-    Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-    return _np.vstack((L1, Lt, L2)).T
+    Lt = np.maximum(L_ctc - (L1 + L2), 1e-15)
+    return np.vstack((L1, Lt, L2)).T
 
 
 @_geodocs
 def circles_and_rectangles(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are circles
@@ -97,15 +91,13 @@ def circles_and_rectangles(
     return spheres_and_cylinders(
         network=network,
         pore_diameter=pore_diameter,
-        throat_diameter=throat_diameter
+        throat_diameter=throat_diameter,
     )
 
 
 @_geodocs
 def cones_and_cylinders(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
@@ -123,14 +115,8 @@ def cones_and_cylinders(
     -------
 
     """
-    try:
-        L_ctc = network['throat.spacing']
-    except KeyError:
-        P12 = network['throat.conns']
-        C1 = network['pore.coords'][P12[:, 0]]
-        C2 = network['pore.coords'][P12[:, 1]]
-        L_ctc = _np.linalg.norm(C1 - C2)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L_ctc = _get_L_ctc(network)
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -140,16 +126,12 @@ def cones_and_cylinders(
     mask = L_ctc - 0.5 * (D1 + D2) < 0
     L1[mask] = _L1[mask]
     L2[mask] = (L_ctc - L1)[mask]
-    Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
-    return _np.vstack((L1, Lt, L2)).T
+    Lt = np.maximum(L_ctc - (L1 + L2), 1e-15)
+    return np.vstack((L1, Lt, L2)).T
 
 
 @_geodocs
-def intersecting_cones(
-    network,
-    pore_coords="pore.coords",
-    throat_coords="throat.coords"
-):
+def intersecting_cones(network, pore_coords="pore.coords", throat_coords="throat.coords"):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
     that intersect. Therefore, the throat is the cross sectional plane where
@@ -167,22 +149,18 @@ def intersecting_cones(
     -------
 
     """
-    P12 = network['throat.conns']
+    P12 = network["throat.conns"]
     p_coords = network[pore_coords]
     t_coords = network[throat_coords]
-    L1 = _np.sqrt(_np.sum(((p_coords[P12[:, 0]]-t_coords))**2,
-                          axis=1))
-    L2 = _np.sqrt(_np.sum(((p_coords[P12[:, 1]]-t_coords))**2,
-                          axis=1))
-    Lt = _np.zeros(len(network.Ts))
-    return _np.vstack((L1, Lt, L2)).T
+    L1 = np.sqrt(np.sum(((p_coords[P12[:, 0]] - t_coords)) ** 2, axis=1))
+    L2 = np.sqrt(np.sum(((p_coords[P12[:, 1]] - t_coords)) ** 2, axis=1))
+    Lt = np.zeros(len(network.Ts))
+    return np.vstack((L1, Lt, L2)).T
 
 
 @_geodocs
 def hybrid_cones_and_cylinders(
-    network,
-    pore_diameter="pore.diameter",
-    throat_coords="throat.coords"
+    network, pore_diameter="pore.diameter", throat_coords="throat.coords"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
@@ -200,37 +178,29 @@ def hybrid_cones_and_cylinders(
     -------
 
     """
-    try:
-        L_ctc = network['throat.spacing']
-    except KeyError:
-        P12 = network['throat.conns']
-        C1 = network['pore.coords'][P12[:, 0]]
-        C2 = network['pore.coords'][P12[:, 1]]
-        L_ctc = _np.linalg.norm(C1 - C2)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L_ctc = _get_L_ctc(network)
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
-    Lt = _np.maximum(L_ctc - (L1 + L2), 1e-15)
+    Lt = np.maximum(L_ctc - (L1 + L2), 1e-15)
     # Handle intersecting pores
     XYp = network.coords[network.conns]
     XYt = network[throat_coords]
-    _L1, _L2 = _np.linalg.norm(XYp - XYt[:, None], axis=2).T
+    _L1, _L2 = np.linalg.norm(XYp - XYt[:, None], axis=2).T
     mask1 = _L1 < L1
     mask2 = _L2 < L2
-    mask = _np.logical_or(mask1, mask2)
+    mask = np.logical_or(mask1, mask2)
     if mask.any():
         L1[mask] = _L1[mask]
         L2[mask] = _L2[mask]
         Lt[mask] = 0.0
-    return _np.vstack((L1, Lt, L2)).T
+    return np.vstack((L1, Lt, L2)).T
 
 
 @_geodocs
 def trapezoids_and_rectangles(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -251,16 +221,16 @@ def trapezoids_and_rectangles(
     symmetry.
 
     """
-    return cones_and_cylinders(network,
-                               pore_diameter=pore_diameter,
-                               throat_diameter=throat_diameter)
+    return cones_and_cylinders(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter,
+    )
 
 
 @_geodocs
 def intersecting_trapezoids(
-    network,
-    pore_coords="pore.coords",
-    throat_coords="throat.coords"
+    network, pore_coords="pore.coords", throat_coords="throat.coords"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -281,16 +251,16 @@ def intersecting_trapezoids(
     symmetry.
 
     """
-    return intersecting_cones(network,
-                              pore_coords=pore_coords,
-                              throat_coords=throat_coords)
+    return intersecting_cones(
+        network=network,
+        pore_coords=pore_coords,
+        throat_coords=throat_coords,
+    )
 
 
 @_geodocs
 def hybrid_trapezoids_and_rectangles(
-    network,
-    pore_diameter="pore.diameter",
-    throat_coords="throat.coords"
+    network, pore_diameter="pore.diameter", throat_coords="throat.coords"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -311,16 +281,16 @@ def hybrid_trapezoids_and_rectangles(
     symmetry.
 
     """
-    return hybrid_cones_and_cylinders(network,
-                                      pore_diameter=pore_diameter,
-                                      throat_coords=throat_coords)
+    return hybrid_cones_and_cylinders(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords,
+    )
 
 
 @_geodocs
 def pyramids_and_cuboids(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are truncated
@@ -336,16 +306,16 @@ def pyramids_and_cuboids(
     -------
 
     """
-    return cones_and_cylinders(network,
-                               pore_diameter=pore_diameter,
-                               throat_diameter=throat_diameter)
+    return cones_and_cylinders(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter,
+    )
 
 
 @_geodocs
 def intersecting_pyramids(
-    network,
-    pore_coords="pore.coords",
-    throat_coords="throat.coords"
+    network, pore_coords="pore.coords", throat_coords="throat.coords"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -361,16 +331,16 @@ def intersecting_pyramids(
     -------
 
     """
-    return intersecting_cones(network,
-                              pore_coords=pore_coords,
-                              throat_coords=throat_coords)
+    return intersecting_cones(
+        network=network,
+        pore_coords=pore_coords,
+        throat_coords=throat_coords,
+    )
 
 
 @_geodocs
 def hybrid_pyramids_and_cuboids(
-    network,
-    pore_diameter="pore.diameter",
-    throat_coords="throat.coords"
+    network, pore_diameter="pore.diameter", throat_coords="throat.coords"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are truncated
@@ -387,16 +357,16 @@ def hybrid_pyramids_and_cuboids(
     -------
 
     """
-    return hybrid_cones_and_cylinders(network,
-                                      pore_diameter=pore_diameter,
-                                      throat_coords=throat_coords)
+    return hybrid_cones_and_cylinders(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_coords=throat_coords,
+    )
 
 
 @_geodocs
 def cubes_and_cuboids(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cubes
@@ -412,14 +382,8 @@ def cubes_and_cuboids(
     -------
 
     """
-    try:
-        L_ctc = network['throat.spacing']
-    except KeyError:
-        P12 = network['throat.conns']
-        C1 = network['pore.coords'][P12[:, 0]]
-        C2 = network['pore.coords'][P12[:, 1]]
-        L_ctc = _np.linalg.norm(C1 - C2)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split('.', 1)[-1]).T
+    L_ctc = _get_L_ctc(network)
+    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -430,15 +394,13 @@ def cubes_and_cuboids(
     L2[mask] = (L_ctc - L1)[mask]
     mask = (Lt < 0) & (L2 > L1)
     L1[mask] = (L_ctc - L2)[mask]
-    Lt = _np.maximum(Lt, 1e-15)
-    return _np.vstack((L1, Lt, L2)).T
+    Lt = np.maximum(Lt, 1e-15)
+    return np.vstack((L1, Lt, L2)).T
 
 
 @_geodocs
 def squares_and_rectangles(
-    network,
-    pore_diameter="pore.diameter",
-    throat_diameter="throat.diameter"
+    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are squares
@@ -459,13 +421,29 @@ def squares_and_rectangles(
     symmetry.
 
     """
-    return cubes_and_cuboids(network,
-                             pore_diameter=pore_diameter,
-                             throat_diameter=throat_diameter)
+    return cubes_and_cuboids(
+        network=network,
+        pore_diameter=pore_diameter,
+        throat_diameter=throat_diameter,
+    )
 
 
 # Dealing with errors and exceptions
 def _raise_incompatible_data():
-    raise Exception(
+    msg = (
         "'spheres_and_cylinders' can only be applied when throat diameter is"
-        " smaller than that of adjacent pores.")
+        " smaller than that of adjacent pores."
+    )
+    raise Exception(msg)
+
+
+def _get_L_ctc(network):
+    """Returns throat spacing if it exists, otherwise calculates it."""
+    try:
+        L_ctc = network["throat.spacing"]
+    except KeyError:
+        P12 = network["throat.conns"]
+        C1 = network["pore.coords"][P12[:, 0]]
+        C2 = network["pore.coords"][P12[:, 1]]
+        L_ctc = np.linalg.norm(C1 - C2, axis=1)
+    return L_ctc
