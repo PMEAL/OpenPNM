@@ -229,7 +229,9 @@ def trapezoids_and_rectangles(
 
 
 @_geodocs
-def intersecting_trapezoids(network, pore_coords="pore.coords", throat_coords="throat.coords"):
+def intersecting_trapezoids(
+    network, pore_coords="pore.coords", throat_coords="throat.coords"
+):
     r"""
     Calculates conduit lengths in the network assuming pores are
     intersecting trapezoids.
@@ -312,7 +314,9 @@ def pyramids_and_cuboids(
 
 
 @_geodocs
-def intersecting_pyramids(network, pore_coords="pore.coords", throat_coords="throat.coords"):
+def intersecting_pyramids(
+    network, pore_coords="pore.coords", throat_coords="throat.coords"
+):
     r"""
     Calculates conduit lengths in the network assuming pores are
     intersecting pyramids.
@@ -426,10 +430,11 @@ def squares_and_rectangles(
 
 # Dealing with errors and exceptions
 def _raise_incompatible_data():
-    raise Exception(
+    msg = (
         "'spheres_and_cylinders' can only be applied when throat diameter is"
         " smaller than that of adjacent pores."
     )
+    raise Exception(msg)
 
 
 def _get_L_ctc(network):
