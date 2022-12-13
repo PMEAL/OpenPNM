@@ -1,8 +1,9 @@
+import numpy as np
+from numpy.testing import assert_array_almost_equal
+
 import openpnm as op
 import openpnm.models.geometry as gm
 import openpnm.models.misc as mm
-import numpy as np
-from numpy.testing import assert_array_almost_equal
 
 
 class ThroatLengthTest:
@@ -33,6 +34,13 @@ class ThroatLengthTest:
         self.net.add_model(propname='throat.length',
                            model=gm.throat_length.cubes_and_cuboids)
         assert_array_almost_equal(self.net['throat.length'], 0.5)
+        # Make sure it still works if throat.spacing is not defined
+        del self.net['throat.spacing']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.cubes_and_cuboids)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
+        # Add back throat.spacing so other tests don't fail
+        self.net.regenerate_models()
 
     def test_squares_and_rectangles(self):
         del self.net['throat.length']
@@ -57,8 +65,15 @@ class ThroatLengthTest:
         self.net.add_model(propname='throat.length',
                            model=gm.throat_length.cones_and_cylinders)
         assert_array_almost_equal(self.net['throat.length'], 0.5)
+        # Make sure it still works if throat.spacing is not defined
+        del self.net['throat.spacing']
+        self.net.add_model(propname='throat.length',
+                           model=gm.throat_length.cones_and_cylinders)
+        assert_array_almost_equal(self.net['throat.length'], 0.5)
+        # Add back throat.spacing so other tests don't fail
+        self.net.regenerate_models()
 
-    def test_hybrid_hybrid_trapezoids_and_rectangles(self):
+    def test_hybrid_trapezoids_and_rectangles(self):
         del self.net['throat.length']
         self.net.add_model(propname='throat.length',
                            model=gm.throat_length.hybrid_trapezoids_and_rectangles)
