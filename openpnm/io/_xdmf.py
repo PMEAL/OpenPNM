@@ -3,7 +3,6 @@ import pandas as pd
 import xml.etree.cElementTree as ET
 from openpnm.io import project_to_dict, _parse_filename
 from openpnm.utils._misc import is_transient
-import h5py
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +28,7 @@ def project_to_xdmf(project, filename=''):
     or other attributes.
 
     """
+    import h5py
 
     network = project.network
     algs = project.algorithms
