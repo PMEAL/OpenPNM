@@ -1,6 +1,5 @@
 import logging
 from openpnm.io import project_to_dict, _parse_filename
-from h5py import File as hdfFile
 import pandas as pd
 
 
@@ -25,6 +24,7 @@ def project_to_hdf5(project, filename=''):
         A handle to an hdf5 file.  This must be closed when done (i.e.
         ``f.close()``.
     """
+    from h5py import File as hdfFile
     if filename == '':
         filename = project.name
     filename = _parse_filename(filename, ext='hdf')
