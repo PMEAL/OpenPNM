@@ -30,6 +30,10 @@ def parse_points(shape, points, reflect=False):
     else:
         # Should we check to ensure that points are reflected?
         points = np.array(points)
+        # Add 3rd column to 2D points
+        if points.shape[1] == 2:
+            zeros = np.atleast_2d(np.zeros_like(points[:, 0])).T
+            points = np.hstack((points, zeros))
     return points
 
 
