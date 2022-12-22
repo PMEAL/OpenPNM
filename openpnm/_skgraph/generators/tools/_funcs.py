@@ -34,6 +34,9 @@ def parse_points(shape, points, reflect=False):
         if points.shape[1] == 2:
             zeros = np.atleast_2d(np.zeros_like(points[:, 0])).T
             points = np.hstack((points, zeros))
+        # Ensure z-axis is all 0's if shape ends in 0 (ie. square or disk)
+        if shape[-1] == 0:
+            points[:, -1] = 0.0
     return points
 
 
