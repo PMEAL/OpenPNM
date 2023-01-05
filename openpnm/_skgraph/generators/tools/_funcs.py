@@ -5,6 +5,7 @@ Tools
 """
 import numpy as np
 from openpnm._skgraph import tools
+import scipy.spatial as sptl
 
 
 __all__ = [
@@ -15,13 +16,84 @@ __all__ = [
     'template_cylinder_annulus',
     'generate_base_points',
     'reflect_base_points',
+    'get_centroid',
 ]
 
-__notyet__ = [
-]
+
+def get_centroid(pts, mode='rigorous'):
+    r"""
+    Finds the centroid of a given set of points that form a convex hull
+
+    Parameters
+    ----------
+    pts : ndarray
+        The points in 2D or 3D
+    mode : str
+        Options are:
+
+        =========== ================================================================
+        mode        description
+        =========== ================================================================
+        rigorous    Computes a Delaunay triangulation of the input points then finds
+                    the true centroid by computing the area/volume of each triangle/
+                    tetrahedron to find the weighted average center of mass.
+        fast        Computes the basic average of the input points without
+                    accounting for the distribution of points. This is a decent
+                    approximation and is *much* faster.
+        =========== ================================================================
+
+    Returns
+    -------
+    pt : ndarray
+        A single coordinate representing the center of mass of the input points
+
+    """
+    if mode == 'rigorous':
+        tri = sptl.Delaunay(pts)
+        centroids = tri.points[tri.simplices].mean(axis=1)
+        A = []
+        for s in tri.simplices:
+            xy = tri.points[s]
+            if xy.shape[1] == 2:  # In 2D
+                # Use Heron's formula to find area of arbitrary triangle
+                a = np.sqrt((xy[0, 0] - xy[1, 0])**2 + (xy[0, 1] - xy[1, 1])**2)
+                b = np.sqrt((xy[1, 0] - xy[2, 0])**2 + (xy[1, 1] - xy[2, 1])**2)
+                c = np.sqrt((xy[2, 0] - xy[0, 0])**2 + (xy[2, 1] - xy[0, 1])**2)
+                s = (a + b + c)/2
+                temp = np.sqrt(s*(s-a)*(s-b)*(s-c))
+            else:
+                # Using formula from here: https://en.wikipedia.org/wiki/Tetrahedron
+                d = np.r_[xy.T, [np.ones_like(xy.T[0, :])]]  # In 3D
+                temp = abs(np.linalg.det(d))/6
+            A.append(temp)
+        A = np.array(A)
+        CoM = np.array([(centroids[:, i]*A/A.sum()*len(A)).mean()
+                        for i in range(centroids.shape[1])])
+    elif mode == 'fast':
+        CoM = pts.mean(axis=0)
+    return CoM
 
 
 def parse_points(shape, points, reflect=False):
+    r"""
+    Converts given points argument to consistent format
+
+    Parameters
+    ----------
+    shape : array_like
+        The shape of the domain
+    points : int or array_like
+        If a scalar value then this indicates the number of points to generate. If
+        an array, then these points are used directly.
+    reflect : bool, optional
+        If ``True`` the base points are reflected across the borders of the domain.
+
+    Returns
+    -------
+    points : ndarray
+        The points after being cleaned and parsed correctly
+
+    """
     # Deal with input arguments
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
