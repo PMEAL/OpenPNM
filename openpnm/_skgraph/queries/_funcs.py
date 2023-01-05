@@ -290,7 +290,7 @@ def find_neighbor_edges(network, inds, flatten=True, logic='or'):
 def find_neighbor_nodes(network, inds, flatten=True, include_input=False,
                         logic='or'):
     r"""
-    Ginds all nodes that are directly connected to the input nodes
+    Finds all nodes that are directly connected to the input nodes
 
     Parameters
     ----------
@@ -340,9 +340,7 @@ def find_neighbor_nodes(network, inds, flatten=True, include_input=False,
     -----
     The ``logic`` options are applied to neighboring nodes only, thus it is not
     possible to obtain nodes that are part of the global set but not neighbors.
-    This is because (a) the list global nodes might be very large, and (b) it
-    is not possible to return a list of neighbors for each input site if global
-    nodes are considered.
+    This is because the list of global nodes might be very large.
 
     """
     g = network

@@ -9,18 +9,29 @@ class VoronoiTest:
     def teardown_class(self):
         pass
 
-    def test_voronoi_num_points(self):
+    def test_voronoi_cube_num_points(self):
         net = op.network.Voronoi(points=30, shape=[1, 1, 1])
         assert net.Np > 30
+        assert not np.all(net.coords[:, -1] == 0.0)
 
-    def test_voronoi_points(self):
-        points = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=points, shape=[1, 1, 1])
-        assert net.Np > 30
-
-    def test_voronoi_2d(self):
+    def test_voronoi_square_num_points(self):
         net = op.network.Voronoi(points=30, shape=[1, 1, 0])
         assert net.Np > 30
+        assert np.all(net.coords[:, -1] == 0.0)
+
+    def test_voronoi_square_2D_points(self):
+        np.random.rand(0)
+        pts = np.random.rand(30, 2)
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 0])
+        assert net.Np > 30
+        assert np.all(net.coords[:, -1] == 0.0)
+
+    def test_voronoi_square_3D_points(self):
+        np.random.rand(0)
+        pts = np.random.rand(30, 3)
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 0])
+        assert net.Np > 30
+        assert np.all(net.coords[:, -1] == 0.0)
 
     def test_voronoi_delaunay_dual(self):
         np.random.seed(0)
