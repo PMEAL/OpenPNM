@@ -1,9 +1,6 @@
-import numpy as np
 from openpnm.network import Network
 from openpnm.utils import Docorator
-from openpnm._skgraph.generators import voronoi_delaunay_dual, delaunay, tools
-from openpnm._skgraph.tools import isoutside
-from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph.generators import delaunay, tools
 
 
 __all__ = ['Delaunay']
@@ -18,21 +15,27 @@ class Delaunay(Network):
     Parameters
     ----------
     points : array_like or int
-        Can either be an N-by-3 array of point coordinates which will be used,
-        or a scalar value indicating the number of points to generate
+        Can either be an N-by-D array of point coordinates which will be used,
+        or a scalar value indicating the number of points to generate. If 3D points
+        are supplied, and a 2D shape is specified, then the z-coordinate is ignored.
     shape : array_like
-        The size of the domain.  It's possible to create cubic as well as 2D
-        square domains by changing the ``shape`` as follows:
+        The size and shape of the domain:
 
         ========== ============================================================
         shape      result
         ========== ============================================================
         [x, y, z]  A 3D cubic domain of dimension x, y and z
         [x, y, 0]  A 2D square domain of size x by y
-        [r, z]     A 3D cylindrical domain of radius r and height z
-        [r, 0]     A 2D circular domain of radius r
-        [r]        A 3D spherical domain of radius r
         ========== ============================================================
+
+    trim : bool, optional
+        If ``True`` (default) then all vertices laying outside the domain will
+        be removed. This is only useful if ``reflect=True``.
+    reflect : bool, optional
+        If ``True`` (default) then the base points will be reflected across
+        all the faces of the domain prior to performing the tessellation. This
+        feature is best combined with ``trim=True`` to prevent unreasonably long
+        connections between points on the surfaces.
 
     %(Network.parameters)s
 
@@ -44,8 +47,13 @@ class Delaunay(Network):
 
     Notes
     -----
-    This class always performs the tessellation on the full set of points,
-    then trims any points that lie outside the given domain ``shape``.
+    It is also possible to generate circular ``[r, 0]``, cylindrical ``[r, z]``, and
+    spherical domains ``[r]``, but this feature does not quite work as desired.
+    It does not produce a truly clean outer surface since the tessellation are
+    conducted in cartesian coordinates, so the circular and spherical surfaces
+    have artifacts. Scipy recently added the ability to do tessellations on
+    spherical surfaces, for geological applications, but this is not flexible
+    enough, yet.
 
     """
 
@@ -57,12 +65,4 @@ class Delaunay(Network):
                             node_prefix='pore',
                             edge_prefix='throat')
         self.update(net)
-
-
-if __name__ == "__main__":
-    import openpnm as op
-    dn = Delaunay(shape=[2, 0], points=1000, reflect=True, trim=True)
-    op.visualization.plot_connections(dn)
-    pts = np.random.rand(500, 2)
-    dn = Delaunay(points=pts, shape=[1, 1, 0])
-    op.visualization.plot_connections(dn)
+        self.tri = tri

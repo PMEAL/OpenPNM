@@ -3,11 +3,32 @@ import openpnm as op
 
 
 class DelaunayGabrielTest:
+
     def setup_class(self):
         pass
 
     def teardown_class(self):
         pass
+
+    def test_delaunay_square_with_trim_reflect(self):
+        np.random.seed(0)
+        shape = [1, 1, 0]
+        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=False)
+        assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
+        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=True)
+        assert op.topotools.isoutside(network=tri, shape=shape).sum() > 0
+        tri = op.network.Delaunay(points=30, shape=shape, trim=True, reflect=False)
+        assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
+
+    def test_delaunay_cube_with_trim_reflect(self):
+        np.random.seed(0)
+        shape = [1, 1, 1]
+        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=False)
+        assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
+        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=True)
+        assert op.topotools.isoutside(network=tri, shape=shape).sum() > 0
+        tri = op.network.Delaunay(points=30, shape=shape, trim=True, reflect=False)
+        assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
 
     def test_delaunay_square_with_2D_points(self):
         np.random.seed(0)
@@ -25,12 +46,22 @@ class DelaunayGabrielTest:
         assert np.all(tri.coords[:, -1] != pts[:, -1])
         assert np.all(tri.coords[:, -1] == 0.0)
 
+    def test_delaunay_square_with_num_points(self):
+        np.random.seed(0)
+        tri = op.network.Delaunay(points=30, shape=[1, 1, 0])
+        assert op.topotools.dimensionality(network=tri).sum() == 2
+
     def test_delaunay_cube_with_points(self):
         np.random.seed(0)
         pts = np.random.rand(50, 3)
         tri = op.network.Delaunay(points=pts, shape=[1, 1, 1])
         assert tri.coords.shape == (50, 3)
         assert np.all(tri.coords == pts)
+
+    def test_delaunay_cube_with_num_points(self):
+        np.random.seed(0)
+        tri = op.network.Delaunay(points=30, shape=[1, 1, 1])
+        assert op.topotools.dimensionality(network=tri).sum() == 3
 
     def test_delaunay_disk_with_2D_points(self):
         np.random.seed(0)
@@ -48,12 +79,22 @@ class DelaunayGabrielTest:
         assert tri.coords.shape == (50, 3)
         assert np.all(tri.coords == pts)
 
+    def test_delaunay_disk_with_num_points(self):
+        np.random.seed(0)
+        tri = op.network.Delaunay(points=30, shape=[1, 0])
+        assert op.topotools.dimensionality(network=tri).sum() == 2
+
     def test_delaunay_cylinder_with_points(self):
         np.random.seed(0)
         pts = np.random.rand(50, 3)
         tri = op.network.Delaunay(points=pts, shape=[1, 1])
         assert tri.coords.shape == (50, 3)
         assert np.all(tri.coords == pts)
+
+    def test_delaunay_sphere_with_num_points(self):
+        np.random.seed(0)
+        tri = op.network.Delaunay(points=30, shape=[1])
+        assert op.topotools.dimensionality(network=tri).sum() == 3
 
 
 if __name__ == '__main__':
