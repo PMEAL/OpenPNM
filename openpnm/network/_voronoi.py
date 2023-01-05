@@ -1,7 +1,6 @@
 from openpnm.network import Network
 from openpnm.utils import Docorator
 from openpnm._skgraph.generators import voronoi
-from openpnm._skgraph.generators.tools import parse_points
 
 
 docstr = Docorator()
@@ -60,14 +59,10 @@ class Voronoi(Network):
 
     def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
         super().__init__(**kwargs)
-        # Clean-up input points
-        points = parse_points(shape=shape, points=points, reflect=reflect)
-        # Call skgraph generator
         net, vor = voronoi(points=points,
                            shape=shape,
                            trim=trim,
                            node_prefix='pore',
                            edge_prefix='throat')
-        # Update dictionary on self
         self.update(net)
         self.vor = vor

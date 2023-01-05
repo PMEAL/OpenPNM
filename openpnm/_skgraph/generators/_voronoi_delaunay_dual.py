@@ -22,11 +22,14 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
     trim : bool, optional
         If ``True`` (default) then all points lying beyond the given domain
         shape will be removed
+    reflect : bool, optionl
+        If ``True`` (Default) then points are reflected across each face of the
+        domain prior to performing the tessellation.
 
     Returns
     -------
     network : dict
-        A dictionary containing 'node.coords' and 'edge.conns'
+        A dictionary containing '<node_prefix>.coords' and '<edge_prefix>.conns'
     vor : Voronoi object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
     tri : Delaunay object
@@ -110,18 +113,22 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
     Ts = np.sum(network[node_prefix+'.delaunay'][conns].astype(int), axis=1) == 1
     network[edge_prefix+'.interconnect'] = Ts
 
-    # Identify and trim nodes outside the domain if requested
     if trim:
-        inside_all = ~isoutside(network, shape=shape)
-        inside_delaunay = inside_all*network[node_prefix+'.delaunay']
-        outside_delaunay = (~inside_all)*network[node_prefix+'.delaunay']
-        neighbors = find_neighbor_nodes(network=network,
-                                        inds=np.where(inside_delaunay)[0],
-                                        include_input=True)
-        trim = np.ones([network[node_prefix+'.coords'].shape[0], ], dtype=bool)
-        trim[neighbors] = False  # Keep all neighbors to internal delaunay nodes
-        trim[outside_delaunay] = True  # Re-add external delaunay nodes to trim
-        network = trim_nodes(network=network, inds=np.where(trim)[0])
+        # Find all delaunay nodes outside the domain
+        Ps = isoutside(network=network, shape=shape)*network[node_prefix+'.delaunay']
+        if np.any(Ps):  # only occurs if points were reflected
+            # Find voronoi nodes connected to these and mark them as surface nodes
+            inds = np.where(Ps)[0]
+            Ns = find_neighbor_nodes(network=network, inds=inds)
+            network[node_prefix+'.surface'] = np.zeros(n_nodes, dtype=bool)
+            network[node_prefix+'.surface'][Ns] = True
+            Ps = isoutside(network=network, shape=shape)
+            inds = np.where(Ps)[0]
+            network = trim_nodes(network=network, inds=inds)
+        else:
+            trim = isoutside(network=network, shape=shape)
+            inds = np.where(trim)[0]
+            network = trim_nodes(network=network, inds=inds)
 
     return network, vor, tri
 

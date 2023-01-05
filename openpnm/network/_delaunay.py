@@ -1,6 +1,6 @@
 from openpnm.network import Network
 from openpnm.utils import Docorator
-from openpnm._skgraph.generators import delaunay, tools
+from openpnm._skgraph.generators import delaunay
 
 
 __all__ = ['Delaunay']
@@ -39,12 +39,6 @@ class Delaunay(Network):
 
     %(Network.parameters)s
 
-    See Also
-    --------
-    Gabriel
-    Voronoi
-    DelaunayVoronoiDual
-
     Notes
     -----
     It is also possible to generate circular ``[r, 0]``, cylindrical ``[r, z]``, and
@@ -59,7 +53,6 @@ class Delaunay(Network):
 
     def __init__(self, shape, points, reflect=True, trim=True, **kwargs):
         super().__init__(**kwargs)
-        points = tools.parse_points(shape=shape, points=points, reflect=reflect)
         net, tri = delaunay(points=points,
                             shape=shape,
                             node_prefix='pore',
