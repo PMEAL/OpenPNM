@@ -6,7 +6,7 @@ from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 
 
-def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
+def voronoi(points, shape=[1, 1, 1], trim=True, reflect=True, relaxation=0,
             node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Voronoi tessellation of base points
@@ -21,11 +21,15 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
     trim : boolean
         If ``True`` (default) then any vertices laying outside the domain
         given by ``shape`` are removed (as are the edges connected to them).
-    tolerance : float
-        The tolerance to use when deciding if a point is within the domain or
-        not when ``trim=True``. The default is 0.  Increasing this is usually
-        only needed when dealing with curved domain faces (spheres and
-        cylinders).
+    relaxation : int, optional (default = 0)
+        The number of iterations to use for relaxing the base points. This is
+        sometimes called `Lloyd's algorithm
+        <https://en.wikipedia.org/wiki/Lloyd%27s_algorithm>`_. This function computes
+        the new base points as the simple average of the Voronoi vertices instead
+        of rigorously finding the center of mass, which is quite time consuming.
+        To use the rigorous method, call the ``lloyd_relaxation`` function manually
+        to obtain relaxed points, then pass the points directly to this funcion.
+        The results are quite stable after only a few iterations.
 
     Returns
     -------
@@ -35,10 +39,20 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
     """
-    points = tools.parse_points(points=points, shape=shape)
+    points = tools.parse_points(points=points, shape=shape, reflect=reflect)
     mask = ~np.all(points == 0, axis=0)
     # Perform tessellation
     vor = sptl.Voronoi(points=points[:, mask])
+    for _ in range(relaxation):
+        points = tools.lloyd_relaxation(vor, mode='rigorous')
+        # Reparse points
+        d = {}
+        d[node_prefix+'.coords'] = points
+        keep = ~isoutside(network=d, shape=shape)
+        points = points[keep]
+        points = tools.parse_points(points=points, shape=shape, reflect=reflect)
+        vor = sptl.Voronoi(points=points[:, mask])
+
     # Convert to adjecency matrix
     coo = vor_to_am(vor)
     # Write values to dictionary
@@ -58,7 +72,7 @@ def voronoi(points, shape=[1, 1, 1], trim=True, tolerance=0.0,
     d[node_prefix+'.coords'] = coords
 
     if trim:
-        hits = isoutside(d, shape=shape, rtol=tolerance)
+        hits = isoutside(d, shape=shape)
         d = trim_nodes(d, hits)
 
     return d, vor
@@ -71,7 +85,6 @@ if __name__ == "__main__":
     print(vn['node.coords'].shape)
     print(vn['edge.conns'].shape)
 
-    shape = [1, 0]
-    pts = tools.parse_points(points=1000, shape=shape, reflect=True)
-    vn, vor = voronoi(points=pts, shape=shape, trim=True, tolerance=[0.2, 0])
+    shape = [1, 1]
+    vn, vor = voronoi(points=500, shape=shape, trim=True, relaxation=5)
     plot_edges(vn)

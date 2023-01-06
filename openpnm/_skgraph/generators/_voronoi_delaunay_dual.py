@@ -7,7 +7,7 @@ from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph.queries import find_neighbor_nodes
 
 
-def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
+def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
                           node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
@@ -25,6 +25,15 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
     reflect : bool, optionl
         If ``True`` (Default) then points are reflected across each face of the
         domain prior to performing the tessellation.
+    relaxation : int, optional (default = 0)
+        The number of iterations to use for relaxing the base points. This is
+        sometimes called `Lloyd's algorithm
+        <https://en.wikipedia.org/wiki/Lloyd%27s_algorithm>`_. This function computes
+        the new base points as the simple average of the Voronoi vertices instead
+        of rigorously finding the center of mass, which is quite time consuming.
+        To use the rigorous method, call the ``lloyd_relaxation`` function manually
+        to obtain relaxed points, then pass the points directly to this funcion.
+        The results are quite stable after only a few iterations.
 
     Returns
     -------
@@ -43,6 +52,9 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
 
     # Perform tessellations
     vor = sptl.Voronoi(points=points[:, mask])
+    for _ in range(relaxation):
+        points = tools.lloyd_relaxation(vor, mode='fast')
+        vor = sptl.Voronoi(points=points[:, mask])
     tri = sptl.Delaunay(points=points[:, mask])
 
     # Combine points
@@ -144,7 +156,7 @@ if __name__ == "__main__":
     # print(dvd.keys())
     # print(dvd['node.coords'].shape)
     # print(dvd['edge.conns'].shape)
-    shape = [1]
+    shape = [1, 0]
     pts = tools.parse_points(points=1000, shape=shape, reflect=True)
-    vn, vor, tri = voronoi_delaunay_dual(points=pts, shape=shape, trim=True)
+    vn, vor, tri = voronoi_delaunay_dual(points=pts, shape=shape, trim=True, relaxation=1)
     plot_edges(vn)

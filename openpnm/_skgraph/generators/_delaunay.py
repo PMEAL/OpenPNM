@@ -4,7 +4,7 @@ from openpnm._skgraph.generators import tools
 from openpnm._skgraph.tools import tri_to_am
 
 
-def delaunay(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
+def delaunay(points, shape=[1, 1, 1], trim=True, reflect=True, node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on Delaunay triangulation of random points
 
@@ -23,7 +23,7 @@ def delaunay(points, shape=[1, 1, 1], node_prefix='node', edge_prefix='edge'):
     tri : Delaunay tessellation object
         The Delaunay tessellation object produced by ``scipy.spatial.Delaunay``
     """
-    points = tools.parse_points(points=points, shape=shape)
+    points = tools.parse_points(points=points, shape=shape, reflect=reflect)
     mask = ~np.all(points == 0, axis=0)
     tri = sptl.Delaunay(points=points[:, mask])
     coo = tri_to_am(tri)

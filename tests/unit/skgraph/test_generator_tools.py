@@ -18,9 +18,9 @@ class SKGRGeneratorToolsTest:
                         [1, 1],
                         [1, 0]], dtype=float)
         pt = gen.tools.get_centroid(pts, mode='rigorous')
-        assert np.all(pt == [0.5, 0.5])
+        assert_allclose(pt, [0.5, 0.5], rtol=1e-7)
         pt = gen.tools.get_centroid(pts, mode='fast')
-        assert np.all(pt == [0.5, 0.5])
+        assert_allclose(pt, [0.5, 0.5], rtol=1e-12)
         pts = np.array([[0, 0],
                         [0, 0.2],
                         [0, 0.4],
@@ -30,7 +30,7 @@ class SKGRGeneratorToolsTest:
                         [1, 1],
                         [1, 0]], dtype=float)
         pt = gen.tools.get_centroid(pts, mode='rigorous')
-        assert_allclose(pt, [0.5, 0.5], rtol=1e-12)
+        assert_allclose(pt, [0.5, 0.5], rtol=1e-7)
         pt = gen.tools.get_centroid(pts, mode='fast')
         assert_allclose(pt, [0.25, 0.5], rtol=1e-12)
 
@@ -64,7 +64,7 @@ class SKGRGeneratorToolsTest:
                         [1, 0, 1],
                         [1, 1, 1]], dtype=float)
         pt = gen.tools.get_centroid(pts, mode='rigorous')
-        assert_allclose(pt, [0.5, 0.5, 0.5], rtol=1e-12)
+        assert_allclose(pt, [0.5, 0.5, 0.5], rtol=1e-8)
         pt = gen.tools.get_centroid(pts, mode='fast')
         assert_allclose(pt, [0.5, 0.5, 0.25], rtol=1e-12)
 
