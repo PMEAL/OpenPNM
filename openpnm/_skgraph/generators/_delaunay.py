@@ -1,10 +1,12 @@
 import numpy as np
 import scipy.spatial as sptl
 from openpnm._skgraph.generators import tools
-from openpnm._skgraph.tools import tri_to_am
+from openpnm._skgraph.tools import tri_to_am, isoutside
+from openpnm._skgraph.operations import trim_nodes
 
 
-def delaunay(points, shape=[1, 1, 1], trim=True, reflect=True, node_prefix='node', edge_prefix='edge'):
+def delaunay(points, shape=[1, 1, 1], reflect=False,
+             node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on Delaunay triangulation of random points
 
@@ -15,6 +17,11 @@ def delaunay(points, shape=[1, 1, 1], trim=True, reflect=True, node_prefix='node
         or a scalar value indicating the number of points to generate
     shape : array_like
         Indicates the size and shape of the domain
+    reflect : boolean, optional (default = ``False``)
+        If ``True`` then points are reflected across each face of the domain
+        prior to performing the tessellation. These reflected points are
+        automatically trimmed.  Enabling this behavior prevents long-range
+        connections between surface pores.
 
     Returns
     -------
@@ -30,37 +37,7 @@ def delaunay(points, shape=[1, 1, 1], trim=True, reflect=True, node_prefix='node
     d = {}
     d[node_prefix+'.coords'] = points
     d[edge_prefix+'.conns'] = np.vstack((coo.row, coo.col)).T
+    if reflect:
+        trim = isoutside(d, shape=shape)
+        d = trim_nodes(network=d, inds=np.where(trim)[0])
     return d, tri
-
-
-if __name__ == "__main__":
-    # Make a 2D network based on number of points
-    dn, tri = delaunay(points=50, shape=[1, 1, 0], node_prefix='node', edge_prefix='edge')
-    print(dn.keys())
-    print(dn['node.coords'].shape)
-    print(dn['edge.conns'].shape)
-    # Make a 2D network based on number of points
-    dn, tri = delaunay(points=50, shape=[1, 0, 1])
-    print(dn.keys())
-    print(dn['node.coords'].shape)
-    print(dn['edge.conns'].shape)
-    # Make a 3D network based on number of points
-    dn, tri = delaunay(points=50, shape=[1, 1, 1])
-    print(dn.keys())
-    print(dn['node.coords'].shape)
-    print(dn['edge.conns'].shape)
-    # Make a 3D cylinder
-    dn, tri = delaunay(points=50, shape=[1, 1])
-    print(dn.keys())
-    print(dn['node.coords'].shape)
-    print(dn['edge.conns'].shape)
-    # Make a 2D circle
-    dn, tri = delaunay(points=50, shape=[1, 0])
-    print(dn.keys())
-    print(dn['node.coords'].shape)
-    print(dn['edge.conns'].shape)
-    # Make a 3D sphere
-    dn, tri = delaunay(points=50, shape=[1])
-    print(dn.keys())
-    print(dn['node.coords'].shape)
-    print(dn['edge.conns'].shape)

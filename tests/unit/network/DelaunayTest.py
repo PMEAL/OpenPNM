@@ -10,24 +10,20 @@ class DelaunayGabrielTest:
     def teardown_class(self):
         pass
 
-    def test_delaunay_square_with_trim_reflect(self):
+    def test_delaunay_square_with_reflect(self):
         np.random.seed(0)
         shape = [1, 1, 0]
-        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=False)
+        tri = op.network.Delaunay(points=30, shape=shape, reflect=False)
         assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
-        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=True)
-        assert op.topotools.isoutside(network=tri, shape=shape).sum() > 0
-        tri = op.network.Delaunay(points=30, shape=shape, trim=True, reflect=False)
+        tri = op.network.Delaunay(points=30, shape=shape, reflect=True)
         assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
 
     def test_delaunay_cube_with_trim_reflect(self):
         np.random.seed(0)
         shape = [1, 1, 1]
-        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=False)
+        tri = op.network.Delaunay(points=30, shape=shape, reflect=False)
         assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
-        tri = op.network.Delaunay(points=30, shape=shape, trim=False, reflect=True)
-        assert op.topotools.isoutside(network=tri, shape=shape).sum() > 0
-        tri = op.network.Delaunay(points=30, shape=shape, trim=True, reflect=False)
+        tri = op.network.Delaunay(points=30, shape=shape, reflect=True)
         assert op.topotools.isoutside(network=tri, shape=shape).sum() == 0
 
     def test_delaunay_square_with_2D_points(self):

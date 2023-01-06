@@ -1,12 +1,11 @@
 import numpy as np
 import scipy.spatial as sptl
-from openpnm._skgraph import settings
 from openpnm._skgraph.tools import vor_to_am, isoutside
 from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 
 
-def voronoi(points, shape=[1, 1, 1], trim=True, reflect=True, relaxation=0,
+def voronoi(points, shape=[1, 1, 1], trim=True, reflect=False, relaxation=0,
             node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on a Voronoi tessellation of base points
@@ -21,6 +20,10 @@ def voronoi(points, shape=[1, 1, 1], trim=True, reflect=True, relaxation=0,
     trim : boolean
         If ``True`` (default) then any vertices laying outside the domain
         given by ``shape`` are removed (as are the edges connected to them).
+    reflect : boolean, optional (default = ``False``)
+        If ``True`` then points are reflected across each face of the domain
+        prior to performing the tessellation. Enabling this behavior creates
+        flat faces on all sizes of the domain.
     relaxation : int, optional (default = 0)
         The number of iterations to use for relaxing the base points. This is
         sometimes called `Lloyd's algorithm
@@ -52,14 +55,12 @@ def voronoi(points, shape=[1, 1, 1], trim=True, reflect=True, relaxation=0,
         points = points[keep]
         points = tools.parse_points(points=points, shape=shape, reflect=reflect)
         vor = sptl.Voronoi(points=points[:, mask])
-
     # Convert to adjecency matrix
     coo = vor_to_am(vor)
     # Write values to dictionary
     d = {}
     conns = np.vstack((coo.row, coo.col)).T
     d[edge_prefix+'.conns'] = conns
-
     # Convert coords to 3D if necessary
     # Rounding is crucial since some voronoi verts endup outside domain
     pts = np.around(vor.vertices, decimals=10)
@@ -68,23 +69,8 @@ def voronoi(points, shape=[1, 1, 1], trim=True, reflect=True, relaxation=0,
         coords[:, mask] = pts
     else:
         coords = pts
-
     d[node_prefix+'.coords'] = coords
-
     if trim:
         hits = isoutside(d, shape=shape)
         d = trim_nodes(d, hits)
-
     return d, vor
-
-
-if __name__ == "__main__":
-    from openpnm._skgraph.visualization import plot_edges
-    vn, vor = voronoi(points=50, shape=[1, 0, 1])
-    print(vn.keys())
-    print(vn['node.coords'].shape)
-    print(vn['edge.conns'].shape)
-
-    shape = [1, 1]
-    vn, vor = voronoi(points=500, shape=shape, trim=True, relaxation=5)
-    plot_edges(vn)

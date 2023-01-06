@@ -1,8 +1,8 @@
 import numpy as np
 from openpnm._skgraph import generators as gen
 from openpnm._skgraph import operations as ops
-from openpnm._skgraph import settings
-from openpnm._skgraph.visualization import plot_edges, plot_nodes
+from openpnm._skgraph.operations import trim_nodes
+from openpnm._skgraph.tools import isoutside
 
 
 class SKGRGeneratorsTest:
@@ -53,23 +53,23 @@ class SKGRGeneratorsTest:
 
     def test_delaunay(self):
         np.random.seed(0)
-        net, tri = gen.delaunay(points=20, shape=[1, 1, 1])
+        net, tri = gen.delaunay(points=20, shape=[1, 1, 1], reflect=False)
         assert net['node.coords'].shape[0] == 20
         assert net['edge.conns'].shape[0] == 95
 
     def test_gabriel(self):
         np.random.seed(0)
-        net = gen.gabriel(points=20, shape=[1, 1, 1])
+        net = gen.gabriel(points=20, shape=[1, 1, 1], reflect=False)
         assert net['node.coords'].shape[0] == 20
         assert net['edge.conns'].shape[0] == 46
 
     def test_voronoi_cubic(self):
         np.random.seed(0)
-        net, vor = gen.voronoi(points=20, shape=[1, 1, 1], trim=False)
+        net, vor = gen.voronoi(points=20, shape=[1, 1, 1], reflect=False, trim=False)
         assert net['node.coords'].shape[0] == 65
         assert net['edge.conns'].shape[0] == 119
         np.random.seed(0)
-        net, vor = gen.voronoi(points=20, shape=[1, 1, 1], trim=True)
+        net, vor = gen.voronoi(points=20, shape=[1, 1, 1], reflect=False, trim=True)
         assert net['node.coords'].shape[0] == 39
         assert net['edge.conns'].shape[0] == 61
 
@@ -83,35 +83,43 @@ class SKGRGeneratorsTest:
 
     def test_voronoi_circle(self):
         np.random.seed(0)
-        points = gen.tools.generate_base_points(1000, [4, 0], reflect=True)
+        shape = [4, 0]
+        points = gen.tools.generate_base_points(1000, shape, reflect=True)
         assert len(points) == 2000
-        net, vor = gen.voronoi(points=points, shape=[4, 0],
-                               trim=True, tolerance=0.0015)
+        net, vor = gen.voronoi(points=points, shape=shape, trim=False)
+        trim = isoutside(net, shape=shape, rtol=0.0015)
+        net = trim_nodes(net, np.where(trim)[0])
         assert net['node.coords'].shape[0] == 2098
         assert net['edge.conns'].shape[0] == 3097
 
     def test_voronoi_cylinder(self):
         np.random.seed(0)
-        points = gen.tools.generate_base_points(700, [2, 4], reflect=True)
-        net, vor = gen.voronoi(points=points, shape=[2, 4],
-                               trim=True, tolerance=[0.05, 0])
+        shape = [2, 4]
+        points = gen.tools.generate_base_points(700, shape, reflect=True)
+        net, vor = gen.voronoi(points=points, shape=shape, trim=False)
+        trim = isoutside(net, shape=shape, rtol=[0.05, 0])
+        net = trim_nodes(net, np.where(trim)[0])
         assert net['node.coords'].shape[0] == 5800
         assert net['edge.conns'].shape[0] == 11272
 
     def test_voronoi_sphere(self):
         np.random.seed(0)
-        points = gen.tools.generate_base_points(700, [2], reflect=True)
-        net, vor = gen.voronoi(points=points, shape=[2],
-                               trim=True, tolerance=[0.05])
+        shape = [2]
+        points = gen.tools.generate_base_points(700, shape, reflect=True)
+        net, vor = gen.voronoi(points=points, shape=shape, trim=False)
+        trim = isoutside(net, shape=shape, rtol=[0.05])
+        net = trim_nodes(net, np.where(trim)[0])
         assert net['node.coords'].shape[0] == 5656
         assert net['edge.conns'].shape[0] == 10953
 
     def test_voronoi_delaunay_dual_square(self):
         np.random.seed(0)
-        points = gen.tools.generate_base_points(50, [1, 1, 0], reflect=True)
+        shape = [1, 1, 0]
+        points = gen.tools.generate_base_points(50, shape, reflect=True)
         assert len(points) == 250
         net, vor, tri = gen.voronoi_delaunay_dual(points=points,
-                                                  shape=[1, 1, 0],
+                                                  shape=shape,
+                                                  reflect=False,
                                                   trim=True)
         assert net['node.coords'].shape[0] == 152
         assert net['edge.conns'].shape[0] == 552
@@ -123,15 +131,24 @@ class SKGRGeneratorsTest:
         np.random.seed(0)
         net, vor, tri = gen.voronoi_delaunay_dual(points=20,
                                                   shape=[1, 1, 1],
-                                                  trim=False, reflect=False)
+                                                  trim=False,
+                                                  reflect=False)
         assert net['node.coords'].shape[0] == 85
         assert net['edge.conns'].shape[0] == 491
         np.random.seed(0)
         net, vor, tri = gen.voronoi_delaunay_dual(points=20,
                                                   shape=[1, 1, 1],
-                                                  trim=True, reflect=False)
-        assert net['node.coords'].shape[0] == 85
-        assert net['edge.conns'].shape[0] == 491
+                                                  trim=True,
+                                                  reflect=False)
+        assert net['node.coords'].shape[0] == 59
+        assert net['edge.conns'].shape[0] == 311
+        np.random.seed(0)
+        net, vor, tri = gen.voronoi_delaunay_dual(points=20,
+                                                  shape=[1, 1, 1],
+                                                  trim=True,
+                                                  reflect=True)
+        assert net['node.coords'].shape[0] == 124
+        assert net['edge.conns'].shape[0] == 597
 
     def test_cubic_template(self):
         im = np.ones([50, 50], dtype=bool)

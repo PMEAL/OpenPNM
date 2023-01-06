@@ -143,20 +143,3 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
             network = trim_nodes(network=network, inds=inds)
 
     return network, vor, tri
-
-
-if __name__ == "__main__":
-    from openpnm._skgraph.visualization import plot_edges
-
-    # dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
-    # print(dvd.keys())
-    # print(dvd['node.coords'].shape)
-    # print(dvd['edge.conns'].shape)
-    # dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], trim=True)
-    # print(dvd.keys())
-    # print(dvd['node.coords'].shape)
-    # print(dvd['edge.conns'].shape)
-    shape = [1, 0]
-    pts = tools.parse_points(points=1000, shape=shape, reflect=True)
-    vn, vor, tri = voronoi_delaunay_dual(points=pts, shape=shape, trim=True, relaxation=1)
-    plot_edges(vn)
