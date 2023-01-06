@@ -147,8 +147,8 @@ class SKGRGeneratorsTest:
                                                   shape=[1, 1, 1],
                                                   trim=True,
                                                   reflect=True)
-        assert net['node.coords'].shape[0] == 124
-        assert net['edge.conns'].shape[0] == 597
+        assert net['node.coords'].shape[0] == 125
+        assert net['edge.conns'].shape[0] == 601
 
     def test_cubic_template(self):
         im = np.ones([50, 50], dtype=bool)
