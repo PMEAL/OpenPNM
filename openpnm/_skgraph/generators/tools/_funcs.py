@@ -6,7 +6,6 @@ Tools
 import numpy as np
 from openpnm._skgraph import tools
 import scipy.spatial as sptl
-from numba import jit
 
 
 __all__ = [
@@ -92,7 +91,12 @@ def get_centroid(pts, mode='rigorous'):
     return CoM
 
 
-@jit
+# This function is causing all kinds of problems on the CI.  It is working on
+# Ubuntu, Py3.8, but failing on all others.  It is working locally, windows with
+# Py3.9.  jit and njit both fail for different reasons.  Anyway, the slow part
+# is the tessellation of the points, not this actually CoM calculation
+# so I'm commenting out the decorator for now.
+# @njit
 def center_of_mass(simplices, points):
     A = []
     centroids = np.zeros((simplices.shape[0], points.shape[1]), dtype=np.float_)
