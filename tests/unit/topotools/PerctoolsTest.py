@@ -14,21 +14,35 @@ class PerctoolsTest:
         self.ws.clear()
 
     def test_find_path(self):
+        import scipy as sp
         pn = op.network.Demo(shape=[4, 4, 1])
+        ver = tuple([int(i) for i in sp.__version__.split('.')])
         nodes, edges = op.topotools.find_path(
             network=pn,
             pore_pairs=[[0, 15]]).values()
         assert len(nodes) == 1
         assert len(edges) == 1
-        assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
-        assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
+        # This conditional check is because scipy 1.10 and above returns a different
+        # path, in exchange for being much faster. See the issue I opened on Github
+        # here: https://github.com/scipy/scipy/issues/17734
+        if ver < tuple((1, 10, 0)):
+            assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
+            assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
+        else:
+            assert np.all(nodes[0] == [0, 1, 5, 9, 13, 14, 15])
+            assert np.all(edges[0] == [0, 13, 17, 21, 10, 11])
         nodes, edges = op.topotools.find_path(
             network=pn,
             pore_pairs=[[0, 15], [1, 15]]).values()
         assert len(nodes) == 2
         assert len(edges) == 2
-        assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
-        assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
+        # See: https://github.com/scipy/scipy/issues/17734
+        if ver < tuple((1, 10, 0)):
+            assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
+            assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
+        else:
+            assert np.all(nodes[0] == [0, 1, 5, 9, 13, 14, 15])
+            assert np.all(edges[0] == [0, 13, 17, 21, 10, 11])
 
     def test_ispercolating(self):
         pn = op.network.Demo(shape=[4, 4, 1])

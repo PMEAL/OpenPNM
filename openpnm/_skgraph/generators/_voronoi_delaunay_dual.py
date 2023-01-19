@@ -7,7 +7,7 @@ from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph.queries import find_neighbor_nodes
 
 
-def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
+def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
                           node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
@@ -22,11 +22,23 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
     trim : bool, optional
         If ``True`` (default) then all points lying beyond the given domain
         shape will be removed
+    reflect : bool, optionl
+        If ``True`` (Default) then points are reflected across each face of the
+        domain prior to performing the tessellation.
+    relaxation : int, optional (default = 0)
+        The number of iterations to use for relaxing the base points. This is
+        sometimes called `Lloyd's algorithm
+        <https://en.wikipedia.org/wiki/Lloyd%27s_algorithm>`_. This function computes
+        the new base points as the simple average of the Voronoi vertices instead
+        of rigorously finding the center of mass, which is quite time consuming.
+        To use the rigorous method, call the ``lloyd_relaxation`` function manually
+        to obtain relaxed points, then pass the points directly to this funcion.
+        The results are quite stable after only a few iterations.
 
     Returns
     -------
     network : dict
-        A dictionary containing 'node.coords' and 'edge.conns'
+        A dictionary containing '<node_prefix>.coords' and '<edge_prefix>.conns'
     vor : Voronoi object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
     tri : Delaunay object
@@ -40,6 +52,9 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
 
     # Perform tessellations
     vor = sptl.Voronoi(points=points[:, mask])
+    for _ in range(relaxation):
+        points = tools.lloyd_relaxation(vor, mode='fast')
+        vor = sptl.Voronoi(points=points[:, mask])
     tri = sptl.Delaunay(points=points[:, mask])
 
     # Combine points
@@ -110,34 +125,21 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True,
     Ts = np.sum(network[node_prefix+'.delaunay'][conns].astype(int), axis=1) == 1
     network[edge_prefix+'.interconnect'] = Ts
 
-    # Identify and trim nodes outside the domain if requested
     if trim:
-        inside_all = ~isoutside(network, shape=shape)
-        inside_delaunay = inside_all*network[node_prefix+'.delaunay']
-        outside_delaunay = (~inside_all)*network[node_prefix+'.delaunay']
-        neighbors = find_neighbor_nodes(network=network,
-                                        inds=np.where(inside_delaunay)[0],
-                                        include_input=True)
-        trim = np.ones([network[node_prefix+'.coords'].shape[0], ], dtype=bool)
-        trim[neighbors] = False  # Keep all neighbors to internal delaunay nodes
-        trim[outside_delaunay] = True  # Re-add external delaunay nodes to trim
-        network = trim_nodes(network=network, inds=np.where(trim)[0])
+        # Find all delaunay nodes outside the domain
+        Ps = isoutside(network=network, shape=shape)*network[node_prefix+'.delaunay']
+        if np.any(Ps):  # only occurs if points were reflected
+            # Find voronoi nodes connected to these and mark them as surface nodes
+            inds = np.where(Ps)[0]
+            Ns = find_neighbor_nodes(network=network, inds=inds)
+            network[node_prefix+'.surface'] = np.zeros(n_nodes, dtype=bool)
+            network[node_prefix+'.surface'][Ns] = True
+            Ps = isoutside(network=network, shape=shape)
+            inds = np.where(Ps)[0]
+            network = trim_nodes(network=network, inds=inds)
+        else:
+            trim = isoutside(network=network, shape=shape)
+            inds = np.where(trim)[0]
+            network = trim_nodes(network=network, inds=inds)
 
     return network, vor, tri
-
-
-if __name__ == "__main__":
-    from openpnm._skgraph.visualization import plot_edges
-
-    # dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1])
-    # print(dvd.keys())
-    # print(dvd['node.coords'].shape)
-    # print(dvd['edge.conns'].shape)
-    # dvd, vor, tri = voronoi_delaunay_dual(points=50, shape=[1, 0, 1], trim=True)
-    # print(dvd.keys())
-    # print(dvd['node.coords'].shape)
-    # print(dvd['edge.conns'].shape)
-    shape = [1]
-    pts = tools.parse_points(points=1000, shape=shape, reflect=True)
-    vn, vor, tri = voronoi_delaunay_dual(points=pts, shape=shape, trim=True)
-    plot_edges(vn)

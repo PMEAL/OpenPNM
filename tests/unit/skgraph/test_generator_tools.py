@@ -4,12 +4,69 @@ import openpnm as op
 import matplotlib.pyplot as plt
 from openpnm._skgraph import generators as gen
 from openpnm._skgraph import tools
+from numpy.testing import assert_allclose
 
 
 class SKGRGeneratorToolsTest:
 
     def setup_class(self):
         self.ws = op.Workspace()
+
+    def test_get_centroid_2D(self):
+        pts = np.array([[0, 0],
+                        [0, 1],
+                        [1, 1],
+                        [1, 0]], dtype=float)
+        pt = gen.tools.get_centroid(pts, mode='rigorous')
+        assert_allclose(pt, [0.5, 0.5], rtol=1e-7)
+        pt = gen.tools.get_centroid(pts, mode='fast')
+        assert_allclose(pt, [0.5, 0.5], rtol=1e-12)
+        pts = np.array([[0, 0],
+                        [0, 0.2],
+                        [0, 0.4],
+                        [0, 0.6],
+                        [0, 0.8],
+                        [0, 1],
+                        [1, 1],
+                        [1, 0]], dtype=float)
+        pt = gen.tools.get_centroid(pts, mode='rigorous')
+        assert_allclose(pt, [0.5, 0.5], rtol=1e-7)
+        pt = gen.tools.get_centroid(pts, mode='fast')
+        assert_allclose(pt, [0.25, 0.5], rtol=1e-12)
+
+    def test_get_centroid_3D(self):
+        pts = np.array([[0, 0, 0],
+                        [0, 1, 0],
+                        [1, 0, 0],
+                        [1, 1, 0],
+                        [0, 0, 1],
+                        [0, 1, 1],
+                        [1, 0, 1],
+                        [1, 1, 1]], dtype=float)
+        pt = gen.tools.get_centroid(pts, mode='rigorous')
+        assert_allclose(pt, [0.5, 0.5, 0.5], rtol=1e-12)
+        pt = gen.tools.get_centroid(pts, mode='fast')
+        assert_allclose(pt, [0.5, 0.5, 0.5], rtol=1e-12)
+        pts = np.array([[0, 0, 0],
+                        [0, 0.2, 0],
+                        [0, 0.4, 0],
+                        [0, 0.6, 0],
+                        [0, 0.8, 0],
+                        [0, 1, 0],
+                        [1, 0, 0],
+                        [1, 0.2, 0],
+                        [1, 0.4, 0],
+                        [1, 0.6, 0],
+                        [1, 0.8, 0],
+                        [1, 1, 0],
+                        [0, 0, 1],
+                        [0, 1, 1],
+                        [1, 0, 1],
+                        [1, 1, 1]], dtype=float)
+        pt = gen.tools.get_centroid(pts, mode='rigorous')
+        assert_allclose(pt, [0.5, 0.5, 0.5], rtol=1e-8)
+        pt = gen.tools.get_centroid(pts, mode='fast')
+        assert_allclose(pt, [0.5, 0.5, 0.25], rtol=1e-12)
 
     def test_parse_points(self):
         pts = gen.tools.parse_points(shape=[1, 1, 1], points=10)
