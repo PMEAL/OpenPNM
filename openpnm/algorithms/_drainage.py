@@ -34,7 +34,6 @@ class DrainageSettings:
 
     """
     phase = ''
-    quantity = 'pressure'
     throat_entry_pressure = 'throat.entry_pressure'
     pore_volume = 'pore.volume'
     throat_volume = 'throat.volume'

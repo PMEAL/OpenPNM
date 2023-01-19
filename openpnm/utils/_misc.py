@@ -601,10 +601,10 @@ def is_transient(algorithms):
         algorithms = [algorithms]
     # return True if any algorithm is transient
     for alg in algorithms:
-        quantity = alg.settings['quantity']
-        soln_type = type(alg.soln[quantity])
-        if 'TransientSolution' in str(soln_type):
-            return True
+        if hasattr(alg, 'soln'):
+            soln_type = type(alg.soln[alg.settings['quantity']])
+            if 'TransientSolution' in str(soln_type):
+                return True
     return False
 
 
