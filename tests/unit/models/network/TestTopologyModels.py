@@ -117,6 +117,16 @@ class TopologyModelsTest:
                      model=op.models.network.reversed_throats)
         assert pn['throat.reversed'].sum() == 1
 
+    def test_gabrial_edges(self):
+        net = op.network.Delaunay(points=30, shape=[1, 1, 0])
+        net.add_model(propname='throat.gabriel',
+                      model=op.models.network.gabriel_edges)
+        assert net['throat.gabriel'].sum() < net.Nt
+        net = op.network.Delaunay(points=30, shape=[1, 1, 1])
+        net.add_model(propname='throat.gabriel',
+                      model=op.models.network.gabriel_edges)
+        assert net['throat.gabriel'].sum() < net.Nt
+
 
 if __name__ == '__main__':
 

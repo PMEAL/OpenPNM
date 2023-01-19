@@ -3,24 +3,119 @@ import openpnm as op
 
 
 class VoronoiTest:
+
     def setup_class(self):
         pass
 
     def teardown_class(self):
         pass
 
-    def test_voronoi_num_points(self):
-        net = op.network.Voronoi(points=30, shape=[1, 1, 1])
-        assert net.Np > 30
+    def test_voronoi_square_trim_and_reflect(self):
+        np.random.seed(0)
+        shape = [1, 1, 0]
+        net = op.network.Voronoi(points=30, shape=shape, trim=False, reflect=False)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() > 0
+        net = op.network.Voronoi(points=30, shape=shape, trim=True, reflect=False)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() == 0
+        net = op.network.Voronoi(points=30, shape=shape, trim=False, reflect=True)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() > 0
+        net = op.network.Voronoi(points=30, shape=shape, trim=True, reflect=True)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() == 0
 
-    def test_voronoi_points(self):
-        points = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=points, shape=[1, 1, 1])
-        assert net.Np > 30
+    def test_voronoi_cube_trim_and_reflect(self):
+        np.random.seed(0)
+        shape = [1, 1, 1]
+        net = op.network.Voronoi(points=30, shape=shape, trim=False, reflect=False)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() > 0
+        net = op.network.Voronoi(points=30, shape=shape, trim=True, reflect=False)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() == 0
+        net = op.network.Voronoi(points=30, shape=shape, trim=False, reflect=True)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() > 0
+        net = op.network.Voronoi(points=30, shape=shape, trim=True, reflect=True)
+        assert op.topotools.isoutside(network=net, shape=shape).sum() == 0
 
-    def test_voronoi_2d(self):
+    def test_voronoi_square_num_points(self):
+        np.random.seed(0)
         net = op.network.Voronoi(points=30, shape=[1, 1, 0])
         assert net.Np > 30
+        assert np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, False])
+
+    def test_voronoi_square_2D_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 2)
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 0])
+        assert net.Np > 30
+        assert np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, False])
+
+    def test_voronoi_square_3D_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 3)
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 0])
+        assert net.Np > 30
+        assert np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, False])
+
+    def test_voronoi_cube_num_points(self):
+        np.random.seed(0)
+        net = op.network.Voronoi(points=30, shape=[1, 1, 1])
+        assert net.Np > 30
+        assert not np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, True])
+
+    def test_voronoi_cube_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 3)
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 1])
+        assert net.Np > 30
+        assert np.all(net.coords[:, -1] != 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, True])
+
+    def test_voronoi_disk_2D_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 2)
+        net = op.network.Voronoi(points=pts, shape=[1, 0])
+        assert np.all(op.topotools.dimensionality(net) == [True, True, False])
+
+    def test_voronoi_disk_3D_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 3)
+        net = op.network.Voronoi(points=pts, shape=[1, 0])
+        assert np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, False])
+
+    def test_voronoi_disk_num_points(self):
+        np.random.seed(0)
+        net = op.network.Voronoi(points=30, shape=[1, 0])
+        assert np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, False])
+
+    def test_voronoi_cylinder_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 3)
+        net = op.network.Voronoi(points=pts, shape=[1, 1])
+        assert not np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, True])
+
+    def test_voronoi_cylinder_num_points(self):
+        np.random.seed(0)
+        net = op.network.Voronoi(points=30, shape=[1, 1])
+        assert not np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, True])
+
+    def test_voronoi_sphere_points(self):
+        np.random.seed(0)
+        pts = np.random.rand(30, 3)
+        net = op.network.Voronoi(points=pts, shape=[1])
+        assert not np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, True])
+
+    def test_voronoi_sphere_num_points(self):
+        np.random.seed(0)
+        net = op.network.Voronoi(points=30, shape=[1])
+        assert not np.all(net.coords[:, -1] == 0.0)
+        assert np.all(op.topotools.dimensionality(net) == [True, True, True])
 
     def test_voronoi_delaunay_dual(self):
         np.random.seed(0)
