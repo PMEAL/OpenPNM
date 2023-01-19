@@ -32,6 +32,36 @@ class VTKTest:
         assert fname.is_file()
         os.remove(fname)
 
+    def test_save_single_phase_simulation(self, tmpdir):
+        fname = Path(tmpdir, 'test_save_vtk_1.vtp')
+        pn = op.network.Cubic(shape=[2, 2, 2])
+        phase = op.phase.Phase(network=pn)
+        phase['throat.diffusive_conductance'] = 1.0
+        fd = op.algorithms.FickianDiffusion(network=pn, phase=phase)
+        fd.set_value_BC(pores=pn.pores('left'), values=1)
+        fd.set_value_BC(pores=pn.pores('right'), values=0)
+        fd.run()
+        op.io.project_to_vtk(pn.project, filename=fname)
+        assert fname.is_file()
+        os.remove(fname)
+
+    def test_save_multiphase_simulation(self, tmpdir):
+        fname = Path(tmpdir, 'test_save_vtk_1.vtp')
+        pn = op.network.Cubic(shape=[2, 2, 2])
+        phase = op.phase.Phase(network=pn)
+        phase['throat.diffusive_conductance'] = 1.0
+        phase['throat.entry_pressure'] = np.random.rand(pn.Nt)
+        fd = op.algorithms.FickianDiffusion(network=pn, phase=phase)
+        fd.set_value_BC(pores=pn.pores('left'), values=1)
+        fd.set_value_BC(pores=pn.pores('right'), values=0)
+        fd.run()
+        drn = op.algorithms.Drainage(network=pn, phase=phase)
+        drn.set_inlet_BC(pores=pn.pores('left'))
+        drn.run()
+        op.io.project_to_vtk(pn.project, filename=fname)
+        assert fname.is_file()
+        os.remove(fname)
+
 
 if __name__ == '__main__':
     import py
