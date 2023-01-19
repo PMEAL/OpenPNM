@@ -6,7 +6,7 @@ Tools
 import numpy as np
 from openpnm._skgraph import tools
 import scipy.spatial as sptl
-from numba import njit
+from numba import jit
 
 
 __all__ = [
@@ -92,7 +92,7 @@ def get_centroid(pts, mode='rigorous'):
     return CoM
 
 
-@njit
+@jit
 def center_of_mass(simplices, points):
     A = []
     centroids = np.zeros((simplices.shape[0], points.shape[1]), dtype=np.float_)
