@@ -30,6 +30,7 @@ network
       distance_to_nearest_pore
       duplicate_throats
       find_coincident_pores
+      gabriel_edges
       headless_throats
       isolated_pores
       looped_throats

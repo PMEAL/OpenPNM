@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>network &#8212; OpenPNM 3.1.0 documentation</title>
+    <title>network &#8212; OpenPNM 3.1.1 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -4585,6 +4585,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="openpnm.models.network.gabriel_edges.html">
+       gabriel_edges
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="openpnm.models.network.headless_throats.html">
        headless_throats
       </a>
@@ -7342,19 +7347,22 @@ networks</p>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.network.find_coincident_pores.html#openpnm.models.network.find_coincident_pores" title="openpnm.models.network.find_coincident_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_coincident_pores</span></code></a>(network[, thresh])</p></td>
 <td><p>Find the indices of coincident pores</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.network.headless_throats.html#openpnm.models.network.headless_throats" title="openpnm.models.network.headless_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">headless_throats</span></code></a>(network)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.network.gabriel_edges.html#openpnm.models.network.gabriel_edges" title="openpnm.models.network.gabriel_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gabriel_edges</span></code></a>(network)</p></td>
+<td><p>Find throats which make a Gabriel subgraph</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.network.headless_throats.html#openpnm.models.network.headless_throats" title="openpnm.models.network.headless_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">headless_throats</span></code></a>(network)</p></td>
 <td><p>Find any throats that point to a non-existent pore</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.network.isolated_pores.html#openpnm.models.network.isolated_pores" title="openpnm.models.network.isolated_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isolated_pores</span></code></a>(network)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.network.isolated_pores.html#openpnm.models.network.isolated_pores" title="openpnm.models.network.isolated_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isolated_pores</span></code></a>(network)</p></td>
 <td><p>Find which pores, if any, are not connected to a throat</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.network.looped_throats.html#openpnm.models.network.looped_throats" title="openpnm.models.network.looped_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">looped_throats</span></code></a>(network)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.network.looped_throats.html#openpnm.models.network.looped_throats" title="openpnm.models.network.looped_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">looped_throats</span></code></a>(network)</p></td>
 <td><p>Find any throats that are connected to the same pore on both ends</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.network.pore_to_pore_distance.html#openpnm.models.network.pore_to_pore_distance" title="openpnm.models.network.pore_to_pore_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pore_to_pore_distance</span></code></a>(network)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.network.pore_to_pore_distance.html#openpnm.models.network.pore_to_pore_distance" title="openpnm.models.network.pore_to_pore_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pore_to_pore_distance</span></code></a>(network)</p></td>
 <td><p>Find the center to center distance between each pair of pores</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.models.network.reversed_throats.html#openpnm.models.network.reversed_throats" title="openpnm.models.network.reversed_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reversed_throats</span></code></a>(network)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.models.network.reversed_throats.html#openpnm.models.network.reversed_throats" title="openpnm.models.network.reversed_throats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reversed_throats</span></code></a>(network)</p></td>
 <td><p>Find any throat connections that are pointing from j -&gt; i where j &gt; i</p></td>
 </tr>
 </tbody>
@@ -7380,7 +7388,7 @@ networks</p>
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2022, PMEAL.<br>
+    &copy; Copyright 2023, PMEAL.<br>
 </p>
   </div>
   

@@ -1,0 +1,6 @@
+gabriel\_edges
+==============
+
+.. currentmodule:: openpnm.models.network
+
+.. autofunction:: gabriel_edges
