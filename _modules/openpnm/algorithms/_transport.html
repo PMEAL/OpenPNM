@@ -208,7 +208,7 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;TransportSettings&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">TransportSettings</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines the settings for Transport algorithms</span>
 
 <span class="sd">    Parameters</span>
@@ -240,7 +240,7 @@
 <div class="viewcode-block" id="Transport"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.html#openpnm.algorithms.Transport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Transport&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Transport</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class implements steady-state linear transport calculations.</span>
 
 <span class="sd">    Parameters</span>
@@ -272,7 +272,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Shortcut to the solution currently stored on the algorithm.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shortcut to the solution currently stored on the algorithm.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]]</span>
 
     <span class="nd">@x</span><span class="o">.</span><span class="n">setter</span>
@@ -281,7 +281,7 @@
 
     <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
     <span class="k">def</span> <span class="nf">_build_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds the coefficient matrix based on throat conductance values.</span>
 
 <span class="sd">        Notes</span>
@@ -303,14 +303,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_build_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initializes the RHS vector, b, with zeros.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the RHS vector, b, with zeros.&quot;&quot;&quot;</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span> <span class="o">=</span> <span class="n">b</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pure_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The coefficient matrix, A (in Ax = b)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The coefficient matrix, A (in Ax = b)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_A</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span>
@@ -321,7 +321,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The right-hand-side (RHS) vector, b (in Ax = b)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The right-hand-side (RHS) vector, b (in Ax = b)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_b</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_b</span>
@@ -331,7 +331,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_b</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">def</span> <span class="nf">_apply_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Applies specified boundary conditions by modifying A and b.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies specified boundary conditions by modifying A and b.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;pore.bc.rate&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># Update b</span>
             <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc.rate&#39;</span><span class="p">])</span>
@@ -357,7 +357,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">eliminate_zeros</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Transport.run"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.run.html#openpnm.algorithms.Transport.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds the A and b matrices, and calls the solver specified in the</span>
 <span class="sd">        ``settings`` attribute.</span>
 
@@ -409,13 +409,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">soln</span><span class="o">.</span><span class="n">is_converged</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">exit_code</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_A_and_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Builds A and b, and applies specified boundary conditions.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds A and b, and applies specified boundary conditions.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_A</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_b</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_BCs</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_validate_x0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Ensures x0 doesn&#39;t contain any nans/infs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensures x0 doesn&#39;t contain any nans/infs.&quot;&quot;&quot;</span>
         <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.initial_guess&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;x0 contains inf/nan values&quot;</span><span class="p">)</span>
@@ -429,7 +429,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;&#39;phase&#39; hasn&#39;t been defined on this algorithm&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_topology_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures the network is not clustered, and if it is, they&#39;re at</span>
 <span class="sd">        least connected to a boundary condition pore.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -439,13 +439,13 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_linear_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Ensures the linear system Ax = b doesn&#39;t contain any nans/infs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensures the linear system Ax = b doesn&#39;t contain any nans/infs.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">return</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;A or b contains inf/nan values&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Transport.rate"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.rate.html#openpnm.algorithms.Transport.rate">[docs]</a>    <span class="k">def</span> <span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the net rate of material moving into a given set of</span>
 <span class="sd">        pores or throats</span>
 
@@ -517,15 +517,15 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport.clear_value_BCs"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.clear_value_BCs.html#openpnm.algorithms.Transport.clear_value_BCs">[docs]</a>    <span class="k">def</span> <span class="nf">clear_value_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Clears all value BCs.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears all value BCs.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport.clear_rate_BCs"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.clear_rate_BCs.html#openpnm.algorithms.Transport.clear_rate_BCs">[docs]</a>    <span class="k">def</span> <span class="nf">clear_rate_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Clears all rate BCs&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears all rate BCs&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;rate&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport.set_value_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.set_value_BC.html#openpnm.algorithms.Transport.set_value_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_value_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies constant value boundary conditons to the specified pores.</span>
 
 <span class="sd">        These are sometimes referred to as Dirichlet conditions.</span>
@@ -547,7 +547,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Transport.set_rate_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Transport.set_rate_BC.html#openpnm.algorithms.Transport.set_rate_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_rate_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply constant rate boundary conditons to the specified locations.</span>
 
 <span class="sd">        Parameters</span>

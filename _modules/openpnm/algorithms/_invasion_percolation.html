@@ -218,7 +218,7 @@
                      <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Other Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">IPSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -238,7 +238,7 @@
 
 
 <div class="viewcode-block" id="InvasionPercolation"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.html#openpnm.algorithms.InvasionPercolation">[docs]</a><span class="k">class</span> <span class="nc">InvasionPercolation</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A classic invasion percolation algorithm optimized for speed with numba</span>
 
 <span class="sd">    Parameters</span>
@@ -300,7 +300,7 @@
                 <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.residual&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="InvasionPercolation.set_inlet_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.set_inlet_BC.html#openpnm.algorithms.InvasionPercolation.set_inlet_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlet_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specifies which pores are treated as inlets for the invading phase</span>
 
 <span class="sd">        Parameters</span>
@@ -338,7 +338,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc.inlet&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.set_outlet_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.set_outlet_BC.html#openpnm.algorithms.InvasionPercolation.set_outlet_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_outlet_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specifies which pores are treated as outlets for the defending phase</span>
 
 <span class="sd">        This must be specified if trapping is to be considered.</span>
@@ -376,7 +376,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;outlet&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.run"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.run.html#openpnm.algorithms.InvasionPercolation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs the algorithm for the given number of steps</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -433,7 +433,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.order&#39;</span><span class="p">][</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.sorted&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nt</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InvasionPercolation.pc_curve"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.pc_curve.html#openpnm.algorithms.InvasionPercolation.pc_curve">[docs]</a>    <span class="k">def</span> <span class="nf">pc_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the percolation data as the non-wetting phase saturation vs the</span>
 <span class="sd">        capillary pressure.</span>
 
@@ -466,7 +466,7 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
 <div class="viewcode-block" id="InvasionPercolation.apply_trapping"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.InvasionPercolation.apply_trapping.html#openpnm.algorithms.InvasionPercolation.apply_trapping">[docs]</a>    <span class="k">def</span> <span class="nf">apply_trapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adjusts the invasion sequence of pores and throats that are trapped.</span>
 
 <span class="sd">        This method uses the reverse invasion percolation procedure outlined</span>
@@ -605,7 +605,7 @@
 <span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">_run_accelerated</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span> <span class="n">t_sorted</span><span class="p">,</span> <span class="n">t_order</span><span class="p">,</span> <span class="n">t_inv</span><span class="p">,</span> <span class="n">p_inv</span><span class="p">,</span> <span class="n">p_inv_t</span><span class="p">,</span>
                      <span class="n">conns</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">indptr</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Numba-jitted run method for InvasionPercolation class.</span>
 
 <span class="sd">    Notes</span>

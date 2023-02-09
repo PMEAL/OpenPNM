@@ -211,7 +211,7 @@
 
 
 <div class="viewcode-block" id="cluster_number"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.cluster_number.html#openpnm.models.network.cluster_number">[docs]</a><span class="k">def</span> <span class="nf">cluster_number</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Assign a cluster number to each pore</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csgraph</span> <span class="k">as</span> <span class="n">csg</span>
@@ -221,7 +221,7 @@
 
 
 <div class="viewcode-block" id="cluster_size"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.cluster_size.html#openpnm.models.network.cluster_size">[docs]</a><span class="k">def</span> <span class="nf">cluster_size</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">cluster</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the size of the cluster to which each pore belongs</span>
 
 <span class="sd">    Parameters</span>
@@ -251,7 +251,7 @@
 
 
 <div class="viewcode-block" id="isolated_pores"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.isolated_pores.html#openpnm.models.network.isolated_pores">[docs]</a><span class="k">def</span> <span class="nf">isolated_pores</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find which pores, if any, are not connected to a throat</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -264,7 +264,7 @@
 
 
 <div class="viewcode-block" id="reversed_throats"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.reversed_throats.html#openpnm.models.network.reversed_throats">[docs]</a><span class="k">def</span> <span class="nf">reversed_throats</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find any throat connections that are pointing from j -&gt; i where j &gt; i</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">hits</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -272,7 +272,7 @@
 
 
 <div class="viewcode-block" id="looped_throats"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.looped_throats.html#openpnm.models.network.looped_throats">[docs]</a><span class="k">def</span> <span class="nf">looped_throats</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find any throats that are connected to the same pore on both ends</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">hits</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -280,7 +280,7 @@
 
 
 <div class="viewcode-block" id="headless_throats"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.headless_throats.html#openpnm.models.network.headless_throats">[docs]</a><span class="k">def</span> <span class="nf">headless_throats</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find any throats that point to a non-existent pore</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -288,14 +288,14 @@
 
 
 <div class="viewcode-block" id="duplicate_throats"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.duplicate_throats.html#openpnm.models.network.duplicate_throats">[docs]</a><span class="k">def</span> <span class="nf">duplicate_throats</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find repeat occurrences of throat connections</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">)</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="count_coincident_pores"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.count_coincident_pores.html#openpnm.models.network.count_coincident_pores">[docs]</a><span class="k">def</span> <span class="nf">count_coincident_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count number of pores that are spatially coincident with other pores</span>
 
 <span class="sd">    Parameters</span>
@@ -324,7 +324,7 @@
 
 
 <div class="viewcode-block" id="find_coincident_pores"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.find_coincident_pores.html#openpnm.models.network.find_coincident_pores">[docs]</a><span class="k">def</span> <span class="nf">find_coincident_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">thresh</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the indices of coincident pores</span>
 
 <span class="sd">    Parameters</span>

@@ -202,7 +202,7 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;AlgorithmSettings&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">AlgorithmSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -214,7 +214,7 @@
 <div class="viewcode-block" id="Algorithm"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Algorithm.html#openpnm.algorithms.Algorithm">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Algorithm&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Algorithm</span><span class="p">(</span><span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">Base2</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generic class to define the foundation of Algorithms</span>
 
 <span class="sd">    Parameters</span>
@@ -232,7 +232,7 @@
     <span class="c1"># @functools.cached_property</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">iterative_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds and returns properties that need to be iterated while</span>
 <span class="sd">        running the algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -255,7 +255,7 @@
         <span class="k">return</span> <span class="n">iterative_props</span>
 
     <span class="k">def</span> <span class="nf">_update_iterative_props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterative_props</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Regenerates phase, geometries, and physics objects using the</span>
 <span class="sd">        current value of ``quantity``.</span>
 
@@ -279,7 +279,7 @@
         <span class="n">phase</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="n">iterative_props</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Algorithm.clear_BCs"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Algorithm.clear_BCs.html#openpnm.algorithms.Algorithm.clear_BCs">[docs]</a>    <span class="k">def</span> <span class="nf">clear_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clear all BCs of the given type(s)</span>
 
 <span class="sd">        Parameters</span>
@@ -291,7 +291,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">bctype</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Algorithm.set_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Algorithm.set_BC.html#openpnm.algorithms.Algorithm.set_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="p">[],</span> <span class="n">bcvalues</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The main method for setting and adjusting boundary conditions.</span>
 
 <span class="sd">        This method is called by other more convenient wrapper functions like</span>

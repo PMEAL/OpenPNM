@@ -208,7 +208,7 @@
                      <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">DrainageSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(AlgorithmSettings.parameters)s</span>
@@ -239,7 +239,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Drainage.reset"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Drainage.reset.html#openpnm.algorithms.Drainage.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the algorithm&#39;s main results so that it can be re-run</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.invaded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
@@ -267,7 +267,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">][</span><span class="n">throats</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="Drainage.set_inlet_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Drainage.set_inlet_BC.html#openpnm.algorithms.Drainage.set_inlet_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_inlet_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specify the pores from which invading fluid will enter the domain</span>
 
 <span class="sd">        Parameters</span>
@@ -297,7 +297,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;inlet&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Drainage.set_outlet_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Drainage.set_outlet_BC.html#openpnm.algorithms.Drainage.set_outlet_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_outlet_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Specify the pores from which defending fluid exits the network.</span>
 
 <span class="sd">        This is optional and only required if trapping is to be considered.</span>
@@ -329,7 +329,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="s1">&#39;outlet&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Drainage.run"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Drainage.run.html#openpnm.algorithms.Drainage.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pressures</span><span class="o">=</span><span class="mi">25</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the simulation for the pressure points</span>
 
 <span class="sd">        Parameters</span>
@@ -374,7 +374,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.invaded&#39;</span><span class="p">][</span><span class="n">b_labels</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="Drainage.apply_trapping"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Drainage.apply_trapping.html#openpnm.algorithms.Drainage.apply_trapping">[docs]</a>    <span class="k">def</span> <span class="nf">apply_trapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adjusts the invasion history of pores and throats that are trapped.</span>
 
 <span class="sd">        Returns</span>

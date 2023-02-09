@@ -208,7 +208,7 @@
 
 
 <div class="viewcode-block" id="gabriel_edges"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.gabriel_edges.html#openpnm.models.network.gabriel_edges">[docs]</a><span class="k">def</span> <span class="nf">gabriel_edges</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find throats which make a Gabriel subgraph</span>
 
 <span class="sd">    Returns</span>
@@ -246,7 +246,7 @@
 
 
 <div class="viewcode-block" id="coordination_number"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.coordination_number.html#openpnm.models.network.coordination_number">[docs]</a><span class="k">def</span> <span class="nf">coordination_number</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the number of neighbors for each pore</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -254,7 +254,7 @@
 
 
 <div class="viewcode-block" id="pore_to_pore_distance"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.pore_to_pore_distance.html#openpnm.models.network.pore_to_pore_distance">[docs]</a><span class="k">def</span> <span class="nf">pore_to_pore_distance</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the center to center distance between each pair of pores</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
@@ -265,7 +265,7 @@
 
 
 <div class="viewcode-block" id="distance_to_nearest_neighbor"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.distance_to_nearest_neighbor.html#openpnm.models.network.distance_to_nearest_neighbor">[docs]</a><span class="k">def</span> <span class="nf">distance_to_nearest_neighbor</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the distance between each pore and its closest topological neighbor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
@@ -279,7 +279,7 @@
 
 
 <div class="viewcode-block" id="distance_to_furthest_neighbor"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.distance_to_furthest_neighbor.html#openpnm.models.network.distance_to_furthest_neighbor">[docs]</a><span class="k">def</span> <span class="nf">distance_to_furthest_neighbor</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the distance between each pore and its furthest topological neighbor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">throats</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">throats</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -294,7 +294,7 @@
 
 
 <div class="viewcode-block" id="distance_to_nearest_pore"><a class="viewcode-back" href="../../../../modules/generated/openpnm.models.network.distance_to_nearest_pore.html#openpnm.models.network.distance_to_nearest_pore">[docs]</a><span class="k">def</span> <span class="nf">distance_to_nearest_pore</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find distance to and index of nearest pore even if not topologically</span>
 <span class="sd">    connected</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -207,7 +207,7 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s2">&quot;ReactiveTransportSettings&quot;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Parameters&quot;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">ReactiveTransportSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -237,7 +237,7 @@
 <div class="viewcode-block" id="ReactiveTransport"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.ReactiveTransport.html#openpnm.algorithms.ReactiveTransport">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s2">&quot;ReactiveTransport&quot;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Parameters&quot;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">ReactiveTransport</span><span class="p">(</span><span class="n">Transport</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A subclass for steady-state simulations with (optional) source terms.</span>
 
 <span class="sd">    Parameters</span>
@@ -256,7 +256,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">ReactiveTransportSettings</span><span class="p">())</span>
 
 <div class="viewcode-block" id="ReactiveTransport.set_source"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.ReactiveTransport.set_source.html#openpnm.algorithms.ReactiveTransport.set_source">[docs]</a>    <span class="k">def</span> <span class="nf">set_source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies a given source term to the specified pores</span>
 
 <span class="sd">        Parameters</span>
@@ -311,7 +311,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_apply_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates ``A`` and ``b``, applying source terms to specified pores.</span>
 
 <span class="sd">        Notes</span>
@@ -336,7 +336,7 @@
             <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_run_special</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Repeatedly updates ``A``, ``b``, and the solution guess within</span>
 <span class="sd">        according to the applied source term then calls ``_solve`` to</span>
 <span class="sd">        solve the resulting system of linear equations.</span>
@@ -401,7 +401,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> didn&#39;t converge after </span><span class="si">{</span><span class="n">maxiter</span><span class="si">}</span><span class="s2"> iterations&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an approximate value for completion percent of Newton iterations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_f0_norm&quot;</span><span class="p">):</span>
@@ -412,7 +412,7 @@
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">progress</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_A_and_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds/updates A, b based on the recent solution on algorithm object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_iterative_props</span><span class="p">()</span>
@@ -420,7 +420,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_sources</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates solution residual based on the given ``x`` based on the</span>
 <span class="sd">        following formula:</span>
 

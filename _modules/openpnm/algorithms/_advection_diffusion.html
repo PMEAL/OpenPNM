@@ -203,7 +203,7 @@
                      <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">AdvectionDiffusionSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    %(ReactiveTransportSettings.parameters)s</span>
@@ -229,7 +229,7 @@
 
 
 <div class="viewcode-block" id="AdvectionDiffusion"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.AdvectionDiffusion.html#openpnm.algorithms.AdvectionDiffusion">[docs]</a><span class="k">class</span> <span class="nc">AdvectionDiffusion</span><span class="p">(</span><span class="n">ReactiveTransport</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A subclass of ReactiveTransport to simulate advection-diffusion</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -239,7 +239,7 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc.outflow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
 <div class="viewcode-block" id="AdvectionDiffusion.set_outflow_BC"><a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.AdvectionDiffusion.set_outflow_BC.html#openpnm.algorithms.AdvectionDiffusion.set_outflow_BC">[docs]</a>    <span class="k">def</span> <span class="nf">set_outflow_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds outflow boundary condition to the selected pores</span>
 
 <span class="sd">        Parameters</span>
@@ -278,7 +278,7 @@
                     <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_apply_BCs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies Dirichlet, Neumann, and outflow BCs in order</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Apply Dirichlet and rate BCs</span>

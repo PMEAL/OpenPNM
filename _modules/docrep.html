@@ -230,7 +230,7 @@
 
 
 <span class="n">substitution_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;(?s)(?&lt;!%)(%%)*%(?!%)   # uneven number of %</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;(?s)(?&lt;!%)(%%)*%(?!%)   # uneven number of %</span>
 <span class="sd">        \((?P&lt;key&gt;.*?)\)# key enclosed in brackets&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
 
 
@@ -238,7 +238,7 @@
 
 
 <span class="k">class</span> <span class="nc">_StrWithIndentation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A convenience class that indents the given string if requested through</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A convenience class that indents the given string if requested through</span>
 <span class="sd">    the __str__ method&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -253,7 +253,7 @@
 
 
 <span class="k">def</span> <span class="nf">safe_modulo</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">checked</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">print_warning</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Safe version of the modulo operation (%) of strings</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Safe version of the modulo operation (%) of strings</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -316,7 +316,7 @@
 
 
 <span class="k">def</span> <span class="nf">delete_params</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete the given parameters from a string.</span>
 
 <span class="sd">    Same as :meth:`delete_params` but does not use the :attr:`params`</span>
@@ -340,7 +340,7 @@
 
 
 <span class="k">def</span> <span class="nf">delete_types</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">*</span><span class="n">types</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete the given types from a string.</span>
 
 <span class="sd">    Same as :meth:`delete_types` but does not use the :attr:`params`</span>
@@ -364,7 +364,7 @@
 
 
 <span class="k">def</span> <span class="nf">delete_kwargs</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete the ``*args`` or ``**kwargs`` part from the parameters section.</span>
 
 <span class="sd">    Either `args` or `kwargs` must not be None.</span>
@@ -396,7 +396,7 @@
 
 
 <span class="k">def</span> <span class="nf">keep_params</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keep the given parameters from a string.</span>
 
 <span class="sd">    Same as :meth:`keep_params` but does not use the :attr:`params`</span>
@@ -420,7 +420,7 @@
 
 
 <span class="k">def</span> <span class="nf">keep_types</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">*</span><span class="n">types</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Keep the given types from a string.</span>
 
 <span class="sd">    Same as :meth:`keep_types` but does not use the :attr:`params`</span>
@@ -453,7 +453,7 @@
 
 
 <span class="k">class</span> <span class="nc">DocstringProcessor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class that is intended to process docstrings.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that is intended to process docstrings.</span>
 
 <span class="sd">    It is, but only to minor extends, inspired by the</span>
 <span class="sd">    :class:`matplotlib.docstring.Substitution` class.</span>
@@ -587,7 +587,7 @@
     <span class="n">python2_classes</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ``*args``</span>
@@ -621,7 +621,7 @@
 
     <span class="nd">@updates_docstring</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Substitute in a docstring of a function with :attr:`params`.</span>
 
 <span class="sd">        Parameters</span>
@@ -640,7 +640,7 @@
     <span class="nd">@reads_docstring</span>
     <span class="k">def</span> <span class="nf">get_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;Other Parameters&#39;</span><span class="p">]):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Exctract sections out of a docstring.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Exctract sections out of a docstring.</span>
 
 <span class="sd">        This method extracts the specified `sections` out of the given string</span>
 <span class="sd">        if (and only if) the docstring follows the numpy documentation</span>
@@ -707,7 +707,7 @@
 
     <span class="nd">@updates_docstring</span>
     <span class="k">def</span> <span class="nf">dedent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dedent a string and substitute with the :attr:`params` attribute.</span>
 
 <span class="sd">        Parameters</span>
@@ -724,7 +724,7 @@
 
     <span class="nd">@updates_docstring</span>
     <span class="k">def</span> <span class="nf">with_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Substitute a string with the indented :attr:`params`.</span>
 
 <span class="sd">        Parameters</span>
@@ -753,7 +753,7 @@
         <span class="k">return</span> <span class="n">safe_modulo</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="n">stacklevel</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">delete_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_key</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete a parameter from a parameter documentation.</span>
 
 <span class="sd">        This method deletes the given `param` from the `base_key` item in the</span>
@@ -784,7 +784,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">base_key</span><span class="p">],</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">delete_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_key</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the ``*args`` or ``**kwargs`` part from the parameters section.</span>
 
 <span class="sd">        Either `args` or `kwargs` must not be None. The resulting key will be</span>
@@ -823,7 +823,7 @@
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span> <span class="nf">delete_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_key</span><span class="p">,</span> <span class="n">out_key</span><span class="p">,</span> <span class="o">*</span><span class="n">types</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete a parameter from a parameter documentation.</span>
 
 <span class="sd">        This method deletes the given `param` from the `base_key` item in the</span>
@@ -852,7 +852,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">base_key</span><span class="p">],</span> <span class="o">*</span><span class="n">types</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">keep_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_key</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Keep only specific parameters from a parameter documentation.</span>
 
 <span class="sd">        This method extracts the given `param` from the `base_key` item in the</span>
@@ -940,7 +940,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">base_key</span><span class="p">],</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">keep_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_key</span><span class="p">,</span> <span class="n">out_key</span><span class="p">,</span> <span class="o">*</span><span class="n">types</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Keep only specific parameters from a parameter documentation.</span>
 
 <span class="sd">        This method extracts the given `type` from the `base_key` item in the</span>
@@ -1023,7 +1023,7 @@
 
     <span class="nd">@reads_docstring</span>
     <span class="k">def</span> <span class="nf">get_docstring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get a docstring of a function.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a docstring of a function.</span>
 
 <span class="sd">        Like the :meth:`get_sections` method this method serves as a</span>
 <span class="sd">        descriptor for functions but saves the entire docstring.</span>
@@ -1034,7 +1034,7 @@
 
     <span class="nd">@reads_docstring</span>
     <span class="k">def</span> <span class="nf">get_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the summary of the given docstring.</span>
 
 <span class="sd">        This method extracts the summary from the given docstring `s` which is</span>
@@ -1061,7 +1061,7 @@
 
     <span class="nd">@reads_docstring</span>
     <span class="k">def</span> <span class="nf">get_extended_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the extended summary from a docstring.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the extended summary from a docstring.</span>
 
 <span class="sd">        This here is the extended summary</span>
 
@@ -1093,7 +1093,7 @@
 
     <span class="nd">@reads_docstring</span>
     <span class="k">def</span> <span class="nf">get_full_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the full description from a docstring.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the full description from a docstring.</span>
 
 <span class="sd">        This here and the line above is the full description (i.e. the</span>
 <span class="sd">        combination of the :meth:`get_summary` and the</span>

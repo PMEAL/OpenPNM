@@ -203,7 +203,7 @@
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;NetworkSettings&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">NetworkSettings</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -214,7 +214,7 @@
 <div class="viewcode-block" id="Network"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.html#openpnm.network.Network">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Network&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Network</span><span class="p">(</span><span class="n">Domain</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class contains the main functionality used by all networks.</span>
 
 <span class="sd">    Parameters</span>
@@ -309,7 +309,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Network.get_adjacency_matrix"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.get_adjacency_matrix.html#openpnm.network.Network.get_adjacency_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adjacency matrix in the specified sparse format, with throat IDs</span>
 <span class="sd">        indicating the non-zero values.</span>
 
@@ -345,7 +345,7 @@
         <span class="k">return</span> <span class="n">am</span></div>
 
 <div class="viewcode-block" id="Network.get_incidence_matrix"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.get_incidence_matrix.html#openpnm.network.Network.get_incidence_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">get_incidence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Incidence matrix in the specified sparse format, with pore IDs</span>
 <span class="sd">        indicating the non-zero values.</span>
 
@@ -387,7 +387,7 @@
 
 <div class="viewcode-block" id="Network.create_adjacency_matrix"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.create_adjacency_matrix.html#openpnm.network.Network.create_adjacency_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">create_adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                 <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a weighted adjacency matrix in the desired sparse format</span>
 
 <span class="sd">        Parameters</span>
@@ -490,7 +490,7 @@
 
 <div class="viewcode-block" id="Network.create_incidence_matrix"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.create_incidence_matrix.html#openpnm.network.Network.create_incidence_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">create_incidence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;coo&#39;</span><span class="p">,</span>
                                 <span class="n">drop_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a weighted incidence matrix in the desired sparse format</span>
 
 <span class="sd">        Parameters</span>
@@ -568,7 +568,7 @@
         <span class="k">return</span> <span class="n">temp</span></div>
 
 <div class="viewcode-block" id="Network.find_connected_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.find_connected_pores.html#openpnm.network.Network.find_connected_pores">[docs]</a>    <span class="k">def</span> <span class="nf">find_connected_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of pores connected to the given list of throats</span>
 
 <span class="sd">        Parameters</span>
@@ -625,7 +625,7 @@
         <span class="k">return</span> <span class="n">pores</span></div>
 
 <div class="viewcode-block" id="Network.find_connecting_throat"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.find_connecting_throat.html#openpnm.network.Network.find_connecting_throat">[docs]</a>    <span class="k">def</span> <span class="nf">find_connecting_throat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the throat index connecting pairs of pores.</span>
 
 <span class="sd">        Parameters</span>
@@ -665,7 +665,7 @@
 
 <div class="viewcode-block" id="Network.find_neighbor_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.find_neighbor_pores.html#openpnm.network.Network.find_neighbor_pores">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of pores that are direct neighbors to the given pore(s)</span>
 
 <span class="sd">        Parameters</span>
@@ -768,7 +768,7 @@
 
 <div class="viewcode-block" id="Network.find_neighbor_throats"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.find_neighbor_throats.html#openpnm.network.Network.find_neighbor_throats">[docs]</a>    <span class="k">def</span> <span class="nf">find_neighbor_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                               <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of throats neighboring the given pore(s)</span>
 
 <span class="sd">        Parameters</span>
@@ -854,7 +854,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot create mask on an unflattened output&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Network.num_neighbors"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.num_neighbors.html#openpnm.network.Network.num_neighbors">[docs]</a>    <span class="k">def</span> <span class="nf">num_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of neigbhoring pores for each given input pore</span>
 
 <span class="sd">        Parameters</span>
@@ -930,7 +930,7 @@
         <span class="k">return</span> <span class="n">num</span></div>
 
 <div class="viewcode-block" id="Network.find_nearby_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.network.Network.find_nearby_pores.html#openpnm.network.Network.find_nearby_pores">[docs]</a>    <span class="k">def</span> <span class="nf">find_nearby_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_input</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find all pores within a given radial distance of the input pore(s)</span>
 <span class="sd">        regardless of whether or not they are toplogically connected.</span>
 
@@ -1012,12 +1012,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">conns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the connectivity matrix of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the connectivity matrix of the network.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the list of pore coordinates of the network.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the list of pore coordinates of the network.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span></div>
 </pre></div>
 

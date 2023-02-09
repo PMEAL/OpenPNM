@@ -319,7 +319,7 @@
 
 
 <div class="viewcode-block" id="dimensionality"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.dimensionality.html#openpnm.topotools.dimensionality">[docs]</a><span class="k">def</span> <span class="nf">dimensionality</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines whether a network is 1D, 2D or 3D, and in which dimensions</span>
 
 <span class="sd">    Parameters</span>
@@ -343,7 +343,7 @@
 
 
 <div class="viewcode-block" id="trim"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.trim.html#openpnm.topotools.trim">[docs]</a><span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove pores or throats from the network</span>
 
 <span class="sd">    Parameters</span>
@@ -420,7 +420,7 @@
 
 
 <div class="viewcode-block" id="extend"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.extend.html#openpnm.topotools.extend">[docs]</a><span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="p">[],</span> <span class="n">conns</span><span class="o">=</span><span class="p">[],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add pores or throats to the network from a list of coords or conns.</span>
 
 <span class="sd">    Parameters</span>
@@ -508,7 +508,7 @@
 
 
 <div class="viewcode-block" id="label_faces"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.label_faces.html#openpnm.topotools.label_faces">[docs]</a><span class="k">def</span> <span class="nf">label_faces</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;surface&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds pores on the surface of the network and labels them according to</span>
 <span class="sd">    whether they are on the *top*, *bottom*, etc.</span>
 
@@ -553,7 +553,7 @@
 
 
 <div class="viewcode-block" id="find_surface_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.find_surface_pores.html#openpnm.topotools.find_surface_pores">[docs]</a><span class="k">def</span> <span class="nf">find_surface_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;surface&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the pores on the surface of the domain by performing a Delaunay</span>
 <span class="sd">    triangulation between the network pores and some external ``markers``. All</span>
 <span class="sd">    pores connected to these external marker points are considered surface</span>
@@ -635,7 +635,7 @@
 
 
 <div class="viewcode-block" id="clone_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.clone_pores.html#openpnm.topotools.clone_pores">[docs]</a><span class="k">def</span> <span class="nf">clone_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;clone&#39;</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;parents&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clones the specified pores and adds them to the network</span>
 
 <span class="sd">    Parameters</span>
@@ -698,7 +698,7 @@
 
 
 <div class="viewcode-block" id="merge_networks"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.merge_networks.html#openpnm.topotools.merge_networks">[docs]</a><span class="k">def</span> <span class="nf">merge_networks</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">donor</span><span class="o">=</span><span class="p">[]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combine multiple networks into one without making any topological</span>
 <span class="sd">    connections</span>
 
@@ -777,7 +777,7 @@
 
 <div class="viewcode-block" id="stitch"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.stitch.html#openpnm.topotools.stitch">[docs]</a><span class="k">def</span> <span class="nf">stitch</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">donor</span><span class="p">,</span> <span class="n">P_network</span><span class="p">,</span> <span class="n">P_donor</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span>
            <span class="n">len_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">label_suffix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">label_stitches</span><span class="o">=</span><span class="s1">&#39;stitched&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stitches a second a network to the current network.</span>
 
 <span class="sd">    Parameters</span>
@@ -863,7 +863,7 @@
 
 
 <span class="k">def</span> <span class="nf">stitch_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores1</span><span class="p">,</span> <span class="n">pores2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;gabriel&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stitches together pores in a network with disconnected clusters</span>
 
 <span class="sd">    Parameters</span>
@@ -911,7 +911,7 @@
 
 
 <div class="viewcode-block" id="connect_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.connect_pores.html#openpnm.topotools.connect_pores">[docs]</a><span class="k">def</span> <span class="nf">connect_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores1</span><span class="p">,</span> <span class="n">pores2</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;new_conns&#39;</span><span class="p">]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the possible connections between two groups of pores</span>
 
 <span class="sd">    Parameters</span>
@@ -966,7 +966,7 @@
 
 
 <div class="viewcode-block" id="merge_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.merge_pores.html#openpnm.topotools.merge_pores">[docs]</a><span class="k">def</span> <span class="nf">merge_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;merged&#39;</span><span class="p">]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combines a selection of pores into a new single pore located at the</span>
 <span class="sd">    centroid of the selected pores and connected to all of their neighbors.</span>
 
@@ -1033,7 +1033,7 @@
 
 
 <div class="viewcode-block" id="hull_centroid"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.hull_centroid.html#openpnm.topotools.hull_centroid">[docs]</a><span class="k">def</span> <span class="nf">hull_centroid</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes centroid of the convex hull enclosing the given coordinates.</span>
 
 <span class="sd">    Parameters</span>
@@ -1057,7 +1057,7 @@
 
 <div class="viewcode-block" id="add_boundary_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.add_boundary_pores.html#openpnm.topotools.add_boundary_pores">[docs]</a><span class="k">def</span> <span class="nf">add_boundary_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">move_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">apply_label</span><span class="o">=</span><span class="s1">&#39;boundary&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This method uses ``clone_pores`` to clone the input pores, then shifts</span>
 <span class="sd">    them the specified amount and direction, then applies the given label.</span>
 
@@ -1111,7 +1111,7 @@
 
 
 <div class="viewcode-block" id="iscoplanar"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.iscoplanar.html#openpnm.topotools.iscoplanar">[docs]</a><span class="k">def</span> <span class="nf">iscoplanar</span><span class="p">(</span><span class="n">coords</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines if given pores are coplanar with each other</span>
 
 <span class="sd">    Parameters</span>
@@ -1166,7 +1166,7 @@
 
 
 <div class="viewcode-block" id="is_fully_connected"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.is_fully_connected.html#openpnm.topotools.is_fully_connected">[docs]</a><span class="k">def</span> <span class="nf">is_fully_connected</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pores_BC</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks whether network is fully connected, i.e. not clustered.</span>
 
 <span class="sd">    Parameters</span>
@@ -1200,7 +1200,7 @@
 
 
 <div class="viewcode-block" id="get_domain_area"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.get_domain_area.html#openpnm.topotools.get_domain_area">[docs]</a><span class="k">def</span> <span class="nf">get_domain_area</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the cross sectional area relative to the inlets/outlets.</span>
 
 <span class="sd">    Parameters</span>
@@ -1242,7 +1242,7 @@
 
 
 <div class="viewcode-block" id="get_domain_length"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.get_domain_length.html#openpnm.topotools.get_domain_length">[docs]</a><span class="k">def</span> <span class="nf">get_domain_length</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the domain length relative to the inlets/outlets.</span>
 
 <span class="sd">    Parameters</span>
@@ -1278,7 +1278,7 @@
 
 
 <div class="viewcode-block" id="reduce_coordination"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.reduce_coordination.html#openpnm.topotools.reduce_coordination">[docs]</a><span class="k">def</span> <span class="nf">reduce_coordination</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deletes throats on network to match specified average coordination number</span>
 
 <span class="sd">    Parameters</span>
@@ -1325,7 +1325,7 @@
 
 
 <div class="viewcode-block" id="add_reservoir_pore"><a class="viewcode-back" href="../../../modules/generated/openpnm.topotools.add_reservoir_pore.html#openpnm.topotools.add_reservoir_pore">[docs]</a><span class="k">def</span> <span class="nf">add_reservoir_pore</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">pores</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adds a single pore connected to all ``pores`` to act as a reservoir</span>
 
 <span class="sd">    This function is mostly needed to make network compatible with the</span>

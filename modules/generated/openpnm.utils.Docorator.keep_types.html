@@ -7343,9 +7343,9 @@ docstrings, you can type:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">DocstringProcessor</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nd">@d</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;do_something&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Returns&#39;</span><span class="p">])</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">do_something</span><span class="p">():</span>
-<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="gp">... </span><span class="sd">    That&#39;s %(doc_key)s</span>
-<span class="gp">...</span><span class="sd"></span>
+<span class="gp">...</span>
 <span class="gp">... </span><span class="sd">    Returns</span>
 <span class="gp">... </span><span class="sd">    -------</span>
 <span class="gp">... </span><span class="sd">    float</span>
@@ -7358,9 +7358,9 @@ docstrings, you can type:</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="nd">@d</span><span class="o">.</span><span class="n">dedent</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">do_less</span><span class="p">():</span>
-<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="gp">... </span><span class="sd">    My second function that only returns an integer</span>
-<span class="gp">...</span><span class="sd"></span>
+<span class="gp">...</span>
 <span class="gp">... </span><span class="sd">    Returns</span>
 <span class="gp">... </span><span class="sd">    -------</span>
 <span class="gp">... </span><span class="sd">    %(do_something.returns.int_only)s&#39;&#39;&#39;</span>
@@ -7381,9 +7381,9 @@ parameters:</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="nd">@d</span><span class="o">.</span><span class="n">dedent</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">do_less</span><span class="p">():</span>
-<span class="gp">... </span>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="gp">... </span><span class="sd">    My second function with only `a` and `c`</span>
-<span class="gp">...</span><span class="sd"></span>
+<span class="gp">...</span>
 <span class="gp">... </span><span class="sd">    Returns</span>
 <span class="gp">... </span><span class="sd">    ----------</span>
 <span class="gp">... </span><span class="sd">    %(do_something.returns.no_float)s&#39;&#39;&#39;</span>
