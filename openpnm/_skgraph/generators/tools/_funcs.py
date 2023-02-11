@@ -5,6 +5,7 @@ Tools
 """
 import numpy as np
 from openpnm._skgraph import tools
+import scipy.spatial as sptl
 
 
 __all__ = [
@@ -15,21 +16,165 @@ __all__ = [
     'template_cylinder_annulus',
     'generate_base_points',
     'reflect_base_points',
+    'get_centroid',
+    'lloyd_relaxation',
 ]
 
-__notyet__ = [
-]
+
+def lloyd_relaxation(vor, mode='rigorous'):
+    r"""
+    Computes the center of mass for each polyhedra in a Voronoi tessellaion
+
+    Parameters
+    ----------
+    vor : Scipy Voronoi object
+        The object returned by ``scipy.spatial.Voronoi``
+    mode : str
+        Options are:
+
+        =========== ================================================================
+        mode        description
+        =========== ================================================================
+        rigorous    Computes a Delaunay triangulation of the input points then finds
+                    the true centroid by computing the area/volume of each triangle/
+                    tetrahedron to find the weighted average center of mass.
+        fast        Computes the basic average of the input points without
+                    accounting for the distribution of points. This is a decent
+                    approximation and is *much* faster.
+        =========== ================================================================
+
+    """
+    pts = vor.points
+    for i, r in enumerate(vor.point_region):
+        if np.all(np.array(vor.regions[r]) > 0):
+            pts[i, :pts.shape[1]] = \
+                get_centroid(vor.vertices[vor.regions[r]], mode=mode)
+    if pts.shape[1] == 2:
+        pts = np.c_[pts, np.zeros_like(pts[:, 0])]
+    return pts
+
+
+def get_centroid(pts, mode='rigorous'):
+    r"""
+    Finds the centroid of a given set of points
+
+    Parameters
+    ----------
+    pts : ndarray
+        The points in 2D or 3D
+    mode : str
+        Options are:
+
+        =========== ================================================================
+        mode        description
+        =========== ================================================================
+        rigorous    Computes a Delaunay triangulation of the input points then finds
+                    the true centroid by computing the area/volume of each triangle/
+                    tetrahedron to find the weighted average center of mass.
+        fast        Computes the basic average of the input points without
+                    accounting for the distribution of points. This is a decent
+                    approximation and is *much* faster.
+        =========== ================================================================
+
+    Returns
+    -------
+    pt : ndarray
+        A single coordinate representing the center of mass of the input points
+
+    """
+    if mode == 'rigorous':
+        tri = sptl.Delaunay(pts)
+        CoM = center_of_mass(simplices=tri.simplices.astype(np.int_),
+                             points=tri.points.astype(np.float_))
+    elif mode == 'fast':
+        CoM = pts.mean(axis=0)
+    return CoM
+
+
+# This function is causing all kinds of problems on the CI.  It is working on
+# Ubuntu, Py3.8, but failing on all others.  It is working locally, windows with
+# Py3.9.  jit and njit both fail for different reasons.  Anyway, the slow part
+# is the tessellation of the points, not this actually CoM calculation
+# so I'm commenting out the decorator for now.
+# @njit
+def center_of_mass(simplices, points):
+    A = []
+    centroids = np.zeros((simplices.shape[0], points.shape[1]), dtype=np.float_)
+    for i, s in enumerate(simplices):
+        xy = points[s]
+        cen = np.sum(points[s], axis=0)/simplices.shape[1]
+        centroids[i, :] = cen.astype(np.float_)
+        if xy.shape[1] == 2:  # In 2D
+            # Use Heron's formula to find area of arbitrary triangle
+            a = np.sqrt((xy[0, 0] - xy[1, 0])**2 + (xy[0, 1] - xy[1, 1])**2)
+            b = np.sqrt((xy[1, 0] - xy[2, 0])**2 + (xy[1, 1] - xy[2, 1])**2)
+            c = np.sqrt((xy[2, 0] - xy[0, 0])**2 + (xy[2, 1] - xy[0, 1])**2)
+            s = (a + b + c)/2
+            temp = np.sqrt(s*(s-a)*(s-b)*(s-c))
+        else:
+            # Using formula from here: https://en.wikipedia.org/wiki/Tetrahedron
+            d = np.concatenate((xy.T, np.ones((1, 4))))  # In 3D
+            temp = np.abs(np.linalg.det(d))/6.0
+            # temp = 0
+        A.append(temp)
+    A = np.array(A, dtype=np.float_)
+    CoM = np.array([(centroids[:, i]*A/A.sum()*len(A)).mean()
+                    for i in range(centroids.shape[1])], dtype=np.float_)
+    return CoM
 
 
 def parse_points(shape, points, reflect=False):
+    r"""
+    Converts given points argument to consistent format
+
+    Parameters
+    ----------
+    shape : array_like
+        The shape of the domain
+    points : int or array_like
+        If a scalar value then this indicates the number of points to generate. If
+        an array, then these points are used directly.
+    reflect : bool, optional
+        If ``True`` the base points are reflected across the borders of the domain.
+
+    Returns
+    -------
+    points : ndarray
+        The points after being cleaned and parsed correctly
+
+    """
     # Deal with input arguments
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
                                       domain_size=shape,
-                                      reflect=reflect)
+                                      reflect=False)
     else:
-        # Should we check to ensure that points are reflected?
         points = np.array(points)
+        # Add 3rd column to 2D points
+        if points.shape[1] == 2:
+            zeros = np.atleast_2d(np.zeros_like(points[:, 0])).T
+            points = np.hstack((points, zeros))
+        # Ensure z-axis is all 0's if shape ends in 0 (ie. square or disk)
+        if shape[-1] == 0:
+            points[:, -1] = 0.0
+    if reflect:
+        if np.any(tools.isoutside(points, shape=shape)):
+            raise Exception('Some points lie outside the domain, '
+                            + 'cannot safely apply reflection')
+        if len(shape) == 3:
+            points = reflect_base_points(points=points, domain_size=shape)
+        elif len(shape) == 2:
+            # Convert xyz to cylindrical, and back
+            R, Q, Z = tools.cart2cyl(*points.T)
+            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)), domain_size=shape)
+            # Convert back to cartesean coordinates
+            points = np.vstack(tools.cyl2cart(R, Q, Z)).T
+        elif len(shape) == 1:
+            # Convert to spherical coordinates
+            R, Q, P = tools.cart2sph(*points.T)
+            R, Q, P = reflect_base_points(np.vstack((R, Q, P)), domain_size=shape)
+            # Convert to back to cartesean coordinates
+            points = np.vstack(tools.sph2cart(R, Q, P)).T
     return points
 
 

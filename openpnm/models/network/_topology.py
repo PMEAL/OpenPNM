@@ -6,14 +6,55 @@ Pore-scale models related to topology of the network.
 """
 from numpy.linalg import norm
 import numpy as np
+import scipy.spatial as sptl
+
 
 __all__ = [  # Keep this alphabetical for easier inspection of what's imported
     'coordination_number',
     'distance_to_furthest_neighbor',
     'distance_to_nearest_neighbor',
     'distance_to_nearest_pore',
+    'gabriel_edges',
     'pore_to_pore_distance',
 ]
+
+
+def gabriel_edges(network):
+    r"""
+    Find throats which make a Gabriel subgraph
+
+    Returns
+    -------
+    throats : ndarray
+        An ndarray of boolean values with ``True`` indicating that a throat
+        satisfies the conditions of Gabriel graph, meaning that a circle (or
+        sphere) can be drawn between its two connected pores that does not
+        contain any other pores.
+
+    Notes
+    -----
+    Technically this should only be used on a Delaunay network, but it will
+    work on any graph. By deleting all throats that are *not* identified by
+    this fuction one would obtain the Gabriel graph [1].
+
+    References
+    ----------
+    [1] `Wikipedia <https://en.wikipedia.org/wiki/Gabriel_graph>`_
+
+    """
+    dn = network
+    # Find centroid or midpoint of each edge in conns
+    c = dn['pore.coords'][dn['throat.conns']]
+    m = (c[:, 0, :] + c[:, 1, :])/2
+    # Find the radius the sphere between each pair of nodes
+    r = np.sqrt(np.sum((c[:, 0, :] - c[:, 1, :])**2, axis=1))/2
+    # Use the kd-tree function in Scipy's spatial module
+    tree = sptl.cKDTree(dn['pore.coords'])
+    # Find the nearest point for each midpoint
+    n = tree.query(x=m, k=1)[0]
+    # If nearest point to m is at distance r, then the edge is a Gabriel edge
+    g = n >= r*(0.999)  # This factor avoids precision errors in the distances
+    return g
 
 
 def coordination_number(network):

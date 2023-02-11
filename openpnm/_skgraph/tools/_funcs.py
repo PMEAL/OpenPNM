@@ -127,7 +127,8 @@ def isoutside(network, shape, rtol=0.0):
     Parameters
     ----------
     network : dict
-        The network dictionary
+        The network dictionary. For convenience it is also permissible to just
+        supply an N-by-D array of coordinates.
     shape : array_like
         The shape of the domain beyond which points are considered "outside".
         The argument is treated as follows:
@@ -166,8 +167,11 @@ def isoutside(network, shape, rtol=0.0):
     of ``shape`` should be set to 0.
 
     """
-    node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    try:
+        node_prefix = get_node_prefix(network)
+        coords = network[node_prefix+'.coords']
+    except AttributeError:
+        coords = network
     shape = np.array(shape, dtype=float)
     if np.isscalar(rtol):
         tolerance = np.array([rtol]*len(shape))

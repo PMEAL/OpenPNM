@@ -1,14 +1,15 @@
 import numpy as np
-import scipy.spatial as sptl
-from openpnm import topotools
 from openpnm.network import Network
 from openpnm._skgraph.generators.tools import parse_points
 from openpnm._skgraph.generators import voronoi_delaunay_dual
+from openpnm.utils import Docorator
 
 
 __all__ = ['DelaunayVoronoiDual']
+docstr = Docorator()
 
 
+@docstr.dedent
 class DelaunayVoronoiDual(Network):
     r"""
     Combined and interconnected Voronoi and Delaunay tessellations
@@ -19,55 +20,48 @@ class DelaunayVoronoiDual(Network):
         Can either be an N-by-3 array of point coordinates which will be used,
         or a scalar value indicating the number of points to generate
     shape : array_like
-        The size and shape of the domain used for generating and trimming
-        excess points. The coordinates are treated as the outer corner of a
-        rectangle [x, y, z] whose opposite corner lies at [0, 0, 0].
-        By default, a domain size of [1, 1, 1] is used. To create a 2D network
-        set the Z-dimension to 0.
+        The size and shape of the domain:
+
+        ========== ============================================================
+        shape      result
+        ========== ============================================================
+        [x, y, z]  A 3D cubic domain of dimension x, y and z
+        [x, y, 0]  A 2D square domain of size x by y
+        ========== ============================================================
+
+    trim : bool, optional
+        If ``True`` (default) then all vertices laying outside the domain will
+        be removed. This is only useful if ``reflect=True``.
+    reflect : bool, optional
+        If ``True`` (default) then the base points will be reflected across
+        all the faces of the domain prior to performing the tessellation. This
+        feature is best combined with ``trim=True`` to prevent unreasonably long
+        connections between points on the surfaces.
+
+    %(Network.parameters)s
 
     Notes
     -----
     A Delaunay tessellation is performed on a set of base points then the
     corresponding Voronoi diagram is generated.  Finally, each Delaunay node
-    is connected to it's neighboring Voronoi vertices to create interaction
+    is connected to its neighboring Voronoi vertices to create interconnections
     between the two networks.
 
     All pores and throats are labelled according to their network (i.e.
     'pore.delaunay'), so they can be each assigned to a different Geometry.
 
-    The dual-nature of this network is meant for modeling transport in the void
-    and solid space simultaneously by treating one network (i.e. Delaunay) as
-    voids and the other (i.e. Voronoi) as solid.  Interaction such as heat
-    transfer between the solid and void can be accomplished via the
-    interconnections between the Delaunay and Voronoi nodes.
-
     """
 
     def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
         super().__init__(**kwargs)
-        points = parse_points(shape=shape, points=points, reflect=reflect)
-
         net, vor, tri = voronoi_delaunay_dual(shape=shape,
                                               points=points,
                                               trim=trim,
                                               node_prefix='pore',
                                               edge_prefix='throat')
         self.update(net)
-        self._vor = vor
-        self._tri = tri
-
-    @property
-    def tri(self):
-        """A shortcut to get a handle to the Delanuay subnetwork"""
-        if not hasattr(self, '_tri'):
-            points = self._vor.points
-            self._tri = sptl.Delaunay(points=points)
-        return self._tri
-
-    @property
-    def vor(self):
-        """A shortcut to get a handle to the Voronoi subnetwork"""
-        return self._vor
+        self.vor = vor
+        self.tri = tri
 
     def find_throat_facets(self, throats=None):
         r"""

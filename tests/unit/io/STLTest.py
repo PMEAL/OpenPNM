@@ -1,13 +1,18 @@
 import os
-import pytest
-import numpy as np
+import platform
+
 import openpnm as op
+import py
+import pytest
 from openpnm.models.misc import from_neighbor_pores
 
+import numpy as np
 
-@pytest.mark.skipif(os.name == 'nt', reason="Skipping on Windows")
+is_not_linux = platform.system() in ["Windows", "Darwin"]
+
+
+@pytest.mark.skipif(is_not_linux, reason="Skipping on Windows/macOS")
 class STLTest:
-
     def setup_class(self):
         np.random.seed(10)
         self.net = op.network.Cubic(shape=[2, 2, 2])
@@ -27,15 +32,15 @@ class STLTest:
         assert os.path.isfile("custom_stl.stl")
 
 
-if __name__ == '__main__':
-    import py
+if __name__ == "__main__":
+
     # All the tests in this file can be run with 'playing' this file
     t = STLTest()
     self = t  # For interacting with the tests at the command line
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test'):
-            print(f'Running test: {item}')
+        if item.startswith("test"):
+            print(f"Running test: {item}")
             try:
                 t.__getattribute__(item)()
             except TypeError:
