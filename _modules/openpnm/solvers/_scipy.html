@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.solvers._scipy &#8212; OpenPNM 3.1.1 documentation</title>
+    <title>openpnm.solvers._scipy &#8212; OpenPNM 3.1.2 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -194,20 +194,20 @@
 
 
 <div class="viewcode-block" id="ScipySpsolve"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.ScipySpsolve.html#openpnm.solvers.ScipySpsolve">[docs]</a><span class="k">class</span> <span class="nc">ScipySpsolve</span><span class="p">(</span><span class="n">DirectSolver</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solves a linear system using ``scipy.sparse.linalg.spsolve``.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Solves a linear system using ``scipy.sparse.linalg.spsolve``.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ScipySpsolve.solve"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.ScipySpsolve.solve.html#openpnm.solvers.ScipySpsolve.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves the given linear system of equations Ax=b.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Solves the given linear system of equations Ax=b.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="n">csc_matrix</span><span class="p">)):</span>
             <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">spsolve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ScipyCG"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.ScipyCG.html#openpnm.solvers.ScipyCG">[docs]</a><span class="k">class</span> <span class="nc">ScipyCG</span><span class="p">(</span><span class="n">IterativeSolver</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solves a linear system using ``scipy.sparse.linalg.cg``.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Solves a linear system using ``scipy.sparse.linalg.cg``.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ScipyCG.solve"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.ScipyCG.solve.html#openpnm.solvers.ScipyCG.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves the given linear system of equations Ax=b.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Solves the given linear system of equations Ax=b.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="p">(</span><span class="n">csr_matrix</span><span class="p">,</span> <span class="n">csc_matrix</span><span class="p">)):</span>
             <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
         <span class="n">atol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_atol</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>

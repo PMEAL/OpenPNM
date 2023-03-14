@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.solvers._petsc &#8212; OpenPNM 3.1.1 documentation</title>
+    <title>openpnm.solvers._petsc &#8212; OpenPNM 3.1.2 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -206,7 +206,7 @@
 
 
 <div class="viewcode-block" id="PETScLinearSolver"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.PETScLinearSolver.html#openpnm.solvers.PETScLinearSolver">[docs]</a><span class="k">class</span> <span class="nc">PETScLinearSolver</span><span class="p">(</span><span class="n">IterativeSolver</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solves the sparse linear system Ax = b using petsc solvers.</span>
 
 <span class="sd">    Notes</span>
@@ -222,7 +222,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_create_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method creates the petsc sparse linear solver.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># https://petsc.org/release/docs/manualpages/KSP/KSPType.html</span>
@@ -275,7 +275,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_tolerances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set absolute and relative tolerances, and maximum number of iterations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">atol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atol</span> <span class="k">if</span> <span class="n">atol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">atol</span>
@@ -285,7 +285,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ksp</span><span class="o">.</span><span class="n">setTolerances</span><span class="p">(</span><span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="o">/</span><span class="mi">50</span><span class="p">,</span> <span class="n">max_it</span><span class="o">=</span><span class="n">maxiter</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_assemble_A</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method creates the petsc sparse coefficients matrix from the</span>
 <span class="sd">        OpenPNM scipy one. The method also equally decomposes the matrix at</span>
 <span class="sd">        certain rows into different blocks (each block contains all the</span>
@@ -320,7 +320,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">petsc_A</span><span class="o">.</span><span class="n">assemblyEnd</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_assemble_b_and_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the solution vector (self.petsc_x), which is a dense</span>
 <span class="sd">        matrix (1D vector) and defines the rhs vector (self.petsc_b) from</span>
 <span class="sd">        the existing data.</span>
@@ -347,7 +347,7 @@
 
 <div class="viewcode-block" id="PETScLinearSolver.solve"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.PETScLinearSolver.solve.html#openpnm.solvers.PETScLinearSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solver_type</span><span class="o">=</span><span class="s1">&#39;cg&#39;</span><span class="p">,</span> <span class="n">precondioner</span><span class="o">=</span><span class="s1">&#39;jacobi&#39;</span><span class="p">,</span>
               <span class="n">maxiter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solves and returns the solution to the linear system, Ax = b.</span>
 
 <span class="sd">        This method converts the solution vector from a PETSc.Vec</span>

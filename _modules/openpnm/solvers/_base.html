@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.solvers._base &#8212; OpenPNM 3.1.1 documentation</title>
+    <title>openpnm.solvers._base &#8212; OpenPNM 3.1.2 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -192,22 +192,22 @@
 
 
 <div class="viewcode-block" id="BaseSolver"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.BaseSolver.html#openpnm.solvers.BaseSolver">[docs]</a><span class="k">class</span> <span class="nc">BaseSolver</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all solvers.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all solvers.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="o">...</span>
 
 <div class="viewcode-block" id="BaseSolver.solve"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.BaseSolver.solve.html#openpnm.solvers.BaseSolver.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves the given linear system of equations Ax=b.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Solves the given linear system of equations Ax=b.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="DirectSolver"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.DirectSolver.html#openpnm.solvers.DirectSolver">[docs]</a><span class="k">class</span> <span class="nc">DirectSolver</span><span class="p">(</span><span class="n">BaseSolver</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all direct solvers.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all direct solvers.&quot;&quot;&quot;</span>
     <span class="o">...</span></div>
 
 
 <div class="viewcode-block" id="IterativeSolver"><a class="viewcode-back" href="../../../modules/generated/openpnm.solvers.IterativeSolver.html#openpnm.solvers.IterativeSolver">[docs]</a><span class="k">class</span> <span class="nc">IterativeSolver</span><span class="p">(</span><span class="n">BaseSolver</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for iterative solvers.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base class for iterative solvers.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="n">tol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
@@ -215,7 +215,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rtol</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># needs to be evaluated later</span>
 
     <span class="k">def</span> <span class="nf">_get_atol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the absolute tolerance ``atol`` that corresponds to the</span>
 <span class="sd">        the given tolerance ``tol``.</span>
 
@@ -228,7 +228,7 @@
         <span class="k">return</span> <span class="n">norm</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tol</span>
 
     <span class="k">def</span> <span class="nf">_get_rtol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the relative tolerance ``rtol`` that corresponds to the</span>
 <span class="sd">        the given tolerance ``tol``.</span>
 
@@ -244,7 +244,7 @@
         <span class="k">return</span> <span class="n">rtol</span>
 
     <span class="k">def</span> <span class="nf">_get_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the residual based on the given ``x`` using:</span>
 <span class="sd">            ``res = norm(A*x - b)``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
