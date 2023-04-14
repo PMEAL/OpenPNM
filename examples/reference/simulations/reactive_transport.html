@@ -267,7 +267,7 @@
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="../../applications/mercury_intrusion.html">
-     Simulating Mercury Intrusion Porosimetry Curves
+     Calibrating a Network Using Mercury Intrusion Data
     </a>
    </li>
    <li class="toctree-l2">
@@ -426,7 +426,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fd3efa66540&gt;
+net : &lt;openpnm.network.Cubic at 0x7fee3575a0e0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -515,7 +515,7 @@ net : &lt;openpnm.network.Cubic at 0x7fd3efa66540&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd434adf130&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fee3575a9a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -550,7 +550,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd434adf130&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd434adf130&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fee3575a9a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -578,7 +578,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd434adf130&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7fd3ef364770&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7fee3575a090&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -652,24 +652,24 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fd3ef364770&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.89995595 -0.26102051  0.         -0.63893544  0.          0.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.77273539 -0.10418218  0.         -0.6685532   0.          0.
    0.          0.          0.        ]
- [-0.26102051  2.02590103 -0.97557004  0.         -0.78931047  0.
+ [-0.10418218  1.0370355  -0.2152191   0.         -0.71763421  0.
    0.          0.          0.        ]
- [ 0.         -0.97557004  1.53772287  0.          0.         -0.56215283
+ [ 0.         -0.2152191   1.05053793  0.          0.         -0.83531882
    0.          0.          0.        ]
- [-0.63893544  0.          0.          2.34893981 -0.95983527  0.
-  -0.75016911  0.          0.        ]
- [ 0.         -0.78931047  0.         -0.95983527  3.49021384 -0.77519737
-   0.         -0.96587072  0.        ]
- [ 0.          0.         -0.56215283  0.         -0.77519737  1.63712427
-   0.          0.         -0.29977407]
- [ 0.          0.          0.         -0.75016911  0.          0.
-   1.51468786 -0.76451875  0.        ]
- [ 0.          0.          0.          0.         -0.96587072  0.
-  -0.76451875  2.42818948 -0.69780001]
- [ 0.          0.          0.          0.          0.         -0.29977407
-   0.         -0.69780001  0.99757408]]
+ [-0.6685532   0.          0.          2.04635636 -0.99986784  0.
+  -0.37793531  0.          0.        ]
+ [ 0.         -0.71763421  0.         -0.99986784  2.34640424 -0.01457417
+   0.         -0.61432803  0.        ]
+ [ 0.          0.         -0.83531882  0.         -0.01457417  1.6780193
+   0.          0.         -0.82812631]
+ [ 0.          0.          0.         -0.37793531  0.          0.
+   0.41038756 -0.03245224  0.        ]
+ [ 0.          0.          0.          0.         -0.61432803  0.
+  -0.03245224  1.32716164 -0.68038137]
+ [ 0.          0.          0.          0.          0.         -0.82812631
+   0.         -0.68038137  1.50850768]]
 </pre></div>
 </div>
 </div>

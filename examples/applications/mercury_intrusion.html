@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Simulating Mercury Intrusion Porosimetry Curves &#8212; OpenPNM 3.1.2 documentation</title>
+    <title>Calibrating a Network Using Mercury Intrusion Data &#8212; OpenPNM 3.1.2 documentation</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -45,7 +45,7 @@
     <script src="../../_static/design-tabs.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script type="application/vnd.jupyter.widget-state+json">{"state": {"5b8b40ae1f0c450ebf2d89d9fddba728": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "7eccfa27f561498d9e86fa7022695ef8": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "8060ea5206934b39917b26c3c4cfc603": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_5b8b40ae1f0c450ebf2d89d9fddba728", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_7eccfa27f561498d9e86fa7022695ef8", "value": 25.0}}, "23d98d37077a44c8b460e948e8b91735": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "765c3de7a5f242f3a30f9b82eabe1838": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "8ac56addb47f4132a3325dd8277823b0": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_23d98d37077a44c8b460e948e8b91735", "placeholder": "\u200b", "style": "IPY_MODEL_765c3de7a5f242f3a30f9b82eabe1838", "value": "Performing drainage simulation: 100%"}}, "0df50bcb9abf406b9e43fbd16d018055": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "069f77850fcd4dbb8c877cacc90b935e": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "f7a10ff86abd4d78aed7783c8b26b816": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_0df50bcb9abf406b9e43fbd16d018055", "placeholder": "\u200b", "style": "IPY_MODEL_069f77850fcd4dbb8c877cacc90b935e", "value": " 25/25 [00:00&lt;00:00, 326.37it/s]"}}, "9c148385247f47eda658ea2c2bacc0db": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "63be884f40f64c9faf67034b0a8c85fc": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_8ac56addb47f4132a3325dd8277823b0", "IPY_MODEL_8060ea5206934b39917b26c3c4cfc603", "IPY_MODEL_f7a10ff86abd4d78aed7783c8b26b816"], "layout": "IPY_MODEL_9c148385247f47eda658ea2c2bacc0db"}}}, "version_major": 2, "version_minor": 0}</script>
+    <script type="application/vnd.jupyter.widget-state+json">{"state": {"e537572f090942409a5ffdcae188be13": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "3a7e33073770485c9e0ac803dc0d19bb": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "3e803623604243f4ad2feede92e2565f": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_e537572f090942409a5ffdcae188be13", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_3a7e33073770485c9e0ac803dc0d19bb", "value": 25.0}}, "a7efd8d5e5a740c4beaf82e14a197bae": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "f36ce0e047844d1fa23d15afb15640fa": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "15408b7cf70e41afbfe87be55a09ad19": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_a7efd8d5e5a740c4beaf82e14a197bae", "placeholder": "\u200b", "style": "IPY_MODEL_f36ce0e047844d1fa23d15afb15640fa", "value": "Performing drainage simulation: 100%"}}, "69b593e5556342b6a1ee0891edf3380d": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "8950b7dde2584372a42d63e487c67246": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "91fc03f3dac5491b9d0c4a6d5b14f6c3": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_69b593e5556342b6a1ee0891edf3380d", "placeholder": "\u200b", "style": "IPY_MODEL_8950b7dde2584372a42d63e487c67246", "value": " 25/25 [00:00&lt;00:00, 474.87it/s]"}}, "8fb127c4a1ec49ad898e56f0694b70ca": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "1d8b9f070a85448cb2fab4b328a84076": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_15408b7cf70e41afbfe87be55a09ad19", "IPY_MODEL_3e803623604243f4ad2feede92e2565f", "IPY_MODEL_91fc03f3dac5491b9d0c4a6d5b14f6c3"], "layout": "IPY_MODEL_8fb127c4a1ec49ad898e56f0694b70ca"}}, "a458eb7612184143810e9dde43e26c37": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "991aed3b3c6d42738c84179230bc270d": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "f92aea249bee4046b75be854c4329278": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_a458eb7612184143810e9dde43e26c37", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_991aed3b3c6d42738c84179230bc270d", "value": 25.0}}, "bed62acaa95f42b99ad003677662f91e": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "b562dc0b4fb6461e8149ab01c68a358c": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "b561e34c02d341ea85936d08d4925a2c": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_bed62acaa95f42b99ad003677662f91e", "placeholder": "\u200b", "style": "IPY_MODEL_b562dc0b4fb6461e8149ab01c68a358c", "value": "Performing drainage simulation: 100%"}}, "8f269aba978e47b2afca25f882d7ad9c": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "fe9a0df6dc3b4fb19daa147ae8f89a5c": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "03504126fad841e08ba870d6d32057bd": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_8f269aba978e47b2afca25f882d7ad9c", "placeholder": "\u200b", "style": "IPY_MODEL_fe9a0df6dc3b4fb19daa147ae8f89a5c", "value": " 25/25 [00:00&lt;00:00, 481.26it/s]"}}, "5bfc094a12e64a159d4621a229195633": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "e2175ed38d0642f0a0298482f75b34e5": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_b561e34c02d341ea85936d08d4925a2c", "IPY_MODEL_f92aea249bee4046b75be854c4329278", "IPY_MODEL_03504126fad841e08ba870d6d32057bd"], "layout": "IPY_MODEL_5bfc094a12e64a159d4621a229195633"}}, "89e1f91a52c34c8da10746ba93d51dbb": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "c732b5aff60846d4adfe95e61a0c12ad": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "ff4b252b0dcd4769adc4857295bd1be2": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_89e1f91a52c34c8da10746ba93d51dbb", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_c732b5aff60846d4adfe95e61a0c12ad", "value": 25.0}}, "c4fd3798488741d081019fdeb0d90925": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "d818ade5a78940f799f4c6d92417bcf3": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "68ce1d3df9e545a0b8da1629acf1b75a": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_c4fd3798488741d081019fdeb0d90925", "placeholder": "\u200b", "style": "IPY_MODEL_d818ade5a78940f799f4c6d92417bcf3", "value": "Performing drainage simulation: 100%"}}, "e756ded1d65b408dbe0e5c6a4340315a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "168e824b2e614c6fa755db1eae2f177d": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "05d4aa8cafcf4ec2bfdf707a843fd885": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_e756ded1d65b408dbe0e5c6a4340315a", "placeholder": "\u200b", "style": "IPY_MODEL_168e824b2e614c6fa755db1eae2f177d", "value": " 25/25 [00:00&lt;00:00, 493.04it/s]"}}, "0d9be7d8461843de8b5bee9fcf0ea447": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "06b8d04749e24c7eab1beccf32f850fb": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_68ce1d3df9e545a0b8da1629acf1b75a", "IPY_MODEL_ff4b252b0dcd4769adc4857295bd1be2", "IPY_MODEL_05d4aa8cafcf4ec2bfdf707a843fd885"], "layout": "IPY_MODEL_0d9be7d8461843de8b5bee9fcf0ea447"}}, "df9f50b5f90746e2becf8bba7e7342c4": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "f5204c309e854fc6b4c5d84d510bcf8f": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "fd7620d8ac1a43a2b69318b58d593f86": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_df9f50b5f90746e2becf8bba7e7342c4", "max": 25.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_f5204c309e854fc6b4c5d84d510bcf8f", "value": 25.0}}, "83a503a2e016480da5931035d33c0d41": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "4d6cea1bb59942339831de752a573aeb": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "3dddad7464aa44b99fd2553fca023208": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_83a503a2e016480da5931035d33c0d41", "placeholder": "\u200b", "style": "IPY_MODEL_4d6cea1bb59942339831de752a573aeb", "value": "Performing drainage simulation: 100%"}}, "1e156442e3604ab19363fecbc0665a2a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "aa99b31e03284f598933da81ee228db7": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "db9d8c113c004af09d47b369887428e8": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_1e156442e3604ab19363fecbc0665a2a", "placeholder": "\u200b", "style": "IPY_MODEL_aa99b31e03284f598933da81ee228db7", "value": " 25/25 [00:00&lt;00:00, 524.78it/s]"}}, "76fa7233afe14b83a9e77bb0445d756a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "b2fcffd3005b4d1a9fe6c547f218dbde": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_3dddad7464aa44b99fd2553fca023208", "IPY_MODEL_fd7620d8ac1a43a2b69318b58d593f86", "IPY_MODEL_db9d8c113c004af09d47b369887428e8"], "layout": "IPY_MODEL_76fa7233afe14b83a9e77bb0445d756a"}}}, "version_major": 2, "version_minor": 0}</script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script crossorigin="anonymous" data-jupyter-widgets-cdn="https://cdn.jsdelivr.net/npm/" src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script src="../../_static/js/custom.js"></script>
@@ -270,7 +270,7 @@
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Simulating Mercury Intrusion Porosimetry Curves
+     Calibrating a Network Using Mercury Intrusion Data
     </a>
    </li>
    <li class="toctree-l2">
@@ -377,14 +377,48 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#import-packages">
+   Import Packages
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#import-data-for-a-sandstone">
+   Import Data for a Sandstone
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#network">
    Network
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#add-geometry">
-   Add Geometry
+  <a class="reference internal nav-link" href="#add-geometrical-properties">
+   Add Geometrical Properties
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pore-sizes">
+     Pore Sizes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#finding-pore-sizes-given-random-seeds-between-0-and-1">
+     Finding Pore Sizes Given Random Seeds between 0 and 1
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#apply-distribution-to-the-network">
+   Apply Distribution to the Network
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#throat-sizes">
+     Throat Sizes
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#phase">
@@ -399,6 +433,16 @@
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#perform-mercury-intrusion">
    Perform Mercury Intrusion
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#check-geometric-consistency">
+   Check Geometric Consistency
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#additional-calibration-steps">
+   Additional Calibration Steps
   </a>
  </li>
 </ul>
@@ -420,14 +464,21 @@
               
               <article class="bd-article" role="main">
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="simulating-mercury-intrusion-porosimetry-curves">
-<h1>Simulating Mercury Intrusion Porosimetry Curves<a class="headerlink" href="#simulating-mercury-intrusion-porosimetry-curves" title="Permalink to this heading">#</a></h1>
-<p>Mercury intrusion is a common technique in the study of porous media used to determine the pore size distribution of a porous material. In this example, we will show how OpenPNM can be used to simulate mercury intrusion and estimate the pore size distribution of a network.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="calibrating-a-network-using-mercury-intrusion-data">
+<h1>Calibrating a Network Using Mercury Intrusion Data<a class="headerlink" href="#calibrating-a-network-using-mercury-intrusion-data" title="Permalink to this heading">#</a></h1>
+<p>Mercury intrusion porosimetry (MIP) is a common technique in the study of porous media used to determine the pore size distribution of a porous material. There are two reasons why one would want to fit a PNM to MIP data.</p>
+<p>The first reason is to more accurately obtain pore size distributions from MIP data.  MIP data is universally interpreted using a ‘bundle of tubes’ model, which neglects the shielding effect that occurs when large pore bodies are ‘shielded’ behind smaller ones.  A more nuanced interpretation of MIP data requires using a pore network model to fit the data, then obtaining the pore and throat size distribution of the model. This is not usually done because it is quite a bit more difficult, and the additional accuracy is not necessarily justified.</p>
+<p>The second reason is that often we wish to generate a cubic pore network that is representative of a specific material so that we can then perform additional simulations using the network.  This is called <em>network calibration</em>.  Calibration can also involve fitting of permeability and formation factor data as well, since successfully fitting more metrics means a better calibration.</p>
+<p>In this example, we will show how OpenPNM can be used to simulate mercury intrusion and estimate the pore size distribution of a network, and we’ll compare this experimental values, and iterate until they match.</p>
+<section id="import-packages">
+<h2>Import Packages<a class="headerlink" href="#import-packages" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">spst</span>
 
 <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -438,37 +489,306 @@
 </div>
 </div>
 </div>
-<section id="network">
-<h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h2>
-<p>In this example we use a simple cubic network with 20 pores per side and a spacing of 50 um.</p>
+</section>
+<section id="import-data-for-a-sandstone">
+<h2>Import Data for a Sandstone<a class="headerlink" href="#import-data-for-a-sandstone" title="Permalink to this heading">#</a></h2>
+<p>For this work we will use the porosimetry data from <a class="reference external" href="http://doi.org/10.1016/S0309-1708(00)00002-6">Characterization of the pore structure of reservoir rocks with the aid
+of serial sectioning analysis, mercury porosimetry and network simulation” by  Tsakiroglou and Payatakes in Advances in Water Resources 23 (2000) 773-789</a>.  The data we extracted from Figure.8 in that paper using a graph digitizer:</p>
+<p>Let’s import the MIP data for this sample:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">5e-5</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;Sandstone.csv&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>       Pc [Pa]     S_Hg
+0      12056.4  0.00122
+1      15162.4  0.00368
+2      17630.0  0.00741
+3      23693.0  0.00860
+4      30708.0  0.01607
+5      36799.0  0.01979
+6      44633.0  0.02351
+7      49752.0  0.02599
+8      52522.0  0.03474
+9      55439.0  0.05476
+10     55449.0  0.05473
+11     57820.0  0.06977
+12     59569.0  0.09980
+13     62089.0  0.16613
+14     63563.0  0.22244
+15     65092.0  0.25123
+16     66585.0  0.37262
+17     68232.0  0.34759
+18     69833.0  0.42518
+19     71069.0  0.47100
+20     71085.0  0.45271
+21     76355.0  0.54039
+22     76802.0  0.54156
+23    101289.0  0.60534
+24    117732.0  0.63785
+25    135188.0  0.67913
+26    160014.0  0.70663
+27    203630.0  0.73037
+28    222870.0  0.74787
+29    267020.0  0.76787
+30    348080.0  0.79660
+31    437710.0  0.80783
+32    696280.0  0.83528
+33   1148210.0  0.87899
+34   1860000.0  0.90268
+35   2352900.0  0.92016
+36   3975500.0  0.94885
+37   5214900.0  0.95882
+38   7353000.0  0.98253
+39   9821400.0  0.99375
+40  11698800.0  0.99622
+41  12884400.0  0.99620
+42  15440700.0  0.99617
+43  17108000.0  0.99865
+</pre></div>
+</div>
+</div>
+</div>
+<p>We have 45 pressure points, and the mercury volume has already been normalized by the porosity, which was 18% in this case.</p>
+<p>Before we get into the network modeling, it is a good idea to convert the pressure data to pore size data using the bundle of tubes model to get a first approximation of the sizes to expect:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="mf">0.480</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">140</span><span class="p">))</span><span class="o">/</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc [Pa]&#39;</span><span class="p">]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;S_Hg&#39;</span><span class="p">],</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Pore Diameter [um]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/1a5f9aad074fd1208610224779b86651649e3102ab8b646796f109194d533153.png" src="../../_images/1a5f9aad074fd1208610224779b86651649e3102ab8b646796f109194d533153.png" />
+</div>
+</div>
+<p>We can see that we should aim to have pore diameters in the range of 20-30 um.</p>
+</section>
+<section id="network">
+<h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h2>
+<p>We may want to use a large network for some future simulations, but for the sake of the fitting process we can use a relatively small network to get the parameters.  Here we will use use a simple cubic network with 15 pores per side and a spacing of 40 um.  Note that we <em>can adjust</em> this spacing if it let’s us match the data more closely.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">30e-6</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Cubic at 0x7f7461ae0a90&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.coords                                                   3375 / 3375
+  3  throat.conns                                                  9450 / 9450
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.surface                                                         1178
+  3  throat.surface                                                       2352
+  4  pore.left                                                             225
+  5  pore.right                                                            225
+  6  pore.front                                                            225
+  7  pore.back                                                             225
+  8  pore.bottom                                                           225
+  9  pore.top                                                              225
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="add-geometry">
-<h2>Add Geometry<a class="headerlink" href="#add-geometry" title="Permalink to this heading">#</a></h2>
-<p>The network object only contains topological and spatial information.  We need to assign some pore and throat sizes, which can be conveniently done using the <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> collection of geometry models. The collection is added to the network. Don’t forget to regenerate models on the network object after adding the geometry models!</p>
+<section id="add-geometrical-properties">
+<h2>Add Geometrical Properties<a class="headerlink" href="#add-geometrical-properties" title="Permalink to this heading">#</a></h2>
+<p>The network object only contains topological and spatial information.  We need to assign some pore and throat sizes.  Since one of the objectives of this tutorial is to shine some light on the use of pore-scale models and how to customize them, we will <em>not</em> use the convenient pre-packages model collections, but instead add all the models we need by hand.  Let’s start by assigning sizes to the pore bodies:</p>
+<section id="pore-sizes">
+<h3>Pore Sizes<a class="headerlink" href="#pore-sizes" title="Permalink to this heading">#</a></h3>
+<p>It is possible to produce sizes directly from a statistical distribution, like <code class="docutils literal notranslate"><span class="pre">scipy.stats.weibull_min.rvs(&lt;args&gt;)</span></code>, however, we are going to do it the “hard way” since this will help us later.  We’ll start by assigning random seed values between 0 and 1 to the network:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># Set the state of the random number generator to &quot;0&quot;</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> geometry collection includes pore and throat diameter models. The model for pore diameter assigns pores as random values between 0.2 and 0.7 of the lattice spacing. Throat diameter is determined as half of the smallest neighbour pore. All geometric information in this model collection assumes the pores are spheres and the throats are cylinders.</p>
+<p>Now let’s define a statistical distribution. The Weibull distribution is common since it has mostly small pore and a long tail of a few large pores, which is typical of many porous materials.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">=</span> <span class="n">spst</span><span class="o">.</span><span class="n">weibull_min</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mf">1.9</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">20e-6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above line creates what is called a “frozen object”, meaning that <code class="docutils literal notranslate"><span class="pre">dst</span></code> is now a <code class="docutils literal notranslate"><span class="pre">weibull_min</span></code> object with the parameters <code class="docutils literal notranslate"><span class="pre">c</span></code>, <code class="docutils literal notranslate"><span class="pre">loc</span></code>, and <code class="docutils literal notranslate"><span class="pre">scale</span></code> fixed at their given values.</p>
+<p>Let’s quickly look at some values from this distribution to see if the parameters we chose are a decent starting point. The <code class="docutils literal notranslate"><span class="pre">rvs</span></code> method returns the requested number of randomly generated values from the frozen distribution.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dst</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Pore Diameter [um]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/aea09a9a6fd9098acfae205867cd05bd639630cdc265c600e6c5219f7aed7bc5.png" src="../../_images/aea09a9a6fd9098acfae205867cd05bd639630cdc265c600e6c5219f7aed7bc5.png" />
+</div>
+</div>
+<p>This looks pretty good.  The minimum value (<code class="docutils literal notranslate"><span class="pre">loc</span></code>) was set to 100 nm, and the <code class="docutils literal notranslate"><span class="pre">scale</span></code> of 20 um positions the distribution well within our expected range.  Lastly, the <code class="docutils literal notranslate"><span class="pre">c</span></code> value controls the skew, which has created a slighly elongated tail, but nothing too  extreme.  Only a few values will be larger than the network spacing of 40 um, which we will revisit later.</p>
+</section>
+<section id="finding-pore-sizes-given-random-seeds-between-0-and-1">
+<h3>Finding Pore Sizes Given Random Seeds between 0 and 1<a class="headerlink" href="#finding-pore-sizes-given-random-seeds-between-0-and-1" title="Permalink to this heading">#</a></h3>
+<p>Before moving on, let’s first examine how we can produce random values given seed values between 0 and 1.  Below is a plot of the cumulative probability distribution (<code class="docutils literal notranslate"><span class="pre">cdf</span></code>). The y-axis is the <code class="docutils literal notranslate"><span class="pre">pn['pore.seed']</span></code> values, and the x-axis is the pore size value.  The <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values are chosen at random between 0 and 1, and the size values can be found by doing a reverse “look-up”, shown by the red lines.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dst</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">]),</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">],</span> <span class="s1">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">dst</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">dst</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="mi">45</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/13c03e3f6ac59fa8e24744b0cf6bf5250817f2aab17337d690ab541a5c599a31.png" src="../../_images/13c03e3f6ac59fa8e24744b0cf6bf5250817f2aab17337d690ab541a5c599a31.png" />
+</div>
+</div>
+<p>There are two important advantages to this approach.</p>
+<p>Firstly, we can limit the range of seed values, for instance from 0.1 to 0.9, which will prevent any abnormally large values that might occur if a point far out on the tail end of the distribution is choosen (like 0.9999).</p>
+<p>Seconly, this simplifies the process of creating spatially correlated pore sizes since there are many way to generate correlated random numbers bewteen 0 and 1 (i.e. <code class="docutils literal notranslate"><span class="pre">porespy.generators.fractal_noise</span></code>). We won’t go into that here, but it was used to create anisotropic networks in <a class="reference external" href="https://doi.org/10.1016/j.jpowsour.2007.04.059">this work</a>.</p>
+</section>
+</section>
+<section id="apply-distribution-to-the-network">
+<h2>Apply Distribution to the Network<a class="headerlink" href="#apply-distribution-to-the-network" title="Permalink to this heading">#</a></h2>
+<p>We can now use this model to generate our pore sizes for the network.  We can do this easy way or the right way.</p>
+<p>First the easy way: Let’s just assign values from the frozen distribution to the network directly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dst</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Pore Diameter [um]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f3c0648272c16b560dcba7b68d8f18008b19f343fa6c0aa71cd5a071f0292e50.png" src="../../_images/f3c0648272c16b560dcba7b68d8f18008b19f343fa6c0aa71cd5a071f0292e50.png" />
+</div>
+</div>
+<p>The problem with this approach is that if we were to change the values of ‘pore.seed’, it would have no effect on the pore sizes.  This is not really an issue in the current example since we haven’t used a model for ‘pore.seed’ values. However, a common use case might be to re-run a simulation N times to ensure the results are repeatable. If a model for ‘pore.seed’ were used, then we could just do <code class="docutils literal notranslate"><span class="pre">pn.regenerate_models()</span></code>, and OpenPNM would generate a new set of ‘pore.seed’ values, then it would recompute all the values that depend on ‘pore.seed’, starting with ‘pore.diameter’, and then ‘pore.volume’, and so forth.</p>
+<p>To properly leverage the OpenPNM models regeneration features, we need to assign the statistical model (ie. ‘weibull_min’) to the network as a pore-scale model. OpenPNM includes a <code class="docutils literal notranslate"><span class="pre">generic_distribution</span></code> function, which accepts a pre-initialized <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> distribution, like the one we defined above.  Let’s also add a model for ‘pore.seed’ values, and truncate the values in the range of [0.0 to 0.98].</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_seed</span><span class="o">.</span><span class="n">random</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+             <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">])</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">generic_distribution</span><span class="p">,</span>
+             <span class="n">func</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span>
+             <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="mi">45</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/97762f172e7c3d2fc8404e2067abbf8a473ab03594934b9cc879aff49c824871.png" src="../../_images/97762f172e7c3d2fc8404e2067abbf8a473ab03594934b9cc879aff49c824871.png" />
+</div>
+</div>
+<section id="throat-sizes">
+<h3>Throat Sizes<a class="headerlink" href="#throat-sizes" title="Permalink to this heading">#</a></h3>
+<p>When assigning throat sizes it must be remembered that throat sizes should <em>usually</em> be smaller than the two pores which they connect.  This is not <em>strictly</em> necessary, but it is consistent with the general picture of a porous material, and it also make other calculations quite a bit simpler.
+|
+There are two methods we can use to assign throat sizes. We can assume that each throat is smaller than the two pores it connects by some factor, i.e., <code class="docutils literal notranslate"><span class="pre">0.5</span> <span class="pre">*</span> <span class="pre">min(d1,</span> <span class="pre">d2)</span></code>.  Alternatively, we can assign each throat a <code class="docutils literal notranslate"><span class="pre">seed</span></code> value, which is taken as the minimum of the seed value in the two pores it connects, then use those values in any desired size distribution (which should produce smaller values than the chosen pore size distribution given the same seed values).</p>
+<p>Let’s do both:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter_1&#39;</span><span class="p">,</span> 
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+             <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
+             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span> 
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
+             <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
+             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter_2&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_size</span><span class="o">.</span><span class="n">generic_distribution</span><span class="p">,</span>
+             <span class="n">func</span><span class="o">=</span><span class="n">dst</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And we can chose which of these becomes the “official” throat diameter, and apply some scaling to the values if needed using:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">scaled</span><span class="p">,</span>
+             <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;throat.diameter_1&#39;</span><span class="p">,</span>  <span class="c1"># This could also be &#39;throat.diameter_2&#39;</span>
+             <span class="n">factor</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>  <span class="c1"># This could be 1.0 if no scaling is desired</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s plot the two distributions together:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;pores&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;throats&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Pore diameter [um]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/727954ae3df24b39af146ca4a1bc85c2b0590ac8e2aad762b3960b759eef665d.png" src="../../_images/727954ae3df24b39af146ca4a1bc85c2b0590ac8e2aad762b3960b759eef665d.png" />
+</div>
+</div>
+<p>To fully define the geometry for this network we need to assign pore and throat volumes.  This requires making an assumption about their shapes, since spheres and cubes have different volumes. Let’s assume spherical pores:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To compute the throat volume we need to know not only the diameter but also the length.  Things get a bit nuanced here because of the way that spherical pore bodies and cylindrical throat overlap.  There is a ‘lens’ shaped region of overlap whose volume will be counted twice.  So the following set of models is necessary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.total_volume&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cylinder</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.lens_volume&#39;</span><span class="p">,</span> 
+            <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">lens</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">,</span> 
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">difference</span><span class="p">,</span>
+             <span class="n">props</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;throat.total_volume&#39;</span><span class="p">,</span> <span class="s1">&#39;throat.lens_volume&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="phase">
 <h2>Phase<a class="headerlink" href="#phase" title="Permalink to this heading">#</a></h2>
 <p>Next we create a phase object which contains the thermophysical properties of the invading fluid, such as surface tension. In the case of mercury intrusion, the invading fluid is of course mercury!</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Mercury</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mercury&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hg</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Mercury</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -479,50 +799,178 @@
 <p>To simulate mercury intrusion, we will need to calulate the capillary pressure of the throats in the network. The capillary pressure can be calculated using the Washburn equation as provided below.</p>
 <div class="math notranslate nohighlight">
 \[ P_C = \frac{-2\sigma cos(\theta)}{R_T} \]</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">basic</span></code> collection of physics model already contains the washburn model for capillary pressure so we will add it to the mercury phase object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span>
-<span class="n">hg</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hg</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.entry_pressure&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">capillary_pressure</span><span class="o">.</span><span class="n">washburn</span><span class="p">)</span>
 <span class="n">hg</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[18:28:05] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.diffusive_conductance was not run since the following property is         <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         missing: <span style="color: #008000; text-decoration-color: #008000">'throat.diffusivity'</span>                                                    <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
-</pre>
-</div></div>
 </div>
 <p>The washburn model will fetch the surface tension and contact angle from the mercury phase object while the throat radius is fetched from the network object.</p>
 </section>
 <section id="perform-mercury-intrusion">
 <h2>Perform Mercury Intrusion<a class="headerlink" href="#perform-mercury-intrusion" title="Permalink to this heading">#</a></h2>
-<p>Now that all the required objects and models are setup, we can perform the capillary pressure curve simulation.  OpenPNM contains both InvasionPercolation and OrdinaryPercolation classes. The porosimetry experiment is ordinary percolation with access limitations. This means that a fixed pressure is applied to the invading fluid and all pores and throats that can be penetrated at that pressure are set as <em>possibly</em> invaded, <em>then</em> pores and throats are set to invaded only if they are physically connected to the source of invading fluid directly or though a path of already invading pores and throats.</p>
-<p><strong>FIX: Where is porosimetry class? Since this process is simulated very frequently, OpenPNM includes a class called Porosimetry that is a subclass of OrdinaryPercolation, with several useful methods added. It’s use is illustrated below:</strong></p>
+<p>Now that all the required objects and models are setup, we can perform the capillary pressure curve simulation.  The mercury intrusion experiment is a “drainage” since the wetting fluid (i.e. rarefied air) is being ‘drained’ while the non-wetting fluid is invading.</p>
+<p>When setting the boundary conditions for this simulation all the surface pores should be considered as inlets since the experiment starts with the sample fully surrounded by mercury.  The <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> class has a <code class="docutils literal notranslate"><span class="pre">'pore.surface'</span></code> label which we can use:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
-<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;front&#39;</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">))</span>
 <span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "63be884f40f64c9faf67034b0a8c85fc"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "1d8b9f070a85448cb2fab4b328a84076"}</script></div>
 </div>
-<p>The meaning of this warning message will be analyzed below, but first let’s take a quick look at the result using the built-in plotting method:</p>
+<p>Now let’s compare the simulation to the experimental data:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pc</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="o">*</span><span class="n">pc</span><span class="p">,</span> <span class="s1">&#39;b-o&#39;</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pc_sim</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="o">*</span><span class="n">pc_sim</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc [Pa]&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;S_Hg&#39;</span><span class="p">],</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;experiment&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/42d24d3703147e7dc840974f594ccb23be5419fc7354fcb24ee86c94cc8c4213.png" src="../../_images/42d24d3703147e7dc840974f594ccb23be5419fc7354fcb24ee86c94cc8c4213.png" />
+<img alt="../../_images/e6feb05111353e9899620b9ca0bc7b9d8a10eaff4b4c8742d6b9f7e81bbef8e5.png" src="../../_images/e6feb05111353e9899620b9ca0bc7b9d8a10eaff4b4c8742d6b9f7e81bbef8e5.png" />
 </div>
 </div>
+<p>The agreement is surprizingly good for a first guess.  We probably want to make the throat sizes in the network a little bit larger to shift the curve left.  Recall that to compute the throat sizes we took the minimum size of the two neighboring pores and scaled it by 0.5. Let’s adjust this scale factor.  We could readd a new model over the old one, or just adjust the stored parameters of the current one:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;throat.diameter@all&#39;</span><span class="p">][</span><span class="s1">&#39;factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">hg</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">))</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">pc_sim</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="o">*</span><span class="n">pc_sim</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc [Pa]&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;S_Hg&#39;</span><span class="p">],</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;experiment&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "e2175ed38d0642f0a0298482f75b34e5"}</script><img alt="../../_images/9a7203b011dd65d7e2fce837cc06513e35bb965e68038c954a55cd23064f1e5b.png" src="../../_images/9a7203b011dd65d7e2fce837cc06513e35bb965e68038c954a55cd23064f1e5b.png" />
+</div>
+</div>
+<p>This helped quite a bit, but is still not great.</p>
+<p>The process of adjusting the pore and throat size distributions to match MIP curves has been studied by many people over the years in attempts to automate it.  OpenPNM does not have any automated algorithms for this (at least not at the moment), so we must forge ahead by hand.  The next thing to try would be to shift the pore size distributions to slightly higher values. We can play with the <code class="docutils literal notranslate"><span class="pre">c</span></code> value which is the skewness of the curve, and we can adjust the <code class="docutils literal notranslate"><span class="pre">scale</span></code> which shifts it to higher sizes.</p>
+<p>Let’s plot a new distribution on top of the current values on the network to see how things will change:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">=</span> <span class="n">spst</span><span class="o">.</span><span class="n">weibull_min</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mf">2.2</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">22e-6</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dst</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelrotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Pore Diameter [um]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/791d519b0634e06b1a822091ee37138b6213081903a5fcccfd7e8b3e31d11aa2.png" src="../../_images/791d519b0634e06b1a822091ee37138b6213081903a5fcccfd7e8b3e31d11aa2.png" />
+</div>
+</div>
+<p>Since the new distribution looks like an improvement, let’s add it to the network and repeat:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;pore.diameter@all&#39;</span><span class="p">][</span><span class="s1">&#39;func&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dst</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">hg</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">))</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">pc_sim</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="o">*</span><span class="n">pc_sim</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc [Pa]&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;S_Hg&#39;</span><span class="p">],</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;experiment&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "06b8d04749e24c7eab1beccf32f850fb"}</script><img alt="../../_images/74c9a34f49f89fd5a24507ae77fc4a4ac802e60e7ccf4a14b4f588dbbe98450d.png" src="../../_images/74c9a34f49f89fd5a24507ae77fc4a4ac802e60e7ccf4a14b4f588dbbe98450d.png" />
+</div>
+</div>
+<p>Now teh fit in the low pressure region is nearly perfect. Of course the high pressure region is not fitting at all, but as dicussed by Tsakiroglou and Payatakes in their paper, this sandstone has a dual porosity or microporosity, which is not resolved by the basic network used here.</p>
+</section>
+<section id="check-geometric-consistency">
+<h2>Check Geometric Consistency<a class="headerlink" href="#check-geometric-consistency" title="Permalink to this heading">#</a></h2>
+<p>We used a spacing of 40 um when creating the network, but we have some pores which are greater than 30 um in diameter.  If two of these pores happen to be beside each other, then geometric ‘inconsistencies’ will arise.  For instance, the throat volume might have some negative values:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4.079377537427984e-05
+-1.1974596571409197e-14
+</pre></div>
+</div>
+</div>
+</div>
+<p>To remedy this we can increase the lattice spacing of the network. Instead of creating an entirely new network, this can be done simply by scaling the pore coordinates directly.  We will scale the spacing to 50 um instead of 30 um, by multiplying all the coordinates by 50/30:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">50</span><span class="o">/</span><span class="mi">30</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">hg</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="n">mip</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">Drainage</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">hg</span><span class="p">)</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">set_inlet_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">))</span>
+<span class="n">mip</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">pc_sim</span> <span class="o">=</span> <span class="n">mip</span><span class="o">.</span><span class="n">pc_curve</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="o">*</span><span class="n">pc_sim</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;simulation&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Pc [Pa]&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;S_Hg&#39;</span><span class="p">],</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;experiment&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "b2fcffd3005b4d1a9fe6c547f218dbde"}</script><img alt="../../_images/deaa8bfaa7936044005ecd171453c0ad671e0926741f67e551aca3a71aaaba97.png" src="../../_images/deaa8bfaa7936044005ecd171453c0ad671e0926741f67e551aca3a71aaaba97.png" />
+</div>
+</div>
+<p>The capillary pressure curve was not changed noticeably because the only thing that changed is the throat lengths (not sizes).  This adjustment has fixed the problem of negative throat lengths:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>6.681583689206006e-18
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="additional-calibration-steps">
+<h2>Additional Calibration Steps<a class="headerlink" href="#additional-calibration-steps" title="Permalink to this heading">#</a></h2>
+<p>We could also check the permeability coefficient, formation factor (i.e. tortuosity), and porosity to ensure they also match, but this would require yet more iterating to find a suitable set of pore and throat sizes.</p>
+<p>For instance, in the present case we can find the network porosity using:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="mi">15</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="mf">50e-6</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.15258430635887843
+</pre></div>
+</div>
+</div>
+</div>
+<p>This value is only slightly below the known value of 0.18.  This means the pores are spaced too far apart.  Instead of 50 um spacing, perhaps 48 um would have been better.</p>
 </section>
 </section>
 
