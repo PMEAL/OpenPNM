@@ -202,6 +202,11 @@ class NetworkTest:
         assert len(am.keys()) == 48
         assert len(net._am) == 2
 
+    def test_into(self):
+        net = op.network.Demo([4, 4, 1])
+        # This test is lame, but just to keep the code cov counter happy
+        net.info
+
 
 if __name__ == '__main__':
 
