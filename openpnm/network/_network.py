@@ -823,6 +823,61 @@ class Network(Domain):
         return Pn
 
     @property
+    def info(self):
+        hr = '―' * 78
+        errmsg = '--------- ! --------- ! ---------\n'
+        pad = 45
+        lines = hr + '\n'
+        # ---
+        lines += 'Number of pores | throats: '.ljust(pad)
+        lines += f"{self.Np} | {self.Nt} \n"
+        # ---
+        lines += 'Pore Coordination (min | mean | max): '.ljust(pad)
+        try:
+            x = self['pore.coordination_number']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Pore Diameter (min | mean | max): '.ljust(pad)
+        try:
+            x = self['pore.diameter']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Pore Spacing (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.spacing']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+           lines += errmsg
+        # ---
+        lines += 'Throat Diameter (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.diameter']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Throat Length (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.length']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Throat Volume (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.volume']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += hr
+        print(lines)
+
+    @property
     def conns(self):
         r"""Returns the connectivity matrix of the network."""
         return self['throat.conns']
