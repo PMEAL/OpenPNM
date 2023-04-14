@@ -851,7 +851,7 @@ class Network(Domain):
             x = self['throat.spacing']
             lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
         except KeyError:
-           lines += errmsg
+            lines += errmsg
         # ---
         lines += 'Throat Diameter (min | mean | max): '.ljust(pad)
         try:
