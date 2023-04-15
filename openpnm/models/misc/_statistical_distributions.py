@@ -114,12 +114,12 @@ def normal(network, seeds, mean=None, stddev=None, scale=None, loc=None):
 
 
 @_doctxt
-def generic_distribution(network, seeds, func):
+def generic_distribution(network, seeds, func, **kwargs):
     r"""
-    Accepts an 'rv_frozen' object from the Scipy.stats submodule and returns
+    Accepts an object from the Scipy.stats submodule and returns
     values from the distribution for the given seeds
 
-    This uses the ``ppf`` method of the stats object
+
 
     Parameters
     ----------
@@ -127,11 +127,16 @@ def generic_distribution(network, seeds, func):
     seeds : str (dict key)
         %(dict_blurb) seed
     func : object
-        A 'rv_frozen' object from the scipy.stats library with all of the
-        parameters pre-specified.
+        An object from the scipy.stats library. Can be a 'frozen' object, where all
+        the parameters were specified upon creation, or a handle to an unintialized
+        object. In the latter case the parameters for the distribution should be
+        provided as keyword arguments.
 
     Returns
     -------
+    values : ndarray
+        An ndarray of either Np or Nt length, with values taken from the supplied
+        distribution.
 
     Examples
     --------
@@ -161,6 +166,8 @@ def generic_distribution(network, seeds, func):
        plt.show()
 
     """
+    if hasattr(func, 'freeze'):
+        func = func.freeze(**kwargs)
     seeds = network[seeds]
     value = func.ppf(seeds)
     return value
