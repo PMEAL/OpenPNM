@@ -1,6 +1,6 @@
 import numpy as np
-
 from openpnm.models.geometry import _geodocs
+
 
 __all__ = [
     "spheres_and_cylinders",
@@ -45,7 +45,8 @@ def spheres_and_cylinders(
     Notes
     -----
     The cylindrical throat is assumed to overlap the spherical pore bodies creating
-    a hemispherical cap at the area of intersection.
+    a hemispherical cap at the area of intersection. The length of the cap is
+    assigned to the throat.
 
     """
     L_ctc = _get_L_ctc(network)
