@@ -62,6 +62,7 @@ class Voronoi(Network):
         net, vor = voronoi(points=points,
                            shape=shape,
                            trim=trim,
+                           reflect=reflect,
                            node_prefix='pore',
                            edge_prefix='throat')
         self.update(net)
