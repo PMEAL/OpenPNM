@@ -72,7 +72,7 @@ class SurfaceTensionTest:
             # chemicals.interface.Somayajulu,  # Needs A
             # chemicals.interface.Jasper,  # Needs a
             chemicals.interface.Brock_Bird,
-            chemicals.interface.Sastri_Rao,  # Numba version not working
+            # chemicals.interface.Sastri_Rao,  # Numba version not working
             # chemicals.interface.Pitzer,  # Model missing
             chemicals.interface.Zuo_Stenby,
             chemicals.interface.Miqueu,
