@@ -354,7 +354,7 @@ class InvasionPercolation(Algorithm):
         # self['throat.trapped'][self['throat.residual']] = False
 
 
-@jit
+@jit(nopython=True)
 def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
     Np = len(inv_seq)
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
