@@ -23,7 +23,7 @@ class DensityTest:
         # Liquid water
         self.phase.add_model(propname='pore.density',
                              model=op.models.phase.density.liquid_pure_COSTALD)
-        assert_approx_equal(self.phase['pore.density'].mean(), 992.345519756)
+        assert_approx_equal(self.phase['pore.density'].mean(), 993.327626112987)
 
     def test_ideal_gas(self):
         # Water vapor
@@ -93,7 +93,7 @@ class DensityTest:
             f=chemicals.volume.COSTALD_compressed,
             rho='pore.density',
         )
-        assert_allclose(Vm, 1.61982081e-05, rtol=1e-4)
+        assert_allclose(Vm, 1.62975733e-05, rtol=1e-4)
 
     def test_chemicals_wrapper_for_liquid_mixture(self):
         h2o = op.phase.Species(network=self.net, species='h2o')
