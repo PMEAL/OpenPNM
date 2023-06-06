@@ -57,6 +57,7 @@ class DelaunayVoronoiDual(Network):
         net, vor, tri = voronoi_delaunay_dual(shape=shape,
                                               points=points,
                                               trim=trim,
+                                              reflect=reflect,
                                               node_prefix='pore',
                                               edge_prefix='throat')
         self.update(net)
