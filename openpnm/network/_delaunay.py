@@ -55,6 +55,7 @@ class Delaunay(Network):
         super().__init__(**kwargs)
         net, tri = delaunay(points=points,
                             shape=shape,
+                            reflect=reflect,
                             node_prefix='pore',
                             edge_prefix='throat')
         self.update(net)
