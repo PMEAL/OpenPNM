@@ -67,7 +67,7 @@ class VoronoiTest:
     def test_voronoi_cube_points(self):
         np.random.seed(0)
         pts = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=pts, shape=[1, 1, 1])
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 1], reflect=False)
         assert net.Np > 30
         assert np.all(net.coords[:, -1] != 0.0)
         assert np.all(op.topotools.dimensionality(net) == [True, True, True])

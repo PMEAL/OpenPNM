@@ -30,13 +30,12 @@ class DelaunayVoronoiDual(Network):
         ========== ============================================================
 
     trim : bool, optional
-        If ``True`` (default) then all vertices laying outside the domain will
+        If ``True`` then all vertices laying outside the domain will
         be removed. This is only useful if ``reflect=True``.
     reflect : bool, optional
-        If ``True`` (default) then the base points will be reflected across
+        If ``True`` then the base points will be reflected across
         all the faces of the domain prior to performing the tessellation. This
-        feature is best combined with ``trim=True`` to prevent unreasonably long
-        connections between points on the surfaces.
+        feature is best combined with ``trim=True``.
 
     %(Network.parameters)s
 

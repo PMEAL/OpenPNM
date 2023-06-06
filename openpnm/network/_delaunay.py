@@ -29,7 +29,7 @@ class Delaunay(Network):
         ========== ============================================================
 
     reflect : bool, optional
-        If ``True`` (default) then the base points will be reflected across
+        If ``True`` then the base points will be reflected across
         all the faces of the domain prior to performing the tessellation. This
         feature is best combined with ``trim=True`` to prevent unreasonably long
         connections between points on the surfaces.

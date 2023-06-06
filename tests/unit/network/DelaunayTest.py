@@ -70,6 +70,16 @@ class DelaunayGabrielTest:
         assert np.all(tri.coords[:, -1] != pts[:, -1])
         assert np.all(tri.coords[:, -1] == 0.0)
 
+    def test_delaunay_disk_with_prereflected_points(self):
+        np.random.seed(0)
+        rqz = np.random.rand(50, 3)*np.array([1, 2*np.pi, 1])
+        rqz = op._skgraph.generators.tools.reflect_base_points(rqz.T,
+                                                               domain_size=[1, 1])
+        pts = np.vstack(op._skgraph.tools.cyl2cart(*rqz)).T
+        tri = op.network.Delaunay(points=pts, shape=[1, 1], reflect=False, trim=True)
+        assert tri.coords.shape == (50, 3)
+        assert_array_almost_equal(tri.coords, pts[:50, :], decimal=15)
+
     def test_delaunay_disk_with_3D_points(self):
         np.random.seed(0)
         rqz = np.random.rand(50, 3)*np.array([1, 2*np.pi, 1])
