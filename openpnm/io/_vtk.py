@@ -101,7 +101,7 @@ def project_to_vtk(project, filename="",
         if array.dtype == "O":
             logger.warning(key + " has dtype object," + " will not write to file")
         else:
-            if array.dtype == np.bool:
+            if array.dtype == bool:
                 array = array.astype(int)
             if np.any(np.isnan(array)):
                 if fill_nans is None:

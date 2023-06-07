@@ -30,10 +30,10 @@ class Voronoi(Network):
         ========== ============================================================
 
     trim : bool, optional
-        If ``True`` (default) then all Voronoi vertices laying outside the domain
+        If ``True`` then all Voronoi vertices laying outside the domain
         will be removed.
     reflect : bool, optional
-        If ``True`` (default) then the base points will be reflected across
+        If ``True`` then the base points will be reflected across
         all the faces of the domain prior to performing the tessellation. This
         feature is best combined with ``trim=True`` to make nice flat faces
         on all sides of the domain.
@@ -57,11 +57,12 @@ class Voronoi(Network):
 
     """
 
-    def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
+    def __init__(self, shape, points, trim=False, reflect=False, **kwargs):
         super().__init__(**kwargs)
         net, vor = voronoi(points=points,
                            shape=shape,
                            trim=trim,
+                           reflect=reflect,
                            node_prefix='pore',
                            edge_prefix='throat')
         self.update(net)
