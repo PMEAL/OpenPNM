@@ -60,6 +60,7 @@ class DelaunayVoronoiDual(Network):
                                               node_prefix='pore',
                                               edge_prefix='throat')
         self.update(net)
+        self._post_init()
         self.vor = vor
         self.tri = tri
 

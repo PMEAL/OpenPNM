@@ -1,5 +1,6 @@
 from openpnm.network import Network
 from openpnm.utils import Docorator
+from openpnm.topotools import label_faces
 from openpnm._skgraph.generators import voronoi
 
 
@@ -57,7 +58,7 @@ class Voronoi(Network):
 
     """
 
-    def __init__(self, shape, points, trim=False, reflect=False, **kwargs):
+    def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
         super().__init__(**kwargs)
         net, vor = voronoi(points=points,
                            shape=shape,
@@ -66,4 +67,5 @@ class Voronoi(Network):
                            node_prefix='pore',
                            edge_prefix='throat')
         self.update(net)
+        self._post_init()
         self.vor = vor

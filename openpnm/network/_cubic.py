@@ -63,6 +63,7 @@ class Cubic(Network):
                                     connectivity=connectivity,
                                     node_prefix='pore', edge_prefix='throat')
         self.update(net)
+        self._post_init()
         self["pore.surface"] = skgr.tools.find_surface_nodes_cubic(self)
         Ps = self["pore.surface"]
         self["throat.surface"] = np.all(Ps[self["throat.conns"]], axis=1)

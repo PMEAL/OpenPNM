@@ -113,6 +113,13 @@ class Network(Domain):
                        regen_mode='deferred',
                        domain='all')
 
+    def _post_init(self, *args, **kwargs):
+        # A collection of functions to run after initialization of a network
+        topotools.label_faces(self, label=None)
+        drop = ['pore.left', 'pore.right', 'pore.front', 'pore.back',
+                'pore.bottom', 'pore.top']
+        [self.pop(item) for item in list(self.keys()) if item in drop]
+
     def __setitem__(self, key, value):
         if key == 'throat.conns':
             if np.any(value[:, 0] > value[:, 1]):

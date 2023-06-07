@@ -60,4 +60,5 @@ class Delaunay(Network):
                             node_prefix='pore',
                             edge_prefix='throat')
         self.update(net)
+        self._post_init()
         self.tri = tri
