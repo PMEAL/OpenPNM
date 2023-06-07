@@ -360,8 +360,8 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
     cluster = -np.ones(Np, dtype=np.int_)
-    trapped_pores = np.zeros(Np, dtype=np.bool_)
-    trapped_clusters = np.zeros(Np, dtype=np.bool_)
+    trapped_pores = np.zeros(Np, dtype=bool)
+    trapped_clusters = np.zeros(Np, dtype=bool)
     # cluster_map = qupc_initialize(Np)
     cluster_map = np.arange(Np, dtype=np.int_)
     next_cluster_num = 0
