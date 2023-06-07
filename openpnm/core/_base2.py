@@ -97,6 +97,9 @@ class Base2(dict):
             self._params[key] = value
             return
 
+        if not (key.startswith('pore.') or key.startswith('throat.')):
+            raise Exception("All dict names must start with pore, throat, or param")
+
         # Intercept @ symbol
         if '@' in key:
             element, prop = key.split('@')[0].split('.', 1)
