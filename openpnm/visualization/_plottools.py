@@ -3,6 +3,10 @@ import openpnm as op
 from tqdm.auto import tqdm
 from matplotlib.pyplot import cm
 import matplotlib.pyplot as plt
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -147,9 +151,15 @@ def plot_connections(network,
     if color_by is not None:
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
+        if not np.all(np.isfinite(color_by)):
+            color_by[~np.isfinite(color_by)] = 0
+            logger.warning('nans or infs found in color_by array, setting to 0')
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
+        if not np.all(np.isfinite(size_by)):
+            size_by[~np.isfinite(size_by)] = 0
+            logger.warning('nans or infs found in size_by array, setting to 0')
         linewidth = size_by / size_by.max() * linewidth
 
     if ThreeD:
@@ -297,8 +307,14 @@ def plot_coordinates(network,
         markersize = kwargs.pop('s')
     if color_by is not None:
         color_by = color_by[Ps]
+        if not np.all(np.isfinite(color_by)):
+            color_by[~np.isfinite(color_by)] = 0
+            logger.warning('nans or infs found in color_by array, setting to 0')
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
     if size_by is not None:
+        if not np.all(np.isfinite(size_by)):
+            size_by[~np.isfinite(size_by)] = 0
+            logger.warning('nans or infs found in size_by array, setting to 0')
         markersize = size_by / size_by.max() * markersize
 
     if ThreeD:
