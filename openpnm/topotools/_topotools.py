@@ -341,10 +341,13 @@ def label_faces(network, tol=0.0, label='surface'):
         ``find_surface_pores``.
 
     """
-    label = label.split('.', 1)[-1]
-    if 'pore.'+label not in network.labels():
-        find_surface_pores(network, label=label)
-    Psurf = network['pore.'+label]
+    if label is not None:
+        label = label.split('.', 1)[-1]
+        if 'pore.'+label not in network.labels():
+            find_surface_pores(network, label=label)
+        Psurf = network['pore.'+label]
+    else:
+        Psurf = True  # So it will "do nothing" below
     crds = network['pore.coords']
     xmin, xmax = np.amin(crds[:, 0]), np.amax(crds[:, 0])
     xspan = xmax - xmin
@@ -355,13 +358,19 @@ def label_faces(network, tol=0.0, label='surface'):
     dims = dimensionality(network)
     if dims[0]:
         network['pore.left'] = (crds[:, 0] <= (xmin + tol*xspan)) * Psurf
+        network['pore.xmin'] = np.copy(network['pore.left'])
         network['pore.right'] = (crds[:, 0] >= (xmax - tol*xspan)) * Psurf
+        network['pore.xmax'] = np.copy(network['pore.right'])
     if dims[1]:
         network['pore.front'] = (crds[:, 1] <= (ymin + tol*yspan)) * Psurf
+        network['pore.ymin'] = np.copy(network['pore.front'])
         network['pore.back'] = (crds[:, 1] >= (ymax - tol*yspan)) * Psurf
+        network['pore.ymax'] = np.copy(network['pore.back'])
     if dims[2]:
-        network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
         network['pore.bottom'] = (crds[:, 2] <= (zmin + tol*zspan)) * Psurf
+        network['pore.zmin'] = np.copy(network['pore.bottom'])
+        network['pore.top'] = (crds[:, 2] >= (zmax - tol*zspan)) * Psurf
+        network['pore.zmax'] = np.copy(network['pore.top'])
 
 
 def find_surface_pores(network, markers=None, label='surface'):
