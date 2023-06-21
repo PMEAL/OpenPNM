@@ -17,7 +17,8 @@ class BravaisTest:
         assert fcc.num_pores('pore.corner') == 27
         assert fcc.num_pores('pore.face') == 36
         assert fcc.num_throats('throat.corner_to_corner') == 54
-        assert fcc.num_throats('throat.corner_to_face') == 240
+        assert fcc.num_throats('throat.face_to_face') == 96
+        assert fcc.num_throats('throat.corner_to_face') == 144
 
     def test_fcc_add_boundary_pores(self):
         fcc = op.network.FaceCenteredCubic(shape=[3, 3, 3])
