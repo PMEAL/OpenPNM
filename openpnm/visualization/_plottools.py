@@ -208,7 +208,9 @@ def plot_coordinates(network,
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']). These
-        values are normalized by scaled by ``markersize``.
+        values are normalized by scaled by ``markersize``.  Note that this controls
+        the marker *area*, so if you want the markers to be proportional to diameter
+        you should do `size_by=net['pore.diameter']**2`.
     color_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']).
     cmap : str or cmap object
