@@ -208,7 +208,9 @@ def plot_coordinates(network,
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']). These
-        values are normalized by scaled by ``markersize``.
+        values are normalized by scaled by ``markersize``.  Note that this controls
+        the marker *area*, so if you want the markers to be proportional to diameter
+        you should do `size_by=net['pore.diameter']**2`.
     color_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']).
     cmap : str or cmap object
@@ -469,6 +471,8 @@ def plot_networkx(network,
 
 
 def plot_tutorial(network,
+                  pore_labels=None,
+                  throat_labels=None,
                   font_size=12,
                   line_width=2,
                   node_color='b',
@@ -482,6 +486,12 @@ def plot_tutorial(network,
     network : Network
         The network to plot, should be 2D, since the z-coordinate will be
         ignored.
+    pore_labels : array_like
+        A list of values to use for labeling the pores. If not provided then pore
+        index is used.
+    throat_labels : array_like
+        A list of values to use for labeling the throat. If not provided then throat
+        index is used.
     font_size : int
         Size of font to use for labels.
     line_width : int
@@ -504,8 +514,15 @@ def plot_tutorial(network,
 
     G = network_to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
-    labels = {i: i for i in network.Ps}
-    edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
+    if pore_labels is None:
+        labels = {i: i for i in network.Ps}
+    else:
+        labels = {i: pore_labels[i] for i in network.Ps}
+    if throat_labels is None:
+        edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
+    else:
+        edge_labels = {tuple(network['throat.conns'][i, :]): throat_labels[i]
+                       for i in network.Ts}
 
     gplot = nx.draw_networkx_nodes(G, pos,
                                    node_size=node_size,

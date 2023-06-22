@@ -50,20 +50,19 @@ class FaceCenteredCubic(Network):
         net = fcc(shape=shape, spacing=spacing,
                   node_prefix='pore', edge_prefix='throat')
         self.update(net)
-        # Deal with labels
-        Ts = self.find_neighbor_throats(pores=self.pores('corner'),
-                                        mode='xnor')
-        self['throat.corner_to_corner'] = False
-        self['throat.corner_to_corner'][Ts] = True
-        Ts = self.find_neighbor_throats(pores=self.pores('face'))
-        self['throat.corner_to_face'] = False
-        self['throat.corner_to_face'][Ts] = True
+        # Add labels
+        Ts1 = np.all(self['pore.corner'][self.conns], axis=1)
+        self['throat.corner_to_corner'] = Ts1
+        Ts2 = np.all(self['pore.face'][self.conns], axis=1)
+        self['throat.face_to_face'] = Ts2
+        self['throat.corner_to_face'] = ~(Ts1 + Ts2)
 
-        # Finally scale network to specified spacing
         topotools.label_faces(self)
-        Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
+        Ps = self.pores(['xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'])
         Ps = self.to_mask(pores=Ps)
         self['pore.surface'] = Ps
+
+        # Finally scale network to specified spacing
         self['pore.coords'] *= np.array(spacing)
 
     def add_boundary_pores(self, labels, spacing):

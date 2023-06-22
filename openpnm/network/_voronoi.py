@@ -38,6 +38,9 @@ class Voronoi(Network):
         all the faces of the domain prior to performing the tessellation. This
         feature is best combined with ``trim=True`` to make nice flat faces
         on all sides of the domain.
+    relaxation : int
+        The number of time to iteratively relax the base points by moving them to
+        the centroid of their respective Voronoi hulls. The default it 0.
 
     %(Network.parameters)s
 
@@ -58,12 +61,21 @@ class Voronoi(Network):
 
     """
 
-    def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
+    def __init__(
+        self,
+        shape,
+        points,
+        trim=True,
+        reflect=True,
+        relaxation=0,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         net, vor = voronoi(points=points,
                            shape=shape,
                            trim=trim,
                            reflect=reflect,
+                           relaxation=relaxation,
                            node_prefix='pore',
                            edge_prefix='throat')
         self.update(net)
