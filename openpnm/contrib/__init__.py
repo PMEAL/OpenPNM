@@ -11,3 +11,4 @@ removed.
 
 from ._transient_multiphysics import *
 from ._multiphase import *
+from ._generic_multiphysics import *
