@@ -37,6 +37,8 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
                          neighboring throats
             'mean'       Returns the value of the mean property of the
                          neighboring throats
+            'sum'        Returns the value of the sum property of the
+                         neighboring throats
             ===========  =====================================================
 
     Returns
@@ -54,12 +56,12 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
             data[nans] = np.inf
         values = np.ones((network.Np, ))*np.inf
         np.minimum.at(values, im.row, data[im.col])
-    if mode == 'max':
+    elif mode == 'max':
         if ignore_nans:
             data[nans] = -np.inf
         values = np.ones((network.Np, ))*-np.inf
         np.maximum.at(values, im.row, data[im.col])
-    if mode == 'mean':
+    elif mode == 'mean':
         if ignore_nans:
             data[nans] = 0
         values = np.zeros((network.Np, ))
@@ -69,6 +71,11 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         if ignore_nans:
             np.subtract.at(counts, im.row, nans[im.col])
         values = values/counts
+    elif mode == 'sum':
+        if ignore_nans:
+            data[nans] = 0
+        values = np.zeros((network.Np, ))
+        np.add.at(values, im.row, data[im.col])
     return values
 
 
@@ -98,6 +105,8 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
                          neighboring pores
             'mean'       Returns the value of the mean property of the
                          neighboring pores
+            'sum'        Returns the value of the sum property of the
+                         neighboring pores
             ===========  =====================================================
 
     ignore_nans : bool (default is ``True``)
@@ -118,10 +127,12 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
     try:  # If pvalues is not empty
         if mode == 'min':
             value = np.amin(pvalues, axis=1)
-        if mode == 'max':
+        elif mode == 'max':
             value = np.amax(pvalues, axis=1)
-        if mode == 'mean':
+        elif mode == 'mean':
             value = np.mean(pvalues, axis=1)
+        elif mode == 'sum':
+            value = np.sum(pvalues, axis=1)
     except np.AxisError:  # Handle case of empty pvalues
         value = []
     return np.array(value)
