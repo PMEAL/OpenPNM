@@ -25,7 +25,6 @@ simulations.
    :maxdepth: 0
 
    installation
-   basic_usage
    modules/index
    _examples/index
 
