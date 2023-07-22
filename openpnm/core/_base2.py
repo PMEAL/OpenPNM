@@ -220,9 +220,9 @@ class Base2(dict):
         mode : str
             Controls which things are to be deleted. Options are:
 
-            ----------- ------------------------------------------------------------
+            =========== ============================================================
             `mode`        Description
-            ----------- ------------------------------------------------------------
+            =========== ============================================================
             'props'     Deletes all pore and throat properties (i.e numerical data)
                         in the object's dictionary (except 'pore.coords' and
                         'throat.conns' if it is a network object).
@@ -230,7 +230,7 @@ class Base2(dict):
                         dictionary.
             'models'    Delete are pore and throat properties that were produced
                         by a pore-scale model.
-            ----------- ------------------------------------------------------------
+            =========== ============================================================
 
         """
         if mode is None:
