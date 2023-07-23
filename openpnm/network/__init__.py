@@ -1,3 +1,11 @@
+r"""
+Network
+=======
+
+Contains network generators and the basic Network class
+
+"""
+
 from ._network import Network
 from ._cubic import Cubic
 from ._demo import Demo
