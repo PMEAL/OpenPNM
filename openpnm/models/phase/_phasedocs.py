@@ -1,6 +1,5 @@
 from matplotlib.docstring import Substitution
 
-
 __all__ = [
     '_phasedocs',
 ]

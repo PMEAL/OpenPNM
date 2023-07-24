@@ -117,9 +117,9 @@ def liquid_mixture_wsd(
     Parameters
     ----------
     %(phase)s
-    %(sigmas)s
     %(rhos)s
     %(MWs)s
+    %(sigmas)s
 
     Returns
     -------
