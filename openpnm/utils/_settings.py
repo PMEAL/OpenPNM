@@ -1,7 +1,7 @@
 import logging
 from copy import deepcopy
-from openpnm.utils import PrintableDict
 
+from openpnm.utils import PrintableDict
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ __all__ = [
 
 
 class TypedMixin:
-    """Brief explanation of 'TypedMixin'"""
+    """Based class for enforcing types on lists and sets."""
 
     def __init__(self, iterable=[], types=[]):
         self._types = types
@@ -45,7 +45,7 @@ class TypedMixin:
 
 
 class TypedSet(TypedMixin, set):
-    """Brief explanation of 'TypedSet'"""
+    """A set that enforces all elements have the same type."""
 
     def add(self, item):
         self._check_type(item)
@@ -53,11 +53,7 @@ class TypedSet(TypedMixin, set):
 
 
 class TypedList(TypedMixin, list):
-    """
-    A list that enforces all elements have the same type.
-
-    The allowed type or types are set during
-    """
+    """A list that enforces all elements have the same type."""
 
     def __setitem__(self, ind, value):
         self._check_type(value)

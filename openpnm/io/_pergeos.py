@@ -1,8 +1,9 @@
 import logging
+
 import numpy as np
+
 from openpnm.io import _parse_filename
 from openpnm.network import Network
-
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +115,7 @@ def network_to_pergeos(network, filename=''):
 
 def network_from_pergeos(filename):
     r"""
+    Loads a network from a PerGeos file.
 
     Notes
     -----

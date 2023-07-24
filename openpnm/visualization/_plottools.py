@@ -1,10 +1,11 @@
-import numpy as np
-import openpnm as op
-from tqdm.auto import tqdm
-from matplotlib.pyplot import cm
-import matplotlib.pyplot as plt
 import logging
 
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.pyplot import cm
+from tqdm.auto import tqdm
+
+import openpnm as op
 
 logger = logging.getLogger(__name__)
 
@@ -113,9 +114,10 @@ def plot_connections(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from matplotlib import colors as mcolors
-    from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
+    from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
     from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -272,6 +274,7 @@ def plot_coordinates(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from mpl_toolkits.mplot3d import Axes3D
+
     from openpnm.topotools import dimensionality
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
@@ -383,7 +386,7 @@ def plot_networkx(network,
                   ax=None,
                   alpha=1.0):  # pragma: no cover
     r"""
-    Creates a pretty 2d plot for 2d OpenPNM networks.
+    Creates a pretty 2D plot for 2D OpenPNM networks.
 
     Parameters
     ----------
@@ -404,7 +407,8 @@ def plot_networkx(network,
     """
     import matplotlib.pyplot as plt
     from matplotlib.collections import PathCollection
-    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
+    from networkx import Graph, draw_networkx_edges, draw_networkx_nodes
+
     from openpnm.topotools import dimensionality
 
     dims = dimensionality(network)
@@ -508,8 +512,9 @@ def plot_tutorial(network,
     g : NetworkX plot object
 
     """
-    import networkx as nx
     import matplotlib.pyplot as plt
+    import networkx as nx
+
     from openpnm.io import network_to_networkx
 
     G = network_to_networkx(network=network)
@@ -704,8 +709,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     solid phase, pores, and throats respectively.
 
     """
-    from skimage.morphology import cube, ball
-    from porespy.tools import overlay, insert_cylinder
+    from porespy.tools import insert_cylinder, overlay
+    from skimage.morphology import ball, cube
     xyz = network["pore.coords"]
     cn = network["throat.conns"]
 
@@ -847,6 +852,7 @@ def plot_vispy(
     bgcolor='grey',
 ):
     r"""
+    Creates a pretty network plot using VisPy.
 
     Parameters
     ----------

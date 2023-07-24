@@ -1,14 +1,21 @@
-import numpy as np
 import logging
-from openpnm.phase import Phase
-from openpnm.models.phase.mixtures import mole_summation
-from openpnm.models.collections.phase import standard_liquid_mixture
-from openpnm.models.collections.phase import standard_gas_mixture
-from openpnm.models.collections.phase import binary_gas_mixture
-from openpnm.utils import HealthDict
-from openpnm.utils import Docorator, Workspace
-from openpnm.utils import get_printable_props, get_printable_labels
 
+import numpy as np
+
+from openpnm.models.collections.phase import (
+    binary_gas_mixture,
+    standard_gas_mixture,
+    standard_liquid_mixture,
+)
+from openpnm.models.phase.mixtures import mole_summation
+from openpnm.phase import Phase
+from openpnm.utils import (
+    Docorator,
+    HealthDict,
+    Workspace,
+    get_printable_labels,
+    get_printable_props,
+)
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
@@ -344,7 +351,7 @@ class GasMixture(Mixture):
 
 class BinaryGas(GasMixture):
     r"""
-    A `GasMixture` class that has a predefined set of models for computing the
+    A ``GasMixture`` class that has a predefined set of models for computing the
     properties of the mixture as a function of composition.
 
     The number of components is capped at 2 (i.e. binary) since the calculation
@@ -374,11 +381,11 @@ class BinaryGas(GasMixture):
 
 class StandardLiquidMixture(LiquidMixture):
     r"""
-    A `LiquidMixture` class that also has a predefined suite of models for
+    A ``LiquidMixture`` class that also has a predefined suite of models for
     computing the properties of the mixture as a function of composition.
 
     The models are taken from the `chemicals` package and can be viewed with
-    `print(liq_mix.models)`, where `liq_mix` is an instance of this class.
+    ``print(liq_mix.models)``, where `liq_mix` is an instance of this class.
     """
 
     def __init__(self, *args, **kwargs):
@@ -390,11 +397,11 @@ class StandardLiquidMixture(LiquidMixture):
 
 class StandardGasMixture(GasMixture):
     r"""
-    A `GasMixture` class that also has a predefined suite of models for
+    A ``GasMixture`` class that also has a predefined suite of models for
     computing the properties of the mixture as a function of composition.
 
     The models are taken from the `chemicals` package and can be viewed with
-    `print(gas_mix.models)`, where `gas_mix` is an instance of this class.
+    ``print(gas_mix.models)``, where `gas_mix` is an instance of this class.
     """
 
     def __init__(self, *args, **kwargs):

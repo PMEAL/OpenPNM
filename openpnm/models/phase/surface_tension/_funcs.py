@@ -1,6 +1,6 @@
 import numpy as np
-from openpnm.models.phase import _phasedocs
 
+from openpnm.models.phase import _phasedocs
 
 __all__ = [
     "water_correlation",
@@ -123,6 +123,8 @@ def liquid_mixture_wsd(
 
     Returns
     -------
+    sigma : ndarray
+        A numpy ndarray containing surface tension values
 
     References
     ----------

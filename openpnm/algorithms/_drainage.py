@@ -1,14 +1,15 @@
+from collections import namedtuple
+
 import numpy as np
 from tqdm.auto import tqdm
-from collections import namedtuple
-from openpnm.algorithms import Algorithm
-from openpnm.utils import Docorator, TypedSet
+
 from openpnm._skgraph.simulations import (
     bond_percolation,
-    site_percolation,
     find_connected_clusters,
+    site_percolation,
 )
-
+from openpnm.algorithms import Algorithm
+from openpnm.utils import Docorator, TypedSet
 
 docstr = Docorator()
 
@@ -41,6 +42,7 @@ class DrainageSettings:
 
 
 class Drainage(Algorithm):
+    """A class to simulate drainage."""
 
     def __init__(self, phase, name='drainage_?', **kwargs):
         super().__init__(name=name, **kwargs)
@@ -273,8 +275,9 @@ class Drainage(Algorithm):
 # %%
 # def run_examples():
 if __name__ == '__main__':
-    import openpnm as op
     import matplotlib.pyplot as plt
+
+    import openpnm as op
     plt.rcParams['figure.facecolor'] = 'darkgrey'
     plt.rcParams['axes.facecolor'] = 'grey'
 
