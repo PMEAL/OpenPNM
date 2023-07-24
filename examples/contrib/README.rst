@@ -1,4 +1,8 @@
-# Contibuted Examples
+
+:orphan:
+
+Contibuted Examples
+-------------------
 
 This folder contains code that has been contributed by a user (or developer) that is not quite ready to be included in OpenPNM permanently, but is worth including in the repository so it can be accessible via Github.  
 
