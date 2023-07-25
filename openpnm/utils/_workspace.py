@@ -49,13 +49,13 @@ class WorkspaceSettings(SettingsAttr):
     def loglevel(self, value):
         if isinstance(value, str):
             options = {
-                "TRACE" : 5,
-                "DEBUG" : 10,
-                "INFO" : 20,
-                "SUCESS" : 25,
-                "WARNING" : 30,
-                "ERROR" : 40,
-                "CRITICAL" : 50
+                "TRACE": 5,
+                "DEBUG": 10,
+                "INFO": 20,
+                "SUCESS": 25,
+                "WARNING": 30,
+                "ERROR": 40,
+                "CRITICAL": 50
             }
             value = options[value]
         self._loglevel = value
