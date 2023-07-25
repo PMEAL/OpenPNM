@@ -9,8 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 def network_to_pergeos(network, filename=''):
-    r"""
-    """
     # avoid printing truncated array
     np.set_printoptions(threshold=np.inf)
 

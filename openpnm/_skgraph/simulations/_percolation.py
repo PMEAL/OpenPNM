@@ -1,9 +1,10 @@
+from collections import namedtuple
+
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from collections import namedtuple
-from openpnm._skgraph.operations import split_edges
 
+from openpnm._skgraph.operations import split_edges
 
 __all__ = [
     'trim_disconnected_clusters',
@@ -116,8 +117,6 @@ def mixed_percolation(
     occupied_sites,
     occupied_bonds
 ):  # pragma: no cover
-    r"""
-    """
     new_conns = split_edges(conns)[0]
     new_sites = np.hstack((occupied_sites, occupied_bonds))
     s, b = site_percolation(conns=new_conns, occupied_sites=new_sites)
