@@ -196,6 +196,8 @@ class Base2(dict):
                 super().__delitem__(f'{key}.{item}')
 
     def pop(self, *args):
+        r"""
+        """
         v = super().pop(*args)
         if v is None:
             try:
@@ -209,6 +211,28 @@ class Base2(dict):
         return v
 
     def clear(self, mode=None):
+        r"""
+        Clears or deletes certain things from object. If no arguments are provided
+        it defaults to the normal `dict` behavior.
+
+        Parameters
+        ----------
+        mode : str
+            Controls which things are to be deleted. Options are:
+
+            =========== ============================================================
+            `mode`        Description
+            =========== ============================================================
+            'props'     Deletes all pore and throat properties (i.e numerical data)
+                        in the object's dictionary (except 'pore.coords' and
+                        'throat.conns' if it is a network object).
+            'labels'    Deletes all labels (i.e. boolean data) in the object's
+                        dictionary.
+            'models'    Delete are pore and throat properties that were produced
+                        by a pore-scale model.
+            =========== ============================================================
+
+        """
         if mode is None:
             super().clear()
         else:
@@ -312,10 +336,20 @@ class Base2(dict):
 
     @property
     def network(self):
+        r"""
+        Shortcut to retrieve a handle to the network object associated with the
+        calling object
+        """
         return self.project.network
 
     @property
     def params(self):
+        r"""
+        This attribute stores 'scalar' data that can be used by pore-scale models.
+        For instance, if a model calls for `temperature` you can specify
+        `pore.temperature` if every pore might have a different value, or
+        `param.temperature` if a single value prevails everywhere.
+        """
         return self._params
 
     def _count(self, element):
@@ -336,18 +370,30 @@ class Base2(dict):
 
     @property
     def Nt(self):
+        r"""
+        Shortcut to retrieve the number of throats in the domain
+        """
         return self._count('throat')
 
     @property
     def Np(self):
+        r"""
+        Shortcut to retrieve the number of pores in the domain
+        """
         return self._count('pore')
 
     @property
     def Ts(self):
+        r"""
+        Shortcut to retrieve the indices of *all* throats
+        """
         return np.arange(self._count('throat'))
 
     @property
     def Ps(self):
+        r"""
+        Shortcut to retrieve the indices of *all* pores
+        """
         return np.arange(self._count('pore'))
 
     def _tomask(self, element, indices):

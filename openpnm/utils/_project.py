@@ -1,12 +1,13 @@
-import re
-import pickle
 import logging
+import pickle
+import re
 import uuid
-import numpy as np
 from copy import deepcopy
 from datetime import datetime
-from openpnm.utils import Workspace, SettingsAttr
 
+import numpy as np
+
+from openpnm.utils import SettingsAttr, Workspace
 
 ws = Workspace()
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ __all__ = [
 
 
 class SimpleList:
+    """A simple list class that prevents duplicates, and more!"""
     def __init__(self, data=None):
         if (data is not None):
             self._list = list(data)

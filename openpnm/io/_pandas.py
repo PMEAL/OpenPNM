@@ -1,10 +1,12 @@
 import numpy as np
 from pandas import DataFrame
+
 from openpnm.io import project_to_dict
-from openpnm.utils import sanitize_dict, Project
+from openpnm.utils import Project, sanitize_dict
 
 
 def network_to_pandas(network, join=False, delim='.'):
+    """Converts network data to a Pandas DataFrame."""
     proj = Project()
     proj.append(network)
     # Initialize pore and throat data dictionary using Dict class

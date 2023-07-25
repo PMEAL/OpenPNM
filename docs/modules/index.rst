@@ -20,4 +20,5 @@ Module Reference
       openpnm.algorithms
       openpnm.topotools
       openpnm.io
-      openpnm.metrics
+      openpnm.contrib
+      openpnm.visualization
