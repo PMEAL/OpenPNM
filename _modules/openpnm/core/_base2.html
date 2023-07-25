@@ -435,7 +435,7 @@ document.write(`
     <span class="n">default_domain</span> <span class="o">=</span> <span class="s1">&#39;domain_1&#39;</span>
 
 
-<div class="viewcode-block" id="Base2"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.html#openpnm.core.Base2">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Base&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<div class="viewcode-block" id="Base2"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.html#openpnm.algorithms.Base2">[docs]</a><span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Base&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span> <span class="nc">Base2</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -586,7 +586,7 @@ document.write(`
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Base2.pop"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.pop.html#openpnm.core.Base2.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.pop"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.pop.html#openpnm.algorithms.Base2.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">v</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
@@ -601,7 +601,7 @@ document.write(`
                 <span class="k">pass</span>
         <span class="k">return</span> <span class="n">v</span></div>
 
-<div class="viewcode-block" id="Base2.clear"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.clear.html#openpnm.core.Base2.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.clear"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.clear.html#openpnm.algorithms.Base2.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Clears or deletes certain things from object. If no arguments are provided</span>
 <span class="sd">        it defaults to the normal `dict` behavior.</span>
@@ -641,7 +641,7 @@ document.write(`
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Base2.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.keys.html#openpnm.core.Base2.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.keys"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.keys.html#openpnm.algorithms.Base2.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        An overloaded version of ``keys`` that optionally accepts a ``mode``</span>
 
@@ -790,7 +790,7 @@ document.write(`
     <span class="k">def</span> <span class="nf">_tomask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">element</span><span class="o">+</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">indices</span><span class="p">})</span>
 
-<div class="viewcode-block" id="Base2.to_mask"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.to_mask.html#openpnm.core.Base2.to_mask">[docs]</a>    <span class="k">def</span> <span class="nf">to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.to_mask"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.to_mask.html#openpnm.algorithms.Base2.to_mask">[docs]</a>    <span class="k">def</span> <span class="nf">to_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a boolean mask with `True` values in the given locations</span>
 
@@ -822,7 +822,7 @@ document.write(`
         <span class="n">mask</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">mask</span></div>
 
-<div class="viewcode-block" id="Base2.to_indices"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.to_indices.html#openpnm.core.Base2.to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">to_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.to_indices"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.to_indices.html#openpnm.algorithms.Base2.to_indices">[docs]</a>    <span class="k">def</span> <span class="nf">to_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a boolean mask to pore or throat indices</span>
 
@@ -848,7 +848,7 @@ document.write(`
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Mask must be either Nt or Np long&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Base2.props"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.props.html#openpnm.core.Base2.props">[docs]</a>    <span class="k">def</span> <span class="nf">props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]):</span>
+<div class="viewcode-block" id="Base2.props"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.props.html#openpnm.algorithms.Base2.props">[docs]</a>    <span class="k">def</span> <span class="nf">props</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pore&#39;</span><span class="p">,</span> <span class="s1">&#39;throat&#39;</span><span class="p">]):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves a list of keys that contain numerical data (i.e. &quot;properties&quot;)</span>
 
@@ -877,7 +877,7 @@ document.write(`
         <span class="n">props</span> <span class="o">=</span> <span class="n">PrintableList</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">props</span></div>
 
-<div class="viewcode-block" id="Base2.interpolate_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.interpolate_data.html#openpnm.core.Base2.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.interpolate_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.interpolate_data.html#openpnm.algorithms.Base2.interpolate_data">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates an array of the requested pore/throat data by interpolating</span>
 <span class="sd">        the neighboring throat/pore data.</span>
@@ -910,7 +910,7 @@ document.write(`
             <span class="n">values</span> <span class="o">=</span> <span class="n">from_neighbor_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;throat.&#39;</span><span class="o">+</span><span class="n">prop</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">values</span></div>
 
-<div class="viewcode-block" id="Base2.get_conduit_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.get_conduit_data.html#openpnm.core.Base2.get_conduit_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_conduit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
+<div class="viewcode-block" id="Base2.get_conduit_data"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Base2.get_conduit_data.html#openpnm.algorithms.Base2.get_conduit_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_conduit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">propname</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetches an Nt-by-3 array of the requested property</span>
 
@@ -967,7 +967,7 @@ document.write(`
         <span class="k">return</span> <span class="n">temp</span></div>
 
 
-<div class="viewcode-block" id="Domain"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Domain.html#openpnm.core.Domain">[docs]</a><span class="k">class</span> <span class="nc">Domain</span><span class="p">(</span><span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ModelsMixin2</span><span class="p">,</span> <span class="n">Base2</span><span class="p">):</span>
+<div class="viewcode-block" id="Domain"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.Domain.html#openpnm.algorithms.Domain">[docs]</a><span class="k">class</span> <span class="nc">Domain</span><span class="p">(</span><span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ModelsMixin2</span><span class="p">,</span> <span class="n">Base2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The main class used for Network, Phase and Algorithm objects.</span>
 

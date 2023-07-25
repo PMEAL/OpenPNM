@@ -399,7 +399,7 @@ document.write(`
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="ParserMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ParserMixin.html#openpnm.core.ParserMixin">[docs]</a><span class="k">class</span> <span class="nc">ParserMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="ParserMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.ParserMixin.html#openpnm.algorithms.ParserMixin">[docs]</a><span class="k">class</span> <span class="nc">ParserMixin</span><span class="p">:</span>
 
     <span class="k">def</span> <span class="nf">_parse_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -573,7 +573,7 @@ document.write(`
         <span class="k">return</span> <span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">propname</span></div>
 
 
-<div class="viewcode-block" id="LabelMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.html#openpnm.core.LabelMixin">[docs]</a><span class="k">class</span> <span class="nc">LabelMixin</span><span class="p">:</span>
+<div class="viewcode-block" id="LabelMixin"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.html#openpnm.algorithms.LabelMixin">[docs]</a><span class="k">class</span> <span class="nc">LabelMixin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;r</span>
 <span class="sd">    This mixin adds functionality to the Base2 class so that boolean arrays</span>
 <span class="sd">    are treated as labels</span>
@@ -610,7 +610,7 @@ document.write(`
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecognized mode:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">PrintableList</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LabelMixin.labels"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.labels.html#openpnm.core.LabelMixin.labels">[docs]</a>    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.labels"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.labels.html#openpnm.algorithms.LabelMixin.labels">[docs]</a>    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of labels present on the object</span>
 
@@ -686,7 +686,7 @@ document.write(`
                                       <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LabelMixin.set_label"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.set_label.html#openpnm.core.LabelMixin.set_label">[docs]</a>    <span class="k">def</span> <span class="nf">set_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.set_label"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.set_label.html#openpnm.algorithms.LabelMixin.set_label">[docs]</a>    <span class="k">def</span> <span class="nf">set_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">throats</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates or updates a label array</span>
 
@@ -808,7 +808,7 @@ document.write(`
         <span class="n">ind</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ind</span>
 
-<div class="viewcode-block" id="LabelMixin.pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.pores.html#openpnm.core.LabelMixin.pores">[docs]</a>    <span class="k">def</span> <span class="nf">pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.pores.html#openpnm.algorithms.LabelMixin.pores">[docs]</a>    <span class="k">def</span> <span class="nf">pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns pore indicies where given labels exist, according to the logic</span>
 <span class="sd">        specified by the ``mode`` argument.</span>
@@ -869,7 +869,7 @@ document.write(`
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ind</span></div>
 
-<div class="viewcode-block" id="LabelMixin.throats"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.throats.html#openpnm.core.LabelMixin.throats">[docs]</a>    <span class="k">def</span> <span class="nf">throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.throats"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.throats.html#openpnm.algorithms.LabelMixin.throats">[docs]</a>    <span class="k">def</span> <span class="nf">throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="n">asmask</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns throat locations where given labels exist, according to the</span>
 <span class="sd">        logic specified by the ``mode`` argument.</span>
@@ -921,7 +921,7 @@ document.write(`
             <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_mask</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ind</span></div>
 
-<div class="viewcode-block" id="LabelMixin.filter_by_label"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.filter_by_label.html#openpnm.core.LabelMixin.filter_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">filter_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.filter_by_label"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.filter_by_label.html#openpnm.algorithms.LabelMixin.filter_by_label">[docs]</a>    <span class="k">def</span> <span class="nf">filter_by_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="p">[],</span> <span class="n">throats</span><span class="o">=</span><span class="p">[],</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns which of the supplied pores (or throats) has the specified</span>
 <span class="sd">        label(s)</span>
@@ -983,7 +983,7 @@ document.write(`
         <span class="n">ind</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="n">locations</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">locations</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="LabelMixin.num_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.num_pores.html#openpnm.core.LabelMixin.num_pores">[docs]</a>    <span class="k">def</span> <span class="nf">num_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.num_pores"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.num_pores.html#openpnm.algorithms.LabelMixin.num_pores">[docs]</a>    <span class="k">def</span> <span class="nf">num_pores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;or&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of pores of the specified labels</span>
 
@@ -1036,7 +1036,7 @@ document.write(`
         <span class="n">Np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">Ps</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">Np</span></div>
 
-<div class="viewcode-block" id="LabelMixin.num_throats"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.num_throats.html#openpnm.core.LabelMixin.num_throats">[docs]</a>    <span class="k">def</span> <span class="nf">num_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="LabelMixin.num_throats"><a class="viewcode-back" href="../../../modules/generated/openpnm.core.LabelMixin.num_throats.html#openpnm.algorithms.LabelMixin.num_throats">[docs]</a>    <span class="k">def</span> <span class="nf">num_throats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;union&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of throats of the specified labels</span>
 
