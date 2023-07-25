@@ -1,0 +1,6 @@
+plot\_notebook
+==============
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: plot_notebook

@@ -1,0 +1,8 @@
+:orphan:
+
+filter_by_label
+=====================================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.filter_by_label

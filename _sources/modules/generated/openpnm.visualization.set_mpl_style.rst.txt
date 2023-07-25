@@ -1,0 +1,6 @@
+set\_mpl\_style
+===============
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: set_mpl_style

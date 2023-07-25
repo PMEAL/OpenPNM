@@ -1,0 +1,8 @@
+:orphan:
+
+set_BC
+============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.set_BC

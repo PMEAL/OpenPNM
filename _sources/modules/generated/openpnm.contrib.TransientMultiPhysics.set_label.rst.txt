@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+===============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.set_label

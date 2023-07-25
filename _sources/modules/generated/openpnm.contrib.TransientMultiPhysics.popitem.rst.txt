@@ -1,0 +1,8 @@
+:orphan:
+
+popitem
+=============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.popitem

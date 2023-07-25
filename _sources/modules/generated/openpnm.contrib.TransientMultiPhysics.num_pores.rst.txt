@@ -1,0 +1,8 @@
+:orphan:
+
+num_pores
+===============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.num_pores

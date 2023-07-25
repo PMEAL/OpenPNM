@@ -1,0 +1,6 @@
+plot\_vispy
+===========
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: plot_vispy

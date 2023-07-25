@@ -1,0 +1,6 @@
+plot\_coordinates
+=================
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: plot_coordinates

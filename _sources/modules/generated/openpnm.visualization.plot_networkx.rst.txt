@@ -1,0 +1,6 @@
+plot\_networkx
+==============
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: plot_networkx

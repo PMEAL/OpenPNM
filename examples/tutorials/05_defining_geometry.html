@@ -1,38 +1,44 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Assigning Geometric Properties &#8212; OpenPNM 3.1.2 documentation</title>
-<script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
-</script>
-
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-
-  <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
-
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -43,401 +49,404 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/05_defining_geometry';</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Using Labels and Defining Domains" href="06_labels_and_domains.html" />
     <link rel="prev" title="Network Representation, Queries, and Manipulation" href="04_graph_queries_and_manipulation.html" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-    <div class="bd-header-announcement container-fluid" id="banner">
-      
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    </div>
-
-    
-    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
-
-  <div id="navbar-start">
-    
-    
   
-
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../index.html">
   
   
   
   
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+    
+    
+      
+    
+    
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-</a>
+</a></div>
     
   </div>
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="fas fa-bars"></span>
-  </button>
-
   
-  <div id="navbar-collapsible" class=" collapse navbar-collapse">
-    <div id="navbar-center" class="mr-auto">
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../installation.html">
-  Installation
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../modules/index.html">
-  Module Reference
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../../_examples/index.html">
-  Examples
- </a>
-</li>
-
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
     
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-</ul>
-      </div>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../modules/index.html">
+                        Module Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+                    Issue Tracker
+                  </a>
+                </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+                    Get Help
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-      </ul>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../modules/index.html">
+                        Module Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+                    Issue Tracker
+                  </a>
+                </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+                    Get Help
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_numerical_python_primer.html">Numerical Python Primer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_network_generation_and_visualization.html">Generating Networks and Quick Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_data_and_topology_storage.html">Storage of Network Data and Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_graph_queries_and_manipulation.html">Network Representation, Queries, and Manipulation</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Assigning Geometric Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_labels_and_domains.html">Using Labels and Defining Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_phases_and_mixtures.html">Creating Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_simulating_transport.html">Simulating Single Phase Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09_simulating_invasion.html">Simulating Invasion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_visualization_options.html">Visualization options</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/applications.html">Applications</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applications/absolute_permeability.html">Predicting absolute permeability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/formation_factor.html">Predicting Formation Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/porosity.html">Predicting Porosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications/relative_permeability.html">Predicting relative permeability</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/reference.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/architecture/pore_scale_models.html">Pore-Scale Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">Settings Attribute Machinery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/architecture/workspace_and_projects.html">The Workspace and Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/networks/managing_clustered_networks.html">Managing Clustered Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">Available Matrix Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/basic_transport.html">Steady State Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/explanation_of_units.html">Explanation of Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/reactive_transport.html">Reactive Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">Size Factors and Transport Conductance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/transient_transport.html">Transient Transport</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
       
-    </div>
-  </div>
-</div>
-    </nav>
-    
-
-    <div class="bd-container container-xl">
-      <div class="bd-container__inner row">
-          
-
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="../../_examples/tutorials.html">
-   10 Steps to Learn OpenPNM
-  </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="01_numerical_python_primer.html">
-     Numerical Python Primer
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="02_network_generation_and_visualization.html">
-     Generating Networks and Quick Visualization
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="03_data_and_topology_storage.html">
-     Storage of Network Data and Topology
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="04_graph_queries_and_manipulation.html">
-     Network Representation, Queries, and Manipulation
-    </a>
-   </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Assigning Geometric Properties
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="06_labels_and_domains.html">
-     Using Labels and Defining Domains
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="07_phases_and_mixtures.html">
-     Creating Phases
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="08_simulating_transport.html">
-     Simulating Single Phase Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="09_simulating_invasion.html">
-     Simulating Invasion
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="10_visualization_options.html">
-     Visualization options
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../_examples/applications.html">
-   Applications
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/absolute_permeability.html">
-     Predicting absolute permeability
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">
-     Adjusting Pore Size Distributions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/dispersion_coefficient.html">
-     Predicting dispersion coefficient
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">
-     Finding Effective Diffusivity and Tortuosity of a Network
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/formation_factor.html">
-     Predicting Formation Factor
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/mercury_intrusion.html">
-     Calibrating a Network Using Mercury Intrusion Data
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/porosity.html">
-     Predicting Porosity
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/relative_diffusivity.html">
-     Obtaining Relative Diffusivity Curves
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../applications/relative_permeability.html">
-     Predicting relative permeability
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../_examples/reference.html">
-   Reference
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-  <label for="toctree-checkbox-3">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/architecture/pore_scale_models.html">
-     Pore-Scale Models
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">
-     Settings Attribute Machinery
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/architecture/workspace_and_projects.html">
-     The Workspace and Projects
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/networks/managing_clustered_networks.html">
-     Managing Clustered Networks
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">
-     Available Matrix Solvers
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/basic_transport.html">
-     Steady State Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/explanation_of_units.html">
-     Explanation of Units
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/reactive_transport.html">
-     Reactive Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">
-     Size Factors and Transport Conductance
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../reference/simulations/transient_transport.html">
-     Transient Transport
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-  </div>
-</nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
-
-
-          
-
-
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
-  
-    
-    <div class="toc-item">
-      
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
-
-<nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#manually-calculating-properties">
-   Manually Calculating Properties
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#adding-pore-and-throat-sizes-from-scipy-stats-distributions">
-     Adding pore and throat sizes from
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       scipy.stats
-      </span>
-     </code>
-     distributions
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#computing-throat-length">
-     Computing throat length
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#computing-pore-surface-areas">
-     Computing pore surface areas
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#using-pore-scale-models-from-the-library">
-   Using Pore-scale Models from the Library
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#using-predefined-collections-of-models">
-   Using Predefined Collections of Models
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#customizing-models-by-overwriting-them-or-their-arguments">
-   Customizing Models by Overwriting Them or Their Arguments
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#introduction-to-the-dependency-handler">
-   Introduction to the Dependency Handler
-  </a>
- </li>
-</ul>
-
-</nav>
-    </div>
-    
-    <div class="toc-item">
-      
-    </div>
-    
-  
-</div>
-
-
-          
-          
-          <div class="bd-content col-12 col-md-9 col-xl-7">
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-              <article class="bd-article" role="main">
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../_examples/index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../_examples/tutorials.html" class="nav-link">10 Steps to Learn OpenPNM</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Assigning Geometric Properties</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="assigning-geometric-properties">
 <h1>Assigning Geometric Properties<a class="headerlink" href="#assigning-geometric-properties" title="Permalink to this heading">#</a></h1>
 <p>Geometric properties refer to the physical sizes of the pores and throats, such as pore diameter and throat lengths. The values are essential to the pore network modeling enterprize since they control all the transport and percolation behavior of the network. Unlike phase properties which can be normalized for, geometric properties define the network even more so than topological properties like connectivity.</p>
@@ -460,6 +469,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
+</pre></div>
+</div>
+</div>
 </div>
 <p>Let’s start by creating a blank Cubic network.  As we can see by printing it, there only coordinates, connections, and some labels, but no geometric properties:</p>
 <div class="cell docutils container">
@@ -472,7 +487,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0f2cf8b880&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -481,14 +496,20 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.surface                                                         2168
-  3  throat.surface                                                       4332
-  4  pore.left                                                             400
-  5  pore.right                                                            400
-  6  pore.front                                                            400
-  7  pore.back                                                             400
-  8  pore.bottom                                                           400
-  9  pore.top                                                              400
+  2  pore.xmin                                                             400
+  3  pore.xmax                                                             400
+  4  pore.ymin                                                             400
+  5  pore.ymax                                                             400
+  6  pore.zmin                                                             400
+  7  pore.zmax                                                             400
+  8  pore.surface                                                         2168
+  9  throat.surface                                                       4332
+ 10  pore.left                                                             400
+ 11  pore.right                                                            400
+ 12  pore.front                                                            400
+ 13  pore.back                                                             400
+ 14  pore.bottom                                                           400
+ 15  pore.top                                                              400
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -522,7 +543,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d9e8c5f410eae2e70d1e59d945ba9cfa22afb254ee7fb200aaa075af48264c79.png" src="../../_images/d9e8c5f410eae2e70d1e59d945ba9cfa22afb254ee7fb200aaa075af48264c79.png" />
+<img alt="../../_images/6cbe738de4a14a7683072ec1c81b9aaa565c0b49d0138c2df2c0203b970a98e2.png" src="../../_images/6cbe738de4a14a7683072ec1c81b9aaa565c0b49d0138c2df2c0203b970a98e2.png" />
 </div>
 </div>
 <p>The above distribution looks good, let’s just make absolutely sure that our distribution is not so wide that it has negative numbers or values greater than 50 um:</p>
@@ -559,7 +580,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/828a732815c4aa5e2e44f63d2e10049b1981457244fc8e386cf558e8734e72b7.png" src="../../_images/828a732815c4aa5e2e44f63d2e10049b1981457244fc8e386cf558e8734e72b7.png" />
+<img alt="../../_images/d5a4287a9c9740f95de07d8f6541c1c485fe5db2756b8ec617440c3fb082928d.png" src="../../_images/d5a4287a9c9740f95de07d8f6541c1c485fe5db2756b8ec617440c3fb082928d.png" />
 </div>
 </div>
 <p>Again, let’s inspect the high and low values:</p>
@@ -620,7 +641,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/147585f7b25470d9630b82f61256a7b4de81d189fb44b0c949dbd7ef09551549.png" src="../../_images/147585f7b25470d9630b82f61256a7b4de81d189fb44b0c949dbd7ef09551549.png" />
+<img alt="../../_images/26c2270ca2f1ceee12bcb49a173d8ae2fd63d1a598de464d772b955fe339867b.png" src="../../_images/26c2270ca2f1ceee12bcb49a173d8ae2fd63d1a598de464d772b955fe339867b.png" />
 </div>
 </div>
 <p>We can see from the above plot that the throat sizes are similar to the pore sizes, which is expected since they are taken from the pore sizes values. However, we can also see a small shift to the left, which is also expected given that the throats always take on the size of the smaller pore, creating a bias towards smaller sizes.</p>
@@ -635,7 +656,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/23f002b0fa4fddf86fdcafdc666b2ca6f05776fb90c3feaa010df3467308a4f5.png" src="../../_images/23f002b0fa4fddf86fdcafdc666b2ca6f05776fb90c3feaa010df3467308a4f5.png" />
+<img alt="../../_images/37c8893707b4f105f3dda210a4c47a499b3761a7fda1df4727d11465ce548110.png" src="../../_images/37c8893707b4f105f3dda210a4c47a499b3761a7fda1df4727d11465ce548110.png" />
 </div>
 </div>
 <p>One downside of the above approach is that you no longer have control over the shape and distribution of the throat sizes. This can be solved by applying the same approach just described but to <em>random seeds</em> instead of actual sizes. Then the random seeds can be put into a cumulative density function to compute the corresponding size.  This is demonstrated below:</p>
@@ -663,7 +684,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a8fb7697e12c894a8d2cdc917b14a84387f68cd32f4efce24bb1c3a27a1fb98c.png" src="../../_images/a8fb7697e12c894a8d2cdc917b14a84387f68cd32f4efce24bb1c3a27a1fb98c.png" />
+<img alt="../../_images/593dc223bae6f79971f51a056df76f3c262f9b3e9638abe044f5fdb042378db9.png" src="../../_images/593dc223bae6f79971f51a056df76f3c262f9b3e9638abe044f5fdb042378db9.png" />
 </div>
 </div>
 <p>Now we can find the throat seed values as the <em>minimum pore seed</em> value of the two neighboring pores:</p>
@@ -686,7 +707,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b512c6b3859427a53cce77c7437c6aedc679a7843453327b5cdec43a5ffd3414.png" src="../../_images/b512c6b3859427a53cce77c7437c6aedc679a7843453327b5cdec43a5ffd3414.png" />
+<img alt="../../_images/afad38ffe4ba21a3b0cd8a4d80b8acb04e2ae736ef370f3a920b5f101bbc5505.png" src="../../_images/afad38ffe4ba21a3b0cd8a4d80b8acb04e2ae736ef370f3a920b5f101bbc5505.png" />
 </div>
 </div>
 <p>Once the pore and throat diameters are specified, the next step is to define any dependent properties of interest, such as pore volume or throat length. These additional calculations tend to require that we assume a shape for the pores and throats.  It is not mandatory to use spheres and cylinders, though this is a common choice.  We could also work with cubic pores and cuboid throats, which occupy a large volume fraction for instance.  The choice of cubic shapes also happens to make the calculations much easier, for reasons explored below, so in this tutorial we’ll assume cubic shapes.  Let’s calculate the throat length, and pore surface area, since each of these illustrate very important concepts regarding the use of vectorized calculations.</p>
@@ -803,7 +824,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/89367125f8a6460eea32375d3e1619553cc4b6e16074813b2bda405b2f15493b.png" src="../../_images/89367125f8a6460eea32375d3e1619553cc4b6e16074813b2bda405b2f15493b.png" />
+<img alt="../../_images/8ceadec7a8c61cc5656f30278860a00d063c49e10818a5ceea34991b20fc518b.png" src="../../_images/8ceadec7a8c61cc5656f30278860a00d063c49e10818a5ceea34991b20fc518b.png" />
 </div>
 </div>
 <p>And similarly we fetch a model for the throat sizes as well:</p>
@@ -820,7 +841,7 @@ net : &lt;openpnm.network.Cubic at 0x7f6e34872810&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8dfdc8d4fdf5d1e865df781b90400ee3b95b4e06d87497c924860e8b330bccc1.png" src="../../_images/8dfdc8d4fdf5d1e865df781b90400ee3b95b4e06d87497c924860e8b330bccc1.png" />
+<img alt="../../_images/8e206bfc1d5eb7aa18397f7bccf459007d2c60f7d001338996a7ee4bffdb6749.png" src="../../_images/8e206bfc1d5eb7aa18397f7bccf459007d2c60f7d001338996a7ee4bffdb6749.png" />
 </div>
 </div>
 <p>Now that we have pore and throat sizes, we can compute their volumes (and other properties). The volume will depend on the shape of the pores and throats.  In OpenPNM we do not explicitly track such <em>shapes</em>.  Instead we offer several models that calculate the property of interest for a given shape. This is illustrated below:</p>
@@ -905,40 +926,40 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f6e02e6e5e0&gt;,
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f0f0067edd0&gt;,
                    &#39;props&#39;: [&#39;pore.max_size&#39;, &#39;pore.seed&#39;]},
  &#39;pore.max_size&#39;: {&#39;iters&#39;: 10,
-                   &#39;model&#39;: &lt;function largest_sphere at 0x7f6e00e59550&gt;},
+                   &#39;model&#39;: &lt;function largest_sphere at 0x7f0efe4c8820&gt;},
  &#39;pore.seed&#39;: {&#39;element&#39;: &#39;pore&#39;,
-               &#39;model&#39;: &lt;function random at 0x7f6e02f17dc0&gt;,
+               &#39;model&#39;: &lt;function random at 0x7f0f0067e7a0&gt;,
                &#39;num_range&#39;: [0.2, 0.7],
                &#39;seed&#39;: None},
- &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f6e00e59940&gt;,
+ &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f0efe4c8c10&gt;,
                  &#39;pore_diameter&#39;: &#39;pore.diameter&#39;},
- &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f6e00e64670&gt;,
+ &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f0efe4c9900&gt;,
                                  &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.diameter&#39;: {&#39;factor&#39;: 0.5,
-                     &#39;model&#39;: &lt;function scaled at 0x7f6e02e6e670&gt;,
+                     &#39;model&#39;: &lt;function scaled at 0x7f0f0067ee60&gt;,
                      &#39;prop&#39;: &#39;throat.max_size&#39;},
- &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f6e00e35940&gt;,
+ &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f0efe51b6d0&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f6e00e2f040&gt;,
+ &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f0efe519e10&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f6e00e6f040&gt;,
+ &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f0efe4ca320&gt;,
                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f6e00e75310&gt;,
+ &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f0efe4cb520&gt;,
                         &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                         &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.max_size&#39;: {&#39;mode&#39;: &#39;min&#39;,
-                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f6e02e6e820&gt;,
+                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f0f0067f010&gt;,
                      &#39;prop&#39;: &#39;pore.diameter&#39;},
- &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f6e00e750d0&gt;,
+ &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f0efe4cb2e0&gt;,
                          &#39;throat_diameter&#39;: &#39;throat.diameter&#39;,
                          &#39;throat_length&#39;: &#39;throat.length&#39;},
- &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f6e02e6e280&gt;,
+ &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f0f0067ea70&gt;,
                    &#39;props&#39;: [&#39;throat.total_volume&#39;, &#39;throat.lens_volume&#39;]}}
 </pre></div>
 </div>
@@ -955,7 +976,7 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f6dff4eda90&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0efa8cb290&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -979,14 +1000,20 @@ net : &lt;openpnm.network.Cubic at 0x7f6dff4eda90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.surface                                                         2168
-  3  throat.surface                                                       4332
-  4  pore.left                                                             400
-  5  pore.right                                                            400
-  6  pore.front                                                            400
-  7  pore.back                                                             400
-  8  pore.bottom                                                           400
-  9  pore.top                                                              400
+  2  pore.xmin                                                             400
+  3  pore.xmax                                                             400
+  4  pore.ymin                                                             400
+  5  pore.ymax                                                             400
+  6  pore.zmin                                                             400
+  7  pore.zmax                                                             400
+  8  pore.surface                                                         2168
+  9  throat.surface                                                       4332
+ 10  pore.left                                                             400
+ 11  pore.right                                                            400
+ 12  pore.front                                                            400
+ 13  pore.back                                                             400
+ 14  pore.bottom                                                           400
+ 15  pore.top                                                              400
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1062,7 +1089,7 @@ pore.diameter             model:                    normal
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/087e48edea648818ccb7a589cbf1199507c021bea555e78884948f41db64ee3d.png" src="../../_images/087e48edea648818ccb7a589cbf1199507c021bea555e78884948f41db64ee3d.png" />
+<img alt="../../_images/6aedd3e9242e36493827003952395214a56ff80f66fb30fc751a45d3657358d6.png" src="../../_images/6aedd3e9242e36493827003952395214a56ff80f66fb30fc751a45d3657358d6.png" />
 </div>
 </div>
 <p>This distribution is quite truncated, due to the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values that were used.  Let’s reach into that model and change this.  First print the model:</p>
@@ -1096,7 +1123,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/36cc92fe0764dfe74e351bf50b8185158f6e4bdd769933668c4ac631ab34781e.png" src="../../_images/36cc92fe0764dfe74e351bf50b8185158f6e4bdd769933668c4ac631ab34781e.png" />
+<img alt="../../_images/049841b601a8136c000a97a4a83be2bfbfc0c421baf37d8a1c2bb7fe5f3dae80.png" src="../../_images/049841b601a8136c000a97a4a83be2bfbfc0c421baf37d8a1c2bb7fe5f3dae80.png" />
 </div>
 </div>
 </section>
@@ -1165,7 +1192,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5e253917ebac5835ebeb41d90541271b161e83b8e4e623e97bb63e0eeb2902d8.png" src="../../_images/5e253917ebac5835ebeb41d90541271b161e83b8e4e623e97bb63e0eeb2902d8.png" />
+<img alt="../../_images/4defca699321f77ea0df03c811c92c856ed2e1d3dcc05129f21a3fa5c3dc77dd.png" src="../../_images/4defca699321f77ea0df03c811c92c856ed2e1d3dcc05129f21a3fa5c3dc77dd.png" />
 </div>
 </div>
 <p>The green circles are pore properties and the orange squares are throat properties. We can also see that there are two models which are not dependent on anything else: <code class="docutils literal notranslate"><span class="pre">'throat.spacing'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.coordination_number'</span></code>.  These are added to all networks during generation but not run, hence their values do no show up when doing <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code>.</p>
@@ -1181,42 +1208,85 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/69a4fdca92a2e9a5462217d7aef5e3750272133d9a142711867117ae298eff6e.png" src="../../_images/69a4fdca92a2e9a5462217d7aef5e3750272133d9a142711867117ae298eff6e.png" />
+<img alt="../../_images/00e401eb1267635d4fc160c15f5fad14276372af443a14c6f9182787c6d0c7f5.png" src="../../_images/00e401eb1267635d4fc160c15f5fad14276372af443a14c6f9182787c6d0c7f5.png" />
 </div>
 </div>
 </section>
 </section>
 
 
-              </article>
+                </article>
               
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manually-calculating-properties">Manually Calculating Properties</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-pore-and-throat-sizes-from-scipy-stats-distributions">Adding pore and throat sizes from <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> distributions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-throat-length">Computing throat length</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-pore-surface-areas">Computing pore surface areas</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pore-scale-models-from-the-library">Using Pore-scale Models from the Library</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-predefined-collections-of-models">Using Predefined Collections of Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customizing-models-by-overwriting-them-or-their-arguments">Customizing Models by Overwriting Them or Their Arguments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-the-dependency-handler">Introduction to the Dependency Handler</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
+            
           </div>
-          
-      </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
-
-  
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-<footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
-    <p class="copyright">
-    &copy; Copyright 2023, PMEAL.<br>
-</p>
-  </div>
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, PMEAL.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
   
-  <div class="footer-item">
-    <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-  </div>
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
   
 </div>
-</footer>
+
+  </footer>
   </body>
 </html>

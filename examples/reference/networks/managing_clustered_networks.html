@@ -1,38 +1,44 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Managing Clustered Networks &#8212; OpenPNM 3.1.2 documentation</title>
-<script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
-</script>
-
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
-
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
-
+  
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -43,368 +49,404 @@
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/networks/managing_clustered_networks';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Available Matrix Solvers" href="../simulations/available_matrix_solvers.html" />
     <link rel="prev" title="The Workspace and Projects" href="../architecture/workspace_and_projects.html" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-    <div class="bd-header-announcement container-fluid" id="banner">
-      
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    </div>
-
-    
-    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
-
-  <div id="navbar-start">
-    
-    
   
-
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../../index.html">
   
   
   
   
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image">
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image">
+    
+    
+      
+    
+    
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-</a>
+</a></div>
     
   </div>
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="fas fa-bars"></span>
-  </button>
-
   
-  <div id="navbar-collapsible" class=" collapse navbar-collapse">
-    <div id="navbar-center" class="mr-auto">
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../installation.html">
-  Installation
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../basic_usage.html">
-  Basic Usage
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../modules/index.html">
-  Module Reference
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../../../_examples/index.html">
-  Examples
- </a>
-</li>
-
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
     
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-    <li class="nav-item">
-        <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-    </li>
-    
-</ul>
-      </div>
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../modules/index.html">
+                        Module Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../../_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+                    Issue Tracker
+                  </a>
+                </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+                    Get Help
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/PMEAL/OpenPNM" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
-      </ul>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../modules/index.html">
+                        Module Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../../_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+                    Issue Tracker
+                  </a>
+                </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+                    Get Help
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_numerical_python_primer.html">Numerical Python Primer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_network_generation_and_visualization.html">Generating Networks and Quick Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_data_and_topology_storage.html">Storage of Network Data and Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_graph_queries_and_manipulation.html">Network Representation, Queries, and Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_defining_geometry.html">Assigning Geometric Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/06_labels_and_domains.html">Using Labels and Defining Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/07_phases_and_mixtures.html">Creating Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_simulating_transport.html">Simulating Single Phase Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/09_simulating_invasion.html">Simulating Invasion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_visualization_options.html">Visualization options</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../_examples/applications.html">Applications</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/absolute_permeability.html">Predicting absolute permeability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/formation_factor.html">Predicting Formation Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/porosity.html">Predicting Porosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/relative_permeability.html">Predicting relative permeability</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../_examples/reference.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../architecture/pore_scale_models.html">Pore-Scale Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/settings_attribute_machinery.html">Settings Attribute Machinery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture/workspace_and_projects.html">The Workspace and Projects</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Managing Clustered Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/available_matrix_solvers.html">Available Matrix Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/basic_transport.html">Steady State Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/explanation_of_units.html">Explanation of Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/reactive_transport.html">Reactive Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/size_factors_and_transport_conductance.html">Size Factors and Transport Conductance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulations/transient_transport.html">Transient Transport</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
       
-    </div>
-  </div>
-</div>
-    </nav>
-    
-
-    <div class="bd-container container-xl">
-      <div class="bd-container__inner row">
-          
-
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../../_examples/tutorials.html">
-   10 Steps to Learn OpenPNM
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/01_numerical_python_primer.html">
-     Numerical Python Primer
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/02_network_generation_and_visualization.html">
-     Generating Networks and Quick Visualization
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/03_data_and_topology_storage.html">
-     Storage of Network Data and Topology
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/04_graph_queries_and_manipulation.html">
-     Network Representation, Queries, and Manipulation
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/05_defining_geometry.html">
-     Assigning Geometric Properties
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/06_labels_and_domains.html">
-     Using Labels and Defining Domains
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/07_phases_and_mixtures.html">
-     Creating Phases
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/08_simulating_transport.html">
-     Simulating Single Phase Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/09_simulating_invasion.html">
-     Simulating Invasion
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../tutorials/10_visualization_options.html">
-     Visualization options
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../../../_examples/applications.html">
-   Applications
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-  <label for="toctree-checkbox-2">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/absolute_permeability.html">
-     Predicting absolute permeability
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/adjusting_pore_size_distributions.html">
-     Adjusting Pore Size Distributions
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/dispersion_coefficient.html">
-     Predicting dispersion coefficient
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/effective_diffusivity_and_tortuosity.html">
-     Finding Effective Diffusivity and Tortuosity of a Network
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/formation_factor.html">
-     Predicting Formation Factor
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/mercury_intrusion.html">
-     Calibrating a Network Using Mercury Intrusion Data
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/porosity.html">
-     Predicting Porosity
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/relative_diffusivity.html">
-     Obtaining Relative Diffusivity Curves
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../applications/relative_permeability.html">
-     Predicting relative permeability
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toctree-l1 current active has-children">
-  <a class="reference internal" href="../../../_examples/reference.html">
-   Reference
-  </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
-  <label for="toctree-checkbox-3">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="../architecture/pore_scale_models.html">
-     Pore-Scale Models
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../architecture/settings_attribute_machinery.html">
-     Settings Attribute Machinery
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../architecture/workspace_and_projects.html">
-     The Workspace and Projects
-    </a>
-   </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
-     Managing Clustered Networks
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/available_matrix_solvers.html">
-     Available Matrix Solvers
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/basic_transport.html">
-     Steady State Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/explanation_of_units.html">
-     Explanation of Units
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/reactive_transport.html">
-     Reactive Transport
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/size_factors_and_transport_conductance.html">
-     Size Factors and Transport Conductance
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../simulations/transient_transport.html">
-     Transient Transport
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-  </div>
-</nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
-
-
-          
-
-
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
-  
-    
-    <div class="toc-item">
-      
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
-
-<nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#creating-a-clustered-network">
-   Creating a Clustered Network
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#illustrating-the-problem">
-   Illustrating the Problem
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#fixing-clustered-networks">
-   Fixing Clustered Networks
-  </a>
- </li>
-</ul>
-
-</nav>
-    </div>
-    
-    <div class="toc-item">
-      
-    </div>
-    
-  
-</div>
-
-
-          
-          
-          <div class="bd-content col-12 col-md-9 col-xl-7">
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-              <article class="bd-article" role="main">
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../_examples/index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../../_examples/reference.html" class="nav-link">Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Managing Clustered Networks</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section class="tex2jax_ignore mathjax_ignore" id="managing-clustered-networks">
 <h1>Managing Clustered Networks<a class="headerlink" href="#managing-clustered-networks" title="Permalink to this heading">#</a></h1>
 <p>This tutorial will cover the common issue of a network that is “clustered”, meaning that some pores are not connected the main body of the network. This is fairly common when extracting networks from tomogram, but can occur when getting creative with networks like stitching two together. A clustered network causes problems for the numerical solvers because it leads to “singular” matrices (i.e. they cannot be solved). Below we will explain what this means, and how to fix it.</p>
@@ -413,6 +455,12 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
 </pre></div>
 </div>
 </div>
@@ -425,7 +473,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/371b728dd6c8eee88fbb8fcf88a2b3d4cead1fd985ea7870a451b2a0c655c991.png" src="../../../_images/371b728dd6c8eee88fbb8fcf88a2b3d4cead1fd985ea7870a451b2a0c655c991.png" />
+<img alt="../../../_images/f3245d1d44740c0a4f54031ba5e0e491c3f0a0abd1b14ffc176ee89c0cc5265e.png" src="../../../_images/f3245d1d44740c0a4f54031ba5e0e491c3f0a0abd1b14ffc176ee89c0cc5265e.png" />
 </div>
 </div>
 <section id="creating-a-clustered-network">
@@ -439,7 +487,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/39dcd49bda94017b72cf7bd7b63591a0ef1f8046b02f20ee94489ebe3670b235.png" src="../../../_images/39dcd49bda94017b72cf7bd7b63591a0ef1f8046b02f20ee94489ebe3670b235.png" />
+<img alt="../../../_images/4828b11a5f3c91994c017e231d543adb3ef88679a011c3382d8e7e33cee2541b.png" src="../../../_images/4828b11a5f3c91994c017e231d543adb3ef88679a011c3382d8e7e33cee2541b.png" />
 </div>
 </div>
 <p>Now we can have 3 total “clusters”, two small clusters at the bottom plus one large cluster which constitutes the rest of the network.</p>
@@ -484,7 +532,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/21aaeb9f8cb43779edd6abc18c384c701078ce2daf4a2654889b93819ff07125.png" src="../../../_images/21aaeb9f8cb43779edd6abc18c384c701078ce2daf4a2654889b93819ff07125.png" />
+<img alt="../../../_images/6062c965cc673869642a2cb5b00d5eaa8eeb7194b752a97a5fb9a746ef3137c5.png" src="../../../_images/6062c965cc673869642a2cb5b00d5eaa8eeb7194b752a97a5fb9a746ef3137c5.png" />
 </div>
 </div>
 <p>Referring to the network visualization above we can see that pores 5 and 10 are connected to each other, but not to any other pores. Looking at the A matrix above we can this reflected in the pattern. We can see that on row 5 there is an entry in the diagonal (5, 5) and a second entry at column 10 (5, 10). Now looking at row 10 we see an entry on the diagonal (10, 10) and a entry at column 5 (10, 5). These off-diagonal entries represent the conductance values between pores 5 and 10 (and between 10 and 5). The key point to note is that NO OTHER entries are present on either row. This means that the mass balance equations for pores 5 and 10 are not coupled to the rest of the equations. Another way to say is that pores 5 and 10 form their own independent matrix which can be solved in isolation since they don’t exchange mass with any of the other pores…however, we can’t solve this ‘mini-system’ because we have not specified any boundary conditions for it.</p>
@@ -504,7 +552,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7fbd24269900&gt;
+net : &lt;openpnm.network.Demo at 0x7f38887f96c0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -530,12 +578,16 @@ net : &lt;openpnm.network.Demo at 0x7fbd24269900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.surface                                                           16
-  3  throat.surface                                                         14
-  4  pore.left                                                               5
-  5  pore.right                                                              5
-  6  pore.front                                                              5
-  7  pore.back                                                               5
+  2  pore.xmin                                                               5
+  3  pore.xmax                                                               5
+  4  pore.ymin                                                               5
+  5  pore.ymax                                                               5
+  6  pore.surface                                                           16
+  7  throat.surface                                                         14
+  8  pore.left                                                               5
+  9  pore.right                                                              5
+ 10  pore.front                                                              5
+ 11  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -579,7 +631,7 @@ net : &lt;openpnm.network.Demo at 0x7fbd24269900&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d7ee446b86fee0c26aa5a4830c1ff61eb4a38096426265224338ecf5c462f1da.png" src="../../../_images/d7ee446b86fee0c26aa5a4830c1ff61eb4a38096426265224338ecf5c462f1da.png" />
+<img alt="../../../_images/0d7eb4cd05251593655f8b7baadbc89e53424bbc9f2d58d464510221383fd4aa.png" src="../../../_images/0d7eb4cd05251593655f8b7baadbc89e53424bbc9f2d58d464510221383fd4aa.png" />
 </div>
 </div>
 <p>Now we can see only a single cluster.  Without even re-running the pore-scale models we can see that the pores with a cluster number other than 0 have been removed:</p>
@@ -609,9 +661,9 @@ net : &lt;openpnm.network.Demo at 0x7fbd24269900&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[200000.         200000.         200000.         200000.
- 200000.         181339.10955203 172476.19056854 177966.45457126
- 154672.59174286 153561.06590707 164952.54719178 103516.76572201
- 106705.11382309 125374.250719   133169.59666566 133371.51151668
+ 200000.         179405.78059032 179908.29169275 170973.2417988
+ 173068.66396727 169874.75099423 166017.55410764 105009.03499645
+ 114787.9319111  134223.9918755  139163.18976855 155716.52297261
  100000.         100000.         100000.         100000.
  100000.        ]
 </pre></div>
@@ -626,45 +678,85 @@ net : &lt;openpnm.network.Demo at 0x7fbd24269900&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7fbce44e80d0&gt;
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py:344: UserWarning: The figure layout has changed to tight
+  fig.tight_layout()
 </pre></div>
 </div>
-<img alt="../../../_images/0f125ab26ec182a9cb1a0650f3cd3d5ab2fff8ab6c2a6ea05da78fa0157b77d0.png" src="../../../_images/0f125ab26ec182a9cb1a0650f3cd3d5ab2fff8ab6c2a6ea05da78fa0157b77d0.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f38860295d0&gt;
+</pre></div>
+</div>
+<img alt="../../../_images/32fb7b0f76cce901e777f9046cd4179d35611f0573d3cfa6e9ded32d80ef514f.png" src="../../../_images/32fb7b0f76cce901e777f9046cd4179d35611f0573d3cfa6e9ded32d80ef514f.png" />
 </div>
 </div>
 </section>
 </section>
 
 
-              </article>
+                </article>
               
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-clustered-network">Creating a Clustered Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#illustrating-the-problem">Illustrating the Problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fixing-clustered-networks">Fixing Clustered Networks</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
+            
           </div>
-          
-      </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
-
-  
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
-<footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
-    <p class="copyright">
-    &copy; Copyright 2023, PMEAL.<br>
-</p>
-  </div>
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, PMEAL.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
   
-  <div class="footer-item">
-    <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-  </div>
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
   
 </div>
-</footer>
+
+  </footer>
   </body>
 </html>

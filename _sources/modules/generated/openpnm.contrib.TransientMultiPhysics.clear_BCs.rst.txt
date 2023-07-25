@@ -1,0 +1,8 @@
+:orphan:
+
+clear_BCs
+===============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.clear_BCs

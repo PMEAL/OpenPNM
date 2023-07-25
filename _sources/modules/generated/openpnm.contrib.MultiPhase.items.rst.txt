@@ -1,0 +1,8 @@
+:orphan:
+
+items
+================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: MultiPhase.items

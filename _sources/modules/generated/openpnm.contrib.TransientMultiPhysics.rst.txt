@@ -1,0 +1,44 @@
+TransientMultiPhysics
+=====================================
+
+.. currentmodule:: openpnm.contrib
+
+.. autoclass:: TransientMultiPhysics
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TransientMultiPhysics.clear
+            TransientMultiPhysics.clear_BCs
+            TransientMultiPhysics.copy
+            TransientMultiPhysics.filter_by_label
+            TransientMultiPhysics.fromkeys
+            TransientMultiPhysics.get
+            TransientMultiPhysics.get_conduit_data
+            TransientMultiPhysics.interpolate_data
+            TransientMultiPhysics.items
+            TransientMultiPhysics.keys
+            TransientMultiPhysics.labels
+            TransientMultiPhysics.num_pores
+            TransientMultiPhysics.num_throats
+            TransientMultiPhysics.pop
+            TransientMultiPhysics.popitem
+            TransientMultiPhysics.pores
+            TransientMultiPhysics.props
+            TransientMultiPhysics.run
+            TransientMultiPhysics.set_BC
+            TransientMultiPhysics.set_label
+            TransientMultiPhysics.setdefault
+            TransientMultiPhysics.throats
+            TransientMultiPhysics.to_indices
+            TransientMultiPhysics.to_mask
+            TransientMultiPhysics.update
+            TransientMultiPhysics.values
+   
+   

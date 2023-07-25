@@ -1,0 +1,6 @@
+multiphase\_diffusion
+=====================
+
+.. currentmodule:: openpnm.contrib
+
+.. autofunction:: multiphase_diffusion

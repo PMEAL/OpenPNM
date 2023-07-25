@@ -1,0 +1,6 @@
+plot\_tutorial
+==============
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: plot_tutorial

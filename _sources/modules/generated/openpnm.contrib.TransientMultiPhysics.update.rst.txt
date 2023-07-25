@@ -1,0 +1,8 @@
+:orphan:
+
+update
+============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: TransientMultiPhysics.update

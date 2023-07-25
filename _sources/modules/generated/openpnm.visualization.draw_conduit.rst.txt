@@ -1,0 +1,6 @@
+draw\_conduit
+=============
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: draw_conduit

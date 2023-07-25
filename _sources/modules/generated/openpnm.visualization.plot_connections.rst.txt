@@ -1,0 +1,6 @@
+plot\_connections
+=================
+
+.. currentmodule:: openpnm.visualization
+
+.. autofunction:: plot_connections

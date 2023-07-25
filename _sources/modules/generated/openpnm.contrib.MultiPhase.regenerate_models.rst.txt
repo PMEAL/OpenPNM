@@ -1,0 +1,8 @@
+:orphan:
+
+regenerate_models
+============================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: MultiPhase.regenerate_models

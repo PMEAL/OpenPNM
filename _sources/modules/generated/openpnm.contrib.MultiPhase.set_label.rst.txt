@@ -1,0 +1,8 @@
+:orphan:
+
+set_label
+====================================
+
+.. currentmodule:: openpnm.contrib
+
+.. automethod:: MultiPhase.set_label
