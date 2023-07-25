@@ -4,7 +4,7 @@ myst-nb
 numpydoc
 pandoc
 plotly
-pydata-sphinx-theme=0.9
+pydata-sphinx-theme
 sphinx
 sphinx-copybutton
 sphinx-design

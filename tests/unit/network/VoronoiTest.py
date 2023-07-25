@@ -1,5 +1,6 @@
 import numpy as np
 import openpnm as op
+from openpnm._skgraph.tools import cyl2cart, sph2cart
 
 
 class VoronoiTest:
@@ -67,21 +68,23 @@ class VoronoiTest:
     def test_voronoi_cube_points(self):
         np.random.seed(0)
         pts = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=pts, shape=[1, 1, 1])
+        net = op.network.Voronoi(points=pts, shape=[1, 1, 1], reflect=False)
         assert net.Np > 30
         assert np.all(net.coords[:, -1] != 0.0)
         assert np.all(op.topotools.dimensionality(net) == [True, True, True])
 
     def test_voronoi_disk_2D_points(self):
         np.random.seed(0)
-        pts = np.random.rand(30, 2)
-        net = op.network.Voronoi(points=pts, shape=[1, 0])
+        rqz = np.random.rand(30, 3)*np.array([1, 2*np.pi, 0])
+        xyz = np.vstack(cyl2cart(*rqz.T)).T
+        net = op.network.Voronoi(points=xyz, shape=[1, 0])
         assert np.all(op.topotools.dimensionality(net) == [True, True, False])
 
     def test_voronoi_disk_3D_points(self):
         np.random.seed(0)
-        pts = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=pts, shape=[1, 0])
+        rqz = np.random.rand(30, 3)*np.array([1, 2*np.pi, 1])
+        xyz = np.vstack(cyl2cart(*rqz.T)).T
+        net = op.network.Voronoi(points=xyz, shape=[1, 0])
         assert np.all(net.coords[:, -1] == 0.0)
         assert np.all(op.topotools.dimensionality(net) == [True, True, False])
 
@@ -93,8 +96,9 @@ class VoronoiTest:
 
     def test_voronoi_cylinder_points(self):
         np.random.seed(0)
-        pts = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=pts, shape=[1, 1])
+        rqz = np.random.rand(30, 3)*np.array([1, 2*np.pi, 1])
+        xyz = np.vstack(cyl2cart(*rqz.T)).T
+        net = op.network.Voronoi(points=xyz, shape=[1, 1])
         assert not np.all(net.coords[:, -1] == 0.0)
         assert np.all(op.topotools.dimensionality(net) == [True, True, True])
 
@@ -106,8 +110,9 @@ class VoronoiTest:
 
     def test_voronoi_sphere_points(self):
         np.random.seed(0)
-        pts = np.random.rand(30, 3)
-        net = op.network.Voronoi(points=pts, shape=[1])
+        rqp = np.random.rand(30, 3)*np.array([1, 2*np.pi, 2*np.pi])
+        xyz = np.vstack(sph2cart(*rqp.T)).T
+        net = op.network.Voronoi(points=xyz, shape=[1])
         assert not np.all(net.coords[:, -1] == 0.0)
         assert np.all(op.topotools.dimensionality(net) == [True, True, True])
 

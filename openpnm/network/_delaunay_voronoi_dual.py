@@ -30,13 +30,15 @@ class DelaunayVoronoiDual(Network):
         ========== ============================================================
 
     trim : bool, optional
-        If ``True`` (default) then all vertices laying outside the domain will
+        If ``True`` then all vertices laying outside the domain will
         be removed. This is only useful if ``reflect=True``.
     reflect : bool, optional
-        If ``True`` (default) then the base points will be reflected across
+        If ``True`` then the base points will be reflected across
         all the faces of the domain prior to performing the tessellation. This
-        feature is best combined with ``trim=True`` to prevent unreasonably long
-        connections between points on the surfaces.
+        feature is best combined with ``trim=True``.
+    relaxation : int
+        The number of time to iteratively relax the base points by moving them to
+        the centroid of their respective Voronoi hulls. The default it 0.
 
     %(Network.parameters)s
 
@@ -52,14 +54,25 @@ class DelaunayVoronoiDual(Network):
 
     """
 
-    def __init__(self, shape, points, trim=True, reflect=True, **kwargs):
+    def __init__(
+        self,
+        shape,
+        points,
+        trim=True,
+        reflect=True,
+        relaxation=0,
+        **kwargs
+    ):
         super().__init__(**kwargs)
         net, vor, tri = voronoi_delaunay_dual(shape=shape,
                                               points=points,
                                               trim=trim,
+                                              reflect=reflect,
+                                              relaxation=relaxation,
                                               node_prefix='pore',
                                               edge_prefix='throat')
         self.update(net)
+        self._post_init()
         self.vor = vor
         self.tri = tri
 

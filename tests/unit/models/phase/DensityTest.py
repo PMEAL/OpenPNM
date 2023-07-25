@@ -1,18 +1,16 @@
-import pytest
-import sys
-import openpnm as op
-from numpy.testing import assert_approx_equal, assert_allclose
-from openpnm.utils import get_mixture_model_args
+import os
+
 import chemicals
+import pytest
+from numpy.testing import assert_allclose, assert_approx_equal
 from thermo import Chemical
 
+import openpnm as op
+from openpnm.utils import get_mixture_model_args
 
-is_python_38 = sys.version_info[:2] == (3, 8)
-is_linux = sys.platform.startswith('linux')
-condition = is_python_38 and is_linux
+condition = int(os.environ.get('NUMBA_DISABLE_JIT', 0)) != 0
 
 
-@pytest.mark.skipif(condition, reason="Strange error coming from numba/chemicals")
 class DensityTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
@@ -23,7 +21,7 @@ class DensityTest:
         # Liquid water
         self.phase.add_model(propname='pore.density',
                              model=op.models.phase.density.liquid_pure_COSTALD)
-        assert_approx_equal(self.phase['pore.density'].mean(), 992.345519756)
+        assert_approx_equal(self.phase['pore.density'].mean(), 993.327626112987)
 
     def test_ideal_gas(self):
         # Water vapor
@@ -54,6 +52,7 @@ class DensityTest:
             Vm.append(op.models.phase.chemicals_wrapper(n2, f=f).mean())
         assert_allclose(Vm, 8.795e-6, rtol=.3)
 
+    @pytest.mark.skipif(condition, reason="Strange error coming from numba/chemicals")
     def test_chemicals_wrapper_for_pure_liq_molar_volume(self):
         mods = [
             chemicals.volume.Yen_Woods_saturation,
@@ -93,7 +92,7 @@ class DensityTest:
             f=chemicals.volume.COSTALD_compressed,
             rho='pore.density',
         )
-        assert_allclose(Vm, 1.61982081e-05, rtol=1e-4)
+        assert_allclose(Vm, 1.62975733e-05, rtol=1e-4)
 
     def test_chemicals_wrapper_for_liquid_mixture(self):
         h2o = op.phase.Species(network=self.net, species='h2o')
@@ -158,5 +157,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

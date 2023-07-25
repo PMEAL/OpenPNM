@@ -28,14 +28,14 @@ class Delaunay(Network):
         [x, y, 0]  A 2D square domain of size x by y
         ========== ============================================================
 
-    trim : bool, optional
-        If ``True`` (default) then all vertices laying outside the domain will
-        be removed. This is only useful if ``reflect=True``.
     reflect : bool, optional
-        If ``True`` (default) then the base points will be reflected across
+        If ``True`` then the base points will be reflected across
         all the faces of the domain prior to performing the tessellation. This
         feature is best combined with ``trim=True`` to prevent unreasonably long
         connections between points on the surfaces.
+    trim : bool, optional
+        If ``True`` (default) then all vertices laying outside the domain will
+        be removed. This is only useful if ``reflect=True``.
 
     %(Network.parameters)s
 
@@ -55,7 +55,10 @@ class Delaunay(Network):
         super().__init__(**kwargs)
         net, tri = delaunay(points=points,
                             shape=shape,
+                            reflect=reflect,
+                            trim=trim,
                             node_prefix='pore',
                             edge_prefix='throat')
         self.update(net)
+        self._post_init()
         self.tri = tri

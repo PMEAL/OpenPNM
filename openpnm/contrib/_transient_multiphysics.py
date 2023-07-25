@@ -1,10 +1,11 @@
 import logging
+
 import numpy as np
-from openpnm.utils import Docorator
-from openpnm.integrators import ScipyRK45
+
 from openpnm.algorithms import Algorithm
 from openpnm.algorithms._solution import SolutionContainer, TransientSolution
-
+from openpnm.integrators import ScipyRK45
+from openpnm.utils import Docorator
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
@@ -46,7 +47,7 @@ class TransientMultiPhysics(Algorithm):
         Runs all of the transient algorithms simultaneoulsy and returns the
         solution.
 
-        Parameters steal from transient reactive transport
+        Parameters
         ----------
         x0 : ndarray or float
             Array (or scalar) containing initial condition values.

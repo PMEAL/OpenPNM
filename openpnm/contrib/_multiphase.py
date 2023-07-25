@@ -1,9 +1,10 @@
 import logging
+
 import numpy as np
+
 import openpnm.models.misc as misc
 from openpnm.phase import Phase as Phase
 from openpnm.utils import Docorator, TypedSet
-
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
@@ -303,7 +304,7 @@ def multiphase_diffusion(phase,
                          size_factors="throat.diffusive_size_factors",
                          partition_coef_global="throat.partition_coef.global"):
     r"""
-    Calculates the diffusive conductance of conduits in network.
+    Calculates the diffusive conductance of conduits for multiphase systems.
 
     Parameters
     ----------

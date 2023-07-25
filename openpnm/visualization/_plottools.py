@@ -1,8 +1,13 @@
-import numpy as np
-import openpnm as op
-from tqdm.auto import tqdm
-from matplotlib.pyplot import cm
+import logging
+
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.pyplot import cm
+from tqdm.auto import tqdm
+
+import openpnm as op
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -109,9 +114,10 @@ def plot_connections(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from matplotlib import colors as mcolors
-    from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
+    from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
     from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -147,9 +153,15 @@ def plot_connections(network,
     if color_by is not None:
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
+        if not np.all(np.isfinite(color_by)):
+            color_by[~np.isfinite(color_by)] = 0
+            logger.warning('nans or infs found in color_by array, setting to 0')
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
         color[:, 3] = alpha
     if size_by is not None:
+        if not np.all(np.isfinite(size_by)):
+            size_by[~np.isfinite(size_by)] = 0
+            logger.warning('nans or infs found in size_by array, setting to 0')
         linewidth = size_by / size_by.max() * linewidth
 
     if ThreeD:
@@ -198,7 +210,9 @@ def plot_coordinates(network,
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']). These
-        values are normalized by scaled by ``markersize``.
+        values are normalized by scaled by ``markersize``.  Note that this controls
+        the marker *area*, so if you want the markers to be proportional to diameter
+        you should do `size_by=net['pore.diameter']**2`.
     color_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']).
     cmap : str or cmap object
@@ -260,6 +274,7 @@ def plot_coordinates(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from mpl_toolkits.mplot3d import Axes3D
+
     from openpnm.topotools import dimensionality
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
@@ -297,8 +312,14 @@ def plot_coordinates(network,
         markersize = kwargs.pop('s')
     if color_by is not None:
         color_by = color_by[Ps]
+        if not np.all(np.isfinite(color_by)):
+            color_by[~np.isfinite(color_by)] = 0
+            logger.warning('nans or infs found in color_by array, setting to 0')
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
     if size_by is not None:
+        if not np.all(np.isfinite(size_by)):
+            size_by[~np.isfinite(size_by)] = 0
+            logger.warning('nans or infs found in size_by array, setting to 0')
         markersize = size_by / size_by.max() * markersize
 
     if ThreeD:
@@ -365,7 +386,7 @@ def plot_networkx(network,
                   ax=None,
                   alpha=1.0):  # pragma: no cover
     r"""
-    Creates a pretty 2d plot for 2d OpenPNM networks.
+    Creates a pretty 2D plot for 2D OpenPNM networks.
 
     Parameters
     ----------
@@ -386,7 +407,8 @@ def plot_networkx(network,
     """
     import matplotlib.pyplot as plt
     from matplotlib.collections import PathCollection
-    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
+    from networkx import Graph, draw_networkx_edges, draw_networkx_nodes
+
     from openpnm.topotools import dimensionality
 
     dims = dimensionality(network)
@@ -453,6 +475,8 @@ def plot_networkx(network,
 
 
 def plot_tutorial(network,
+                  pore_labels=None,
+                  throat_labels=None,
                   font_size=12,
                   line_width=2,
                   node_color='b',
@@ -466,6 +490,12 @@ def plot_tutorial(network,
     network : Network
         The network to plot, should be 2D, since the z-coordinate will be
         ignored.
+    pore_labels : array_like
+        A list of values to use for labeling the pores. If not provided then pore
+        index is used.
+    throat_labels : array_like
+        A list of values to use for labeling the throat. If not provided then throat
+        index is used.
     font_size : int
         Size of font to use for labels.
     line_width : int
@@ -482,14 +512,22 @@ def plot_tutorial(network,
     g : NetworkX plot object
 
     """
-    import networkx as nx
     import matplotlib.pyplot as plt
+    import networkx as nx
+
     from openpnm.io import network_to_networkx
 
     G = network_to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
-    labels = {i: i for i in network.Ps}
-    edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
+    if pore_labels is None:
+        labels = {i: i for i in network.Ps}
+    else:
+        labels = {i: pore_labels[i] for i in network.Ps}
+    if throat_labels is None:
+        edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
+    else:
+        edge_labels = {tuple(network['throat.conns'][i, :]): throat_labels[i]
+                       for i in network.Ts}
 
     gplot = nx.draw_networkx_nodes(G, pos,
                                    node_size=node_size,
@@ -671,8 +709,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     solid phase, pores, and throats respectively.
 
     """
-    from skimage.morphology import cube, ball
-    from porespy.tools import overlay, insert_cylinder
+    from porespy.tools import insert_cylinder, overlay
+    from skimage.morphology import ball, cube
     xyz = network["pore.coords"]
     cn = network["throat.conns"]
 
@@ -814,6 +852,7 @@ def plot_vispy(
     bgcolor='grey',
 ):
     r"""
+    Creates a pretty network plot using VisPy.
 
     Parameters
     ----------

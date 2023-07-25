@@ -1,6 +1,7 @@
 import numpy as np
-import openpnm as op
 from numpy.testing import assert_allclose
+
+import openpnm as op
 
 
 class ElectricalConductanceTest:
@@ -36,5 +37,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

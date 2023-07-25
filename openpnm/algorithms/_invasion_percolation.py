@@ -1,21 +1,15 @@
-import logging
 import heapq as hq
-import numpy as np
-from numba import njit, jit
-from tqdm.auto import tqdm
+import logging
 from collections import namedtuple
-from openpnm.utils import Docorator
-from openpnm.algorithms import Algorithm
-from openpnm._skgraph.simulations import (
-    bond_percolation,
-    site_percolation,
-)
-from openpnm._skgraph.queries import (
-    qupc_initialize,
-    qupc_update,
-    qupc_reduce,
-)
 
+import numpy as np
+from numba import jit, njit
+from tqdm.auto import tqdm
+
+from openpnm._skgraph.queries import qupc_initialize, qupc_reduce, qupc_update
+from openpnm._skgraph.simulations import bond_percolation, site_percolation
+from openpnm.algorithms import Algorithm
+from openpnm.utils import Docorator
 
 __all__ = [
     'InvasionPercolation',
@@ -354,14 +348,14 @@ class InvasionPercolation(Algorithm):
         # self['throat.trapped'][self['throat.residual']] = False
 
 
-@jit
-def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
+@jit(forceobj=True)
+def _find_trapped_pores(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
     cluster = -np.ones(Np, dtype=np.int_)
-    trapped_pores = np.zeros(Np, dtype=np.bool_)
-    trapped_clusters = np.zeros(Np, dtype=np.bool_)
+    trapped_pores = np.zeros(Np, dtype=bool)
+    trapped_clusters = np.zeros(Np, dtype=bool)
     # cluster_map = qupc_initialize(Np)
     cluster_map = np.arange(Np, dtype=np.int_)
     next_cluster_num = 0
@@ -471,8 +465,9 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
 
 # %%
 if __name__ == '__main__':
-    import openpnm as op
     import matplotlib.pyplot as plt
+
+    import openpnm as op
 
     np.random.seed(0)
     Nx, Ny, Nz = 25, 25, 1

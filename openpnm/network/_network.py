@@ -113,6 +113,13 @@ class Network(Domain):
                        regen_mode='deferred',
                        domain='all')
 
+    def _post_init(self, *args, **kwargs):
+        # A collection of functions to run after initialization of a network
+        topotools.label_faces(self, label=None)
+        drop = ['pore.left', 'pore.right', 'pore.front', 'pore.back',
+                'pore.bottom', 'pore.top']
+        [self.pop(item) for item in list(self.keys()) if item in drop]
+
     def __setitem__(self, key, value):
         if key == 'throat.conns':
             if np.any(value[:, 0] > value[:, 1]):
@@ -821,6 +828,61 @@ class Network(Domain):
                     temp.append(np.array(item, dtype=np.int64)[mask[item]])
                 Pn = temp
         return Pn
+
+    @property
+    def info(self):
+        hr = '―' * 78
+        errmsg = '--------- ! --------- ! ---------\n'
+        pad = 45
+        lines = hr + '\n'
+        # ---
+        lines += 'Number of pores | throats: '.ljust(pad)
+        lines += f"{self.Np} | {self.Nt} \n"
+        # ---
+        lines += 'Pore Coordination (min | mean | max): '.ljust(pad)
+        try:
+            x = self['pore.coordination_number']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Pore Diameter (min | mean | max): '.ljust(pad)
+        try:
+            x = self['pore.diameter']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Pore Spacing (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.spacing']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Throat Diameter (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.diameter']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Throat Length (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.length']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += 'Throat Volume (min | mean | max): '.ljust(pad)
+        try:
+            x = self['throat.volume']
+            lines += f"{x.min():.3E} | {x.mean():.3E} | {x.max():.3E} \n"
+        except KeyError:
+            lines += errmsg
+        # ---
+        lines += hr
+        print(lines)
 
     @property
     def conns(self):

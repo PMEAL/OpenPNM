@@ -45,13 +45,13 @@ def add_nodes(network, new_coords):
     Nnew = coords.shape[0]
     for k, v in g.items():
         if k.startswith(node_prefix):
-            blank = np.repeat(v[:1, ...], Nnew, axis=0)
             dval = None
             for t in settings.missing_values.keys():
                 if v.dtype == t:
                     dval = settings.missing_values[t]
+            blank = np.repeat(v[:1, ...], Nnew, axis=0)*dval
             blank.fill(dval)
-            g[k] = np.concatenate((v, blank), axis=0)
+            g[k] = np.concatenate((v, blank), axis=0).astype(v.dtype)
     # Lastly, overwrite the -Nnew elements of coords with the given values
     g[node_prefix+'.coords'][-Nnew:] = np.array(coords)
     return g
@@ -89,13 +89,13 @@ def add_edges(network, new_conns):
     Nnew = conns.shape[0]
     for k, v in g.items():
         if k.startswith(edge_prefix):
-            blank = np.repeat(v[:1, ...], Nnew, axis=0)
             dval = None
             for t in settings.missing_values.keys():
                 if v.dtype == t:
                     dval = settings.missing_values[t]
+            blank = np.repeat(v[:1, ...], Nnew, axis=0)*dval
             blank.fill(dval)
-            g[k] = np.concatenate((v, blank), axis=0)
+            g[k] = np.concatenate((v, blank), axis=0).astype(v.dtype)
     # Lastly, overwrite the -Nnew elements of coords with the given values
     g[edge_prefix+'.conns'][-Nnew:] = np.array(conns)
     return g

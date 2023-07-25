@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       max-parallel: 9
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.9', '3.10', '3.11']
         # Add macos-latest to the next line once #2451 is fixed
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
@@ -27,28 +27,28 @@ jobs:
 
     steps:
       - name: Cache pip
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies (pip)
+      - name: Install dependencies
         run: |
           pip install \
             -r requirements.txt \
             -r requirements/tests.txt
 
       - name: Disable numba JIT for codecov to include jitted methods
-        if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
+        if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
         run: |
           echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
@@ -61,7 +61,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml

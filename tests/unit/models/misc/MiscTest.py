@@ -1,7 +1,9 @@
 import numpy as np
+import scipy.stats as spst
+from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
+
 import openpnm as op
 import openpnm.models.misc as mods
-from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
 
 
 class MiscTest:
@@ -246,40 +248,6 @@ class MiscTest:
         tseed = np.mean(self.net['pore.seed'][P12], axis=1)
         assert_array_almost_equal_nulp(self.net['throat.seed'], tseed)
 
-    # def test_from_neighbors_multi_geom(self):
-    #     net = op.network.Cubic(shape=[5, 5, 5])
-    #     net.add_boundary_pores()
-    #     Ps1 = net.pores('internal')
-    #     Ts1 = net.throats('internal')
-    #     geo1 = op.geometry.GenericGeometry(network=net,
-    #                                        pores=Ps1,
-    #                                        throats=Ts1)
-    #     Ps2 = net.pores('internal', mode='not')
-    #     Ts2 = net.throats('internal', mode='not')
-    #     geo2 = op.geometry.GenericGeometry(network=net,
-    #                                        pores=Ps2,
-    #                                        throats=Ts2)
-    #     geo1['pore.rand1'] = np.random.random(geo1.Np)
-    #     geo2['pore.rand1'] = np.random.random(geo2.Np)
-    #     geo1.add_model(model=mods.from_neighbor_pores,
-    #                    propname='throat.rand1',
-    #                    prop='pore.rand1',
-    #                    mode='min')
-    #     test = np.amin(net['pore.rand1'][net['throat.conns']], axis=1)[Ts1]
-    #     assert np.all(test == geo1['throat.rand1'])
-    #     geo1['throat.rand2'] = np.random.random(geo1.Nt)
-    #     geo2['throat.rand2'] = np.random.random(geo2.Nt)
-    #     geo2.add_model(model=mods.from_neighbor_throats,
-    #                    propname='pore.rand2',
-    #                    prop='throat.rand2',
-    #                    mode='max')
-    #     test = np.zeros(geo2.Np).astype(bool)
-    #     for i, pore in enumerate(net.pores(geo2.name)):
-    #         Ts = net.find_neighbor_throats(pores=pore)
-    #         T_max = np.amax(net['throat.rand2'][Ts])
-    #         test[i] = net['pore.rand2'][pore] == T_max
-    #     assert np.all(test)
-
     def test_invert(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         net['pore.diameter'] = 2.0
@@ -299,6 +267,24 @@ class MiscTest:
         assert nums[3] == np.amax(nums)
         assert nums[0] == np.amin(nums)
 
+    def test_generic_distribution(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        pn['pore.seed'] = np.random.rand(pn.Np)
+        pn.add_model(propname='pore.test1',
+                     model=op.models.misc.generic_distribution,
+                     seeds='pore.seed',
+                     func=spst.weibull_min,
+                     c=2.8,
+                     scale=1e-5)
+        pn.add_model(propname='pore.test2',
+                     model=op.models.misc.generic_distribution,
+                     seeds='pore.seed',
+                     func=spst.weibull_min(c=2.8, scale=1e-5))
+        assert np.all(pn['pore.test1'] == pn['pore.test2'])
+        pn.models['pore.test1@all']['c'] = 1.0
+        pn.regenerate_models()
+        assert np.all(pn['pore.test1'] != pn['pore.test2'])
+
 
 if __name__ == '__main__':
 
@@ -307,5 +293,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

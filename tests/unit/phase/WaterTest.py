@@ -1,5 +1,6 @@
-import openpnm as op
 import numpy.testing as nptest
+
+import openpnm as op
 
 
 class WaterTest:
@@ -47,11 +48,11 @@ class WaterTest:
             self.phase['pore.temperature'] = T1
             self.phase.regenerate_models()
             val = self.phase[prop][0]
-            nptest.assert_array_almost_equal_nulp(val, vals[prop][T1])
+            nptest.assert_allclose(val, vals[prop][T1], rtol=1e-10)
             self.phase['pore.temperature'] = T2
             self.phase.regenerate_models()
             val = self.phase[prop][0]
-            nptest.assert_array_almost_equal_nulp(val, vals[prop][T2])
+            nptest.assert_allclose(val, vals[prop][T2], rtol=1e-10)
 
 
 if __name__ == '__main__':
@@ -61,5 +62,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

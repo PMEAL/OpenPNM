@@ -5,7 +5,7 @@ from openpnm._skgraph.tools import tri_to_am, isoutside
 from openpnm._skgraph.operations import trim_nodes
 
 
-def delaunay(points, shape=[1, 1, 1], reflect=False,
+def delaunay(points, shape=[1, 1, 1], reflect=False, trim=True,
              node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a network based on Delaunay triangulation of random points
@@ -22,6 +22,9 @@ def delaunay(points, shape=[1, 1, 1], reflect=False,
         prior to performing the tessellation. These reflected points are
         automatically trimmed.  Enabling this behavior prevents long-range
         connections between surface pores.
+    trim : boolean, optional (default = ``True``)
+        If ``True`` then any points laying outside the domain are removed. This is
+        mostly only useful if ``reflect=True``.
 
     Returns
     -------
@@ -37,7 +40,7 @@ def delaunay(points, shape=[1, 1, 1], reflect=False,
     d = {}
     d[node_prefix+'.coords'] = points
     d[edge_prefix+'.conns'] = np.vstack((coo.row, coo.col)).T
-    if reflect:
+    if trim:
         trim = isoutside(d, shape=shape)
         d = trim_nodes(network=d, inds=np.where(trim)[0])
     return d, tri
