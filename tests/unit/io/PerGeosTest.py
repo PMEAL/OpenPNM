@@ -1,6 +1,7 @@
-import openpnm as op
 import os
 from pathlib import Path
+
+import openpnm as op
 
 
 class PerGeosTest:
@@ -46,13 +47,14 @@ class PerGeosTest:
 
 if __name__ == '__main__':
     import py
+
     # All the tests in this file can be run with 'playing' this file
     t = PerGeosTest()
     self = t  # For interacting with the tests at the command line
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             try:
                 t.__getattribute__(item)()
             except TypeError:
