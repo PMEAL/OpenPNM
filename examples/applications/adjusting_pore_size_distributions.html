@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.1.2.dev1 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.1.2.dev2 documentation</title>
   
   
   
@@ -460,12 +460,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <section id="network">
 <h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h2>
@@ -540,7 +534,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fbec0518c20&gt;
+net : &lt;openpnm.network.Cubic at 0x7f288884efc0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -591,7 +585,7 @@ net : &lt;openpnm.network.Cubic at 0x7fbec0518c20&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4989d821d9d2dc14fdb9dba0aaac0b2e12878c15c39c3ec59baec5baf76747d7.png" src="../../_images/4989d821d9d2dc14fdb9dba0aaac0b2e12878c15c39c3ec59baec5baf76747d7.png" />
+<img alt="../../_images/f06359a45713c3a7cde0103f0dc7a81d10507d08e2913cbaf7d558793a9f1bd6.png" src="../../_images/f06359a45713c3a7cde0103f0dc7a81d10507d08e2913cbaf7d558793a9f1bd6.png" />
 </div>
 </div>
 </section>
@@ -637,7 +631,7 @@ net : &lt;openpnm.network.Cubic at 0x7fbec0518c20&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/eaf6d78b6ef60f6f3ef198d9eb6b286f6eb2938d80220240fc11dfd0d96985b7.png" src="../../_images/eaf6d78b6ef60f6f3ef198d9eb6b286f6eb2938d80220240fc11dfd0d96985b7.png" />
+<img alt="../../_images/4e0cb752da1a19c0022771f62fa3a97a02db4b9de8acdbfca8e875f96d8e5be5.png" src="../../_images/4e0cb752da1a19c0022771f62fa3a97a02db4b9de8acdbfca8e875f96d8e5be5.png" />
 </div>
 </div>
 </section>
@@ -698,7 +692,7 @@ net : &lt;openpnm.network.Cubic at 0x7fbec0518c20&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d4691fb01b5852b14454cd2892bf00cf944f53e7a332e9433c056f89ed5443f8.png" src="../../_images/d4691fb01b5852b14454cd2892bf00cf944f53e7a332e9433c056f89ed5443f8.png" />
+<img alt="../../_images/b299d2b064150eb7eb59d9bb050a1e7dd6c07baccb14bcadea7d3360cb71eed2.png" src="../../_images/b299d2b064150eb7eb59d9bb050a1e7dd6c07baccb14bcadea7d3360cb71eed2.png" />
 </div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
@@ -722,7 +716,7 @@ net : &lt;openpnm.network.Cubic at 0x7fbec0518c20&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9b2e65d7e46302c54b56946922fc640099e0ea2b782e7b97f10ef80d9d7be639.png" src="../../_images/9b2e65d7e46302c54b56946922fc640099e0ea2b782e7b97f10ef80d9d7be639.png" />
+<img alt="../../_images/d825739f2e59ea15c2d56cf3d87c4d5543fa5155403179c5c6fae410c1b2442e.png" src="../../_images/d825739f2e59ea15c2d56cf3d87c4d5543fa5155403179c5c6fae410c1b2442e.png" />
 </div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
@@ -735,7 +729,7 @@ net : &lt;openpnm.network.Cubic at 0x7fbec0518c20&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/65395256ab455c93b7c8bdbae5abccd8cd105ee253b6c20a03bc7fdef32f034a.png" src="../../_images/65395256ab455c93b7c8bdbae5abccd8cd105ee253b6c20a03bc7fdef32f034a.png" />
+<img alt="../../_images/826117f0ceb79919efe61dcc777575bcc5d3485cb948df36031c00b5248076cf.png" src="../../_images/826117f0ceb79919efe61dcc777575bcc5d3485cb948df36031c00b5248076cf.png" />
 </div>
 </div>
 </section>

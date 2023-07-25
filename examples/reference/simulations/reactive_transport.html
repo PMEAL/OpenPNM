@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Reactive Transport &#8212; OpenPNM 3.1.2.dev1 documentation</title>
+    <title>Reactive Transport &#8212; OpenPNM 3.1.2.dev2 documentation</title>
   
   
   
@@ -463,12 +463,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -479,7 +473,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7ff74c9529d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f5039992ed0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -572,7 +566,7 @@ net : &lt;openpnm.network.Cubic at 0x7ff74c9529d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7ff708cb5850&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f5039993ce0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -607,7 +601,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7ff708cb5850&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7ff708cb5850&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f5039993ce0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -635,7 +629,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7ff708cb5850&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7ff708cb5080&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f5039993a10&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -709,24 +703,24 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7ff708cb5080&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.58695497 -0.88888184  0.         -0.69807313  0.          0.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.65074068 -0.71127916  0.         -0.93946152  0.          0.
    0.          0.          0.        ]
- [-0.88888184  1.34742861 -0.20452555  0.         -0.25402123  0.
+ [-0.71127916  2.03024162 -0.38681877  0.         -0.93214369  0.
    0.          0.          0.        ]
- [ 0.         -0.20452555  0.89819125  0.          0.         -0.69366571
+ [ 0.         -0.38681877  0.54994418  0.          0.         -0.16312541
    0.          0.          0.        ]
- [-0.69807313  0.          0.          1.02303658 -0.15677905  0.
-  -0.1681844   0.          0.        ]
- [ 0.         -0.25402123  0.         -0.15677905  0.8841344  -0.17121973
-   0.         -0.30211439  0.        ]
- [ 0.          0.         -0.69366571  0.         -0.17121973  1.62857849
-   0.          0.         -0.76369305]
- [ 0.          0.          0.         -0.1681844   0.          0.
-   0.37299165 -0.20480726  0.        ]
- [ 0.          0.          0.          0.         -0.30211439  0.
-  -0.20480726  1.35139941 -0.84447777]
- [ 0.          0.          0.          0.          0.         -0.76369305
-   0.         -0.84447777  1.60817082]]
+ [-0.93946152  0.          0.          2.18675333 -0.58889444  0.
+  -0.65839737  0.          0.        ]
+ [ 0.         -0.93214369  0.         -0.58889444  2.38926566 -0.28355006
+   0.         -0.58467747  0.        ]
+ [ 0.          0.         -0.16312541  0.         -0.28355006  1.16066508
+   0.          0.         -0.71398962]
+ [ 0.          0.          0.         -0.65839737  0.          0.
+   1.44304676 -0.78464939  0.        ]
+ [ 0.          0.          0.          0.         -0.58467747  0.
+  -0.78464939  2.08964052 -0.72031367]
+ [ 0.          0.          0.          0.          0.         -0.71398962
+   0.         -0.72031367  1.43430329]]
 </pre></div>
 </div>
 </div>

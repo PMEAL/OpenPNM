@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Steady State Transport &#8212; OpenPNM 3.1.2.dev1 documentation</title>
+    <title>Steady State Transport &#8212; OpenPNM 3.1.2.dev2 documentation</title>
   
   
   
@@ -468,12 +468,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <section id="creating-the-coefficient-matrix">
 <h2>Creating the Coefficient Matrix<a class="headerlink" href="#creating-the-coefficient-matrix" title="Permalink to this heading">#</a></h2>
@@ -494,10 +488,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-0.8690644   0.76151834  0.10754605  0.        ]
- [ 0.76151834 -1.53335448  0.          0.77183614]
- [ 0.10754605  0.         -0.41229811  0.30475206]
- [ 0.          0.77183614  0.30475206 -1.0765882 ]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.77785207  0.94477225  0.83307983  0.        ]
+ [ 0.94477225 -1.71656905  0.          0.7717968 ]
+ [ 0.83307983  0.         -0.92680625  0.09372643]
+ [ 0.          0.7717968   0.09372643 -0.86552323]]
 </pre></div>
 </div>
 </div>
@@ -527,9 +521,9 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.76151834 -1.53335448  0.          0.77183614]
- [ 0.10754605  0.         -0.41229811  0.30475206]
- [ 0.          0.77183614  0.30475206 -1.0765882 ]]
+ [ 0.94477225 -1.71656905  0.          0.7717968 ]
+ [ 0.83307983  0.         -0.92680625  0.09372643]
+ [ 0.          0.7717968   0.09372643 -0.86552323]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -549,7 +543,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.45619192 1.20145679 0.91965339]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.55836241 1.90066611 1.0177448 ]
 </pre></div>
 </div>
 </div>
@@ -635,9 +629,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.76151834 -1.53335448  0.          0.77183614]
- [ 0.10754605  0.         -0.41229811  0.30475206]
- [ 0.          0.77183614  0.30475206 -1.0765882 ]]
+ [ 0.94477225 -1.71656905  0.          0.7717968 ]
+ [ 0.83307983  0.         -0.92680625  0.09372643]
+ [ 0.          0.7717968   0.09372643 -0.86552323]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -654,7 +648,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.45619192 1.20145679 0.91965339]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.55836241 1.90066611 1.0177448 ]
 </pre></div>
 </div>
 </div>

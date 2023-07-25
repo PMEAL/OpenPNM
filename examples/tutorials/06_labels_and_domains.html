@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Using Labels and Defining Domains &#8212; OpenPNM 3.1.2.dev1 documentation</title>
+    <title>Using Labels and Defining Domains &#8212; OpenPNM 3.1.2.dev2 documentation</title>
   
   
   
@@ -458,12 +458,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
-  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
-</pre></div>
-</div>
-</div>
 </div>
 <section id="using-predefined-labels">
 <h2>Using Predefined Labels<a class="headerlink" href="#using-predefined-labels" title="Permalink to this heading">#</a></h2>
@@ -477,7 +471,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0796fbf010&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -861,7 +855,7 @@ net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0796fbf010&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -909,7 +903,7 @@ net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0796fbf010&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -965,6 +959,9 @@ net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
 ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
 </div>
 </div>
 <p>Appending <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to the model name creates a unique dictionary key. OpenPNM recoginizes that the models in <code class="docutils literal notranslate"><span class="pre">'pore.seed&#64;left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.seed&#64;right'</span></code> both compute values of <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code>, and directs the outputs of each function to the correct locations, which it can infer from the <code class="docutils literal notranslate"><span class="pre">&#64;right/left</span></code> portion of the key.</p>
@@ -1000,7 +997,7 @@ net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0796fbf010&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1144,7 +1141,7 @@ net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f9eebda69d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f0796fbf010&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
