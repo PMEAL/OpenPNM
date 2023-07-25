@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         persist-credentials: false  # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
         fetch-depth: 0              # otherwise, you will failed to push refs to dest repo
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: '3.9'
 
     - name: Set env variables
       run: |
@@ -77,7 +77,7 @@ jobs:
       with:
         source_branch: "release"                          # If blank, default: triggered branch
         destination_branch: "dev"                         # If blank, default: master
-        pr_title: "Don't forget to merge release back into dev!"
+        pr_title: "Merge release branch back into dev"
         pr_body: "Changes made to the release branch (e.g. hotfixes), plus the version bump."
         pr_assignee: "jgostick,ma-sadeghi"                # Comma-separated list (no spaces)
         pr_label: "high priority"                         # Comma-separated list (no spaces)
