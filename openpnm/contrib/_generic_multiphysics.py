@@ -104,8 +104,7 @@ class GenericMultiPhysics(Algorithm):
         self.soln = SolutionContainer()
         for alg in algs:
             # transient solution for each alg
-            x0 = alg.x.reshape((alg.Np, 1))
-            print(t0)
+            x0 = alg.x.reshape((alg.Np, 1)).copy()
             soln = TransientSolution(t0, x0)
             self.soln[alg.settings['quantity']] = soln
         phase = network.project.phases[0]
