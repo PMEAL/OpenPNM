@@ -110,7 +110,7 @@ class GenericMultiPhysics(Algorithm):
             self.soln[alg.settings['quantity']] = soln
         phase = network.project.phases[0]
         for t in times:
-            print(t0)
+            print(f'Time: {str(t0)}')
             # Initialize residuals & old/new fields for time marching
             g_res = {}
             g_old = {}
