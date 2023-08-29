@@ -159,6 +159,7 @@ def plot_connections(network,
         cmap = plt.colormaps[cmap]
     # Override colors with color_by if given
     if color_by is not None:
+        color_by = np.array(color_by, dtype=np.float16)
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
         if not np.all(np.isfinite(color_by)):
@@ -342,6 +343,7 @@ def plot_coordinates(network,
     if isinstance(cmap, str):
         cmap = plt.colormaps[cmap]
     if color_by is not None:
+        color_by = np.array(color_by, dtype=np.float16)
         if len(color_by) != len(Ps):
             color_by = color_by[Ps]
         if not np.all(np.isfinite(color_by)):
