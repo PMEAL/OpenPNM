@@ -315,7 +315,7 @@ class Base2(dict):
     name = property(_get_name, _set_name)
 
     def _get_project(self):
-        for proj in ws.values():
+        for proj in list(ws.values()):
             if self in proj:
                 return proj
 

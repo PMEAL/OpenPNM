@@ -2,8 +2,6 @@ import pytest
 import numpy as np
 import openpnm as op
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from openpnm import topotools
 from numpy.testing import assert_allclose
 
 
@@ -14,8 +12,9 @@ class PlotToolsTest:
 
     def test_plot_tutorial(self):
         pn = op.network.Cubic(shape=[4, 4, 1])
-        # TODO: This is failing but I think it's a networkx bug?
-        # topotools.plot_tutorial(pn)
+        # This runs locally, but fails on the CI due to a missing argument 's'
+        # coming from within the networkx function, not ours.
+        # op.visualization.plot_tutorial(pn)
         # plt.close()
 
     def test_plot_networkx_var_spacing(self):
@@ -70,9 +69,9 @@ class PlotToolsTest:
             op.models.collections.geometry.spheres_and_cylinders)
         pn.regenerate_models()
         im = op.visualization.generate_voxel_image(network=pn,
-                                               pore_shape='sphere',
-                                               throat_shape='cylinder',
-                                               max_dim=500)
+                                                   pore_shape='sphere',
+                                                   throat_shape='cylinder',
+                                                   max_dim=500)
         assert im.shape[0] == 500
 
     def test_plot_connections_color_by(self):
@@ -86,7 +85,8 @@ class PlotToolsTest:
                                                color_by=pn['throat.diameter'])
         colors_im = im.get_color()
         color_by = pn['throat.diameter'][Ts]
-        color_calc = cm.get_cmap(name='jet')(color_by / color_by.max())
+        cscale = (color_by - color_by.min()) / (color_by.max() - color_by.min())
+        color_calc = plt.colormaps['jet'](cscale)
         color_calc[:, 3] = 1.0
         assert_allclose(color_calc, colors_im, rtol=1e-5)
 
@@ -101,7 +101,8 @@ class PlotToolsTest:
                                                color_by=pn['pore.diameter'])
         colors_im = im.get_edgecolors()
         color_by = pn['pore.diameter'][Ps]
-        color_calc = cm.get_cmap(name='jet')(color_by / color_by.max())
+        cscale = (color_by - color_by.min()) / (color_by.max() - color_by.min())
+        color_calc = plt.colormaps['jet'](cscale)
         color_calc[:, 3] = 1.0
         assert_allclose(color_calc, colors_im, rtol=1e-5)
 

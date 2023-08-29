@@ -123,7 +123,7 @@ class Workspace(dict):
                 name = name + '_01'
             prefix, count = name.rsplit('_', 1)
             n = [0]
-            for item in self.keys():
+            for item in list(self.keys()):
                 if item.startswith(prefix+'_'):
                     n.append(int(item.split(prefix+'_')[1]))
             name = prefix+'_'+str(max(n)+1).zfill(2)
