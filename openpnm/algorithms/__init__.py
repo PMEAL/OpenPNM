@@ -13,6 +13,8 @@ from ._advection_diffusion import *
 from ._transient_advection_diffusion import *
 
 from ._fourier_conduction import *
+from ._transient_fourier_conduction import *
+
 from ._ohmic_conduction import *
 
 from ._drainage import *
