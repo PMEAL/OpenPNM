@@ -7,6 +7,7 @@ __all__ = ['TransientFourierConduction']
 
 logger = logging.getLogger(__name__)
 
+
 class TransientFourierConductionSettings():
     r"""
 
@@ -18,6 +19,7 @@ class TransientFourierConductionSettings():
     quantity = 'pore.temperature'
     conductance = 'throat.thermal_conductance'
     pore_volume = 'pore.volume'
+
 
 class TransientFourierConduction(TransientReactiveTransport, FourierConduction):
     r"""
