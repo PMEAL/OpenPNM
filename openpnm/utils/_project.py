@@ -15,42 +15,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     'Project',
-    'SimpleList',
 ]
-
-
-class SimpleList:
-    """A simple list class that prevents duplicates, and more!"""
-    def __init__(self, data=None):
-        if (data is not None):
-            self._list = list(data)
-        else:
-            self._list = list()
-
-    def __repr__(self):  # pragma: no cover
-        return self._list.__repr__()
-
-    def __len__(self):
-        return len(self._list)
-
-    def __getitem__(self, ii):
-        if isinstance(ii, slice):
-            return self.__class__(self._list[ii])
-        else:
-            return self._list[ii]
-
-    def __delitem__(self, ii):
-        del self._list[ii]
-
-    def __str__(self):  # pragma: no cover
-        return str(self._list)
-
-    def __iter__(self):
-        return self._list.__iter__()
-
-    def append(self, item):
-        if item not in self._list:
-            self._list.append(item)
 
 
 class ProjectSettings(SettingsAttr):
@@ -74,7 +39,7 @@ class ProjectSettings(SettingsAttr):
         self._name = name
 
 
-class Project(SimpleList):
+class Project(list):
     r"""
     This class provides a container for all OpenPNM objects in a given
     simulation.
@@ -109,16 +74,14 @@ class Project(SimpleList):
         ws[self.settings['name']] = self
 
     def __getitem__(self, key):
-        if isinstance(key, str):  # Enable dict-style retrieval if key is a string
-            obj = None
-            for item in self:
-                if item.name == key:
-                    obj = item
-            if obj is None:
-                raise KeyError(key)
-        else:
-            obj = super().__getitem__(key)
-        return obj
+        try:
+            return super().__getitem__(key)
+        except TypeError:
+            if isinstance(key, str):  # Enable dict-style lookup if key is a string
+                for item in self:
+                    if item.name == key:
+                        return item
+            raise KeyError(key)
 
     def copy(self, name=None):
         r"""

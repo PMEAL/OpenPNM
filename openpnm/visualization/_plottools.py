@@ -156,7 +156,10 @@ def plot_connections(network,
         color = kwargs.pop('c')
     color = mcolors.to_rgb(color) + tuple([alpha])
     if isinstance(cmap, str):
-        cmap = plt.colormaps[cmap]
+        try:
+            cmap = plt.colormaps.get_cmap(cmap)
+        except AttributeError:
+            cmap = plt.cm.get_cmap(cmap)
     # Override colors with color_by if given
     if color_by is not None:
         color_by = np.array(color_by, dtype=np.float16)
@@ -341,7 +344,10 @@ def plot_coordinates(network,
     if 's' in kwargs.keys():
         markersize = kwargs.pop('s')
     if isinstance(cmap, str):
-        cmap = plt.colormaps[cmap]
+        try:
+            cmap = plt.colormaps.get_cmap(cmap)
+        except AttributeError:
+            cmap = plt.cm.get_cmap(cmap)
     if color_by is not None:
         color_by = np.array(color_by, dtype=np.float16)
         if len(color_by) != len(Ps):
