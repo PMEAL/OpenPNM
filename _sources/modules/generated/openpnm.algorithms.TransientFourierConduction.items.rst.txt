@@ -1,0 +1,8 @@
+:orphan:
+
+items
+===================================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. automethod:: TransientFourierConduction.items

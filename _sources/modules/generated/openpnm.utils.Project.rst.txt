@@ -15,6 +15,15 @@ Project
          :toctree:
          
             Project.append
+            Project.clear
             Project.copy
+            Project.count
+            Project.extend
+            Project.index
+            Project.insert
+            Project.pop
+            Project.remove
+            Project.reverse
+            Project.sort
    
    

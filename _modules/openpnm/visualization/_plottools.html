@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.visualization._plottools &#8212; OpenPNM 3.1.2.dev2 documentation</title>
+    <title>openpnm.visualization._plottools &#8212; OpenPNM 3.2.0.dev4 documentation</title>
   
   
   
@@ -418,6 +418,7 @@ document.write(`
                      <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">size_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">color_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">label_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span>
                      <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
                      <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
@@ -446,8 +447,10 @@ document.write(`
 <span class="sd">        An ndarray of throat values (e.g. alg[&#39;throat.rate&#39;]).  These</span>
 <span class="sd">        values are used to scale the ``linewidth``, so if the lines are too</span>
 <span class="sd">        thin, then increase ``linewidth``.</span>
-<span class="sd">    color_by : str or array_like (optional)</span>
+<span class="sd">    color_by : array_like (optional)</span>
 <span class="sd">        An ndarray of throat values (e.g. alg[&#39;throat.rate&#39;]).</span>
+<span class="sd">    label_by : array_like (optional)</span>
+<span class="sd">        An array or list of values to use as labels</span>
 <span class="sd">    cmap : str or cmap object (optional)</span>
 <span class="sd">        The matplotlib colormap to use if specfying a throat property</span>
 <span class="sd">        for ``color_by``</span>
@@ -462,6 +465,9 @@ document.write(`
 <span class="sd">        Controls the thickness of drawn lines.  Is used to scale the thickness</span>
 <span class="sd">        if ``size_by`` is given. Default is 1. If a value is provided for</span>
 <span class="sd">        ``size_by`` then they are used to scale the ``linewidth``.</span>
+<span class="sd">    font : dict</span>
+<span class="sd">        A dictionary of key-value pairs that are used to control the font</span>
+<span class="sd">        appearance if `label_by` is provided.</span>
 <span class="sd">    **kwargs : dict</span>
 <span class="sd">        All other keyword arguments are passed on to the ``Line3DCollection``</span>
 <span class="sd">        class of matplotlib, so check their documentation for additional</span>
@@ -540,20 +546,35 @@ document.write(`
     <span class="k">if</span> <span class="s1">&#39;c&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
     <span class="n">color</span> <span class="o">=</span> <span class="n">mcolors</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">alpha</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colormaps</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
     <span class="c1"># Override colors with color_by if given</span>
     <span class="k">if</span> <span class="n">color_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">color_by</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">color_by</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_by</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ts</span><span class="p">):</span>
             <span class="n">color_by</span> <span class="o">=</span> <span class="n">color_by</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">color_by</span><span class="p">)):</span>
             <span class="n">color_by</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">color_by</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;nans or infs found in color_by array, setting to 0&#39;</span><span class="p">)</span>
-        <span class="n">color</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cmap</span><span class="p">)(</span><span class="n">color_by</span> <span class="o">/</span> <span class="n">color_by</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;vmin&#39;</span><span class="p">,</span> <span class="n">color_by</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;vmax&#39;</span><span class="p">,</span> <span class="n">color_by</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">cscale</span> <span class="o">=</span> <span class="p">(</span><span class="n">color_by</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">cscale</span><span class="p">)</span>
         <span class="n">color</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
     <span class="k">if</span> <span class="n">size_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">size_by</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ts</span><span class="p">):</span>
+            <span class="n">size_by</span> <span class="o">=</span> <span class="n">size_by</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">size_by</span><span class="p">)):</span>
             <span class="n">size_by</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">size_by</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;nans or infs found in size_by array, setting to 0&#39;</span><span class="p">)</span>
         <span class="n">linewidth</span> <span class="o">=</span> <span class="n">size_by</span> <span class="o">/</span> <span class="n">size_by</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">linewidth</span>
+    <span class="k">if</span> <span class="n">label_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_by</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ts</span><span class="p">):</span>
+            <span class="n">label_by</span> <span class="o">=</span> <span class="n">label_by</span><span class="p">[</span><span class="n">Ts</span><span class="p">]</span>
+    <span class="n">fontkws</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
     <span class="k">if</span> <span class="n">ThreeD</span><span class="p">:</span>
         <span class="n">lc</span> <span class="o">=</span> <span class="n">Line3DCollection</span><span class="p">(</span><span class="n">throat_pos</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
@@ -563,6 +584,12 @@ document.write(`
         <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">throat_pos</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
                             <span class="n">linestyles</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
                             <span class="n">antialiaseds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Ts</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="p">(</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[</span><span class="n">Ts</span><span class="p">,</span> <span class="p">:]):</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="p">[[</span><span class="n">P1</span><span class="p">,</span> <span class="n">P2</span><span class="p">],</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">label_by</span><span class="p">[</span><span class="n">count</span><span class="p">],</span>
+                        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">fontkws</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">Ts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -578,6 +605,7 @@ document.write(`
                      <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">size_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">color_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">label_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span>
                      <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span>
                      <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
@@ -606,6 +634,8 @@ document.write(`
 <span class="sd">        you should do `size_by=net[&#39;pore.diameter&#39;]**2`.</span>
 <span class="sd">    color_by : str or array_like</span>
 <span class="sd">        An ndarray of pore values (e.g. alg[&#39;pore.concentration&#39;]).</span>
+<span class="sd">    label_by : array_like (optional)</span>
+<span class="sd">        An array or list of values to use as labels</span>
 <span class="sd">    cmap : str or cmap object</span>
 <span class="sd">        The matplotlib colormap to use if specfying a pore property</span>
 <span class="sd">        for ``color_by``</span>
@@ -619,6 +649,9 @@ document.write(`
 <span class="sd">    markersize : scalar</span>
 <span class="sd">        Controls size of marker, default is 1.0.  This value is used to scale</span>
 <span class="sd">        the ``size_by`` argument if given.</span>
+<span class="sd">    font : dict</span>
+<span class="sd">        A dictionary of key-value pairs that are used to control the font</span>
+<span class="sd">        appearance if `label_by` is provided.</span>
 <span class="sd">    **kwargs</span>
 <span class="sd">        All other keyword arguments are passed on to the ``scatter``</span>
 <span class="sd">        function of matplotlib, so check their documentation for additional</span>
@@ -701,18 +734,33 @@ document.write(`
         <span class="n">color</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;s&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">markersize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colormaps</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">color_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">color_by</span> <span class="o">=</span> <span class="n">color_by</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span>
+        <span class="n">color_by</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">color_by</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_by</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ps</span><span class="p">):</span>
+            <span class="n">color_by</span> <span class="o">=</span> <span class="n">color_by</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">color_by</span><span class="p">)):</span>
             <span class="n">color_by</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">color_by</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;nans or infs found in color_by array, setting to 0&#39;</span><span class="p">)</span>
-        <span class="n">color</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cmap</span><span class="p">)(</span><span class="n">color_by</span> <span class="o">/</span> <span class="n">color_by</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;vmin&#39;</span><span class="p">,</span> <span class="n">color_by</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;vmax&#39;</span><span class="p">,</span> <span class="n">color_by</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">cscale</span> <span class="o">=</span> <span class="p">(</span><span class="n">color_by</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">vmax</span> <span class="o">-</span> <span class="n">vmin</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">(</span><span class="n">cscale</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">size_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">size_by</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ps</span><span class="p">):</span>
+            <span class="n">size_by</span> <span class="o">=</span> <span class="n">size_by</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">size_by</span><span class="p">)):</span>
             <span class="n">size_by</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">size_by</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;nans or infs found in size_by array, setting to 0&#39;</span><span class="p">)</span>
         <span class="n">markersize</span> <span class="o">=</span> <span class="n">size_by</span> <span class="o">/</span> <span class="n">size_by</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">markersize</span>
-
+    <span class="k">if</span> <span class="n">label_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">label_by</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ps</span><span class="p">):</span>
+            <span class="n">label_by</span> <span class="o">=</span> <span class="n">label_by</span><span class="p">[</span><span class="n">Ps</span><span class="p">]</span>
+    <span class="n">fontkws</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="p">{})</span>
     <span class="k">if</span> <span class="n">ThreeD</span><span class="p">:</span>
         <span class="n">sc</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span>
                         <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
@@ -729,6 +777,11 @@ document.write(`
                         <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
                         <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">Ps</span><span class="p">,</span> <span class="p">:]):</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">label_by</span><span class="p">[</span><span class="n">count</span><span class="p">],</span>
+                        <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">fontkws</span><span class="p">)</span>
         <span class="n">_scale_axes</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">Xl</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Yl</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Yl</span><span class="p">))</span>
 
     <span class="n">_label_axes</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">Xl</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Yl</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="n">Zl</span><span class="p">)</span>

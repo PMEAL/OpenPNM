@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.topotools._topotools &#8212; OpenPNM 3.1.2.dev2 documentation</title>
+    <title>openpnm.topotools._topotools &#8212; OpenPNM 3.2.0.dev4 documentation</title>
   
   
   
@@ -601,9 +601,6 @@ document.write(`
         <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">Np</span> <span class="o">==</span> <span class="n">Np_old</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">Nt</span> <span class="o">==</span> <span class="n">Nt_old</span><span class="p">):</span>
             <span class="n">Ps</span> <span class="o">=</span> <span class="n">Pkeep_inds</span>
             <span class="n">Ts</span> <span class="o">=</span> <span class="n">Tkeep_inds</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># If subdomain object then Np/Nt &lt; Np/Nt_old</span>
-            <span class="n">Ps</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_local</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">Pkeep_inds</span><span class="p">,</span> <span class="n">missing_vals</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-            <span class="n">Ts</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_local</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="n">Tkeep_inds</span><span class="p">,</span> <span class="n">missing_vals</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="n">temp</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;throat&#39;</span><span class="p">:</span>

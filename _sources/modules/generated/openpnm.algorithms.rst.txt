@@ -37,6 +37,7 @@ algorithms
       StokesFlow
       TransientAdvectionDiffusion
       TransientFickianDiffusion
+      TransientFourierConduction
       TransientReactiveTransport
       Transport
    

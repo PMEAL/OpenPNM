@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.phase._phase &#8212; OpenPNM 3.1.2.dev2 documentation</title>
+    <title>openpnm.phase._phase &#8212; OpenPNM 3.2.0.dev4 documentation</title>
   
   
   
@@ -448,12 +448,12 @@ document.write(`
         <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Deal with the fact that the label might only exist on the network</span>
             <span class="n">propname</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
             <span class="n">element</span><span class="p">,</span> <span class="n">prop</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="c1"># Fetch array from self</span>
-            <span class="k">try</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>  <span class="c1"># Fetch array from self if present</span>
                 <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>  <span class="c1"># Otherwise create it</span>
                 <span class="n">temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_empty_array_like</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">element</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span>
             <span class="c1"># Insert values into masked locations</span>

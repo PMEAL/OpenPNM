@@ -1,0 +1,50 @@
+TransientFourierConduction
+=============================================
+
+.. currentmodule:: openpnm.algorithms
+
+.. autoclass:: TransientFourierConduction
+   :no-members:
+   :no-inherited-members:
+   :no-special-members:
+
+   
+   
+   .. HACK -- we don't want this to appear in the output, but autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+         
+            TransientFourierConduction.clear
+            TransientFourierConduction.clear_BCs
+            TransientFourierConduction.clear_rate_BCs
+            TransientFourierConduction.clear_value_BCs
+            TransientFourierConduction.copy
+            TransientFourierConduction.filter_by_label
+            TransientFourierConduction.fromkeys
+            TransientFourierConduction.get
+            TransientFourierConduction.get_conduit_data
+            TransientFourierConduction.interpolate_data
+            TransientFourierConduction.items
+            TransientFourierConduction.keys
+            TransientFourierConduction.labels
+            TransientFourierConduction.num_pores
+            TransientFourierConduction.num_throats
+            TransientFourierConduction.pop
+            TransientFourierConduction.popitem
+            TransientFourierConduction.pores
+            TransientFourierConduction.props
+            TransientFourierConduction.rate
+            TransientFourierConduction.run
+            TransientFourierConduction.set_BC
+            TransientFourierConduction.set_label
+            TransientFourierConduction.set_rate_BC
+            TransientFourierConduction.set_source
+            TransientFourierConduction.set_value_BC
+            TransientFourierConduction.setdefault
+            TransientFourierConduction.throats
+            TransientFourierConduction.to_indices
+            TransientFourierConduction.to_mask
+            TransientFourierConduction.update
+            TransientFourierConduction.values
+   
+   

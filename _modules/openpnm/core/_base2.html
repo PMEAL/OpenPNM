@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.core._base2 &#8212; OpenPNM 3.1.2.dev2 documentation</title>
+    <title>openpnm.core._base2 &#8212; OpenPNM 3.2.0.dev4 documentation</title>
   
   
   
@@ -706,7 +706,7 @@ document.write(`
     <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_name</span><span class="p">,</span> <span class="n">_set_name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">ws</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ws</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">proj</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">proj</span>
 
