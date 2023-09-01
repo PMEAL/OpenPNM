@@ -1,6 +1,6 @@
 name: Tests
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -15,7 +15,6 @@ jobs:
       max-parallel: 9
       matrix:
         python-version: ['3.9', '3.10', '3.11']
-        # Add macos-latest to the next line once #2451 is fixed
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
         - os: ubuntu-latest
