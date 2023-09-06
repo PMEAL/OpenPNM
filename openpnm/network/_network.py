@@ -359,15 +359,16 @@ class Network(Domain):
         # Check if provided data is valid
         if weights is None:
             weights = np.ones((self.Nt,), dtype=int)
-        elif np.shape(weights)[0] != self.Nt:
+        if np.shape(weights)[0] == self.Nt:
+            weights = np.append(weights, weights)
+        elif np.shape(weights)[0] != 2*self.Nt:
             raise Exception('Received dataset of incorrect length')
 
         conn = self['throat.conns']
-        row = conn[:, 0]
-        row = np.append(row, conn[:, 1])
+        row = conn[:, 1]
+        row = np.append(row, conn[:, 0])
         col = np.arange(self.Nt)
         col = np.append(col, col)
-        weights = np.append(weights, weights)
 
         temp = sprs.coo.coo_matrix((weights, (row, col)), (self.Np, self.Nt))
 
