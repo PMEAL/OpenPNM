@@ -123,7 +123,7 @@ def center_of_mass(simplices, points):
     return CoM
 
 
-def parse_points(shape, points, reflect=False, f=2):
+def parse_points(shape, points, reflect=False, f=1):
     r"""
     Converts given points argument to consistent format
 
@@ -136,6 +136,12 @@ def parse_points(shape, points, reflect=False, f=2):
         an array, then these points are used directly.
     reflect : bool, optional
         If ``True`` the base points are reflected across the borders of the domain.
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
 
     Returns
     -------
@@ -347,7 +353,7 @@ def template_cylinder_annulus(z, r_outer, r_inner=0):
     return img
 
 
-def reflect_base_points(points, domain_size, f=2):
+def reflect_base_points(points, domain_size, f=1):
     r"""
     Relects a set of points about the faces of a given domain
 
@@ -370,11 +376,19 @@ def reflect_base_points(points, domain_size, f=2):
         [r]        Points will be reflected across the outer surface
         ========== ============================================================
 
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
+
     Returns
     -------
     points : ndarray
         The coordinates of the original points plus the new reflected points
     """
+    assert 0 <= f <= 1, 'f must be between 0 and 1'
     domain_size = np.array(domain_size)
     if len(domain_size) == 1:
         r, theta, phi = points
@@ -429,7 +443,7 @@ def reflect_base_points(points, domain_size, f=2):
     return points
 
 
-def generate_base_points(num_points, domain_size, reflect=True):
+def generate_base_points(num_points, domain_size, reflect=True, f=1):
     r"""
     Generates a set of randomly distributed points in rectilinear coordinates
     for use in spatial tessellations
@@ -465,6 +479,12 @@ def generate_base_points(num_points, domain_size, reflect=True):
         tessellation functions into creating smooth faces at the boundaries
         once these excess points are trimmed. Note that the surface is not
         perfectly smooth for the curved faces.
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
 
     Notes
     -----
@@ -484,7 +504,7 @@ def generate_base_points(num_points, domain_size, reflect=True):
         R, Q, P = R[:num_points], Q[:num_points], P[:num_points]
         # Reflect base points across perimeter
         if reflect:
-            R, Q, P = reflect_base_points(np.vstack((R, Q, P)), domain_size)
+            R, Q, P = reflect_base_points(np.vstack((R, Q, P)), domain_size, f=f)
         # Convert to Cartesean coordinates
         base_pts = np.vstack(tools.sph2cart(R, Q, P)).T
 
@@ -500,13 +520,13 @@ def generate_base_points(num_points, domain_size, reflect=True):
         # Reduce to requested number of points
         R, Q, Z = R[:num_points], Q[:num_points], Z[:num_points]
         if reflect:
-            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)), domain_size)
+            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)), domain_size, f=f)
         # Convert to Cartesean coordinates
         base_pts = np.vstack(tools.cyl2cart(R, Q, Z)).T
 
     elif len(domain_size) == 3:  # Cube or square
         base_pts = np.random.rand(num_points, 3)*domain_size
         if reflect:
-            base_pts = reflect_base_points(base_pts, domain_size)
+            base_pts = reflect_base_points(base_pts, domain_size, f=f)
 
     return base_pts
