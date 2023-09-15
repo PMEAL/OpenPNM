@@ -82,7 +82,7 @@ def voronoi_delaunay_dual(
     # Deal with voronoi edges
     v = vor.ridge_vertices.copy()  # Assuming 'ridge' means facet between regions
     # Add row [0] to close the facet on itself, add -1 to break connection to
-    # next facet in list as connections with -1 get deleted
+    # next facet in list as connections with -1 get deleted later
     _ = [row.extend([row[0], -1]) for row in v]
     v = np.hstack(v)
     conns_vor = np.vstack((v[:-1], v[1:])).T
@@ -156,9 +156,9 @@ def voronoi_delaunay_dual(
 
     if return_tri:
         tri = sptl.Delaunay(points=points[:, mask])
-        return network, vor, tri
     else:
-        return network, vor
+        tri = None
+    return network, vor, tri
 
 
 if __name__ == "__main__":

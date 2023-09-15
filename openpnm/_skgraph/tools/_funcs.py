@@ -232,7 +232,8 @@ def dimensionality(network, cache=True):
     n = get_node_prefix(network)
     coords = network[n+'.coords']
     eps = np.finfo(float).resolution
-    dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
+    dims_unique = \
+        [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
     if cache:
         network["params.dimensionality"] = np.array(dims_unique)
     return np.array(dims_unique)
@@ -686,9 +687,7 @@ def vor_to_am(vor):
     weights are set to 1.
 
     """
-    # Create adjacency matrix in lil format for quick matrix construction
     if 0:  # Original way, 2X slower
-        print('old way')
         rc = [[], []]
         for ij in vor.ridge_dict.keys():
             row = vor.ridge_dict[ij].copy()
@@ -699,7 +698,6 @@ def vor_to_am(vor):
             rc[1].extend(row[1:])
         rc = np.vstack(rc).T
     else:
-        print('new way')
         v = vor.ridge_vertices.copy()
         # Add row [0] to close the facet on itself, add -1 to break connection to
         # next facet in list as connections with -1 get deleted
