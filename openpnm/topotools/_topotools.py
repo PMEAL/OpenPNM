@@ -783,10 +783,11 @@ def connect_pores(network, pores1, pores2, labels=['new_conns']):
     extend(network=network, throat_conns=conns, labels=labels)
 
 
-def merge_pores(network, pores, labels=['merged']):
+def merge_pores(network, pores, labels=['merged'], include_neighbors=True):
     r"""
     Combines a selection of pores into a new single pore located at the
-    centroid of the selected pores and connected to all of their neighbors.
+    centroid of the selected pores (and optionally their neighbors)
+    and connected to all of their neighbors.
 
     Parameters
     ----------
@@ -823,8 +824,14 @@ def merge_pores(network, pores, labels=['merged']):
                                            flatten=True,
                                            include_input=False)
         NBs.append(temp)
-        points = np.concatenate((temp, Ps))
-        XYZs.append(hull_centroid(network["pore.coords"][points]))
+        if len(Ps) == 2:
+            XYZs.append(np.mean(network["pore.coords"][Ps], axis=0))
+        else:
+            if include_neighbors:
+                points = np.concatenate((temp, Ps))
+            else:
+                points = Ps
+            XYZs.append(hull_centroid(network["pore.coords"][points]))
 
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
