@@ -687,7 +687,6 @@ def vor_to_am(vor):
 
     """
     # Create adjacency matrix in lil format for quick matrix construction
-    N = vor.vertices.shape[0]
     if 0:  # Original way, 2X slower
         print('old way')
         rc = [[], []]

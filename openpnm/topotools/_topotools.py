@@ -206,7 +206,7 @@ def trim(network, pores=[], throats=[]):
     tpore2 = network['throat.conns'][:, 1]
 
     # Delete specified pores and throats from all objects
-    for obj in network.project[::-1]:
+    for obj in network.project:
         if (obj.Np == Np_old) and (obj.Nt == Nt_old):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
