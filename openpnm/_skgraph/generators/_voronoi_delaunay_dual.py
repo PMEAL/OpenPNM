@@ -7,7 +7,7 @@ from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph.queries import find_neighbor_nodes
 
 
-def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
+def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, f=1, relaxation=0,
                           node_prefix='node', edge_prefix='edge'):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
@@ -25,6 +25,12 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
     reflect : bool, optionl
         If ``True`` (Default) then points are reflected across each face of the
         domain prior to performing the tessellation.
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
     relaxation : int, optional (default = 0)
         The number of iterations to use for relaxing the base points. This is
         sometimes called `Lloyd's algorithm
@@ -50,7 +56,7 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
         points=points,
         shape=shape,
         reflect=reflect,
-        f=0.2,
+        f=1,
     )
 
     # Generate mask to remove any dims with all 0's
@@ -147,11 +153,12 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
 if __name__ == "__main__":
     import openpnm as op
     pn, vor, tri = voronoi_delaunay_dual(
-        points=10000,
-        shape=[1, 1, 1],
+        points=500,
+        shape=[1, 1, 0],
         trim=True,
         reflect=True,
         relaxation=0,
+        f=0.2,
         node_prefix='pore',
         edge_prefix='throat',
     )

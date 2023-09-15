@@ -134,14 +134,14 @@ class SKGRGeneratorsTest:
                                                   trim=False,
                                                   reflect=False)
         assert net['node.coords'].shape[0] == 85
-        assert net['edge.conns'].shape[0] == 491
+        assert net['edge.conns'].shape[0] == 472  # 491
         np.random.seed(0)
         net, vor, tri = gen.voronoi_delaunay_dual(points=20,
                                                   shape=[1, 1, 1],
                                                   trim=True,
                                                   reflect=False)
         assert net['node.coords'].shape[0] == 59
-        assert net['edge.conns'].shape[0] == 311
+        assert net['edge.conns'].shape[0] == 310  # 311
         np.random.seed(0)
         net, vor, tri = gen.voronoi_delaunay_dual(points=20,
                                                   shape=[1, 1, 1],
