@@ -688,28 +688,29 @@ def vor_to_am(vor):
     """
     # Create adjacency matrix in lil format for quick matrix construction
     N = vor.vertices.shape[0]
-    rc = [[], []]
-    for ij in vor.ridge_dict.keys():
-        row = vor.ridge_dict[ij].copy()
-        # Make sure voronoi cell closes upon itself
-        row.append(row[0])
-        # Add connections to rc list
-        rc[0].extend(row[:-1])
-        rc[1].extend(row[1:])
-    rc = np.vstack(rc).T
-    # Make adj mat upper triangular
+    if 0:  # Original way, 2X slower
+        print('old way')
+        rc = [[], []]
+        for ij in vor.ridge_dict.keys():
+            row = vor.ridge_dict[ij].copy()
+            # Make sure voronoi cell closes upon itself
+            row.append(row[0])
+            # Add connections to rc list
+            rc[0].extend(row[:-1])
+            rc[1].extend(row[1:])
+        rc = np.vstack(rc).T
+    else:
+        print('new way')
+        v = vor.ridge_vertices.copy()
+        # Add row [0] to close the facet on itself, add -1 to break connection to
+        # next facet in list as connections with -1 get deleted
+        _ = [row.extend([row[0], -1]) for row in v]
+        v = np.hstack(v)
+        rc = np.vstack((v[:-1], v[1:])).T
+    mask = np.any(rc < 0, axis=1)
+    rc = rc[~mask]
     rc = np.sort(rc, axis=1)
-    # Remove any pairs with ends at infinity (-1)
-    keep = ~np.any(rc == -1, axis=1)
-    rc = rc[keep]
-    data = np.ones_like(rc[:, 0])
-    # Build adj mat in COO format
-    M = N = np.amax(rc) + 1
-    am = sprs.coo_matrix((data, (rc[:, 0], rc[:, 1])), shape=(M, N))
-    # Remove diagonal, and convert to csr remove duplicates
-    am = sprs.triu(A=am, k=1, format='csr')
-    # The convert back to COO and return
-    am = am.tocoo()
+    am = conns_to_am(rc)
     return am
 
 
@@ -898,14 +899,14 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
         A sparse adjacency matrix in COO format
 
     """
-    if force_triu:  # Sort connections to [low, high]
-        conns = np.sort(conns, axis=1)
     if drop_negs:  # Remove connections to -1
         keep = ~np.any(conns < 0, axis=1)
         conns = conns[keep]
     if drop_diag:  # Remove connections of [self, self]
         keep = np.where(conns[:, 0] != conns[:, 1])[0]
         conns = conns[keep]
+    if force_triu:  # Sort connections to [low, high]
+        conns = np.sort(conns, axis=1)
     # Now convert to actual sparse array in COO format
     data = np.ones_like(conns[:, 0], dtype=int)
     if shape is None:
