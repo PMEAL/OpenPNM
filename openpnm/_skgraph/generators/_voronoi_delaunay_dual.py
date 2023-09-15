@@ -168,49 +168,21 @@ if __name__ == "__main__":
         shape=[1, 1, 0],
         trim=True,
         reflect=True,
-        relaxation=0,
         f=0.2,
+        relaxation=0,
         node_prefix='pore',
         edge_prefix='throat',
     )
     net = op.network.Network()
     net.update(pn)
     h = None
-    h = op.visualization.plot_connections(net, throats=pn['throat.delaunay'], c='b', ax=h)
-    h = op.visualization.plot_connections(net, throats=pn['throat.voronoi'], c='g', ax=h)
-    h = op.visualization.plot_connections(net, throats=pn['throat.interconnect'], c='r', ax=h)
-    h = op.visualization.plot_coordinates(net, pores=pn['pore.voronoi'], c='g', markersize=150, ax=h)
-    h = op.visualization.plot_coordinates(net, pores=pn['pore.delaunay'], c='b', markersize=150, ax=h)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    h = op.visualization.plot_connections(
+        net, throats=pn['throat.delaunay'], c='b', ax=h)
+    h = op.visualization.plot_connections(
+        net, throats=pn['throat.voronoi'], c='g', ax=h)
+    h = op.visualization.plot_connections(
+        net, throats=pn['throat.interconnect'], c='r', ax=h)
+    h = op.visualization.plot_coordinates(
+        net, pores=pn['pore.voronoi'], c='g', markersize=150, ax=h)
+    h = op.visualization.plot_coordinates(
+        net, pores=pn['pore.delaunay'], c='b', markersize=150, ax=h)
