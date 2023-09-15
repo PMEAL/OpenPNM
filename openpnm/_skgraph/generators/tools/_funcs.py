@@ -123,7 +123,7 @@ def center_of_mass(simplices, points):
     return CoM
 
 
-def parse_points(shape, points, reflect=False):
+def parse_points(shape, points, reflect=False, f=2):
     r"""
     Converts given points argument to consistent format
 
@@ -144,6 +144,7 @@ def parse_points(shape, points, reflect=False):
 
     """
     # Deal with input arguments
+    shape = np.array(shape, dtype=int)
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
                                       domain_size=shape,
@@ -162,17 +163,17 @@ def parse_points(shape, points, reflect=False):
             raise Exception('Some points lie outside the domain, '
                             + 'cannot safely apply reflection')
         if len(shape) == 3:
-            points = reflect_base_points(points=points, domain_size=shape)
+            points = reflect_base_points(points=points, domain_size=shape, f=f)
         elif len(shape) == 2:
             # Convert xyz to cylindrical, and back
             R, Q, Z = tools.cart2cyl(*points.T)
-            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)), domain_size=shape)
+            R, Q, Z = reflect_base_points(np.vstack((R, Q, Z)), domain_size=shape, f=f)
             # Convert back to cartesean coordinates
             points = np.vstack(tools.cyl2cart(R, Q, Z)).T
         elif len(shape) == 1:
             # Convert to spherical coordinates
             R, Q, P = tools.cart2sph(*points.T)
-            R, Q, P = reflect_base_points(np.vstack((R, Q, P)), domain_size=shape)
+            R, Q, P = reflect_base_points(np.vstack((R, Q, P)), domain_size=shape, f=f)
             # Convert to back to cartesean coordinates
             points = np.vstack(tools.sph2cart(R, Q, P)).T
     return points
@@ -346,7 +347,7 @@ def template_cylinder_annulus(z, r_outer, r_inner=0):
     return img
 
 
-def reflect_base_points(points, domain_size):
+def reflect_base_points(points, domain_size, f=2):
     r"""
     Relects a set of points about the faces of a given domain
 
@@ -382,6 +383,10 @@ def reflect_base_points(points, domain_size):
         theta = np.hstack([theta, theta])
         phi = np.hstack([phi, phi])
         points = np.vstack((r, theta, phi))
+        # Trim excess points outside radius
+        hi = domain_size[0]*(1+f)
+        keep = (points[0, :] <= hi)
+        points = points[:, keep]
     if len(domain_size) == 2:
         r, theta, z = points
         new_r = 2*domain_size[0] - r
@@ -393,6 +398,14 @@ def reflect_base_points(points, domain_size):
             theta = np.hstack([theta, theta, theta])
             z = np.hstack([z, -z, 2*domain_size[1]-z])
         points = np.vstack((r, theta, z))
+        # Trim excess basepoints above and below cylinder
+        hi = domain_size[1]*(1+f)
+        lo = domain_size[1]*(-f)
+        keep = (points[2, :] <= hi)*(points[2, :] >= lo)
+        # Trim excess points outside radius
+        hi = domain_size[0]*(1+f)
+        keep *= (points[0, :] <= hi)
+        points = points[:, keep]
     elif len(domain_size) == 3:
         Nx, Ny, Nz = domain_size
         # Reflect base points about all 6 faces
@@ -407,6 +420,12 @@ def reflect_base_points(points, domain_size):
             points = np.vstack((points,
                                [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
             points = np.vstack((points, [1, 1, -1] * orig_pts))
+        # Trim excess basepoints
+        hi = domain_size*(1+f)
+        lo = domain_size*(-f)
+        keep = np.all(points <= hi, axis=1)
+        keep *= np.all(points >= lo, axis=1)
+        points = points[keep, :]
     return points
 
 

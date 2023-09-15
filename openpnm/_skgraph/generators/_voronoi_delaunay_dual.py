@@ -42,11 +42,17 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, relaxation=0,
     vor : Voronoi object
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
     tri : Delaunay object
-        The Delaunay triangulation object produced ``scipy.spatial.Delaunay``
+        The Delaunay triangulation object produced by ``scipy.spatial.Delaunay``
 
     """
     # Generate a set of base points if scalar was given
-    points = tools.parse_points(points=points, shape=shape, reflect=reflect)
+    points = tools.parse_points(
+        points=points,
+        shape=shape,
+        reflect=reflect,
+        f=0.2,
+    )
+
     # Generate mask to remove any dims with all 0's
     mask = ~np.all(points == 0, axis=0)
 
