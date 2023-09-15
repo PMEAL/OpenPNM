@@ -7,8 +7,17 @@ from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph.queries import find_neighbor_nodes
 
 
-def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, f=1, relaxation=0,
-                          node_prefix='node', edge_prefix='edge'):
+def voronoi_delaunay_dual(
+    points,
+    shape,
+    trim=True,
+    reflect=True,
+    f=1,
+    relaxation=0,
+    node_prefix='node',
+    edge_prefix='edge',
+    return_tri=False,
+):
     r"""
     Generate a dual Voronoi-Delaunay network from given base points
 
@@ -67,8 +76,6 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, f=1, relaxatio
     for _ in range(relaxation):
         points = tools.lloyd_relaxation(vor, mode='fast')
         vor = sptl.Voronoi(points=points[:, mask])
-    # tri = sptl.Delaunay(points=points[:, mask])
-    tri = None
 
     # Collect delaunay edges
     conns_del = vor.ridge_points
@@ -147,7 +154,11 @@ def voronoi_delaunay_dual(points, shape, trim=True, reflect=True, f=1, relaxatio
             inds = np.where(trim)[0]
             network = trim_nodes(network=network, inds=inds)
 
-    return network, vor, tri
+    if return_tri:
+        tri = sptl.Delaunay(points=points[:, mask])
+        return network, vor, tri
+    else:
+        return network, vor
 
 
 if __name__ == "__main__":
