@@ -646,11 +646,20 @@ def tri_to_am(tri):
     lil = sprs.lil_matrix((tri.npoints, tri.npoints))
     # Scan through Delaunay triangulation object to retrieve pairs
     indices, indptr = tri.vertex_neighbor_vertices
-    for k in range(tri.npoints):
-        lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
-    # Convert to coo format
-    lil.data = lil.rows  # Just a dummy array to make things work properly
-    coo = lil.tocoo()
+    if 1:  # Original way
+        for k in range(tri.npoints):
+            lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
+        # Convert to coo format
+        lil.data = lil.rows  # Just a dummy array to make things work properly
+        coo = lil.tocoo()
+    else:  # Alternative way, about 10x SLOWER
+        coo = [[], []]
+        for k in range(tri.npoints):
+            # lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
+            col = indptr[indices[k]:indices[k+1]]
+            coo[0].extend(np.ones_like(col)*k)
+            coo[1].extend(col)
+        coo = sprs.coo_matrix((np.ones_like(coo[0]), (coo[0], coo[1])))
     # Set weights to 1's
     coo.data = np.ones_like(coo.data)
     # Remove diagonal, and convert to csr remove duplicates
