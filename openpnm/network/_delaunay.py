@@ -33,6 +33,12 @@ class Delaunay(Network):
         all the faces of the domain prior to performing the tessellation. This
         feature is best combined with ``trim=True`` to prevent unreasonably long
         connections between points on the surfaces.
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
     trim : bool, optional
         If ``True`` (default) then all vertices laying outside the domain will
         be removed. This is only useful if ``reflect=True``.
@@ -51,14 +57,17 @@ class Delaunay(Network):
 
     """
 
-    def __init__(self, shape, points, reflect=True, trim=True, **kwargs):
+    def __init__(self, shape, points, reflect=True, trim=True, f=1, **kwargs):
         super().__init__(**kwargs)
-        net, tri = delaunay(points=points,
-                            shape=shape,
-                            reflect=reflect,
-                            trim=trim,
-                            node_prefix='pore',
-                            edge_prefix='throat')
+        net, tri = delaunay(
+            points=points,
+            shape=shape,
+            reflect=reflect,
+            f=f,
+            trim=trim,
+            node_prefix='pore',
+            edge_prefix='throat',
+        )
         self.update(net)
         self._post_init()
         self.tri = tri

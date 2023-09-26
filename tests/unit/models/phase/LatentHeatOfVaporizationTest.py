@@ -1,7 +1,8 @@
-import openpnm as op
-from numpy.testing import assert_allclose
 import chemicals
+from numpy.testing import assert_allclose
 from thermo import Chemical
+
+import openpnm as op
 
 
 class LatentHeatTest:
@@ -35,5 +36,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

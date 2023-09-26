@@ -206,13 +206,10 @@ def trim(network, pores=[], throats=[]):
     tpore2 = network['throat.conns'][:, 1]
 
     # Delete specified pores and throats from all objects
-    for obj in network.project[::-1]:
+    for obj in network.project:
         if (obj.Np == Np_old) and (obj.Nt == Nt_old):
             Ps = Pkeep_inds
             Ts = Tkeep_inds
-        else:  # If subdomain object then Np/Nt < Np/Nt_old
-            Ps = obj.to_local(pores=Pkeep_inds, missing_vals=None)
-            Ts = obj.to_local(throats=Tkeep_inds, missing_vals=None)
         for key in list(obj.keys()):
             temp = obj.pop(key)
             if key.split('.', 1)[0] == 'throat':
@@ -786,10 +783,11 @@ def connect_pores(network, pores1, pores2, labels=['new_conns']):
     extend(network=network, throat_conns=conns, labels=labels)
 
 
-def merge_pores(network, pores, labels=['merged']):
+def merge_pores(network, pores, labels=['merged'], include_neighbors=True):
     r"""
     Combines a selection of pores into a new single pore located at the
-    centroid of the selected pores and connected to all of their neighbors.
+    centroid of the selected pores (and optionally their neighbors)
+    and connected to all of their neighbors.
 
     Parameters
     ----------
@@ -826,8 +824,14 @@ def merge_pores(network, pores, labels=['merged']):
                                            flatten=True,
                                            include_input=False)
         NBs.append(temp)
-        points = np.concatenate((temp, Ps))
-        XYZs.append(hull_centroid(network["pore.coords"][points]))
+        if len(Ps) == 2:
+            XYZs.append(np.mean(network["pore.coords"][Ps], axis=0))
+        else:
+            if include_neighbors:
+                points = np.concatenate((temp, Ps))
+            else:
+                points = Ps
+            XYZs.append(hull_centroid(network["pore.coords"][points]))
 
     extend(network, pore_coords=XYZs, labels=labels)
     Pnew = network.Ps[-N::]
