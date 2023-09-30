@@ -36,6 +36,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r requirements/docs.txt
+          pip install pypardiso
 
       - name: Build the documentation
         run: |
