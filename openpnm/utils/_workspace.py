@@ -49,7 +49,11 @@ class WorkspaceSettings(SettingsAttr):
             default_solver = 'PardisoSpsolve'
         except ImportError:
             default_solver = 'ScipySpsolve'
-            logger.error('Pardiso not installed, run `pip install pypardiso`')
+            msg = (
+                'PARDISO solver not installed, run `pip install pypardiso`. '
+                'Otherwise, simulations will be slow. Apple M chips not supported.'
+            )
+            logger.error(msg)
 
     @property
     def loglevel(self):
