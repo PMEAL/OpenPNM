@@ -32,6 +32,12 @@ OpenPNM can also be installed from the [conda-forge](https://anaconda.org/conda-
 conda install -c conda-forge openpnm
 ```
 
+{% note %}
+
+**Note:** Owners and administrators can add outside collaborators to a repository.
+
+{% endnote %}
+
 {% warnings %}
 
 **Warning:** For compatibility with ARM64 architecture, we removed `pypardiso` as a hard dependency. However, we still strongly recommend that non-macOS users (excluding older Macs with an Intel CPU) manually install `pypardiso` via `pip install pypardiso` or `conda install -c conda-forge pypardiso`, otherwise OpenPNM simulations will be very slow.
