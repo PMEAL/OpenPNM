@@ -10,40 +10,41 @@
 
 # Overview of OpenPNM
 
-*OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
+OpenPNM is a comprehensive framework for performing pore network simulations of porous materials.
 
 ## More Information
 
-For more details about the package can be found in the [on-line documentation](https://openpnm.org)
+For more details about the package can be found in the [online documentation](https://openpnm.org)
 
 ## Installation and Requirements
 
-### Preferred method
-The preferred way of installing OpenPNM is through [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
+### [pip](https://pypi.org/project/openpnm/)
+OpenPNM can be installed using `pip` by running the following command in a terminal:
+
+```shell
+pip install openpnm
+```
+
+### [conda-forge](https://anaconda.org/conda-forge/openpnm)
+OpenPNM can also be installed from the [conda-forge](https://anaconda.org/conda-forge/openpnm) repository using:
 
 ```
 conda install -c conda-forge openpnm
 ```
 
-### Alternative method
-OpenPNM can also be installed from the [Python Package Index](https://pypi.org/project/openpnm/) using:
-
-```
-pip install openpnm
-```
-
-However, we don't recommend installing using `pip` since `pypardiso`, which is a blazing fast direct solver, is not available for Windows users who use Python 3.7+.
+> [!WARNING]  
+> For compatibility with ARM64 architecture, we removed `pypardiso` as a hard dependency. However, we still strongly recommend that non-macOS users (including users of older Macs with an Intel CPU) manually install `pypardiso` via `pip install pypardiso` or `conda install -c conda-forge pypardiso`, otherwise OpenPNM simulations will be very slow.
 
 ### For developers
-For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
+For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/PMEAL/OpenPNM/) and installed by running:
 
 ```
 pip install -e 'path/to/downloaded/files'
 ```
 
-The advantage to installing from the source code is that you can edit the files and have access to your changes each time you import *OpenPNM*.
+The advantage to installing from the source code is that you can edit the files and have access to your changes each time you import OpenPNM.
 
-OpenPNM requires the *Scipy Stack* (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the [Anaconda Distribution](https://conda.io/docs/user-guide/install/download.html).
+OpenPNM requires the Scipy Stack (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the [Anaconda Distribution](https://www.anaconda.com/download/).
 
 ## Asking Questions and Getting Help
 
