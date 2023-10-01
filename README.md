@@ -10,7 +10,7 @@
 
 # Overview of OpenPNM
 
-*OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
+OpenPNM is a comprehensive framework for performing pore network simulations of porous materials.
 
 ## More Information
 
