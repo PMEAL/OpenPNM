@@ -1,9 +1,10 @@
-import os
-import sys
 import codecs
+import os
 import os.path
+import sys
 from distutils.util import convert_path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 sys.path.append(os.getcwd())
 ver_path = convert_path('openpnm/__version__.py')
@@ -59,7 +60,6 @@ setup(
         'numpy',
         'pandas',
         'pyamg',
-        'pypardiso',
         'rich',
         'scikit-image',
         'scipy',
