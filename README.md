@@ -19,7 +19,7 @@ For more details about the package can be found in the [online documentation](ht
 ## Installation and Requirements
 
 ### [pip](https://pypi.org/project/openpnm/)
-OpenPNM can be installed using `pip` by running the following command in a terminal (or command prompt on Windows):
+OpenPNM can be installed using `pip` by running the following command in a terminal:
 
 ```shell
 pip install openpnm
