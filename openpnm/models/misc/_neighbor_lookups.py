@@ -37,6 +37,8 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
                          neighboring throats
             'mean'       Returns the value of the mean property of the
                          neighboring throats
+            'sum'        Returns the sum of the property of the neighboring
+                         throats
             ===========  =====================================================
 
     Returns
@@ -69,6 +71,11 @@ def from_neighbor_throats(target, prop, mode='min', ignore_nans=True):
         if ignore_nans:
             np.subtract.at(counts, im.row, nans[im.col])
         values = values/counts
+    if mode == 'sum':
+        if ignore_nans:
+            data[nans] = 0
+        values = np.zeros((network.Np, ))
+        np.add.at(values, im.row, data[im.col])
     return values
 
 
