@@ -105,6 +105,8 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
                          neighboring pores
             'mean'       Returns the value of the mean property of the
                          neighboring pores
+            'sum'        Returns the sum of the property of the neighrboring
+                         pores
             ===========  =====================================================
 
     ignore_nans : bool (default is ``True``)
@@ -129,6 +131,8 @@ def from_neighbor_pores(target, prop, mode='min', ignore_nans=True):
             value = np.amax(pvalues, axis=1)
         if mode == 'mean':
             value = np.mean(pvalues, axis=1)
+        if mode == 'sum':
+            value = np.sum(pvalues, axis=1)
     except np.AxisError:  # Handle case of empty pvalues
         value = []
     return np.array(value)
