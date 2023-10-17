@@ -1,4 +1,8 @@
-from matplotlib._docstring import Substitution
+try:
+    from matplotlib._docstring import Substitution
+except ModuleNotFoundError:
+    from matplotlib.docstring import Substitution
+
 
 __all__ = [
     '_phasedocs',
