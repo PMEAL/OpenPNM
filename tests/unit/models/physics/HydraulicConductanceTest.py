@@ -1,6 +1,7 @@
 import openpnm as op
 import numpy as np
 from numpy.testing import assert_allclose
+import openpnm.models.physics.hydraulic_conductance as hydraulic_conductance
 
 
 class HydraulicConductanceTest:
@@ -53,7 +54,16 @@ class HydraulicConductanceTest:
         actual = self.phase['throat.valvatne_conductance'].mean()
         desired = 6198.347107
         assert_allclose(actual, desired=desired)
-
+        
+    def test_conductance_shape(self):
+        available_models = [
+            getattr(hydraulic_conductance, model_name)
+            for model_name in dir(hydraulic_conductance)
+            if callable(getattr(hydraulic_conductance, model_name))
+            ]
+        for model in available_models:
+            G = model(phase=self.phase)
+            assert_allclose(G.shape, (self.net.Nt, 2), rtol=0)
 
 if __name__ == '__main__':
 
