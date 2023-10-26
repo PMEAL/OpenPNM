@@ -93,7 +93,7 @@ class GenericMultiPhysics(Algorithm):
         nt = len(transient_algs)
         transient_x0 = x0[:nt*network.Np]
         steady_x0 = x0[nt*network.Np:]
-        # define transient multiphysics object for transient algs
+        # define transient multiphysics object for transient algs TODO: remove? 
         tmp = TransientMultiPhysics(algorithms=transient_algs, network=network)
         # define array of times to iterate through
         times = np.arange(tspan[0]+interval, tspan[1], interval)
