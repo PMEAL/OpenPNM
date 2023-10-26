@@ -1,18 +1,16 @@
-import pytest
-import sys
-import numpy as np
-import openpnm as op
 import inspect
-from numpy.testing import assert_approx_equal, assert_allclose
+import os
+
 import chemicals
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose, assert_approx_equal
+
+import openpnm as op
+
+condition = int(os.environ.get('NUMBA_DISABLE_JIT', 0)) != 0
 
 
-is_python_38 = sys.version_info[:2] == (3, 8)
-is_linux = sys.platform.startswith('linux')
-condition = is_python_38 and is_linux
-
-
-@pytest.mark.skipif(condition, reason="Strange error coming from numba/chemicals")
 class VaporPressureTest:
     def setup_class(self):
         self.net = op.network.Cubic(shape=[3, 3, 3])
@@ -48,6 +46,7 @@ class VaporPressureTest:
         assert_approx_equal(self.phase['pore.test'].mean(), 3536.0130)
         self.phase['pore.salinity'] = np.zeros((self.phase.Np,))
 
+    @pytest.mark.skipif(condition, reason="Strange error coming from numba/chemicals")
     def test_generic_chemicals_for_pure_liquid(self):
         mods = [
             # chemicals.vapor_pressure.Wagner_original,  # Needs constants
@@ -75,7 +74,7 @@ class VaporPressureTest:
             'Lee_Kesler': op.models.phase.vapor_pressure.liquid_pure_lk,
             # 'Antoine': op.models.phase.vapor_pressure.liquid_pure_antoine,
         }
-        data = chemicals.vapor_pressure.Psat_data_AntoinePoling
+        # data = chemicals.vapor_pressure.Psat_data_AntoinePoling
         for k, v in vals.items():
             print(f'Testing {k}')
             f = getattr(chemicals.vapor_pressure, k)
@@ -83,7 +82,9 @@ class VaporPressureTest:
             # args = args[0][:-len(args.defaults)]
             kwargs = {i: np.atleast_1d(phase[argmap[i]])[0] for i in args}
             # if len(set(args).intersection(set(['A', 'B', 'C']))) == 3:
-                # kwargs.update({i: data.loc[phase.params['CAS']][i] for i in ['A', 'B', 'C']})
+            #     kwargs.update(
+            #         {i: data.loc[phase.params['CAS']][i] for i in ['A', 'B', 'C']}
+            #     )
             ref = f(**kwargs)
             val = v(phase)[0]
             assert_allclose(ref, val, rtol=1e-13)
@@ -96,5 +97,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

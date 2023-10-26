@@ -1,9 +1,11 @@
-from openpnm.io._pandas import project_to_pandas, network_to_pandas
-from openpnm.io import _parse_filename
-from openpnm.utils import Project
-from pandas import read_table
 import re
+
 import numpy as np
+from pandas import read_table
+
+from openpnm.io import _parse_filename
+from openpnm.io._pandas import network_to_pandas, project_to_pandas
+from openpnm.utils import Project
 
 
 def project_to_csv(project, filename=''):
@@ -27,6 +29,7 @@ def project_to_csv(project, filename=''):
 
 
 def network_to_csv(network, filename=''):
+    """Exports a network to a CSV file."""
     proj = Project()
     proj.append(network)
     df = network_to_pandas(network=network, join=True, delim='.')
@@ -37,6 +40,7 @@ def network_to_csv(network, filename=''):
 
 
 def network_from_csv(filename):
+    """Loads a network from a CSV file."""
     from openpnm.network import Network
     fname = _parse_filename(filename=filename, ext='csv')
 

@@ -1,10 +1,12 @@
 import collections
+
 import numpy as np
-import openpnm as op
-import openpnm.models.physics as pm
 from numpy.testing import assert_allclose
 from sympy import ln as sym_ln
 from sympy import symbols
+
+import openpnm as op
+import openpnm.models.physics as pm
 
 
 class GenericSourceTermTest:
@@ -289,5 +291,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

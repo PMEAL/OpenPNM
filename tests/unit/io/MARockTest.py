@@ -1,6 +1,7 @@
 import os
-import openpnm as op
 from pathlib import Path
+
+import openpnm as op
 
 
 class MARockTest:
@@ -28,11 +29,12 @@ class MARockTest:
 
 if __name__ == '__main__':
     import py
+
     # All the tests in this file can be run with 'playing' this file
     t = MARockTest()
     self = t  # For interacting with the tests at the command line
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

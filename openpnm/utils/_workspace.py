@@ -1,12 +1,13 @@
-import re
 import logging
 import pickle
+import re
+import sys
 from datetime import datetime
 from uuid import uuid4
+
 from openpnm.utils import SettingsAttr
 
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("openpnm")
 
 __all__ = ['Workspace']
 
@@ -39,14 +40,39 @@ class WorkspaceSettings(SettingsAttr):
                 may be unable to continue running.
         ======= ==============================================================
     """
-    default_solver = 'PardisoSpsolve'
+    # Pardiso requires MKL, which is not available on new Apple chips
+    if sys.platform == 'darwin':
+        default_solver = 'ScipySpsolve'
+    else:
+        try:
+            import pypardiso
+            default_solver = 'PardisoSpsolve'
+        except ImportError:
+            default_solver = 'ScipySpsolve'
+            msg = (
+                'PARDISO solver not installed, run `pip install pypardiso`. '
+                'Otherwise, simulations will be slow. Apple M chips not supported.'
+            )
+            logger.error(msg)
 
     @property
     def loglevel(self):
-        return logger.level
+        return self._loglevel
 
     @loglevel.setter
     def loglevel(self, value):
+        if isinstance(value, str):
+            options = {
+                "TRACE": 5,
+                "DEBUG": 10,
+                "INFO": 20,
+                "SUCESS": 25,
+                "WARNING": 30,
+                "ERROR": 40,
+                "CRITICAL": 50
+            }
+            value = options[value]
+        self._loglevel = value
         logger.setLevel(value)
 
 
@@ -111,7 +137,7 @@ class Workspace(dict):
                 name = name + '_01'
             prefix, count = name.rsplit('_', 1)
             n = [0]
-            for item in self.keys():
+            for item in list(self.keys()):
                 if item.startswith(prefix+'_'):
                     n.append(int(item.split(prefix+'_')[1]))
             name = prefix+'_'+str(max(n)+1).zfill(2)

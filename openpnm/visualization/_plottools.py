@@ -1,10 +1,11 @@
-import numpy as np
-import openpnm as op
-from tqdm.auto import tqdm
-from matplotlib.pyplot import cm
-import matplotlib.pyplot as plt
 import logging
 
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.pyplot import cm
+from tqdm.auto import tqdm
+
+import openpnm as op
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ def plot_connections(network,
                      ax=None,
                      size_by=None,
                      color_by=None,
+                     label_by=None,
                      cmap='jet',
                      color='b',
                      alpha=1.0,
@@ -54,8 +56,10 @@ def plot_connections(network,
         An ndarray of throat values (e.g. alg['throat.rate']).  These
         values are used to scale the ``linewidth``, so if the lines are too
         thin, then increase ``linewidth``.
-    color_by : str or array_like (optional)
+    color_by : array_like (optional)
         An ndarray of throat values (e.g. alg['throat.rate']).
+    label_by : array_like (optional)
+        An array or list of values to use as labels
     cmap : str or cmap object (optional)
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
@@ -70,6 +74,9 @@ def plot_connections(network,
         Controls the thickness of drawn lines.  Is used to scale the thickness
         if ``size_by`` is given. Default is 1. If a value is provided for
         ``size_by`` then they are used to scale the ``linewidth``.
+    font : dict
+        A dictionary of key-value pairs that are used to control the font
+        appearance if `label_by` is provided.
     **kwargs : dict
         All other keyword arguments are passed on to the ``Line3DCollection``
         class of matplotlib, so check their documentation for additional
@@ -113,9 +120,10 @@ def plot_connections(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from matplotlib import colors as mcolors
-    from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
+    from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
     from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -147,20 +155,35 @@ def plot_connections(network,
     if 'c' in kwargs.keys():
         color = kwargs.pop('c')
     color = mcolors.to_rgb(color) + tuple([alpha])
+    if isinstance(cmap, str):
+        try:
+            cmap = plt.colormaps.get_cmap(cmap)
+        except AttributeError:
+            cmap = plt.cm.get_cmap(cmap)
     # Override colors with color_by if given
     if color_by is not None:
+        color_by = np.array(color_by, dtype=np.float16)
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        color = cm.get_cmap(name=cmap)(color_by / color_by.max())
+        vmin = kwargs.pop('vmin', color_by.min())
+        vmax = kwargs.pop('vmax', color_by.max())
+        cscale = (color_by - vmin) / (vmax - vmin)
+        color = cmap(cscale)
         color[:, 3] = alpha
     if size_by is not None:
+        if len(size_by) != len(Ts):
+            size_by = size_by[Ts]
         if not np.all(np.isfinite(size_by)):
             size_by[~np.isfinite(size_by)] = 0
             logger.warning('nans or infs found in size_by array, setting to 0')
         linewidth = size_by / size_by.max() * linewidth
+    if label_by is not None:
+        if len(label_by) != len(Ts):
+            label_by = label_by[Ts]
+    fontkws = kwargs.pop('font', {})
 
     if ThreeD:
         lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
@@ -170,6 +193,12 @@ def plot_connections(network,
         lc = LineCollection(throat_pos, colors=color, cmap=cmap,
                             linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
+        if label_by is not None:
+            for count, (P1, P2) in enumerate(network.conns[Ts, :]):
+                i, j, k = np.mean(network.coords[[P1, P2], :], axis=0)
+                ax.text(i, j, label_by[count],
+                        ha='center', va='center',
+                        **fontkws)
     ax.add_collection(lc)
 
     if np.size(Ts) > 0:
@@ -185,6 +214,7 @@ def plot_coordinates(network,
                      ax=None,
                      size_by=None,
                      color_by=None,
+                     label_by=None,
                      cmap='jet',
                      color='r',
                      alpha=1.0,
@@ -213,6 +243,8 @@ def plot_coordinates(network,
         you should do `size_by=net['pore.diameter']**2`.
     color_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']).
+    label_by : array_like (optional)
+        An array or list of values to use as labels
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``
@@ -226,6 +258,9 @@ def plot_coordinates(network,
     markersize : scalar
         Controls size of marker, default is 1.0.  This value is used to scale
         the ``size_by`` argument if given.
+    font : dict
+        A dictionary of key-value pairs that are used to control the font
+        appearance if `label_by` is provided.
     **kwargs
         All other keyword arguments are passed on to the ``scatter``
         function of matplotlib, so check their documentation for additional
@@ -272,6 +307,7 @@ def plot_coordinates(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from mpl_toolkits.mplot3d import Axes3D
+
     from openpnm.topotools import dimensionality
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
@@ -307,18 +343,33 @@ def plot_coordinates(network,
         color = kwargs.pop('c')
     if 's' in kwargs.keys():
         markersize = kwargs.pop('s')
+    if isinstance(cmap, str):
+        try:
+            cmap = plt.colormaps.get_cmap(cmap)
+        except AttributeError:
+            cmap = plt.cm.get_cmap(cmap)
     if color_by is not None:
-        color_by = color_by[Ps]
+        color_by = np.array(color_by, dtype=np.float16)
+        if len(color_by) != len(Ps):
+            color_by = color_by[Ps]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        color = cm.get_cmap(name=cmap)(color_by / color_by.max())
+        vmin = kwargs.pop('vmin', color_by.min())
+        vmax = kwargs.pop('vmax', color_by.max())
+        cscale = (color_by - vmin) / (vmax - vmin)
+        color = cmap(cscale)
     if size_by is not None:
+        if len(size_by) != len(Ps):
+            size_by = size_by[Ps]
         if not np.all(np.isfinite(size_by)):
             size_by[~np.isfinite(size_by)] = 0
             logger.warning('nans or infs found in size_by array, setting to 0')
         markersize = size_by / size_by.max() * markersize
-
+    if label_by is not None:
+        if len(label_by) != len(Ps):
+            label_by = label_by[Ps]
+    fontkws = kwargs.pop('font', {})
     if ThreeD:
         sc = ax.scatter(X, Y, Z,
                         c=color,
@@ -335,6 +386,11 @@ def plot_coordinates(network,
                         marker=marker,
                         alpha=alpha,
                         **kwargs)
+        if label_by is not None:
+            for count, (i, j, k) in enumerate(network.coords[Ps, :]):
+                ax.text(i, j, label_by[count],
+                        ha='center', va='center',
+                        **fontkws)
         _scale_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl))
 
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
@@ -383,7 +439,7 @@ def plot_networkx(network,
                   ax=None,
                   alpha=1.0):  # pragma: no cover
     r"""
-    Creates a pretty 2d plot for 2d OpenPNM networks.
+    Creates a pretty 2D plot for 2D OpenPNM networks.
 
     Parameters
     ----------
@@ -404,7 +460,8 @@ def plot_networkx(network,
     """
     import matplotlib.pyplot as plt
     from matplotlib.collections import PathCollection
-    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
+    from networkx import Graph, draw_networkx_edges, draw_networkx_nodes
+
     from openpnm.topotools import dimensionality
 
     dims = dimensionality(network)
@@ -508,8 +565,9 @@ def plot_tutorial(network,
     g : NetworkX plot object
 
     """
-    import networkx as nx
     import matplotlib.pyplot as plt
+    import networkx as nx
+
     from openpnm.io import network_to_networkx
 
     G = network_to_networkx(network=network)
@@ -704,8 +762,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     solid phase, pores, and throats respectively.
 
     """
-    from skimage.morphology import cube, ball
-    from porespy.tools import overlay, insert_cylinder
+    from porespy.tools import insert_cylinder, overlay
+    from skimage.morphology import ball, cube
     xyz = network["pore.coords"]
     cn = network["throat.conns"]
 
@@ -847,6 +905,7 @@ def plot_vispy(
     bgcolor='grey',
 ):
     r"""
+    Creates a pretty network plot using VisPy.
 
     Parameters
     ----------

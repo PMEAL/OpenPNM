@@ -311,8 +311,9 @@ class Transport(Algorithm):
         if g.size == self.Nt:
             g = np.tile(g, (2, 1)).T    # Make conductance an Nt by 2 matrix
         # The next line is critical for rates to be correct
+        # We could also do "g.T.flatten()" or "g.flatten('F')"
         g = np.flip(g, axis=1)
-        Qt = np.diff(g*X12, axis=1).squeeze()
+        Qt = np.diff(g*X12, axis=1).ravel()
 
         if throats.size:
             R = np.absolute(Qt[throats])

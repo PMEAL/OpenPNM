@@ -1,4 +1,4 @@
-from matplotlib.docstring import Substitution
+from matplotlib._docstring import Substitution
 
 
 __all__ = [
