@@ -10,5 +10,5 @@ removed.
 """
 
 from ._multiphase import *
-from ._generic_multiphysics import *
 from ._transient_multiphysics import *
+from ._generic_multiphysics import *
