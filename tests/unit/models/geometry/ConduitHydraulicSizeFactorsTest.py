@@ -21,10 +21,9 @@ class ConduitHydraulicSizeFactorsTest:
                     'throat': SF[:, 1],
                     'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.01068901, 0.01195694]),
-            'throat': array([6.28318531e+11, 2.02906607e-03]),
-            'pore2': array([0.00771764, 0.00917032])
-        }
+            'pore1': array([0.01655401, 0.01195694]),
+            'throat': array([0.02013733, 0.00202907]),
+            'pore2': array([0.01195694, 0.00917032])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
@@ -34,10 +33,9 @@ class ConduitHydraulicSizeFactorsTest:
                     'throat': SF[:, 1],
                     'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.06563123, 0.06697876]),
-            'throat': array([5.33333333e+12, 1.72232477e-02]),
-            'pore2': array([0.05072058, 0.05686537])
-        }
+            'pore1': array([0.08485281, 0.06697876]),
+            'throat': array([0.17093093, 0.01722325]),
+            'pore2': array([0.06697876, 0.05686537])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
@@ -112,10 +110,9 @@ class ConduitHydraulicSizeFactorsTest:
                     'throat': SF[:, 1],
                     'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.0020471, 0.00612218]),
-            'throat': array([6.28318531e+11, 2.02906607e-03]),
-            'pore2': array([0.00261812, 0.00661558])
-        }
+            'pore1': array([0.00506726, 0.00612218]),
+            'throat': array([0.02013733, 0.00202907]),
+            'pore2': array([0.00612218, 0.00661558])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k], rtol=1e-5)
 
