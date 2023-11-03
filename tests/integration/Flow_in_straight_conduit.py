@@ -46,4 +46,4 @@ if __name__ == "__main__":
         sf2.set_value_BC(pores=pn5.pores('xmax'), values=0.0)
         sf2.run()
         r2 = sf2.rate(pores=pn5.pores('xmin'))
-        np.allclose(r1, r2, atol=0, rtol=1e-10)
+        assert np.allclose(r1, r2, atol=0, rtol=1e-10)
