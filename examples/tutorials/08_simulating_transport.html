@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,41 +18,38 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/08_simulating_transport';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Simulating Invasion" href="09_simulating_invasion.html" />
@@ -128,13 +124,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -464,7 +461,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="simulating-single-phase-transport">
-<h1>Simulating Single Phase Transport<a class="headerlink" href="#simulating-single-phase-transport" title="Permalink to this heading">#</a></h1>
+<h1>Simulating Single Phase Transport<a class="headerlink" href="#simulating-single-phase-transport" title="Link to this heading">#</a></h1>
 <p>The point of an OpenPNM simulation is ultimately to compute some transport process.  In this notebook we will cover the following subjects:</p>
 <ul class="simple">
 <li><p>Defining conductance</p></li>
@@ -484,7 +481,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
+net : &lt;openpnm.network.Demo at 0x7f9e66b4bce0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -524,7 +521,7 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 </div>
 </div>
 <section id="define-phase-viscosity">
-<h2>Define Phase Viscosity<a class="headerlink" href="#define-phase-viscosity" title="Permalink to this heading">#</a></h2>
+<h2>Define Phase Viscosity<a class="headerlink" href="#define-phase-viscosity" title="Link to this heading">#</a></h2>
 <p>To fully illustrate the process of performing transport calculations, we’ll use an empty <code class="docutils literal notranslate"><span class="pre">Phase</span></code> object and add all the needed properties manually:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -544,7 +541,7 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f3a5e628d10&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f9eb49936a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -580,7 +577,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f3a5e628d10&gt;
 </div>
 </section>
 <section id="basic-conductance-calculation">
-<h2>Basic Conductance Calculation<a class="headerlink" href="#basic-conductance-calculation" title="Permalink to this heading">#</a></h2>
+<h2>Basic Conductance Calculation<a class="headerlink" href="#basic-conductance-calculation" title="Link to this heading">#</a></h2>
 <p>Determining the conductance of the conduits between each pair of connected pores is the most important part of performing a simulation. The details of conductance models are covered elsewhere. For this demonstration will assume the very simplest case where all pressure loss occurs in the throats.</p>
 <p>Recall the Hagan-Poiseuille equation for fluid flow through a cylindrical tube:</p>
 <div class="math notranslate nohighlight">
@@ -600,16 +597,16 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f3a5e628d10&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.11978175e-15 2.42774090e-15 2.27514035e-14 2.23436051e-14
- 3.11496227e-14 3.53945061e-14 2.00147175e-14 4.57727686e-15
- 2.20406148e-15 2.46181604e-15 3.51113296e-14 3.24305585e-14
- 1.04042482e-14 9.57191770e-15 6.07642642e-15 2.23685828e-15
- 1.93611116e-14 1.49856940e-14 1.12610959e-14 1.41905798e-14
- 3.23667815e-14 2.11144125e-15 9.58030548e-14 1.66244570e-14
- 5.51965721e-15 3.47386624e-14 2.17057702e-15 9.38824684e-14
- 1.74835130e-14 5.17152230e-15 1.04799479e-14 2.18987764e-15
- 1.09029814e-14 6.77171307e-15 2.70517582e-15 9.83492864e-15
- 2.31870238e-14 8.82739187e-15 6.20161947e-15 2.92153598e-15]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.84373405e-14 2.53217572e-14 1.37386190e-14 1.85089307e-15
+ 2.27798616e-15 2.72134012e-15 2.29518045e-14 1.45218362e-14
+ 4.56452869e-15 4.72627463e-15 1.49263954e-14 1.74641087e-14
+ 8.59739219e-16 8.54471633e-16 2.06978061e-14 8.42106829e-14
+ 2.54331987e-15 2.38347074e-15 5.29157595e-15 3.55333924e-15
+ 2.61083330e-15 2.70936637e-15 2.65606370e-14 1.19885544e-14
+ 1.87919277e-15 2.46713416e-15 2.42437545e-15 1.41768684e-14
+ 3.57577507e-14 1.33367897e-14 9.22080591e-15 7.80314436e-16
+ 1.38804576e-14 3.96520847e-14 1.97711827e-14 1.28681133e-14
+ 7.54499397e-16 5.27407114e-15 2.14455104e-14 4.21102323e-15]
 </pre></div>
 </div>
 </div>
@@ -659,7 +656,7 @@ The <code class="docutils literal notranslate"><span class="pre">Phase</span></c
 </div>
 </section>
 <section id="create-algorithm-object">
-<h2>Create Algorithm Object<a class="headerlink" href="#create-algorithm-object" title="Permalink to this heading">#</a></h2>
+<h2>Create Algorithm Object<a class="headerlink" href="#create-algorithm-object" title="Link to this heading">#</a></h2>
 <p>OpenPNM contains a variety of <code class="docutils literal notranslate"><span class="pre">Algorithm</span></code> classes in the <code class="docutils literal notranslate"><span class="pre">openpnm.algorithms</span></code> module.  Let’s initialize a <code class="docutils literal notranslate"><span class="pre">StokesFlow</span></code> algorithm, since this simulates pressure driven flow through the network.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -670,7 +667,7 @@ The <code class="docutils literal notranslate"><span class="pre">Phase</span></c
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f9e65d9bec0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -688,7 +685,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
 </div>
 </section>
 <section id="assign-boundary-conditions">
-<h2>Assign Boundary Conditions<a class="headerlink" href="#assign-boundary-conditions" title="Permalink to this heading">#</a></h2>
+<h2>Assign Boundary Conditions<a class="headerlink" href="#assign-boundary-conditions" title="Link to this heading">#</a></h2>
 <p>As can be seen in the print-out above there are predefined <code class="docutils literal notranslate"><span class="pre">'pore.bc'</span></code> arrays, but they contain no valid values, meaning they are all <code class="docutils literal notranslate"><span class="pre">nans</span></code>. Once we set some boundary conditions, this will change.  Let’s apply pressure BCs on one side of the network, and rate BCs on the other:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -700,7 +697,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f9e65d9bec0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -763,7 +760,7 @@ All boundary conditions are stored as ‘pore.bc.<type>’, which means that Ope
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f9e65d9bec0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -789,8 +786,8 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([132461.76413781, 132434.17617183, 134519.44307317, 138710.53274535,
-       142169.41121895])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([160851.8993469 , 168990.87122144, 144074.3350884 , 132821.5732894 ,
+       140888.35612524])
 </pre></div>
 </div>
 </div>
@@ -798,10 +795,10 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
 <p>So we can see that 150 kPa was required to accomplish the requested flow.</p>
 </section>
 <section id="rigorous-conductance-calculation">
-<h2>Rigorous Conductance Calculation<a class="headerlink" href="#rigorous-conductance-calculation" title="Permalink to this heading">#</a></h2>
+<h2>Rigorous Conductance Calculation<a class="headerlink" href="#rigorous-conductance-calculation" title="Link to this heading">#</a></h2>
 <p>The above demonstration used a very simplistic conductance calculation.  It was also stated that computing conductance is the most important part of doing a PNM simulation.  To finish this notebook, we’ll look more closely at this process.</p>
 <section id="manual-method">
-<h3>Manual Method<a class="headerlink" href="#manual-method" title="Permalink to this heading">#</a></h3>
+<h3>Manual Method<a class="headerlink" href="#manual-method" title="Link to this heading">#</a></h3>
 <p>Let’s print the network object again:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -811,7 +808,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3a5e62a840&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
+net : &lt;openpnm.network.Demo at 0x7f9e66b4bce0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -864,46 +861,46 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.16016794e-16, 1.89336987e-18, 5.62997600e-17],
-       [5.62997600e-17, 2.16843619e-18, 1.53650665e-16],
-       [4.12023168e-16, 2.03213477e-17, 2.71955190e-16],
-       [2.71955190e-16, 1.99571058e-17, 4.00987595e-16],
-       [3.87573464e-16, 2.78225610e-17, 3.77699771e-16],
-       [3.77699771e-16, 3.16140525e-17, 4.80117256e-16],
-       [3.75782341e-16, 1.78769645e-17, 2.54681485e-16],
-       [1.43371416e-16, 4.08838225e-18, 1.02119979e-16],
-       [1.20826091e-16, 1.96864776e-18, 5.74314284e-17],
-       [5.74314284e-17, 2.19887180e-18, 1.51905332e-16],
-       [4.87452181e-16, 3.13611217e-17, 3.71012074e-16],
-       [3.71012074e-16, 2.89666812e-17, 4.30758370e-16],
-       [1.74837630e-16, 9.29298028e-18, 2.37782056e-16],
-       [2.29208226e-16, 8.54955024e-18, 1.64805665e-16],
-       [1.41669572e-16, 5.42740907e-18, 1.30026438e-16],
-       [8.33872212e-17, 1.99794157e-18, 6.42931883e-17],
-       [2.79832997e-16, 1.72931697e-17, 2.89497889e-16],
-       [2.58005358e-16, 1.33850862e-17, 2.33432675e-16],
-       [2.08812242e-16, 1.00583089e-17, 1.96099953e-16],
-       [1.96099953e-16, 1.26748974e-17, 3.35824166e-16],
-       [3.87960847e-16, 2.89097162e-17, 3.94288927e-16],
-       [5.62997600e-17, 1.88592021e-18, 1.14859088e-16],
-       [7.60285146e-16, 8.55704213e-17, 7.24169932e-16],
-       [2.60731420e-16, 1.48488145e-17, 2.54681485e-16],
-       [2.17831239e-16, 4.93010785e-18, 1.02119979e-16],
-       [4.05937069e-16, 3.10282588e-17, 4.10311000e-16],
-       [1.16298116e-16, 1.93873975e-18, 5.74314284e-17],
-       [7.24169932e-16, 8.38549709e-17, 7.42464470e-16],
-       [2.54681485e-16, 1.56161156e-17, 2.92116299e-16],
-       [1.02119979e-16, 4.61915690e-18, 1.92960613e-16],
-       [2.41636936e-16, 9.36059455e-18, 1.74837630e-16],
-       [5.74314284e-17, 1.95597888e-18, 1.18922808e-16],
-       [2.94397865e-16, 9.73844427e-18, 1.64805665e-16],
-       [1.92107539e-16, 6.04843282e-18, 1.30026438e-16],
-       [1.44434094e-16, 2.41623855e-18, 6.42931883e-17],
-       [1.74837630e-16, 8.78446923e-18, 2.07688897e-16],
-       [3.38620654e-16, 2.07104398e-17, 3.07632454e-16],
-       [1.64805665e-16, 7.88454651e-18, 1.87070915e-16],
-       [1.30026438e-16, 5.53923037e-18, 1.51072445e-16],
-       [6.42931883e-17, 2.60948949e-18, 1.66918205e-16]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[2.71806467e-16, 1.64680657e-17, 2.79263293e-16],
+       [2.93150749e-16, 2.26171643e-17, 4.30621212e-16],
+       [3.30880512e-16, 1.22712101e-17, 1.91819538e-16],
+       [8.71449283e-17, 1.65320094e-18, 5.44560927e-17],
+       [6.77750189e-17, 2.03467661e-18, 6.82496631e-17],
+       [6.91148145e-17, 2.43067636e-18, 1.20145183e-16],
+       [3.02965524e-16, 2.05003441e-17, 3.43143926e-16],
+       [2.80533528e-16, 1.29707726e-17, 2.19607483e-16],
+       [1.24991971e-16, 4.07699570e-18, 1.05695362e-16],
+       [1.05695362e-16, 4.22146572e-18, 1.39719126e-16],
+       [2.24811582e-16, 1.33321212e-17, 2.81233709e-16],
+       [3.01360519e-16, 1.55987838e-17, 2.51103551e-16],
+       [6.93523850e-17, 7.67911288e-19, 3.02676733e-17],
+       [3.02676733e-17, 7.63206327e-19, 6.80528530e-17],
+       [2.63509361e-16, 1.84870930e-17, 3.74308370e-16],
+       [6.77790457e-16, 7.52162197e-17, 7.02590118e-16],
+       [1.03859348e-16, 2.27167028e-18, 6.79802843e-17],
+       [6.79802843e-17, 2.12889449e-18, 8.18174730e-17],
+       [1.12681782e-16, 4.72638773e-18, 1.55840342e-16],
+       [1.30493033e-16, 3.17381044e-18, 8.46653328e-17],
+       [1.13919671e-16, 2.33197267e-18, 6.77750189e-17],
+       [1.18659155e-16, 2.41998151e-18, 6.91148145e-17],
+       [4.39516869e-16, 2.37237205e-17, 3.02965524e-16],
+       [1.91819538e-16, 1.07080682e-17, 2.57874929e-16],
+       [5.44560927e-17, 1.67847797e-18, 9.17249525e-17],
+       [6.77750189e-17, 2.20362190e-18, 9.47498599e-17],
+       [6.91148145e-17, 2.16543020e-18, 8.07184446e-17],
+       [2.50531435e-16, 1.26626505e-17, 2.24811582e-16],
+       [4.17854386e-16, 3.19384992e-17, 4.13082594e-16],
+       [2.19607483e-16, 1.19122998e-17, 2.30446858e-16],
+       [1.67144023e-16, 8.23594036e-18, 2.01228196e-16],
+       [4.82776847e-17, 6.96969791e-19, 3.02676733e-17],
+       [2.24811582e-16, 1.23978991e-17, 2.38042863e-16],
+       [4.13082594e-16, 3.54168831e-17, 4.95278476e-16],
+       [2.51103551e-16, 1.76594414e-17, 3.77330603e-16],
+       [2.33589527e-16, 1.14936823e-17, 2.11891321e-16],
+       [3.02676733e-17, 6.73912032e-19, 4.08427155e-17],
+       [1.54391934e-16, 4.71075260e-18, 1.12681782e-16],
+       [3.80087523e-16, 1.91549358e-17, 2.70090336e-16],
+       [1.91516444e-16, 3.76124783e-18, 8.46653328e-17]])
 </pre></div>
 </div>
 </div>
@@ -931,16 +928,16 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.01893600e-15, 2.30636022e-15, 2.02406693e-14, 1.98936311e-14,
-       2.71942297e-14, 3.07899315e-14, 1.79059983e-14, 4.28362932e-15,
-       2.09796435e-15, 2.33843510e-15, 3.05617436e-14, 2.83157048e-14,
-       9.52565871e-15, 8.78821202e-15, 5.62605431e-15, 2.12017391e-15,
-       1.72630745e-14, 1.35101268e-14, 1.02423796e-14, 1.28727040e-14,
-       2.81980337e-14, 2.01105489e-15, 7.78434824e-14, 1.49064300e-14,
-       5.15417325e-15, 3.01535852e-14, 2.06637411e-15, 7.64057280e-14,
-       1.56834482e-14, 4.83694597e-15, 9.59458764e-15, 2.08459495e-15,
-       9.98286414e-15, 6.28172842e-15, 2.56582444e-15, 9.00189448e-15,
-       2.05470703e-14, 8.09860754e-15, 5.74614095e-15, 2.76602800e-15])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.64684229e-14, 2.24150979e-14, 1.24776387e-14, 1.76388230e-15,
+       2.14938157e-15, 2.57849209e-15, 2.03580234e-14, 1.31383719e-14,
+       4.26117106e-15, 4.41644397e-15, 1.34871861e-14, 1.56785967e-14,
+       8.29509187e-16, 8.24437271e-16, 1.84876573e-14, 6.91368857e-14,
+       2.41006915e-15, 2.25422178e-15, 4.93491505e-15, 3.34649812e-15,
+       2.47501000e-15, 2.56712620e-15, 2.34576201e-14, 1.09250257e-14,
+       1.79120582e-15, 2.33680796e-15, 2.29112831e-15, 1.28080841e-14,
+       3.09925800e-14, 1.20592805e-14, 8.45788075e-15, 7.52136720e-16,
+       1.25361941e-14, 3.42641485e-14, 1.76982202e-14, 1.16617316e-14,
+       7.26342545e-16, 4.91838598e-15, 1.91252948e-14, 3.95748988e-15])
 </pre></div>
 </div>
 </div>
@@ -956,8 +953,8 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([135871.62789501, 135849.56803043, 138077.61421021, 142542.38717176,
-       146260.99454021])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([165906.41017929, 174503.3210657 , 148432.77634929, 136593.91630776,
+       144935.23943639])
 </pre></div>
 </div>
 </div>
@@ -965,7 +962,7 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 <p>As can be seen the numbers are about the same as with the simple case, but should be somewhat more correct.  In fact, these above pressures are a bit higher, which is because the total conductance of the conduit is lower due to the inclusion of the pore body lengths into the total length, compared to above where only the throat length was included.</p>
 </section>
 <section id="pore-scale-model-method">
-<h3>Pore-Scale Model Method<a class="headerlink" href="#pore-scale-model-method" title="Permalink to this heading">#</a></h3>
+<h3>Pore-Scale Model Method<a class="headerlink" href="#pore-scale-model-method" title="Link to this heading">#</a></h3>
 <p>Instead of computing the hydraulic conductance manually as done above, there is a pore-scale model available:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -986,8 +983,8 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([135871.62789501, 135849.56803043, 138077.61421021, 142542.38717176,
-       146260.99454021])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([165906.41017929, 174503.32106571, 148432.77634929, 136593.91630776,
+       144935.23943639])
 </pre></div>
 </div>
 </div>
@@ -1041,8 +1038,8 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1065,7 +1062,7 @@ net : &lt;openpnm.network.Demo at 0x7f3a5ebe2020&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

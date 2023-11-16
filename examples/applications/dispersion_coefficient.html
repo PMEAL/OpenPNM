@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting dispersion coefficient &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Predicting dispersion coefficient &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,41 +18,38 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/applications/dispersion_coefficient';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Finding Effective Diffusivity and Tortuosity of a Network" href="effective_diffusivity_and_tortuosity.html" />
@@ -128,13 +124,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -464,7 +461,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="predicting-dispersion-coefficient">
-<h1>Predicting dispersion coefficient<a class="headerlink" href="#predicting-dispersion-coefficient" title="Permalink to this heading">#</a></h1>
+<h1>Predicting dispersion coefficient<a class="headerlink" href="#predicting-dispersion-coefficient" title="Link to this heading">#</a></h1>
 <p>This example will show how to find the dispersion coefficient of a porous medium. The following equation given by <a class="reference external" href="https://www.sciencedirect.com/science/article/abs/pii/B9780120218073500084%5D">Fried and Combarnous (1971)</a> is used to solve the longitudinal dispersion coefficient:</p>
 <div class="math notranslate nohighlight">
 \[\frac{C}{C_{0}} = \frac{1}{2}erfc\Bigl(\frac{x-Ut}{2(D_{L}t)^{\frac{1}{2}}}\Bigr)+\frac{1}{2}exp\Bigl(\frac{Ux}{D_{L}}\Bigl)erfc\Bigr(\frac{x+Ut}{2(D_{L}t)^{\frac{1}{2}}}\Bigr)\]</div>
@@ -485,7 +482,7 @@ document.write(`
 </div>
 </div>
 <section id="generating-network-and-phase">
-<h2>Generating Network and phase<a class="headerlink" href="#generating-network-and-phase" title="Permalink to this heading">#</a></h2>
+<h2>Generating Network and phase<a class="headerlink" href="#generating-network-and-phase" title="Link to this heading">#</a></h2>
 <p>First, we create a network and assign the phase and properties in a similar way that we used to do for the other examples. A 2D <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> network is generated here, but a 3D network would work as well. Note that <code class="docutils literal notranslate"><span class="pre">op.models.collections.phase</span></code> is added to assign fluid properties such as viscosity, etc, and <code class="docutils literal notranslate"><span class="pre">op.models.collections.physics</span></code> is added to assign pore-scale models such as entry pressure, conduit conductance. A user-defined value for water diffusivity was assumed, as it is not included in <code class="docutils literal notranslate"><span class="pre">collections.phase.water</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -502,14 +499,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[11:48:13] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.electrical_conductance was not run since the following property is        <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[02:17:55] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.electrical_conductance was not run since the following property is        <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         missing: <span style="color: #008000; text-decoration-color: #008000">'throat.electrical_conductivity'</span>                                        <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 </div></div>
 </div>
 </section>
 <section id="defining-effective-pore-volume">
-<h2>Defining Effective Pore Volume<a class="headerlink" href="#defining-effective-pore-volume" title="Permalink to this heading">#</a></h2>
+<h2>Defining Effective Pore Volume<a class="headerlink" href="#defining-effective-pore-volume" title="Link to this heading">#</a></h2>
 <p>The accumulation of mass in the network occurs only in the pores, where the concentration is solved.  In order for mass  accumulate properly, it is necessary to assign the throat volumes to their surrounded throats.  This creates an effective pore volume.  We can define this in a custom pore-scale model, making use of the <code class="docutils literal notranslate"><span class="pre">numpy.add.at</span></code> function, to add 1/2 the volume of each throat to its neighboring pores.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -534,7 +531,7 @@ document.write(`
 </div>
 </section>
 <section id="perform-stokes-flow">
-<h2>Perform Stokes flow<a class="headerlink" href="#perform-stokes-flow" title="Permalink to this heading">#</a></h2>
+<h2>Perform Stokes flow<a class="headerlink" href="#perform-stokes-flow" title="Link to this heading">#</a></h2>
 <p>The advection diffusion algorithm assumes a velocity field. Therefore, Stokes flow in the pore netwok is solved prior to running the <code class="docutils literal notranslate"><span class="pre">AdvectionDiffusion</span></code> algorthim. Note that we updated the phase property after based on pressure distribution from stokes flow results:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -549,7 +546,7 @@ document.write(`
 </div>
 </section>
 <section id="apply-transient-advection-diffusion">
-<h2>Apply transient advection diffusion<a class="headerlink" href="#apply-transient-advection-diffusion" title="Permalink to this heading">#</a></h2>
+<h2>Apply transient advection diffusion<a class="headerlink" href="#apply-transient-advection-diffusion" title="Link to this heading">#</a></h2>
 <p>An algorthim for transient advection diffusion is defined here for a range of timesteps. We must also tell the algorithm to use the effective pore volume rather than the default which is just <code class="docutils literal notranslate"><span class="pre">pore.volume</span></code>. Here, the solution is saved at intervals of 5 through the integration time span <code class="docutils literal notranslate"><span class="pre">tspan</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -570,7 +567,7 @@ document.write(`
 </div>
 </section>
 <section id="elution-curve">
-<h2>Elution curve<a class="headerlink" href="#elution-curve" title="Permalink to this heading">#</a></h2>
+<h2>Elution curve<a class="headerlink" href="#elution-curve" title="Link to this heading">#</a></h2>
 <p>To plot the elution curve from simulation data, we calculate the average concentration at each time step in the <code class="docutils literal notranslate"><span class="pre">soln</span></code> as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -594,12 +591,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3213f4323fd81984dceb9978df77d427e89b19e93549f9f91e21b13ac6aee0ad.png" src="../../_images/3213f4323fd81984dceb9978df77d427e89b19e93549f9f91e21b13ac6aee0ad.png" />
+<img alt="../../_images/2d8151f71dc9da795e64129f5da51b314e41ed21613acc050c5100eb0c883f24.png" src="../../_images/2d8151f71dc9da795e64129f5da51b314e41ed21613acc050c5100eb0c883f24.png" />
 </div>
 </div>
 </section>
 <section id="solving-for-the-dispersion-coefficient">
-<h2>Solving for the dispersion coefficient<a class="headerlink" href="#solving-for-the-dispersion-coefficient" title="Permalink to this heading">#</a></h2>
+<h2>Solving for the dispersion coefficient<a class="headerlink" href="#solving-for-the-dispersion-coefficient" title="Link to this heading">#</a></h2>
 <p>Since we will define the inlet concentration as being equal to 1, solving for <span class="math notranslate nohighlight">\(C\)</span> is effictivly equal to solving for <span class="math notranslate nohighlight">\(\frac{C}{C_{0}}\)</span>.</p>
 <p>We create a function for elution for curve fitting of solution data to the function. The known values are time and concentration found from the transport solution. From curve fittiong, the values of <span class="math notranslate nohighlight">\(D_{L}\)</span> and <span class="math notranslate nohighlight">\(U\)</span> will be found.</p>
 <div class="cell docutils container">
@@ -667,7 +664,7 @@ v_fitted =  7.0669E-05  m/s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/35b778dea9da22a5051b93a29ff9fd3c09ba78bb9c7bd3442aa17cdb54876b75.png" src="../../_images/35b778dea9da22a5051b93a29ff9fd3c09ba78bb9c7bd3442aa17cdb54876b75.png" />
+<img alt="../../_images/3a9330e002f1130d321f446d8daa2d33910ce46566618ab74fd442bd76f6034f.png" src="../../_images/3a9330e002f1130d321f446d8daa2d33910ce46566618ab74fd442bd76f6034f.png" />
 </div>
 </div>
 </section>
@@ -714,8 +711,8 @@ v_fitted =  7.0669E-05  m/s
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -738,7 +735,7 @@ v_fitted =  7.0669E-05  m/s
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

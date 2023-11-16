@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Size Factors and Transport Conductance &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Size Factors and Transport Conductance &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,41 +18,38 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/simulations/size_factors_and_transport_conductance';</script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Transient Transport" href="transient_transport.html" />
@@ -128,13 +124,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -464,9 +461,9 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="size-factors-and-transport-conductance">
-<h1>Size Factors and Transport Conductance<a class="headerlink" href="#size-factors-and-transport-conductance" title="Permalink to this heading">#</a></h1>
+<h1>Size Factors and Transport Conductance<a class="headerlink" href="#size-factors-and-transport-conductance" title="Link to this heading">#</a></h1>
 <section id="conductance-in-pore-network-models">
-<h2>Conductance in pore network models<a class="headerlink" href="#conductance-in-pore-network-models" title="Permalink to this heading">#</a></h2>
+<h2>Conductance in pore network models<a class="headerlink" href="#conductance-in-pore-network-models" title="Link to this heading">#</a></h2>
 <p>Consider an arbitrary pore network model such as the one shown below:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png"><img alt="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" src="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" style="width: 400px;" /></a>
 <p>For simulating transport in this network, we need to know lots of parameters such as pore sizes, physical properties, etc, but ultimately it comes down to knowing the conductance of the “conduits” in the network. For example, consider simulating Fickian diffusion in a pore network model under steady state conditions. Writing a mass balance around an arbitrary pore <span class="math notranslate nohighlight">\(i\)</span>, we have:</p>
@@ -477,12 +474,12 @@ document.write(`
 <p>where <span class="math notranslate nohighlight">\(Nb^i\)</span> is the number of neighboring pores to pore <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(m_{ik}\)</span> is the mass flow rate from pore <span class="math notranslate nohighlight">\(i\)</span> to pore <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the overall conductance of the conduit containing pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and the connecting throat <span class="math notranslate nohighlight">\(ik\)</span>. In simple terms, it means that any mass that enters/exits pore <span class="math notranslate nohighlight">\(i\)</span> must balance such that the net rate is 0. Writing the mass balance for each pore, we get a linear system of <span class="math notranslate nohighlight">\(N_p\)</span> equations (where <span class="math notranslate nohighlight">\(N_p\)</span> is the total number of pores in the network), which can be solved for the pore concentrations using a linear solver.</p>
 </section>
 <section id="conductance-of-a-single-conduit">
-<h2>Conductance of a single conduit<a class="headerlink" href="#conductance-of-a-single-conduit" title="Permalink to this heading">#</a></h2>
+<h2>Conductance of a single conduit<a class="headerlink" href="#conductance-of-a-single-conduit" title="Link to this heading">#</a></h2>
 <p>Consider a conduit in a pore network model, as shown by the following figure (we assumed spherical pores and cylindrical throats, but this is not necessary):</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
 <p>where L is length, A is the cross-sectional area, and the subscripts <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(ik\)</span> denote pore <span class="math notranslate nohighlight">\(i\)</span>, pore <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>. Now, consider the diffusional mass transfer between pore <span class="math notranslate nohighlight">\(i\)</span> and pore <span class="math notranslate nohighlight">\(k\)</span> with a mass flow rate of <span class="math notranslate nohighlight">\(m_{ik}\)</span>, which can be described by the following equation:</p>
 <div class="math notranslate nohighlight" id="equation-mass-flow-rate">
-<span class="eqno">(1)<a class="headerlink" href="#equation-mass-flow-rate" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(1)<a class="headerlink" href="#equation-mass-flow-rate" title="Link to this equation">#</a></span>\[
 m_{ik} = g_{ik} \cdot (c_i - c_k)
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the overall conductance of the conduit <span class="math notranslate nohighlight">\(ik\)</span>.</p>
@@ -497,19 +494,19 @@ R_{ik} = R_i^p + R_k^p + R_{ik}^t
 \]</div>
 <p>where the superscripts <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(t\)</span> denote pore and throat, respectively, and <span class="math notranslate nohighlight">\(R_{ik}\)</span> is the resistance of the entire conduit. The equation above can be rewritten in form of conductance as follows:</p>
 <div class="math notranslate nohighlight" id="equation-resistors-in-series">
-<span class="eqno">(2)<a class="headerlink" href="#equation-resistors-in-series" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(2)<a class="headerlink" href="#equation-resistors-in-series" title="Link to this equation">#</a></span>\[
 1/g_{ik} = 1/g_i^p + 1/g_k^p + 1/g_{ik}^t
 \]</div>
 <p>For simplicity, let’s assume that the shape of the pores and throats are cylindrical as shown in the figure below:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png"><img alt="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" src="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" style="width: 750px;" /></a>
 <p>Based on this assumption, the diffusive conductance of each element can be expressed as (more on how to derive these equations comes later):</p>
 <div class="math notranslate nohighlight" id="equation-diffusive-size-factors-cylindrical">
-<span class="eqno">(3)<a class="headerlink" href="#equation-diffusive-size-factors-cylindrical" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(3)<a class="headerlink" href="#equation-diffusive-size-factors-cylindrical" title="Link to this equation">#</a></span>\[
 g_i^p = D \frac{\pi d_i^2/4}{\ell_i} \quad , \quad g_k^p = D \frac{\pi d_k^2/4}{\ell_k} \quad , \quad g_{ik}^t = D \frac{\pi d_{ik}^2/4}{\ell_{ik}}
 \]</div>
 </section>
 <section id="size-factors-vs-shape-factors">
-<h2>Size factors vs. shape factors<a class="headerlink" href="#size-factors-vs-shape-factors" title="Permalink to this heading">#</a></h2>
+<h2>Size factors vs. shape factors<a class="headerlink" href="#size-factors-vs-shape-factors" title="Link to this heading">#</a></h2>
 <p>In reality, however, pores/throats are not cylindrical, and the diffusive conductance needs to be <strong>corrected</strong>. This correction factor is called the <strong>shape factor</strong> in the network modeling literature, as defined by the following equation:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -537,7 +534,7 @@ g = \mathcal{S} \cdot \frac{1}{\mu}
 <p>for fluid flow, where <span class="math notranslate nohighlight">\(\mu\)</span> is the viscosity.</p>
 </section>
 <section id="built-in-size-factor-models-in-openpnm">
-<h2>Built-in size factor models in OpenPNM<a class="headerlink" href="#built-in-size-factor-models-in-openpnm" title="Permalink to this heading">#</a></h2>
+<h2>Built-in size factor models in OpenPNM<a class="headerlink" href="#built-in-size-factor-models-in-openpnm" title="Link to this heading">#</a></h2>
 <p>OpenPNM has a number of built-in functions to calculate the size factor, which can be found under <code class="docutils literal notranslate"><span class="pre">openpnm.models.geometry</span></code>. Let’s inspect the available diffusive and hydraulic size factor models:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -602,13 +599,13 @@ ncylinders_in_series
 </div>
 </section>
 <section id="deriving-the-size-factor-for-arbitrary-shaped-pores-and-throats">
-<h2>Deriving the size factor for arbitrary-shaped pores and throats<a class="headerlink" href="#deriving-the-size-factor-for-arbitrary-shaped-pores-and-throats" title="Permalink to this heading">#</a></h2>
+<h2>Deriving the size factor for arbitrary-shaped pores and throats<a class="headerlink" href="#deriving-the-size-factor-for-arbitrary-shaped-pores-and-throats" title="Link to this heading">#</a></h2>
 <p>In this section, we will derive the equation for the size factor for arbitrary-shaped pores and throats, then we will apply it to the case of cylindrical pores and throats to retrieve the equations we used in the previous section.</p>
 <p>Consider the following conduit, which consists of pore <span class="math notranslate nohighlight">\(i\)</span>, throat <span class="math notranslate nohighlight">\(ik\)</span>, and pore <span class="math notranslate nohighlight">\(k\)</span>:</p>
 <a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
 <p>Note that the choice of spheres and cylinders in the above figure is arbitrary and will not be taken into account in the derivation.</p>
 <section id="diffusive-size-factor">
-<h3>Diffusive size factor<a class="headerlink" href="#diffusive-size-factor" title="Permalink to this heading">#</a></h3>
+<h3>Diffusive size factor<a class="headerlink" href="#diffusive-size-factor" title="Link to this heading">#</a></h3>
 <p>From the Fick’s law of diffusion, the diffusive mass flow rate between pore <span class="math notranslate nohighlight">\(i\)</span> and pore <span class="math notranslate nohighlight">\(k\)</span> is given by (assuming that the transport begins at the center of pore <span class="math notranslate nohighlight">\(i\)</span> and ends at the center of pore <span class="math notranslate nohighlight">\(k\)</span>):</p>
 <div class="math notranslate nohighlight">
 \[
@@ -652,7 +649,7 @@ m_{ik} = \Bigg[ \Big( \int \frac{dx}{A(x)} \Big)_{\text{pore }i} + \Big( \int \f
 <p>where <span class="math notranslate nohighlight">\(A_i(x)\)</span>, <span class="math notranslate nohighlight">\(A_k(x)\)</span>, and <span class="math notranslate nohighlight">\(A_{ik}(x)\)</span> are the cross-sectional areas of pores <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>, respectively. Note that the above equations are valid for any arbitrary shape of the pores and throats.</p>
 <p>As a test case, let’s consider cylindrical pores and throats. In this case, the cross-sectional area of the each element is given by:</p>
 <div class="math notranslate nohighlight" id="equation-cross-sectional-area">
-<span class="eqno">(4)<a class="headerlink" href="#equation-cross-sectional-area" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(4)<a class="headerlink" href="#equation-cross-sectional-area" title="Link to this equation">#</a></span>\[
 A_i = \pi d_i^2/4 \quad , \quad A_k = \pi d_k^2/4 \quad , \quad A_{ik} = \pi d_{ik}^2/4
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(d_i\)</span>, <span class="math notranslate nohighlight">\(d_k\)</span>, and <span class="math notranslate nohighlight">\(d_{ik}\)</span> are the diameters of pores <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>, respectively. Substituting the above equations into the above equations, we get:</p>
@@ -663,7 +660,7 @@ A_i = \pi d_i^2/4 \quad , \quad A_k = \pi d_k^2/4 \quad , \quad A_{ik} = \pi d_{
 <p>which matches what we declared earlier in equation <a class="reference internal" href="#equation-diffusive-size-factors-cylindrical">(3)</a>.</p>
 </section>
 <section id="hydraulic-size-factor">
-<h3>Hydraulic size factor<a class="headerlink" href="#hydraulic-size-factor" title="Permalink to this heading">#</a></h3>
+<h3>Hydraulic size factor<a class="headerlink" href="#hydraulic-size-factor" title="Link to this heading">#</a></h3>
 <p>For brevity, we will not go into the nitty-gritty details of the derivation of the hydraulic size factors. Instead, we will give you some pointers on where to start. The derivation of the hydraulic size factors is slightly more involved than that of the diffusive size factors. The main reason is that fluid flow equations need to satisfy two sets of boundary conditions, pressure drop along the domain (<span class="math notranslate nohighlight">\(p_i\)</span> and <span class="math notranslate nohighlight">\(p_k\)</span> at the two ends of the conduit), and no slip at the lateral boundaries (walls), whereas for diffusive transport, only the concentration boundary conditions need to be satisfied (<span class="math notranslate nohighlight">\(c_i\)</span> and <span class="math notranslate nohighlight">\(c_k\)</span> at the two ends of the conduit).</p>
 <p>Assuming that the cross-section of the conduit is gradually changing, the pressure drop along the conduit can be approximated by the following equation <a class="footnote-reference brackets" href="#akbari-2011" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
 <div class="math notranslate nohighlight">
@@ -672,7 +669,7 @@ A_i = \pi d_i^2/4 \quad , \quad A_k = \pi d_k^2/4 \quad , \quad A_{ik} = \pi d_{
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(Q\)</span> is the volumetric flow rate, <span class="math notranslate nohighlight">\(I_p^*\)</span> is the <em>specific polar moment of inertia</em> <a class="footnote-reference brackets" href="#bahrami-2007" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> (don’t worry if you don’t know what this is, there are tables in the literature that you can use to look up the values for different shapes), <span class="math notranslate nohighlight">\(A(x)\)</span> is the cross-sectional area of the conduit, and <span class="math notranslate nohighlight">\(\mu\)</span> is the viscosity of the fluid. Rearranging and integrating the above equation, we get:</p>
 <div class="math notranslate nohighlight" id="equation-pressure-drop">
-<span class="eqno">(5)<a class="headerlink" href="#equation-pressure-drop" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(5)<a class="headerlink" href="#equation-pressure-drop" title="Link to this equation">#</a></span>\[
 -\frac{1}{Q} \int dp = \mu \Big[ 16\pi^2 \int \frac{I_p^*}{A(x)} dx - \frac{2 \rho Q}{\mu} \cdot \int \frac{dA(x)/dx}{A(x)^3} dx \Big]
 \]</div>
 <p>From calculus, we know that:</p>
@@ -692,12 +689,12 @@ A_i = \pi d_i^2/4 \quad , \quad A_k = \pi d_k^2/4 \quad , \quad A_{ik} = \pi d_{
 \]</div>
 <p>where the first term in the right-hand-side is the frictional loss, and the second term is the inertial loss. The frictional loss is a function of the conduit geometry, and the inertial loss is a function of the flow rate and the conduit geometry. The frictional loss is usually much larger than the inertial loss, so we can safely ignore the inertial loss to obtain:</p>
 <div class="math notranslate nohighlight" id="equation-pressure-drop-simplified">
-<span class="eqno">(6)<a class="headerlink" href="#equation-pressure-drop-simplified" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(6)<a class="headerlink" href="#equation-pressure-drop-simplified" title="Link to this equation">#</a></span>\[
 \frac{p_i - p_j}{Q} = 16 \pi^2 \mu \int \frac{I_p^*}{A(x)^2} dx
 \]</div>
 <p>Similar to the diffusive transport, the hydraulic conductance is defined as the ratio of the flow rate to the pressure drop as follows:</p>
 <div class="math notranslate nohighlight" id="equation-flow-rate">
-<span class="eqno">(7)<a class="headerlink" href="#equation-flow-rate" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(7)<a class="headerlink" href="#equation-flow-rate" title="Link to this equation">#</a></span>\[
 Q = g_{ik} \cdot (p_i - p_k)
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(g_{ik}\)</span> is the hydraulic conductance (we use the same notation as the diffusive conductance to keep it simple in this notebook). Expanding the integral over the conduit on each element (pores <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>), and by comparing equations <a class="reference internal" href="#equation-pressure-drop-simplified">(6)</a> and <a class="reference internal" href="#equation-flow-rate">(7)</a>, we get:</p>
@@ -712,7 +709,7 @@ Q = g_{ik} \cdot (p_i - p_k)
 \]</div>
 <p>from which, we can obtain the hydraulic size factor for each conduit element as follows:</p>
 <div class="math notranslate nohighlight" id="equation-hydraulic-size-factor">
-<span class="eqno">(8)<a class="headerlink" href="#equation-hydraulic-size-factor" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(8)<a class="headerlink" href="#equation-hydraulic-size-factor" title="Link to this equation">#</a></span>\[
 \mathcal{S}_{i}^p = \Big[ 16 \pi^2 \int_{\ell_i} \frac{I_p^*}{A_i(x)^2} dx \Big]^{-1} \quad , \quad \mathcal{S}_{ik}^t = \Big[ 16 \pi^2 \int_{\ell_{ik}} \frac{I_p^*}{A_{ik}(x)^2} dx \Big]^{-1} \quad , \quad \mathcal{S}_{k}^p = \Big[ 16 \pi^2 \int_{\ell_k} \frac{I_p^*}{A_k(x)^2} dx \Big]^{-1}
 \]</div>
 <p>As a test case, consider cylidnrical pores and throats. The specific polar moment of inertia for a cylinder is:</p>
@@ -739,25 +736,25 @@ I_p^* = \frac{1}{4 \pi}
 </section>
 </section>
 <section id="conduit-vs-element-size-factor">
-<h2>Conduit vs. element size factor<a class="headerlink" href="#conduit-vs-element-size-factor" title="Permalink to this heading">#</a></h2>
+<h2>Conduit vs. element size factor<a class="headerlink" href="#conduit-vs-element-size-factor" title="Link to this heading">#</a></h2>
 <p>So far, we have derived individual equations for the size factor of each conduit element as well the entire conduit (based on resistors in series model). Note that eventually, only the size factor of the entire conduit is used by the algorithms, although as we discussed, it is directly calculated from the size factors of the individual elements.</p>
 <p>Almost all of the built-in size factor models in OpenPNM return an Nt by 3 array, where Nt is the number of conduits (same as the number of throats!). The first column is the size factor of the pore on the left side of the conduit, the second column is the size factor of the throat, and the third column is the size factor of the pore on the right side of the conduit.</p>
 <p>However, we do have one model (at the time of writing this notebook) that uses a machine learning method <a class="footnote-reference brackets" href="#misghaian-2022" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> to predict the diffusive size factor of the <strong>entire conduit</strong> directly from a voxel image of the porous medium. For this reason, it only returns an Nt by 1 vector. Our built-in conductance models (which take in the size factor and physical properties as input and return the conductance) are designed to work with both types of size factor models.</p>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="akbari-2011" role="note">
+<aside class="footnote brackets" id="akbari-2011" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Akbari, M., D. Sinton, and M. Bahrami. “Viscous flow in variable cross-section microchannels of arbitrary shapes.” International Journal of Heat and Mass Transfer 54.17-18 (2011): 3970-3978.</p>
 </aside>
-<aside class="footnote brackets" id="bahrami-2007" role="note">
+<aside class="footnote brackets" id="bahrami-2007" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Bahrami, Majid, M. Michael Yovanovich, and J. Richard Culham. “A novel solution for pressure drop in singly connected microchannels of arbitrary cross-section.” International Journal of Heat and Mass Transfer 50.13-14 (2007): 2492-2502.</p>
 </aside>
-<aside class="footnote brackets" id="hagen-poiseuille-wikipedia" role="note">
+<aside class="footnote brackets" id="hagen-poiseuille-wikipedia" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>https://en.wikipedia.org/wiki/Hagen%E2%80%93Poiseuille_equation</p>
 </aside>
-<aside class="footnote brackets" id="misghaian-2022" role="note">
+<aside class="footnote brackets" id="misghaian-2022" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
 <p>Misaghian, Niloo, et al. “Prediction of diffusional conductance in extracted pore network models using convolutional neural networks.” Computers &amp; Geosciences 162 (2022): 105086.</p>
 </aside>
@@ -810,8 +807,8 @@ I_p^* = \frac{1}{4 \pi}
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -834,7 +831,7 @@ I_p^* = \frac{1}{4 \pi}
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

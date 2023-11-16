@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Generating Networks and Quick Visualization &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Generating Networks and Quick Visualization &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/02_network_generation_and_visualization';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Storage of Network Data and Topology" href="03_data_and_topology_storage.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="generating-networks-and-quick-visualization">
-<h1>Generating Networks and Quick Visualization<a class="headerlink" href="#generating-networks-and-quick-visualization" title="Permalink to this heading">#</a></h1>
+<h1>Generating Networks and Quick Visualization<a class="headerlink" href="#generating-networks-and-quick-visualization" title="Link to this heading">#</a></h1>
 <p>OpenPNM includes a variety of network generators. This notebook cover the use of a few commons ones which is a good primer for for the rest of this tutorial series.  It also illustrates how to quickly visualize networks for inspection while developing and troubleshoot. Full visualization is best done in a dedicated software like paraview or draongfly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -475,7 +472,7 @@ document.write(`
 </div>
 </div>
 <section id="cubic">
-<h2>Cubic<a class="headerlink" href="#cubic" title="Permalink to this heading">#</a></h2>
+<h2>Cubic<a class="headerlink" href="#cubic" title="Link to this heading">#</a></h2>
 <p>The standard cubic network is the basic starting point for pore network modeling.  They are simple but still quite useful since all the key behaviors seen in a porous material are present in cubic network, such as shielding, percolation, and so on.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -486,7 +483,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/67f4e6d4d1a8f4e331acc908a508c476903814e9dd979346ebfd622e5a2d1d2f.png" src="../../_images/67f4e6d4d1a8f4e331acc908a508c476903814e9dd979346ebfd622e5a2d1d2f.png" />
+<img alt="../../_images/9229c90cb99854fc9950740a61cdaad77b88b43758a5e39dc6d10e3f09195ce8.png" src="../../_images/9229c90cb99854fc9950740a61cdaad77b88b43758a5e39dc6d10e3f09195ce8.png" />
 </div>
 </div>
 <div class="admonition tip">
@@ -503,7 +500,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c4a30c7d884204ea18690e0eb32ac81b84a3b685e6758134f1005b7b0cae677e.png" src="../../_images/c4a30c7d884204ea18690e0eb32ac81b84a3b685e6758134f1005b7b0cae677e.png" />
+<img alt="../../_images/05fca8ec941d30bf535558ec3be1c9d113989ed9adec34b3b13e9bbd3ab02ac7.png" src="../../_images/05fca8ec941d30bf535558ec3be1c9d113989ed9adec34b3b13e9bbd3ab02ac7.png" />
 </div>
 </div>
 <p>It is also possible to add more than just the standard 6 connections:</p>
@@ -516,7 +513,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f74641855333906f962df878289a63995402afa47b08455c93a8fda45ebcf282.png" src="../../_images/f74641855333906f962df878289a63995402afa47b08455c93a8fda45ebcf282.png" />
+<img alt="../../_images/3fa43b59a95cc994eb086522b9c42a8b83151c753f27604029d9565ac3cb6888.png" src="../../_images/3fa43b59a95cc994eb086522b9c42a8b83151c753f27604029d9565ac3cb6888.png" />
 </div>
 </div>
 <p>One of the uses of a 26-connreadd network is the removal of throats at random to create a more natural topology.  There is a more detailed description of how to manipulate networks in a following tutorial, but here we’ll introduce the <code class="docutils literal notranslate"><span class="pre">topotools</span></code> module, which contains the <code class="docutils literal notranslate"><span class="pre">trim</span></code> function which allows us to delete some throats or pores:</p>
@@ -532,7 +529,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/12979bba5af2ba88358a1d53c8f8799f2ec1e9f9877f91b37b7bba034902463c.png" src="../../_images/12979bba5af2ba88358a1d53c8f8799f2ec1e9f9877f91b37b7bba034902463c.png" />
+<img alt="../../_images/f1caeaad16da735437c3b56b35ee9e613d64fb7f587cdf6bb76eae0f718536f8.png" src="../../_images/f1caeaad16da735437c3b56b35ee9e613d64fb7f587cdf6bb76eae0f718536f8.png" />
 </div>
 </div>
 <div class="admonition tip">
@@ -547,7 +544,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fbf20eb5120&gt;
+net : &lt;openpnm.network.Cubic at 0x7f48b4fcc0e0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -613,7 +610,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </section>
 <section id="cubictemplates">
-<h2>CubicTemplates<a class="headerlink" href="#cubictemplates" title="Permalink to this heading">#</a></h2>
+<h2>CubicTemplates<a class="headerlink" href="#cubictemplates" title="Link to this heading">#</a></h2>
 <p>It’s possible to make a cubic network with an arbitrary shape, like a sphere or cylinder, or even more complex, though it wil still have a cubic lattice topology. This might be useful for simulating transport in a catalyst pellet for instance.  This requires creating a boolean image with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the shape of the network.  OpenPNM has a few helper functions, but you are free to create any shape.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -625,12 +622,12 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2e5f5a84e5c8b02444205bfb03f1b226543186636588768a8c14ce4ed691e636.png" src="../../_images/2e5f5a84e5c8b02444205bfb03f1b226543186636588768a8c14ce4ed691e636.png" />
+<img alt="../../_images/f2687866cec7c693dad913f0133fdb8c2e8745f4bb1928aad8a570b8c773d9ab.png" src="../../_images/f2687866cec7c693dad913f0133fdb8c2e8745f4bb1928aad8a570b8c773d9ab.png" />
 </div>
 </div>
 </section>
 <section id="other-cubic-lattices">
-<h2>Other Cubic Lattices<a class="headerlink" href="#other-cubic-lattices" title="Permalink to this heading">#</a></h2>
+<h2>Other Cubic Lattices<a class="headerlink" href="#other-cubic-lattices" title="Link to this heading">#</a></h2>
 <p>Another useful and related set of networks are <code class="docutils literal notranslate"><span class="pre">FaceCenteredCubic</span></code> and <code class="docutils literal notranslate"><span class="pre">BodyCenteredCubic</span></code> lattices. These are very helpful for creating higher porosity networks since it jams extra pores into the interstial spaces:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -644,8 +641,8 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c632e43476aa4088237b15c619242f90ad8f058b81bbb275029c9f4e3312c837.png" src="../../_images/c632e43476aa4088237b15c619242f90ad8f058b81bbb275029c9f4e3312c837.png" />
-<img alt="../../_images/ce6eda2c1cfed677f67c5ab2df4e9f69d46e031cfea09c20e7d33ec9f255997c.png" src="../../_images/ce6eda2c1cfed677f67c5ab2df4e9f69d46e031cfea09c20e7d33ec9f255997c.png" />
+<img alt="../../_images/18e585a743b4310d083916e1f0ff8823f6ad4a4f66d0cf824d5c50fea0f90b66.png" src="../../_images/18e585a743b4310d083916e1f0ff8823f6ad4a4f66d0cf824d5c50fea0f90b66.png" />
+<img alt="../../_images/26145d482f00f00e67bab5b1bf7c4405b7837a4687db101e1273e0991d9a96c1.png" src="../../_images/26145d482f00f00e67bab5b1bf7c4405b7837a4687db101e1273e0991d9a96c1.png" />
 </div>
 </div>
 <div class="admonition note">
@@ -661,7 +658,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
+net : &lt;openpnm.network.BodyCenteredCubic at 0x7f48b4e92a70&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -701,7 +698,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/869ea6c736a93cebd20396e3b013c825c5ee196b79c54186d8604a95b3abe512.png" src="../../_images/869ea6c736a93cebd20396e3b013c825c5ee196b79c54186d8604a95b3abe512.png" />
+<img alt="../../_images/42acc6bf3d2f27abf7d3f014f813c4d790f67f637fcfdc67addbc1b3837b8fac.png" src="../../_images/42acc6bf3d2f27abf7d3f014f813c4d790f67f637fcfdc67addbc1b3837b8fac.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -714,12 +711,12 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/08c3c157dfce9e9682531acc30e723517d86acbc09e49857d2d1f6ab1cad1cd9.png" src="../../_images/08c3c157dfce9e9682531acc30e723517d86acbc09e49857d2d1f6ab1cad1cd9.png" />
+<img alt="../../_images/2b2bc05bb0a9f1f3d65fbed57b195de62df2e596ebea13f0bf35d20bc3f88c24.png" src="../../_images/2b2bc05bb0a9f1f3d65fbed57b195de62df2e596ebea13f0bf35d20bc3f88c24.png" />
 </div>
 </div>
 </section>
 <section id="random-network-delaunay-and-voronoi-tessellations">
-<h2>Random Network: Delaunay and Voronoi Tessellations<a class="headerlink" href="#random-network-delaunay-and-voronoi-tessellations" title="Permalink to this heading">#</a></h2>
+<h2>Random Network: Delaunay and Voronoi Tessellations<a class="headerlink" href="#random-network-delaunay-and-voronoi-tessellations" title="Link to this heading">#</a></h2>
 <p>OpenPNM can also handle random networks with ease since the topology is stored in a totally general way, to be discussed in a later tutorial. Below is the Voronoi tessellation of a set of random base points:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -730,7 +727,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d02f40306fde5d493143ee3369cf866175a27ecc545f33814946c7d8eff01f76.png" src="../../_images/d02f40306fde5d493143ee3369cf866175a27ecc545f33814946c7d8eff01f76.png" />
+<img alt="../../_images/9de9cc48957f8d21e8657e3221c84a8236205eb7dc5f6f8e7cc9d32374fdc38c.png" src="../../_images/9de9cc48957f8d21e8657e3221c84a8236205eb7dc5f6f8e7cc9d32374fdc38c.png" />
 </div>
 </div>
 <p>And there is also the complementary Delaunay tessellation:</p>
@@ -743,7 +740,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/28f72b623cc5b9a4d42fbe482c5e3fb449c27bed0e0d4ce5f4f5e86245c40893.png" src="../../_images/28f72b623cc5b9a4d42fbe482c5e3fb449c27bed0e0d4ce5f4f5e86245c40893.png" />
+<img alt="../../_images/1b99e5164d76224e68f635780269b9e6a0e8de55b905d4d52e5cc6393daacb80.png" src="../../_images/1b99e5164d76224e68f635780269b9e6a0e8de55b905d4d52e5cc6393daacb80.png" />
 </div>
 </div>
 <p>And these can be combined in a dual network where the Voronoi and Delaunay networks interpenetrate each other and are connected by additional throats:</p>
@@ -756,7 +753,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/bc6b27a58fa04e45946942b5a614ed51549e1943fd58090fd60ce149637902cc.png" src="../../_images/bc6b27a58fa04e45946942b5a614ed51549e1943fd58090fd60ce149637902cc.png" />
+<img alt="../../_images/252a7a9346d72c6431c10a77f22b21f666bd961702884e1ad1d50fe1f76ad4e8.png" src="../../_images/252a7a9346d72c6431c10a77f22b21f666bd961702884e1ad1d50fe1f76ad4e8.png" />
 </div>
 </div>
 <p>It is also possible to create these lattices in cylindrical and spherical shapes.  This is done via the <code class="docutils literal notranslate"><span class="pre">shape</span></code> argument such that [x, y, z] assumes cartesian, [r, z] assumes cylindrical and [r] assumes spherical:</p>
@@ -769,7 +766,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/14eb3a400990479c9bc7ded5f26d193fc2fdb1e5fc30b5726783898384ff8799.png" src="../../_images/14eb3a400990479c9bc7ded5f26d193fc2fdb1e5fc30b5726783898384ff8799.png" />
+<img alt="../../_images/8ab1e8f106e0ec3ddc84a85e24e6f56627b9bc34c3fb43173328f9336e12c679.png" src="../../_images/8ab1e8f106e0ec3ddc84a85e24e6f56627b9bc34c3fb43173328f9336e12c679.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -781,12 +778,12 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/bb37f37321fe1d10921d7c9bb7246ae2b2d8cdf9a0ea64f9993d26ba9f3d294b.png" src="../../_images/bb37f37321fe1d10921d7c9bb7246ae2b2d8cdf9a0ea64f9993d26ba9f3d294b.png" />
+<img alt="../../_images/4aea735135448dcf8d2c0f552497de036fd912f18f80416d8fef613a3609b659.png" src="../../_images/4aea735135448dcf8d2c0f552497de036fd912f18f80416d8fef613a3609b659.png" />
 </div>
 </div>
 </section>
 <section id="imported-networks">
-<h2>Imported Networks<a class="headerlink" href="#imported-networks" title="Permalink to this heading">#</a></h2>
+<h2>Imported Networks<a class="headerlink" href="#imported-networks" title="Link to this heading">#</a></h2>
 <p>Just as OpenPNM can handle random Voronoi networks, it can handle network extracted from images as well. The basic idea is that OpenPNM needs to know the [x, y, z] coordinates of each pore, and which pores are connected to which.  Let’s generate our own simple network just for fun:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -819,7 +816,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1ee6445e301aea80f91d744d69791735a1860960446d429c99c9c83c06ec1d83.png" src="../../_images/1ee6445e301aea80f91d744d69791735a1860960446d429c99c9c83c06ec1d83.png" />
+<img alt="../../_images/e8a251153099ec0a3eac9e3197359fda72b47d33b42be918cc29b8cd03066c01.png" src="../../_images/e8a251153099ec0a3eac9e3197359fda72b47d33b42be918cc29b8cd03066c01.png" />
 </div>
 </div>
 <p>Now let’s add the pore and throat diameter values. Note the naming convention of preceding the keys with <code class="docutils literal notranslate"><span class="pre">'pore.'</span></code> or <code class="docutils literal notranslate"><span class="pre">'throat.'</span></code>. This will be discussed in more depth in the next tutorial.</p>
@@ -840,7 +837,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0043156d66f9987a8109e5d3df542285b1e2fe77ff198602d01047da339eceb1.png" src="../../_images/0043156d66f9987a8109e5d3df542285b1e2fe77ff198602d01047da339eceb1.png" />
+<img alt="../../_images/39e9f1e50e17ee961258e97c5589743d5fcd74c21bb2f5ed50d386dd16e3a9d2.png" src="../../_images/39e9f1e50e17ee961258e97c5589743d5fcd74c21bb2f5ed50d386dd16e3a9d2.png" />
 </div>
 </div>
 <p>For extracted networks it is not expected that a user would enter all the values by hand as done above. OpenPNM has an <code class="docutils literal notranslate"><span class="pre">io</span></code> module which contains functions for reading from a wide assortment of file formats, as well as outputting to a limited number.</p>
@@ -887,8 +884,8 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -911,7 +908,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbf20f9f420&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

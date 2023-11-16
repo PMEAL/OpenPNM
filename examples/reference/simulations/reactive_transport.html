@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Reactive Transport &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Reactive Transport &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,41 +18,38 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/simulations/reactive_transport';</script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Size Factors and Transport Conductance" href="size_factors_and_transport_conductance.html" />
@@ -128,13 +124,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -464,7 +461,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="reactive-transport">
-<h1>Reactive Transport<a class="headerlink" href="#reactive-transport" title="Permalink to this heading">#</a></h1>
+<h1>Reactive Transport<a class="headerlink" href="#reactive-transport" title="Link to this heading">#</a></h1>
 <blockquote>
 <div><p>This notebook is still a work in progress</p>
 </div></blockquote>
@@ -487,7 +484,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f79a9c96430&gt;
+net : &lt;openpnm.network.Cubic at 0x7faa4f8c4bd0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -521,7 +518,7 @@ net : &lt;openpnm.network.Cubic at 0x7f79a9c96430&gt;
 </div>
 </div>
 <section id="using-the-source-term-functionality-in-openpnm">
-<h2>Using the source term functionality in OpenPNM<a class="headerlink" href="#using-the-source-term-functionality-in-openpnm" title="Permalink to this heading">#</a></h2>
+<h2>Using the source term functionality in OpenPNM<a class="headerlink" href="#using-the-source-term-functionality-in-openpnm" title="Link to this heading">#</a></h2>
 <p>First, we’ll illustrate the process of adding a source term to a diffusion simulation, then we’ll look behind the scenes at how it works.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -580,7 +577,7 @@ net : &lt;openpnm.network.Cubic at 0x7f79a9c96430&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f796542b3d0&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7faa4e7f63e0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -615,7 +612,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f796542b3d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f796542b3d0&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7faa4e7f63e0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -643,7 +640,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f796542b3d0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f796542aca0&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7faa4e7f5ee0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -668,7 +665,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f796542aca0&gt;
 <p>We can also see <code class="docutils literal notranslate"><span class="pre">'pore.reaction.S1'</span></code>, <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> and <code class="docutils literal notranslate"><span class="pre">'rate'</span></code> which are all values returned by the model. We’ll explain what <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> mean in the following section, and <code class="docutils literal notranslate"><span class="pre">'rate'</span></code> is self explanatory.</p>
 </section>
 <section id="how-the-source-term-functionality-works">
-<h2>How the source-term functionality works<a class="headerlink" href="#how-the-source-term-functionality-works" title="Permalink to this heading">#</a></h2>
+<h2>How the source-term functionality works<a class="headerlink" href="#how-the-source-term-functionality-works" title="Link to this heading">#</a></h2>
 <p>OpenPNM uses the method described by Patankar [ref] to linearize the source-terms.  As will be shown below, this method computes the slope and intercept of non-linear term at the current value of the quantity being computed.  This is the origin of the <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> (the slope) and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> (the intercept) arrays on the <code class="docutils literal notranslate"><span class="pre">ph</span></code> object above.</p>
 <p>Determination of <code class="docutils literal notranslate"><span class="pre">'S1'</span></code> and <code class="docutils literal notranslate"><span class="pre">'S2'</span></code> will be outlined below, but let’s first illustrate how they are used. Consider the mass balance around pore 6, which connects to pore 3 and 7:</p>
 <div class="math notranslate nohighlight">
@@ -717,24 +714,33 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f796542aca0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.96936566 -0.76751782  0.         -0.20184784  0.          0.
-   0.          0.          0.        ]
- [-0.76751782  2.41356877 -0.85336154  0.         -0.79268941  0.
-   0.          0.          0.        ]
- [ 0.         -0.85336154  1.13439078  0.          0.         -0.28102924
-   0.          0.          0.        ]
- [-0.20184784  0.          0.          1.33331725 -0.54255061  0.
-  -0.5889188   0.          0.        ]
- [ 0.         -0.79268941  0.         -0.54255061  1.50324245 -0.15103968
-   0.         -0.01696274  0.        ]
- [ 0.          0.         -0.28102924  0.         -0.15103968  0.87641742
-   0.          0.         -0.44434849]
- [ 0.          0.          0.         -0.5889188   0.          0.
-   1.30098415 -0.71206535  0.        ]
- [ 0.          0.          0.          0.         -0.01696274  0.
-  -0.71206535  1.66987705 -0.94084896]
- [ 0.          0.          0.          0.          0.         -0.44434849
-   0.         -0.94084896  1.38519745]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.20473348e+00 -9.40379950e-01  0.00000000e+00 -2.64353527e-01
+   0.00000000e+00  0.00000000e+00  0.00000000e+00  0.00000000e+00
+   0.00000000e+00]
+ [-9.40379950e-01  1.99076401e+00 -6.14137171e-01  0.00000000e+00
+  -4.36246890e-01  0.00000000e+00  0.00000000e+00  0.00000000e+00
+   0.00000000e+00]
+ [ 0.00000000e+00 -6.14137171e-01  8.89545083e-01  0.00000000e+00
+   0.00000000e+00 -2.75407912e-01  0.00000000e+00  0.00000000e+00
+   0.00000000e+00]
+ [-2.64353527e-01  0.00000000e+00  0.00000000e+00  1.23978291e+00
+  -3.96331643e-01  0.00000000e+00 -5.79097742e-01  0.00000000e+00
+   0.00000000e+00]
+ [ 0.00000000e+00 -4.36246890e-01  0.00000000e+00 -3.96331643e-01
+   1.34633671e+00 -1.23265383e-03  0.00000000e+00 -5.12525519e-01
+   0.00000000e+00]
+ [ 0.00000000e+00  0.00000000e+00 -2.75407912e-01  0.00000000e+00
+  -1.23265383e-03  1.01527237e+00  0.00000000e+00  0.00000000e+00
+  -7.38631808e-01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00 -5.79097742e-01
+   0.00000000e+00  0.00000000e+00  9.17031545e-01 -3.37933802e-01
+   0.00000000e+00]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  0.00000000e+00
+  -5.12525519e-01  0.00000000e+00 -3.37933802e-01  1.63470277e+00
+  -7.84243447e-01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  0.00000000e+00
+   0.00000000e+00 -7.38631808e-01  0.00000000e+00 -7.84243447e-01
+   1.52287526e+00]]
 </pre></div>
 </div>
 </div>
@@ -779,8 +785,8 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f796542aca0&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -803,7 +809,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f796542aca0&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

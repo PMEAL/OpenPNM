@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Storage of Network Data and Topology &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Storage of Network Data and Topology &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/03_data_and_topology_storage';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Network Representation, Queries, and Manipulation" href="04_graph_queries_and_manipulation.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="storage-of-network-data-and-topology">
-<h1>Storage of Network Data and Topology<a class="headerlink" href="#storage-of-network-data-and-topology" title="Permalink to this heading">#</a></h1>
+<h1>Storage of Network Data and Topology<a class="headerlink" href="#storage-of-network-data-and-topology" title="Link to this heading">#</a></h1>
 <p>As discussed in the first tutorial, OpenPNM uses Numpy <code class="docutils literal notranslate"><span class="pre">ndarrays</span></code> to store all data, and these arrays store all stored in <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, because all OpenPNM objects are subclassed python dictionaries. In this tutorial will take a deper dive into the details of the OpenPNM data storage scheme. The sections to be covered are:</p>
 <ul class="simple">
 <li><p>The Spreadsheet Analogy</p></li>
@@ -470,7 +467,7 @@ document.write(`
 <li><p>Representing Topology</p></li>
 </ul>
 <section id="spreadsheet-analogy">
-<h2>Spreadsheet Analogy<a class="headerlink" href="#spreadsheet-analogy" title="Permalink to this heading">#</a></h2>
+<h2>Spreadsheet Analogy<a class="headerlink" href="#spreadsheet-analogy" title="Link to this heading">#</a></h2>
 <p>The best analogy for explaining data storage in OpenPNM is the humble spreadsheet.  According to this analogy you can imagine all data is stored in a table; two tables actually, one for pore data and one for throat data.  Each pore (or throat) corresponds to a row and each property corresponds to a column.  Consider the following network with 4 pores, 3 throats:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -599,10 +596,10 @@ Name: pore.volume, dtype: float64
 <p>The spreadsheet analogy is very apt, but it breaks down slightly when one considers data that is multiple colums wide such as <strong>‘pore.coords’</strong>.  The is stored as an Np-by-3 array in the network dictionary, but spreadsheets usually require that all data is only a single column wide.</p>
 </div>
 <section id="rules-to-maintain-data-integrity">
-<h3>Rules to Maintain Data Integrity<a class="headerlink" href="#rules-to-maintain-data-integrity" title="Permalink to this heading">#</a></h3>
+<h3>Rules to Maintain Data Integrity<a class="headerlink" href="#rules-to-maintain-data-integrity" title="Link to this heading">#</a></h3>
 <p>Several rules have been implemented to control the integrity of the data. This is implemented by subclassing the <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> method of the the <code class="docutils literal notranslate"><span class="pre">dict</span></code>. Each time data is assigned to a dictionary key, OpenPNM first checks the data type and dictionary key to ensure the rules are followed.  Each of these checks are explored below.</p>
 <section id="all-values-are-converted-to-numpy-arrays">
-<h4>All Values are Converted to Numpy Arrays<a class="headerlink" href="#all-values-are-converted-to-numpy-arrays" title="Permalink to this heading">#</a></h4>
+<h4>All Values are Converted to Numpy Arrays<a class="headerlink" href="#all-values-are-converted-to-numpy-arrays" title="Link to this heading">#</a></h4>
 <p>Only Numpy arrays can be stored in an OpenPNM object, and any data that is written to an OpenPNM object (i.e. dictionary) will be converted to a Numpy array.  This is done to ensure that all mathematical operations throughout the code can be consistently done using vectorization.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -620,7 +617,7 @@ Name: pore.volume, dtype: float64
 <p>This illustrates that the basic python list-type has been converted to a Numpy array when stored in the dictionary</p>
 </section>
 <section id="dictionary-keys-must-start-with-pore-or-throat">
-<h4>Dictionary Keys Must Start With ‘pore’ or ‘throat’<a class="headerlink" href="#dictionary-keys-must-start-with-pore-or-throat" title="Permalink to this heading">#</a></h4>
+<h4>Dictionary Keys Must Start With ‘pore’ or ‘throat’<a class="headerlink" href="#dictionary-keys-must-start-with-pore-or-throat" title="Link to this heading">#</a></h4>
 <p>All array names must begin with either <em>‘pore.’</em> or <em>‘throat.’</em> which serves to identify the type of information they contain.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -655,7 +652,7 @@ Name: pore.volume, dtype: float64
 </div>
 </section>
 <section id="any-scalars-are-expanded-to-a-full-length-vector">
-<h4>Any Scalars are Expanded to a Full-Length Vector<a class="headerlink" href="#any-scalars-are-expanded-to-a-full-length-vector" title="Permalink to this heading">#</a></h4>
+<h4>Any Scalars are Expanded to a Full-Length Vector<a class="headerlink" href="#any-scalars-are-expanded-to-a-full-length-vector" title="Link to this heading">#</a></h4>
 <p>For the sake of consistency only arrays of length <em>Np</em> or <em>Nt</em> are allowed in the dictionary. Assigning a scalar value to a dictionary results in the creation of a full length vector, either <em>Np</em> or <em>Nt</em> long, depending on the name of the array. This effectively applies the scalar value to all locations in the network.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -673,7 +670,7 @@ Name: pore.volume, dtype: float64
 <p>Note how the scalar value has been cast to an array of 4 elements long, one for each pore in the network.</p>
 </section>
 <section id="nested-dictionary-names-are-allowed">
-<h4>Nested Dictionary Names are Allowed<a class="headerlink" href="#nested-dictionary-names-are-allowed" title="Permalink to this heading">#</a></h4>
+<h4>Nested Dictionary Names are Allowed<a class="headerlink" href="#nested-dictionary-names-are-allowed" title="Link to this heading">#</a></h4>
 <p>It’s possible to create nested properties by assigning a dictionary containing numpy arrays</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -730,7 +727,7 @@ Name: pore.volume, dtype: float64
 </div>
 </section>
 <section id="boolean-arrays-are-treated-as-labels-numerical-arrays-are-treated-as-properties">
-<h4>Boolean Arrays are Treated as Labels, Numerical Arrays are Treated as Properties<a class="headerlink" href="#boolean-arrays-are-treated-as-labels-numerical-arrays-are-treated-as-properties" title="Permalink to this heading">#</a></h4>
+<h4>Boolean Arrays are Treated as Labels, Numerical Arrays are Treated as Properties<a class="headerlink" href="#boolean-arrays-are-treated-as-labels-numerical-arrays-are-treated-as-properties" title="Link to this heading">#</a></h4>
 <p>Any Boolean data will be treated as a <em>label</em> while all other numerical data is treated as a <em>property</em>. OpenPNM uses <em>labels</em> extensively as will be illustrated in a later tutorial. For this tutorial, we’ll just introduce the idea.  We can create a new label by assigning <code class="docutils literal notranslate"><span class="pre">False</span></code> to a new key. This will expand the single <code class="docutils literal notranslate"><span class="pre">False</span></code> value into every pore, which means that NO pores have that label (yet):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -788,7 +785,7 @@ Name: pore.volume, dtype: float64
 </div>
 </section>
 <section id="dictionary-keys-with-a-leading-underscore-are-hidden">
-<h4>Dictionary Keys with a Leading Underscore are Hidden<a class="headerlink" href="#dictionary-keys-with-a-leading-underscore-are-hidden" title="Permalink to this heading">#</a></h4>
+<h4>Dictionary Keys with a Leading Underscore are Hidden<a class="headerlink" href="#dictionary-keys-with-a-leading-underscore-are-hidden" title="Link to this heading">#</a></h4>
 <p>Following the Python convention, if a piece of data is not really meant to be seen or used by the user, it can be pre-pended with an underscore and it will no appear in any output.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -854,7 +851,7 @@ Name: pore.volume, dtype: float64
 </section>
 </section>
 <section id="the-param-prefix">
-<h2>The <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix<a class="headerlink" href="#the-param-prefix" title="Permalink to this heading">#</a></h2>
+<h2>The <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix<a class="headerlink" href="#the-param-prefix" title="Link to this heading">#</a></h2>
 <p>Expanding all scalar values to arrays that are either Np or Nt long is done as a convenience or shorthand to mean “place this value of X in all pores”. This them means that you can later ask “what is the value of X in pore Y” and get an answer. This implies that X might take on different values in each pore/throat. However, there are properties which we know are constant, such as the molecular weight or critical temperature of a pure species. In V3 we have introduced the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute to all object, such that <code class="docutils literal notranslate"><span class="pre">pn.params</span></code> is a dictionary containing such scalar values. For convenience we have also added the ability to read and write to the <code class="docutils literal notranslate"><span class="pre">params</span></code> dictionary via the main get/set method. This is illustrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -899,7 +896,7 @@ test                                2
 </div>
 </section>
 <section id="representing-topology">
-<h2>Representing Topology<a class="headerlink" href="#representing-topology" title="Permalink to this heading">#</a></h2>
+<h2>Representing Topology<a class="headerlink" href="#representing-topology" title="Link to this heading">#</a></h2>
 <p>Topology was introduced in the last tutorial, but not discussed in depth. Actually, the <em>next</em> tutorial will explain topology in full detail, but here we can reveal a little more about it as it pertains to data storage.</p>
 <p>Consider the following simple random network:</p>
 <div class="cell docutils container">
@@ -911,7 +908,7 @@ test                                2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2fb9621dea0994740595bcdb7941060f0bb44ff5989c32680eca87640deb9418.png" src="../../_images/2fb9621dea0994740595bcdb7941060f0bb44ff5989c32680eca87640deb9418.png" />
+<img alt="../../_images/d1d2d87e0a01a8333bee60551a83bfdded231953bb7f3e524610c25b7b1413c2.png" src="../../_images/d1d2d87e0a01a8333bee60551a83bfdded231953bb7f3e524610c25b7b1413c2.png" />
 </div>
 </div>
 <p>The basic premise of how OpenPNM stores topology can be stated in 1 sentence:</p>
@@ -946,7 +943,7 @@ Other general, but non-essential rules are:</p></li>
 </ol>
 </div>
 <section id="adjacency-matrices-dense-vs-sparse">
-<h3>Adjacency Matrices: Dense vs Sparse<a class="headerlink" href="#adjacency-matrices-dense-vs-sparse" title="Permalink to this heading">#</a></h3>
+<h3>Adjacency Matrices: Dense vs Sparse<a class="headerlink" href="#adjacency-matrices-dense-vs-sparse" title="Link to this heading">#</a></h3>
 <p>The topology storage scheme described above is actually an <a class="reference external" href="http://en.wikipedia.org/wiki/Adjacency_matrix">adjacency matrix</a>, in a <a class="reference external" href="http://en.wikipedia.org/wiki/Sparse_matrix">sparse storage format</a> known as IJV or COO.</p>
 <p>An adjacency matrix is a <em>Np</em>-by-<em>Np</em> matrix with non-zero values at location (<em>i</em>, <em>j</em>) indicating that pores <em>i</em> and <em>j</em> are connected.</p>
 <p>OpenPNM Network objects have a method that generates the sparse adjacency matrix:</p>
@@ -1000,7 +997,7 @@ Other general, but non-essential rules are:</p></li>
 </section>
 </section>
 <section id="conduit-data">
-<h2><code class="docutils literal notranslate"><span class="pre">conduit</span></code> data<a class="headerlink" href="#conduit-data" title="Permalink to this heading">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">conduit</span></code> data<a class="headerlink" href="#conduit-data" title="Link to this heading">#</a></h2>
 <p>A <em>conduit</em> in OpenPNM refers to a ‘pore-throat-pore’ connection, where the pores and throats are each called <em>elements</em>. These <em>elements</em> act as resistors (or conductors) in series. Each <em>conduit</em> therefor contains exactly 1 throat and 2 pores. Transport within the network occurs via these interconnected <em>conduits</em>, so the geometric properties of these elements are often need for computing things like diffusive conductance. This is common enough that OpenPNM V3 includes a new helper function for obtaining this data, as illustrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1118,8 +1115,8 @@ Other general, but non-essential rules are:</p></li>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1142,7 +1139,7 @@ Other general, but non-essential rules are:</p></li>
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

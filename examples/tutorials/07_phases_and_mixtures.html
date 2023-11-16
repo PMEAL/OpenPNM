@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Creating Phases &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Creating Phases &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/07_phases_and_mixtures';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Simulating Single Phase Transport" href="08_simulating_transport.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="creating-phases">
-<h1>Creating Phases<a class="headerlink" href="#creating-phases" title="Permalink to this heading">#</a></h1>
+<h1>Creating Phases<a class="headerlink" href="#creating-phases" title="Link to this heading">#</a></h1>
 <p>All simulations in OpenPNM eventually require knowing the physical and thermodynamic properties of the fluids and phases.  OpenPNM provides a framework for computing these values in the <code class="docutils literal notranslate"><span class="pre">phase</span></code> submodule, along with a <em>basic</em> set of functions for predicting the properties pure phases and mixtures. Since we can’t possibly support an exhaustive physical property library, our policy is to provide a set of reasonable default functions for use as first approximations.  There are a number of other packages that can be used when more exacting values are required, such as <code class="docutils literal notranslate"><span class="pre">chemicals</span></code> and <code class="docutils literal notranslate"><span class="pre">cantera</span></code>, which can be used within the framework of OpenPNM.</p>
 <p>In the first part of this notebook, we will cover:</p>
 <ul class="simple">
@@ -480,7 +477,7 @@ document.write(`
 <li><p>Leveraging external packages for making better estimates of pure component and mixture properties</p></li>
 </ul>
 <section id="part-1-the-phase-class">
-<h2>Part 1: The <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class<a class="headerlink" href="#part-1-the-phase-class" title="Permalink to this heading">#</a></h2>
+<h2>Part 1: The <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class<a class="headerlink" href="#part-1-the-phase-class" title="Link to this heading">#</a></h2>
 <p>If your simulation is simple, then a basic <code class="docutils literal notranslate"><span class="pre">Phase</span></code> object may be sufficient.  It has no predefined models for computing anything, so you have to either assign known values directly (e.g <code class="docutils literal notranslate"><span class="pre">water['pore.viscosity']</span> <span class="pre">=</span> <span class="pre">0.001</span></code>) or define models that will compute the values you need.  The models can be taken from the <code class="docutils literal notranslate"><span class="pre">openpnm.models.phase</span></code> library, or you can write your own. We will cover all three options below.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -509,7 +506,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7fc556690310&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f21c72222a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -526,7 +523,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fc556690310&gt;
 </div>
 </div>
 <section id="direct-assignment-of-a-constant-value">
-<h3>Direct assignment of a constant value<a class="headerlink" href="#direct-assignment-of-a-constant-value" title="Permalink to this heading">#</a></h3>
+<h3>Direct assignment of a constant value<a class="headerlink" href="#direct-assignment-of-a-constant-value" title="Link to this heading">#</a></h3>
 <p>The basic <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class creates a (nearly) empty object with only standard temperature and pressure assigned to each pore. In order to use this object for simulations it needs some additional information. For instance, to compute the permeability of <code class="docutils literal notranslate"><span class="pre">pn</span></code> we will need the viscosity.  So, let’s assign a known value directly for liquid water:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -554,7 +551,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fc556690310&gt;
 </div>
 </section>
 <section id="using-a-built-in-model">
-<h3>Using a built-in model<a class="headerlink" href="#using-a-built-in-model" title="Permalink to this heading">#</a></h3>
+<h3>Using a built-in model<a class="headerlink" href="#using-a-built-in-model" title="Link to this heading">#</a></h3>
 <p>Perhaps you would like to run a simulation in the presence of a temperature gradient, and viscosity is a strong function of temperature.  Instead of assigning a constant viscosity, in this case it is better to assign a pore-scale model that OpenPNM will run to compute the viscosity in each pore.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">models</span></code> library in OpenPNM contains some general models which can be used, such as polynomials or linear lines. A 4th order polynomial can be fit to experimental data of viscosity vs temperature yielding the following coefficients:</p>
 <div class="cell docutils container">
@@ -605,14 +602,14 @@ After: [0.00091476 0.00091476 0.00091476 0.00091476]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00091476 0.00091476 0.00091476 0.00091476]
-After: [0.00043318 0.00053384 0.00085912 0.00049331]
+After: [0.00044402 0.0004716  0.00044579 0.00071986]
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="using-a-water-specific-model">
-<h3>Using a water-specific model<a class="headerlink" href="#using-a-water-specific-model" title="Permalink to this heading">#</a></h3>
+<h3>Using a water-specific model<a class="headerlink" href="#using-a-water-specific-model" title="Link to this heading">#</a></h3>
 <p>Because water is so common, OpenPNM has some available functions for its properties. For instance, there is no need to look-up experimental data and fit an n-th order polynomial, as this is already provided:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -625,8 +622,8 @@ After: [0.00043318 0.00053384 0.00085912 0.00049331]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00043318 0.00053384 0.00085912 0.00049331]
-After: [0.00039937 0.00050156 0.00083618 0.00046235]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before: [0.00044402 0.0004716  0.00044579 0.00071986]
+After: [0.0004122  0.00044104 0.00041418 0.00069116]
 </pre></div>
 </div>
 </div>
@@ -643,7 +640,7 @@ After: [0.00039937 0.00050156 0.00083618 0.00046235]
 </div>
 </section>
 <section id="writing-your-own-custom-model">
-<h3>Writing your own custom model<a class="headerlink" href="#writing-your-own-custom-model" title="Permalink to this heading">#</a></h3>
+<h3>Writing your own custom model<a class="headerlink" href="#writing-your-own-custom-model" title="Link to this heading">#</a></h3>
 <p>This subject is explained in detail in another tutorial, but the basic outline is as follows. Creating a custom model, containing any functionality needed, is as simple as defining a new python function:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -664,7 +661,7 @@ After: [0.00039937 0.00050156 0.00083618 0.00046235]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00043318 0.00053384 0.00085912 0.00049331]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.00044402 0.0004716  0.00044579 0.00071986]
 </pre></div>
 </div>
 </div>
@@ -672,7 +669,7 @@ After: [0.00039937 0.00050156 0.00083618 0.00046235]
 <p>The values here are the same as above since this function is just a reimplementation of the n-th order polynomial fit</p>
 </section>
 <section id="specific-classes-for-common-fluids">
-<h3>Specific Classes for Common Fluids<a class="headerlink" href="#specific-classes-for-common-fluids" title="Permalink to this heading">#</a></h3>
+<h3>Specific Classes for Common Fluids<a class="headerlink" href="#specific-classes-for-common-fluids" title="Link to this heading">#</a></h3>
 <p>Air, water, and mercury are used commonly enough that OpenPNM not only has pore-scale models for their propertie (i.e. <code class="docutils literal notranslate"><span class="pre">op.models.viscosity.water_correlation</span></code>), but we have also created pre-defined classes with all the appropriate models already attached:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -683,7 +680,7 @@ After: [0.00039937 0.00050156 0.00083618 0.00046235]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_02 : &lt;openpnm.phase.Water at 0x7fc556692110&gt;
+phase_02 : &lt;openpnm.phase.Water at 0x7f21c7248400&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -763,7 +760,7 @@ phase_02 : &lt;openpnm.phase.Water at 0x7fc556692110&gt;
 </section>
 </section>
 <section id="part-2-using-species-and-mixtures">
-<h2>Part 2: Using Species and Mixtures<a class="headerlink" href="#part-2-using-species-and-mixtures" title="Permalink to this heading">#</a></h2>
+<h2>Part 2: Using Species and Mixtures<a class="headerlink" href="#part-2-using-species-and-mixtures" title="Link to this heading">#</a></h2>
 <p>In some cases a user may wish to compute the thermophysical properties of unusual species, or even mixtures of species. There are packages who’s entire purpose is computing these values, so OpenPNM does not attempt to reproduce this functionality. However, it is needed often enough that OpenPNM has some base level support for making ‘first-approximation’ estimates of species properties, and also has a defined API for dealing with mixtures of individual species.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
@@ -771,7 +768,7 @@ phase_02 : &lt;openpnm.phase.Water at 0x7fc556692110&gt;
 <p>In most cases you probably do not need to use the <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> class. For instance, air is a gas mixture with a well known set of properties. This is sufficient for computing things like permeability.  On the other hand, if you have a 4 component gas mixture at a variety of compositions, and the properties are unknown, the perhaps the <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> feature is the right choice.</p>
 </div>
 <section id="pure-species">
-<h3>Pure Species<a class="headerlink" href="#pure-species" title="Permalink to this heading">#</a></h3>
+<h3>Pure Species<a class="headerlink" href="#pure-species" title="Link to this heading">#</a></h3>
 <p>Mixtures were introduced as a beta feature in V2, but are now part of V3. To create a <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> we start by creating several <code class="docutils literal notranslate"><span class="pre">Species</span></code> objects.  Let’s make air, consisting of oxygen and nitrogen.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -782,7 +779,7 @@ phase_02 : &lt;openpnm.phase.Water at 0x7fc556692110&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_03 : &lt;openpnm.phase.Species at 0x7fc5538eb100&gt;
+phase_03 : &lt;openpnm.phase.Species at 0x7f21c4379620&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -974,7 +971,7 @@ acentric_factor                     0.0222
 </div>
 </section>
 <section id="gas-and-liquid-species">
-<h3>Gas and Liquid Species<a class="headerlink" href="#gas-and-liquid-species" title="Permalink to this heading">#</a></h3>
+<h3>Gas and Liquid Species<a class="headerlink" href="#gas-and-liquid-species" title="Link to this heading">#</a></h3>
 <p>OpenPNM has a suite of functions for computing the properties of pure phases, but these functions differ for gases and liquids.  For this reason we offer two classes for gas and liquid with the appropriate models already defined.  These are referred to as <code class="docutils literal notranslate"><span class="pre">StandardLiquid</span></code> and <code class="docutils literal notranslate"><span class="pre">StandardGas</span></code> to indicate that the models being used are the standard selection which provide a first-approximatation:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -993,7 +990,7 @@ acentric_factor                     0.0222
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_04 : &lt;openpnm.phase.StandardGas at 0x7fc5538f5df0&gt;
+phase_04 : &lt;openpnm.phase.StandardGas at 0x7f21c43bc630&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1022,7 +1019,7 @@ phase_04 : &lt;openpnm.phase.StandardGas at 0x7fc5538f5df0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7fc5538f62f0&gt;
+phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7f21c72235b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1101,7 +1098,7 @@ phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7fc5538f62f0&gt;
 </div>
 </section>
 <section id="gas-and-liquid-mixtures">
-<h3>Gas and Liquid Mixtures<a class="headerlink" href="#gas-and-liquid-mixtures" title="Permalink to this heading">#</a></h3>
+<h3>Gas and Liquid Mixtures<a class="headerlink" href="#gas-and-liquid-mixtures" title="Link to this heading">#</a></h3>
 <p>To create a <code class="docutils literal notranslate"><span class="pre">Mixture</span></code> we must first specify the individual <code class="docutils literal notranslate"><span class="pre">Species</span></code> object.  Below we use the <code class="docutils literal notranslate"><span class="pre">StandardGas</span></code> class, which is the basic <code class="docutils literal notranslate"><span class="pre">Species</span></code> class, but with an assortment of models already attached for computing the component properties:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1131,7 +1128,7 @@ phase_05 : &lt;openpnm.phase.StandardLiquid at 0x7fc5538f62f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7fc5538f7fb0&gt;
+mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f21c43bf1f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1222,15 +1219,15 @@ After: [2.01895979e-05 2.01895979e-05 2.01895979e-05 2.01895979e-05]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7fc5538f6750&gt;,
- &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f21c43be0c0&gt;,
+ &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f21c43be890&gt;}
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="getting-and-setting-compositions">
-<h3>Getting and Setting Compositions<a class="headerlink" href="#getting-and-setting-compositions" title="Permalink to this heading">#</a></h3>
+<h3>Getting and Setting Compositions<a class="headerlink" href="#getting-and-setting-compositions" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">x</span></code> method on <code class="docutils literal notranslate"><span class="pre">LiquidMixture</span></code>, and <code class="docutils literal notranslate"><span class="pre">y</span></code> on <code class="docutils literal notranslate"><span class="pre">GasMixture</span></code> can also be used to retrieve the mole fraction of one or both components:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1259,9 +1256,9 @@ After: [2.01895979e-05 2.01895979e-05 2.01895979e-05 2.01895979e-05]
 </div>
 </section>
 <section id="exploring-features-of-the-mixture-objects">
-<h3>Exploring Features of the Mixture Objects<a class="headerlink" href="#exploring-features-of-the-mixture-objects" title="Permalink to this heading">#</a></h3>
+<h3>Exploring Features of the Mixture Objects<a class="headerlink" href="#exploring-features-of-the-mixture-objects" title="Link to this heading">#</a></h3>
 <section id="adding-and-removing-species">
-<h4>Adding and Removing Species<a class="headerlink" href="#adding-and-removing-species" title="Permalink to this heading">#</a></h4>
+<h4>Adding and Removing Species<a class="headerlink" href="#adding-and-removing-species" title="Link to this heading">#</a></h4>
 <p>You can remove a species:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1271,7 +1268,7 @@ After: [2.01895979e-05 2.01895979e-05 2.01895979e-05 2.01895979e-05]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f21c43be890&gt;}
 </pre></div>
 </div>
 </div>
@@ -1303,7 +1300,7 @@ After: [2.01895979e-05 2.01895979e-05 2.01895979e-05 2.01895979e-05]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7fc5538f6750&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f21c43be0c0&gt;}
 </pre></div>
 </div>
 </div>
@@ -1317,15 +1314,15 @@ After: [2.01895979e-05 2.01895979e-05 2.01895979e-05 2.01895979e-05]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7fc5538f6750&gt;,
- &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;oxygen&#39;: oxygen : &lt;openpnm.phase.StandardGas at 0x7f21c43be0c0&gt;,
+ &#39;nitrogen&#39;: nitrogen : &lt;openpnm.phase.StandardGas at 0x7f21c43be890&gt;}
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="the-info-attribute">
-<h4>The <code class="docutils literal notranslate"><span class="pre">info</span></code> Attribute<a class="headerlink" href="#the-info-attribute" title="Permalink to this heading">#</a></h4>
+<h4>The <code class="docutils literal notranslate"><span class="pre">info</span></code> Attribute<a class="headerlink" href="#the-info-attribute" title="Link to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> attribute reports all the existing properties on the mixture (similar to <code class="docutils literal notranslate"><span class="pre">print</span></code>) but also of each of the components:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1335,7 +1332,7 @@ After: [2.01895979e-05 2.01895979e-05 2.01895979e-05 2.01895979e-05]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7fc5538f7fb0&gt;
+mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7f21c43bf1f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1355,7 +1352,7 @@ mixture_01 : &lt;openpnm.phase.StandardGasMixture at 0x7fc5538f7fb0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 Component Phases
 ══════════════════════════════════════════════════════════════════════════════
-oxygen : &lt;openpnm.phase.StandardGas at 0x7fc5538f6750&gt;
+oxygen : &lt;openpnm.phase.StandardGas at 0x7f21c43be0c0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1372,7 +1369,7 @@ oxygen : &lt;openpnm.phase.StandardGas at 0x7fc5538f6750&gt;
   2  pore.all.oxygen                                                         4
   3  throat.all.oxygen                                                       4
 ══════════════════════════════════════════════════════════════════════════════
-nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;
+nitrogen : &lt;openpnm.phase.StandardGas at 0x7f21c43be890&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1391,14 +1388,11 @@ nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
 </div>
 </div>
 </section>
 <section id="get-component-mole-fractions">
-<h4>Get component mole fractions<a class="headerlink" href="#get-component-mole-fractions" title="Permalink to this heading">#</a></h4>
+<h4>Get component mole fractions<a class="headerlink" href="#get-component-mole-fractions" title="Link to this heading">#</a></h4>
 <p>You’ll notice that the mixture object has arrays called <code class="docutils literal notranslate"><span class="pre">'pore.mole_fraction.&lt;compname&gt;'</span></code> for each component. The dictionary look-up in OpenPNM will return a subdictionary if the given key is just <code class="docutils literal notranslate"><span class="pre">'pore.mole_fraction'</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1415,7 +1409,7 @@ nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;
 </div>
 </section>
 <section id="the-components-attribute">
-<h4>The <code class="docutils literal notranslate"><span class="pre">components</span></code> Attribute<a class="headerlink" href="#the-components-attribute" title="Permalink to this heading">#</a></h4>
+<h4>The <code class="docutils literal notranslate"><span class="pre">components</span></code> Attribute<a class="headerlink" href="#the-components-attribute" title="Link to this heading">#</a></h4>
 <p>This attribute returns a dictionary with each of the components accessible by their name:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1432,7 +1426,7 @@ nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;
 </div>
 </section>
 <section id="using-get-comp-vals">
-<h4>Using <code class="docutils literal notranslate"><span class="pre">get_comp_vals</span></code><a class="headerlink" href="#using-get-comp-vals" title="Permalink to this heading">#</a></h4>
+<h4>Using <code class="docutils literal notranslate"><span class="pre">get_comp_vals</span></code><a class="headerlink" href="#using-get-comp-vals" title="Link to this heading">#</a></h4>
 <p>Since the mixture is made from several components, it is often desired get the values of a specific property from each component.  This method provides a convenient way to do this:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1463,7 +1457,7 @@ nitrogen : &lt;openpnm.phase.StandardGas at 0x7fc5538f76f0&gt;
 <p>In reality there is no array on <code class="docutils literal notranslate"><span class="pre">air</span></code> with the name <code class="docutils literal notranslate"><span class="pre">'pore.viscosity.phase_01'</span></code>, but failure to find this array is what actually triggers the look-up of the array from <code class="docutils literal notranslate"><span class="pre">o2</span></code>. This is a convenient feature that is added using some ‘syntactic sugar’ behind the scenes in Python.</p>
 </section>
 <section id="checking-consistency-with-check-mixture-health">
-<h4>Checking consistency with <code class="docutils literal notranslate"><span class="pre">check_mixture_health</span></code><a class="headerlink" href="#checking-consistency-with-check-mixture-health" title="Permalink to this heading">#</a></h4>
+<h4>Checking consistency with <code class="docutils literal notranslate"><span class="pre">check_mixture_health</span></code><a class="headerlink" href="#checking-consistency-with-check-mixture-health" title="Link to this heading">#</a></h4>
 <p>You can also check the health of the mixture, such as whether all the mole fractions add to 1.0 each each pore:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1502,7 +1496,7 @@ mole_fraction_too_high              []
 </div>
 </section>
 <section id="retrieving-species-properties">
-<h4>Retrieving Species Properties<a class="headerlink" href="#retrieving-species-properties" title="Permalink to this heading">#</a></h4>
+<h4>Retrieving Species Properties<a class="headerlink" href="#retrieving-species-properties" title="Link to this heading">#</a></h4>
 <p>Lastly, the properties of the individual species can be retrieved from the mixture as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1519,7 +1513,7 @@ mole_fraction_too_high              []
 </div>
 </section>
 <section id="using-the-wildcard-syntax">
-<h4>Using the wildcard (<code class="docutils literal notranslate"><span class="pre">*</span></code>) syntax<a class="headerlink" href="#using-the-wildcard-syntax" title="Permalink to this heading">#</a></h4>
+<h4>Using the wildcard (<code class="docutils literal notranslate"><span class="pre">*</span></code>) syntax<a class="headerlink" href="#using-the-wildcard-syntax" title="Link to this heading">#</a></h4>
 <p>One more feature that has been added is the ability to fetch requested property arrays from <em>all</em> the components by replacing the component name with the universal <em>wildcard</em> symbmol: <code class="docutils literal notranslate"><span class="pre">*</span></code> as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1634,8 +1628,8 @@ mole_fraction_too_high              []
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1658,7 +1652,7 @@ mole_fraction_too_high              []
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting absolute permeability &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Predicting absolute permeability &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,41 +18,38 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/applications/absolute_permeability';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Adjusting Pore Size Distributions" href="adjusting_pore_size_distributions.html" />
@@ -128,13 +124,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -464,7 +461,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="predicting-absolute-permeability">
-<h1>Predicting absolute permeability<a class="headerlink" href="#predicting-absolute-permeability" title="Permalink to this heading">#</a></h1>
+<h1>Predicting absolute permeability<a class="headerlink" href="#predicting-absolute-permeability" title="Link to this heading">#</a></h1>
 <p>The example explains absolute permeabilty calculations on a cubic network. Note that permeability calcualtion for an extracted network from PoreSpy follows similar steps in assigning phase, algorithm and calculating permeability.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -479,7 +476,7 @@ document.write(`
 </div>
 </div>
 <section id="create-a-random-cubic-network">
-<h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Permalink to this heading">#</a></h2>
+<h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
@@ -491,7 +488,7 @@ document.write(`
 </div>
 </section>
 <section id="create-phase-object">
-<h2>Create phase object<a class="headerlink" href="#create-phase-object" title="Permalink to this heading">#</a></h2>
+<h2>Create phase object<a class="headerlink" href="#create-phase-object" title="Link to this heading">#</a></h2>
 <p>It is assumed that a generic phase flowsthrough the porous medium. As absolute permeability is the porous medium property and not the fluid property, any other fluid with an assigned viscosity value can be used as the phase.</p>
 <p>Permeability of the network is then found by applying Stokes Flow algorithm. To simulate the fluid flow algorithm, hydraulic conductance of the conduits must be defined. Here, the model collection is used to assign basic pore-scale models including <code class="docutils literal notranslate"><span class="pre">generic_hydraulic</span></code> to the phase.</p>
 <div class="cell docutils container">
@@ -504,7 +501,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[11:47:58] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[02:17:38] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         <span style="color: #008000; text-decoration-color: #008000">'throat.surface_tension'</span>                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 </div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.diffusive_conductance was not run since the following property is         <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
@@ -514,7 +511,7 @@ document.write(`
 </div>
 </section>
 <section id="apply-stokes-flow">
-<h2>Apply Stokes flow<a class="headerlink" href="#apply-stokes-flow" title="Permalink to this heading">#</a></h2>
+<h2>Apply Stokes flow<a class="headerlink" href="#apply-stokes-flow" title="Link to this heading">#</a></h2>
 <p>To calculate permeability in x direction, a constant pressure boundary condition is applied on the left and right side of the network. Note that a similar procedure can be followed to find the permeability in y and z directions.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -545,12 +542,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/923131a8f04524820421d4b4f47f70d94ac17bf62568f52027895e7140590296.png" src="../../_images/923131a8f04524820421d4b4f47f70d94ac17bf62568f52027895e7140590296.png" />
+<img alt="../../_images/2f2314fe5f3cc4a5f1cc4e7bd1726e4e1de399ab463729c0d862e4ad125112fd.png" src="../../_images/2f2314fe5f3cc4a5f1cc4e7bd1726e4e1de399ab463729c0d862e4ad125112fd.png" />
 </div>
 </div>
 </section>
 <section id="calculate-permeability">
-<h2>Calculate permeability<a class="headerlink" href="#calculate-permeability" title="Permalink to this heading">#</a></h2>
+<h2>Calculate permeability<a class="headerlink" href="#calculate-permeability" title="Link to this heading">#</a></h2>
 <p>Calculate the permeability using Darcy’s law:</p>
 <div class="math notranslate nohighlight">
 \[ K_{abs}= \frac{Q}{A} \frac{\mu L} {\Delta P} \]</div>
@@ -568,7 +565,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[11:48:00] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> Attempting to estimate inlet area<span style="color: #808000; text-decoration-color: #808000">...</span>will be low                              <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/topotools/_topotools.py#1046" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1046</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[02:17:40] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> Attempting to estimate inlet area<span style="color: #808000; text-decoration-color: #808000">...</span>will be low                              <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/topotools/_topotools.py#1046" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1046</span></a>
 </pre>
 </div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> Attempting to estimate domain length<span style="color: #808000; text-decoration-color: #808000">...</span>could be low if boundary pores were   <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/topotools/_topotools.py#1090" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1090</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         not added                                                                    <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                  </span>
@@ -629,8 +626,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -653,7 +650,7 @@ document.write(`
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

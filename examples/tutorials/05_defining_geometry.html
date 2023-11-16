@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assigning Geometric Properties &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Assigning Geometric Properties &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/05_defining_geometry';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Using Labels and Defining Domains" href="06_labels_and_domains.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="assigning-geometric-properties">
-<h1>Assigning Geometric Properties<a class="headerlink" href="#assigning-geometric-properties" title="Permalink to this heading">#</a></h1>
+<h1>Assigning Geometric Properties<a class="headerlink" href="#assigning-geometric-properties" title="Link to this heading">#</a></h1>
 <p>Geometric properties refer to the physical sizes of the pores and throats, such as pore diameter and throat lengths. The values are essential to the pore network modeling enterprize since they control all the transport and percolation behavior of the network. Unlike phase properties which can be normalized for, geometric properties define the network even more so than topological properties like connectivity.</p>
 <p>Geometric properties <em>can</em> be calculated by various means, ranging from assigning random values to pores, extracting values from tomographic images. OpenPNM provides a library of functions, or ‘pore-scale models’ which can calcuate these geometric properties automatically. This tutorial will cover the following subjects:</p>
 <ul class="simple">
@@ -495,7 +492,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f71bcf9ec00&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -530,7 +527,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 <p>To add geometrical properties to a network, we have a few different options.  Each will be explored below:</p>
 <section id="manually-calculating-properties">
-<h2>Manually Calculating Properties<a class="headerlink" href="#manually-calculating-properties" title="Permalink to this heading">#</a></h2>
+<h2>Manually Calculating Properties<a class="headerlink" href="#manually-calculating-properties" title="Link to this heading">#</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><strong>Manual Calculation is Not Recommended</strong></p>
@@ -538,7 +535,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 <p>Let’s start by adding pore and throat size distributions.  There are a few different ways to do this, and we’ll explore each one to be thorough.</p>
 <section id="adding-pore-and-throat-sizes-from-scipy-stats-distributions">
-<h3>Adding pore and throat sizes from <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> distributions<a class="headerlink" href="#adding-pore-and-throat-sizes-from-scipy-stats-distributions" title="Permalink to this heading">#</a></h3>
+<h3>Adding pore and throat sizes from <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> distributions<a class="headerlink" href="#adding-pore-and-throat-sizes-from-scipy-stats-distributions" title="Link to this heading">#</a></h3>
 <p>Scipy’s <code class="docutils literal notranslate"><span class="pre">stats</span></code> module has a <em>lot</em> of statistical distributions defined.  Let’s generate pore and throat sizes using some of these.  First, let’s use a normal distribution to generate pore sizes within the range ~1 to 50 um:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -551,7 +548,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/47731716136c21bbfe5cb5ead50f0674515863961ae2490b55f363f1e5cd0208.png" src="../../_images/47731716136c21bbfe5cb5ead50f0674515863961ae2490b55f363f1e5cd0208.png" />
+<img alt="../../_images/c576cfd52f2ef7447734ab9f6d903906abe360ffd37cf8dffb13199efba2bf71.png" src="../../_images/c576cfd52f2ef7447734ab9f6d903906abe360ffd37cf8dffb13199efba2bf71.png" />
 </div>
 </div>
 <p>The above distribution looks good, let’s just make absolutely sure that our distribution is not so wide that it has negative numbers or values greater than 50 um:</p>
@@ -588,7 +585,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c813cc7d88f4aa147f49b03dc2efd95f30a43c65a0e9f8e94b69fb85634fc4d6.png" src="../../_images/c813cc7d88f4aa147f49b03dc2efd95f30a43c65a0e9f8e94b69fb85634fc4d6.png" />
+<img alt="../../_images/c237bb8f3e711f101f77832d28e196e3781bcedc5811d44eda764f411c17c023.png" src="../../_images/c237bb8f3e711f101f77832d28e196e3781bcedc5811d44eda764f411c17c023.png" />
 </div>
 </div>
 <p>Again, let’s inspect the high and low values:</p>
@@ -649,7 +646,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/88afae440cadbdde4b9792a09d19f3ad26d7cb9b3cffd19b99e384551aae3e87.png" src="../../_images/88afae440cadbdde4b9792a09d19f3ad26d7cb9b3cffd19b99e384551aae3e87.png" />
+<img alt="../../_images/37655953bc43ef35ec8dac62be9308d06bdc2d99e34626b95767c815fc29e650.png" src="../../_images/37655953bc43ef35ec8dac62be9308d06bdc2d99e34626b95767c815fc29e650.png" />
 </div>
 </div>
 <p>We can see from the above plot that the throat sizes are similar to the pore sizes, which is expected since they are taken from the pore sizes values. However, we can also see a small shift to the left, which is also expected given that the throats always take on the size of the smaller pore, creating a bias towards smaller sizes.</p>
@@ -664,7 +661,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d87019b3a8eb6b73864328c95b138164e9cbd80c863231e3e8ec47064c06647b.png" src="../../_images/d87019b3a8eb6b73864328c95b138164e9cbd80c863231e3e8ec47064c06647b.png" />
+<img alt="../../_images/76356326874b9fc1f33a4a88ae78e65275b3112a2f9d60af6bcbf53903e45eb4.png" src="../../_images/76356326874b9fc1f33a4a88ae78e65275b3112a2f9d60af6bcbf53903e45eb4.png" />
 </div>
 </div>
 <p>One downside of the above approach is that you no longer have control over the shape and distribution of the throat sizes. This can be solved by applying the same approach just described but to <em>random seeds</em> instead of actual sizes. Then the random seeds can be put into a cumulative density function to compute the corresponding size.  This is demonstrated below:</p>
@@ -692,7 +689,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7d571dfa2e7f0c1da1a0e16548caab7c970b0e76b96efeabe09d39c772366352.png" src="../../_images/7d571dfa2e7f0c1da1a0e16548caab7c970b0e76b96efeabe09d39c772366352.png" />
+<img alt="../../_images/c7a626e3ae14c0d8907e6aa6d50057a724d1d934d9b2be12158fb527fcf263e8.png" src="../../_images/c7a626e3ae14c0d8907e6aa6d50057a724d1d934d9b2be12158fb527fcf263e8.png" />
 </div>
 </div>
 <p>Now we can find the throat seed values as the <em>minimum pore seed</em> value of the two neighboring pores:</p>
@@ -715,13 +712,13 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/59c1f85d5304415bd358b613eb2726085a07917cff0d2780dcd152d0b943506d.png" src="../../_images/59c1f85d5304415bd358b613eb2726085a07917cff0d2780dcd152d0b943506d.png" />
+<img alt="../../_images/8b020a3aa9baccb16375787222b94436e3c6b1e1076c2cbcb8fb193d6f928728.png" src="../../_images/8b020a3aa9baccb16375787222b94436e3c6b1e1076c2cbcb8fb193d6f928728.png" />
 </div>
 </div>
 <p>Once the pore and throat diameters are specified, the next step is to define any dependent properties of interest, such as pore volume or throat length. These additional calculations tend to require that we assume a shape for the pores and throats.  It is not mandatory to use spheres and cylinders, though this is a common choice.  We could also work with cubic pores and cuboid throats, which occupy a large volume fraction for instance.  The choice of cubic shapes also happens to make the calculations much easier, for reasons explored below, so in this tutorial we’ll assume cubic shapes.  Let’s calculate the throat length, and pore surface area, since each of these illustrate very important concepts regarding the use of vectorized calculations.</p>
 </section>
 <section id="computing-throat-length">
-<h3>Computing throat length<a class="headerlink" href="#computing-throat-length" title="Permalink to this heading">#</a></h3>
+<h3>Computing throat length<a class="headerlink" href="#computing-throat-length" title="Link to this heading">#</a></h3>
 <p>Throat length is the pore-to-pore spacing, less the radius of each pore.  This can be found without the need for a for-loop using the following vectorization trick:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -747,7 +744,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 <p>The main take-home message here is that throat properties can be computed in a vectorized way, even if some pore-properties are required. This avoids the use of a for-loop to scan through a list of throats followed by a nested for-loop to scan through each neighboring pore.</p>
 </section>
 <section id="computing-pore-surface-areas">
-<h3>Computing pore surface areas<a class="headerlink" href="#computing-pore-surface-areas" title="Permalink to this heading">#</a></h3>
+<h3>Computing pore surface areas<a class="headerlink" href="#computing-pore-surface-areas" title="Link to this heading">#</a></h3>
 <p>The pore surface area is the total area of the cubic pore body, less the cross-sectional area of each neighboring throat. This can also be found without a for-loop, but requires knowing some deeper <code class="docutils literal notranslate"><span class="pre">numpy</span></code> functionality, known as <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ufunc.at.html">unbuffered in-place operations</a>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -774,7 +771,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </section>
 </section>
 <section id="using-pore-scale-models-from-the-library">
-<h2>Using Pore-scale Models from the Library<a class="headerlink" href="#using-pore-scale-models-from-the-library" title="Permalink to this heading">#</a></h2>
+<h2>Using Pore-scale Models from the Library<a class="headerlink" href="#using-pore-scale-models-from-the-library" title="Link to this heading">#</a></h2>
 <p>The above section is quite lengthy, but lays bare the process of computing geometric properties of a network for illustration purposes.  In this section we’ll utilize OpenPNM’s library of ‘pore-scale’ models to get the same job done much more easily. Start by generating a fresh network:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -832,7 +829,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a87f8af8427d42a59e2491b68ba76d0f94e03f6011b191ab4ea7b89b007ecf4e.png" src="../../_images/a87f8af8427d42a59e2491b68ba76d0f94e03f6011b191ab4ea7b89b007ecf4e.png" />
+<img alt="../../_images/6b472ec577a1f27dc4ab85506c962efae264b805943c8bfe5ca583969a7c80ce.png" src="../../_images/6b472ec577a1f27dc4ab85506c962efae264b805943c8bfe5ca583969a7c80ce.png" />
 </div>
 </div>
 <p>And similarly we fetch a model for the throat sizes as well:</p>
@@ -849,7 +846,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449fe267f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9a4d4dce8bb599e05c8da18f140917bb53e74bc121479124be8ef27b13e50918.png" src="../../_images/9a4d4dce8bb599e05c8da18f140917bb53e74bc121479124be8ef27b13e50918.png" />
+<img alt="../../_images/06643fd3f1ec8b5cc902aa819924f4a4134a179a53dcd35c268e4ce3a95b730c.png" src="../../_images/06643fd3f1ec8b5cc902aa819924f4a4134a179a53dcd35c268e4ce3a95b730c.png" />
 </div>
 </div>
 <p>Now that we have pore and throat sizes, we can compute their volumes (and other properties). The volume will depend on the shape of the pores and throats.  In OpenPNM we do not explicitly track such <em>shapes</em>.  Instead we offer several models that calculate the property of interest for a given shape. This is illustrated below:</p>
@@ -914,7 +911,7 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 </section>
 <section id="using-predefined-collections-of-models">
-<h2>Using Predefined Collections of Models<a class="headerlink" href="#using-predefined-collections-of-models" title="Permalink to this heading">#</a></h2>
+<h2>Using Predefined Collections of Models<a class="headerlink" href="#using-predefined-collections-of-models" title="Link to this heading">#</a></h2>
 <p>The process of selecting all the correct models from the <code class="docutils literal notranslate"><span class="pre">models</span></code> library can be tedious and error prone. In OpenPNM V3 we have introduced the concept of model <em>collections</em>, which are predfined dictionaries of models that form a complete and correct geometry. For instance, there is a collection called <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code>, which contains all the needed models to describe this geometry.</p>
 <p>These collections are found under <code class="docutils literal notranslate"><span class="pre">openpnm.models.collections</span></code>, and their use is outlined below:</p>
 <div class="cell docutils container">
@@ -934,40 +931,40 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f44a1aaab00&gt;,
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f7179211f30&gt;,
                    &#39;props&#39;: [&#39;pore.max_size&#39;, &#39;pore.seed&#39;]},
  &#39;pore.max_size&#39;: {&#39;iters&#39;: 10,
-                   &#39;model&#39;: &lt;function largest_sphere at 0x7f449f80eef0&gt;},
+                   &#39;model&#39;: &lt;function largest_sphere at 0x7f7176f8e680&gt;},
  &#39;pore.seed&#39;: {&#39;element&#39;: &#39;pore&#39;,
-               &#39;model&#39;: &lt;function random at 0x7f44a1aaa4d0&gt;,
+               &#39;model&#39;: &lt;function random at 0x7f7179211900&gt;,
                &#39;num_range&#39;: [0.2, 0.7],
                &#39;seed&#39;: None},
- &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f449f80f2e0&gt;,
+ &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f7176f8ea70&gt;,
                  &#39;pore_diameter&#39;: &#39;pore.diameter&#39;},
- &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f449f824040&gt;,
+ &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f7176f8f760&gt;,
                                  &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.diameter&#39;: {&#39;factor&#39;: 0.5,
-                     &#39;model&#39;: &lt;function scaled at 0x7f44a1aaab90&gt;,
+                     &#39;model&#39;: &lt;function scaled at 0x7f7179211fc0&gt;,
                      &#39;prop&#39;: &#39;throat.max_size&#39;},
- &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f449f859ea0&gt;,
+ &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f7176fd9630&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f449f8585e0&gt;,
+ &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f7176fc3d00&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f449f824a60&gt;,
+ &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f7176fa01f0&gt;,
                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f449f825c60&gt;,
+ &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f7176fa13f0&gt;,
                         &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                         &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.max_size&#39;: {&#39;mode&#39;: &#39;min&#39;,
-                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f44a1aaacb0&gt;,
+                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f71792120e0&gt;,
                      &#39;prop&#39;: &#39;pore.diameter&#39;},
- &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f449f825a20&gt;,
+ &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f7176fa11b0&gt;,
                          &#39;throat_diameter&#39;: &#39;throat.diameter&#39;,
                          &#39;throat_length&#39;: &#39;throat.length&#39;},
- &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f44a1aaa7a0&gt;,
+ &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f7179211bd0&gt;,
                    &#39;props&#39;: [&#39;throat.total_volume&#39;, &#39;throat.lens_volume&#39;]}}
 </pre></div>
 </div>
@@ -984,7 +981,7 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f449d3d50d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f7174cbf6f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1029,7 +1026,7 @@ net : &lt;openpnm.network.Cubic at 0x7f449d3d50d0&gt;
 </div>
 </section>
 <section id="customizing-models-by-overwriting-them-or-their-arguments">
-<h2>Customizing Models by Overwriting Them or Their Arguments<a class="headerlink" href="#customizing-models-by-overwriting-them-or-their-arguments" title="Permalink to this heading">#</a></h2>
+<h2>Customizing Models by Overwriting Them or Their Arguments<a class="headerlink" href="#customizing-models-by-overwriting-them-or-their-arguments" title="Link to this heading">#</a></h2>
 <p>The pre-written models and collections included with OpenPNM are helpful, but you’ll almost always want to adjust some of the models to suit a specific application. This can be done by either altering the arguments of existing models, or by overwriting them all together.</p>
 <p>Let’s first look at replacing a model with one of our choice.  The <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> collection uses a random distribution of pore sizes, bounded between 0 and the distance to the nearest neighbor. This can be inspected by printing the specific model as follows:</p>
 <div class="cell docutils container">
@@ -1097,7 +1094,7 @@ pore.diameter             model:                    normal
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/52c82a4277d2f936431f6518304fa03ea88932f36fb732f06e8e51ebbcb6b500.png" src="../../_images/52c82a4277d2f936431f6518304fa03ea88932f36fb732f06e8e51ebbcb6b500.png" />
+<img alt="../../_images/6a82ced3dfe08b2abc1f8f6ed2e53142b3fe7cb0eb64313d0fd8cc3a8a0321e4.png" src="../../_images/6a82ced3dfe08b2abc1f8f6ed2e53142b3fe7cb0eb64313d0fd8cc3a8a0321e4.png" />
 </div>
 </div>
 <p>This distribution is quite truncated, due to the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values that were used.  Let’s reach into that model and change this.  First print the model:</p>
@@ -1131,12 +1128,12 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/54543708dc65657c0af83e608f008c37f738c361448f4bf89f9498bbe5814f6e.png" src="../../_images/54543708dc65657c0af83e608f008c37f738c361448f4bf89f9498bbe5814f6e.png" />
+<img alt="../../_images/741336797f8f0c0660b249f6e15f34e7a9658dd277796e9525821abd3b4a3428.png" src="../../_images/741336797f8f0c0660b249f6e15f34e7a9658dd277796e9525821abd3b4a3428.png" />
 </div>
 </div>
 </section>
 <section id="introduction-to-the-dependency-handler">
-<h2>Introduction to the Dependency Handler<a class="headerlink" href="#introduction-to-the-dependency-handler" title="Permalink to this heading">#</a></h2>
+<h2>Introduction to the Dependency Handler<a class="headerlink" href="#introduction-to-the-dependency-handler" title="Link to this heading">#</a></h2>
 <p>Pore-scale models clearly make life easier since you don’t have to produce the complex numpy functions by hand each time, but this is not even their best feature! The main benefit of pore-scale models is that they can be <em>recomputed</em> automatically. For instance, if we re-run the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model, then all the other models that depend on <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> will automatically be reomcomputed as well. This all occurs when we call <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code>, as demonstrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1200,7 +1197,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c0d55c7d3e5257ed23f92b1590ac019a326e12af97648936ab942f45533f6f49.png" src="../../_images/c0d55c7d3e5257ed23f92b1590ac019a326e12af97648936ab942f45533f6f49.png" />
+<img alt="../../_images/0985a929c3367d42f872060788f478a90c60a056d0ac57a1fb3c611deb61b57a.png" src="../../_images/0985a929c3367d42f872060788f478a90c60a056d0ac57a1fb3c611deb61b57a.png" />
 </div>
 </div>
 <p>The green circles are pore properties and the orange squares are throat properties. We can also see that there are two models which are not dependent on anything else: <code class="docutils literal notranslate"><span class="pre">'throat.spacing'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.coordination_number'</span></code>.  These are added to all networks during generation but not run, hence their values do no show up when doing <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code>.</p>
@@ -1216,7 +1213,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ec6346ff765be887d3c85235b6db82fae0f25e62e7be79af7ceb6f4acf743c11.png" src="../../_images/ec6346ff765be887d3c85235b6db82fae0f25e62e7be79af7ceb6f4acf743c11.png" />
+<img alt="../../_images/f02c56aa44409c38aa07091b0e97964c772fc193b67041c6e56e467d1d68d21c.png" src="../../_images/f02c56aa44409c38aa07091b0e97964c772fc193b67041c6e56e467d1d68d21c.png" />
 </div>
 </div>
 </section>
@@ -1267,8 +1264,8 @@ pore.seed                 model:                    random
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1291,7 +1288,7 @@ pore.seed                 model:                    random
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

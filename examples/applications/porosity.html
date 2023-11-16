@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting Porosity &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Predicting Porosity &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/applications/porosity';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Obtaining Relative Diffusivity Curves" href="relative_diffusivity.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="predicting-porosity">
-<h1>Predicting Porosity<a class="headerlink" href="#predicting-porosity" title="Permalink to this heading">#</a></h1>
+<h1>Predicting Porosity<a class="headerlink" href="#predicting-porosity" title="Link to this heading">#</a></h1>
 <p>The example explains how to estimate porosity of a network. We also discuss some challenges in estimating the porosity of the network and how to reduce the estimation error.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -495,7 +492,7 @@ document.write(`
 </div>
 </div>
 <section id="create-a-random-cubic-network">
-<h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Permalink to this heading">#</a></h2>
+<h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
@@ -507,7 +504,7 @@ document.write(`
 </div>
 </section>
 <section id="calculate-void-and-bulk-volume">
-<h2>Calculate void and bulk volume<a class="headerlink" href="#calculate-void-and-bulk-volume" title="Permalink to this heading">#</a></h2>
+<h2>Calculate void and bulk volume<a class="headerlink" href="#calculate-void-and-bulk-volume" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Vol_void</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">])</span>
@@ -529,16 +526,16 @@ document.write(`
 </div>
 </section>
 <section id="discussions-and-issues">
-<h2>Discussions and Issues<a class="headerlink" href="#discussions-and-issues" title="Permalink to this heading">#</a></h2>
+<h2>Discussions and Issues<a class="headerlink" href="#discussions-and-issues" title="Link to this heading">#</a></h2>
 <section id="domain-volume">
-<h3>Domain volume<a class="headerlink" href="#domain-volume" title="Permalink to this heading">#</a></h3>
+<h3>Domain volume<a class="headerlink" href="#domain-volume" title="Link to this heading">#</a></h3>
 <p>One of the issues in estimation of porosity of the network is to estimate the domain volume correctly. In a cubic network for example, finding the length at x direction using Nx * spacing is erroneous. The reason is the domain length in x direction includes additional lengths from half of pore diameter for pores that locate on the left and right side. This is shown in figure below:</p>
 <p>left) the green plane is located at the pore centers of left boundary pores and some pore volume on the left is ignored. Applying a similar plane on other sides of the network to find the length in each direction, the resulting bulk volume could be underestimated.</p>
 <p>right) the green plane is located at the far left side. Applying a similar plane on other sides of the network to find the length in each direction, the resulting bulk volume could be overestimated.</p>
 <p><img alt="image" src="https://user-images.githubusercontent.com/43128873/187976526-d36c60be-8514-4326-8ee5-00a24ea90d56.png" /></p>
 </section>
 <section id="overlapping-pores-and-throats">
-<h3>Overlapping pores and throats<a class="headerlink" href="#overlapping-pores-and-throats" title="Permalink to this heading">#</a></h3>
+<h3>Overlapping pores and throats<a class="headerlink" href="#overlapping-pores-and-throats" title="Link to this heading">#</a></h3>
 <p>Another issue is to ensure that the pore-scale models for volume are consistent. For example there is no overlapping pores, because in this case the void volume calculation will overestimate the real void space. Depending on the pore scale model used for the shape of pores and throats, they may need special methods to calculate the void volume to account for the overlap between throats and pores. Depending on the method that was used for assigning throat lengths, this overlap volume may be included in volume calculations. Existing methods to correct the throat volumes are <code class="docutils literal notranslate"><span class="pre">lens</span></code> and <code class="docutils literal notranslate"><span class="pre">pendular_ring</span></code> methods available in geometry models for throat_volume. For example assuming a spheres and cylinders geometry, <code class="docutils literal notranslate"><span class="pre">lens</span></code> model in geometry collection tackles this problem. The <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> geometry collection includes <code class="docutils literal notranslate"><span class="pre">throat.total_volume</span></code> and <code class="docutils literal notranslate"><span class="pre">throat.volume</span></code>. <code class="docutils literal notranslate"><span class="pre">throat.volume</span></code> is the volume of throat with corrections using <code class="docutils literal notranslate"><span class="pre">lens</span></code> volume:</p>
 <p>Throat volume (<code class="docutils literal notranslate"><span class="pre">throat.volume</span></code>) = volume of cylinder (<code class="docutils literal notranslate"><span class="pre">throat.total</span> <span class="pre">volume</span></code>) - the overlap of cylinder with spherical pores at its two ends  (<code class="docutils literal notranslate"><span class="pre">difference</span></code>)</p>
 <p>Let’s create a spheres and cylinders geometry:</p>
@@ -576,9 +573,9 @@ Corrected Porosity: 0.12590
 </section>
 </section>
 <section id="extracted-networks">
-<h2>Extracted networks<a class="headerlink" href="#extracted-networks" title="Permalink to this heading">#</a></h2>
+<h2>Extracted networks<a class="headerlink" href="#extracted-networks" title="Link to this heading">#</a></h2>
 <section id="void-volume">
-<h3>Void volume<a class="headerlink" href="#void-volume" title="Permalink to this heading">#</a></h3>
+<h3>Void volume<a class="headerlink" href="#void-volume" title="Link to this heading">#</a></h3>
 <p>In extracted networks, different geometrical shapes can be assigned to the pores and throats and their volume can be calculated using existing geometry models. However, the original segmented pore regions are not regular shapes. Therefore, the total pore and throat volumes in the network don’t add up to the known void volume, since the pores and throats don’t fill space perfectly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -692,8 +689,8 @@ Corrected Porosity: 0.12590
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -716,7 +713,7 @@ Corrected Porosity: 0.12590
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

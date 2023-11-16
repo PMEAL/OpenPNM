@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/applications/adjusting_pore_size_distributions';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Predicting dispersion coefficient" href="dispersion_coefficient.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="adjusting-pore-size-distributions">
-<h1>Adjusting Pore Size Distributions<a class="headerlink" href="#adjusting-pore-size-distributions" title="Permalink to this heading">#</a></h1>
+<h1>Adjusting Pore Size Distributions<a class="headerlink" href="#adjusting-pore-size-distributions" title="Link to this heading">#</a></h1>
 <p>In this example we show how you can create your very own custom pore size distribution. We start by describing how the built in models work to calculate pore and throat sizes. Next we show how to add a custom pore size distribution using a weibull distribution. Included in this example is how we might visualize our pore and throat size distributions in a histogram.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -476,7 +473,7 @@ document.write(`
 </div>
 </div>
 <section id="network">
-<h2>Network<a class="headerlink" href="#network" title="Permalink to this heading">#</a></h2>
+<h2>Network<a class="headerlink" href="#network" title="Link to this heading">#</a></h2>
 <p>Start by creating a standard cubic lattice topology.  Note that no pore or throat sizes are given yet, only the spacing between the lattice cells.  This spacing dictates the upper limit of pore sizes, since we don’t generally want pores that exceed their cells and overlap their neighbors.  This causes geometrical paradoxes like negative throat lengths.  Here we’ll use a large spacing so that the pore sizes do not need to be expressed in scientific notation below.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -493,12 +490,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d975dee85fc87e3f0aad95b5bacba6ea6416254ca3e5c13b5b92ce803a677e9e.png" src="../../_images/d975dee85fc87e3f0aad95b5bacba6ea6416254ca3e5c13b5b92ce803a677e9e.png" />
+<img alt="../../_images/5d3407617332e89bec8135357df7d0d8489c9179ad94078b2322deb3b1ae3f9a.png" src="../../_images/5d3407617332e89bec8135357df7d0d8489c9179ad94078b2322deb3b1ae3f9a.png" />
 </div>
 </div>
 </section>
 <section id="geometry">
-<h2>Geometry<a class="headerlink" href="#geometry" title="Permalink to this heading">#</a></h2>
+<h2>Geometry<a class="headerlink" href="#geometry" title="Link to this heading">#</a></h2>
 <p>Next we need to add pore and throat sizes to our network. OpenPNM has built in collections of geometry models ready to be added to a network object. For this example we will use the <code class="docutils literal notranslate"><span class="pre">spheres_and_cylinders</span></code> collection of geometry models. It is a dictionary of models containing everything you need to get started.</p>
 <blockquote>
 <div><p>Pro tip, geometry models are stored in <code class="docutils literal notranslate"><span class="pre">op.models.geometry</span></code> and can be added to a network object directly from there using the <code class="docutils literal notranslate"><span class="pre">add_model</span></code> method on the network object.</p>
@@ -548,7 +545,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
+net : &lt;openpnm.network.Cubic at 0x7f67083f02c0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -599,15 +596,15 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a5f1429903b29c50f9027257e4e388a5411e27345ebbae7237394dab24494ddf.png" src="../../_images/a5f1429903b29c50f9027257e4e388a5411e27345ebbae7237394dab24494ddf.png" />
+<img alt="../../_images/8b36a4dd5520d9bf7fb36586af5b005aa2ccb1ce8d831cdb34162508b8d73d77.png" src="../../_images/8b36a4dd5520d9bf7fb36586af5b005aa2ccb1ce8d831cdb34162508b8d73d77.png" />
 </div>
 </div>
 </section>
 <section id="adjusting-pore-and-throat-sizes">
-<h2>Adjusting Pore and Throat Sizes<a class="headerlink" href="#adjusting-pore-and-throat-sizes" title="Permalink to this heading">#</a></h2>
+<h2>Adjusting Pore and Throat Sizes<a class="headerlink" href="#adjusting-pore-and-throat-sizes" title="Link to this heading">#</a></h2>
 <p>We will show two approaches for adjusting pore sizes. The first is the most simple and straight forward approach using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> module directly. The second uses pre-defined pore scale models in OpenPNM. The latter approach is recommended.</p>
 <section id="using-scipy-stats-classes-directly">
-<h3>Using scipy.stats classes directly<a class="headerlink" href="#using-scipy-stats-classes-directly" title="Permalink to this heading">#</a></h3>
+<h3>Using scipy.stats classes directly<a class="headerlink" href="#using-scipy-stats-classes-directly" title="Link to this heading">#</a></h3>
 <p>Let’s start by fetching a statistical <em>class</em> from the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> module, in this case the <code class="docutils literal notranslate"><span class="pre">weibull_min</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -645,12 +642,12 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f7410516b842939cd26b2e174b47546d92458e330e4938485ef31c5bf3af11f7.png" src="../../_images/f7410516b842939cd26b2e174b47546d92458e330e4938485ef31c5bf3af11f7.png" />
+<img alt="../../_images/7af84c2c9de9fa36cd4c667f1ba97a1dd326e23374759135604337690ee455ab.png" src="../../_images/7af84c2c9de9fa36cd4c667f1ba97a1dd326e23374759135604337690ee455ab.png" />
 </div>
 </div>
 </section>
 <section id="using-pre-defined-models-in-openpnm">
-<h3>Using pre-defined models in OpenPNM<a class="headerlink" href="#using-pre-defined-models-in-openpnm" title="Permalink to this heading">#</a></h3>
+<h3>Using pre-defined models in OpenPNM<a class="headerlink" href="#using-pre-defined-models-in-openpnm" title="Link to this heading">#</a></h3>
 <p>The advantage of using the built-in models from OpenPNM is that:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>  a) you can regenerate the distribution programmatically using `regenerate_models()`
   b) you can save the project to file and the model information will be retained
@@ -706,7 +703,7 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7fa3201d1251f78b991b6ebe6e715127516b6fbd6a62de37a535e73a84330862.png" src="../../_images/7fa3201d1251f78b991b6ebe6e715127516b6fbd6a62de37a535e73a84330862.png" />
+<img alt="../../_images/e546ae3c9cca3f57db339b0838cf5feb20d8d5be5cb63873f6221357ddc53b8f.png" src="../../_images/e546ae3c9cca3f57db339b0838cf5feb20d8d5be5cb63873f6221357ddc53b8f.png" />
 </div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
@@ -730,7 +727,7 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/77ead05aa6d81cb74734c5d34e7c0f6d318476087115b0c76ae75bba4b013876.png" src="../../_images/77ead05aa6d81cb74734c5d34e7c0f6d318476087115b0c76ae75bba4b013876.png" />
+<img alt="../../_images/c5548c8168078e146068556ee1d7954d5d304d5ca6133b2f7c92ba24eb1ea4c9.png" src="../../_images/c5548c8168078e146068556ee1d7954d5d304d5ca6133b2f7c92ba24eb1ea4c9.png" />
 </div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
@@ -743,7 +740,7 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1521da0078822b5979cc2530dc2e5b6d14f5dcac94343d9488aa326121b22065.png" src="../../_images/1521da0078822b5979cc2530dc2e5b6d14f5dcac94343d9488aa326121b22065.png" />
+<img alt="../../_images/64cc0afcbae9da3ee96ac07a71542bc388cd534d3c7cd4c7c3e7019cac16072b.png" src="../../_images/64cc0afcbae9da3ee96ac07a71542bc388cd534d3c7cd4c7c3e7019cac16072b.png" />
 </div>
 </div>
 </section>
@@ -792,8 +789,8 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -816,7 +813,7 @@ net : &lt;openpnm.network.Cubic at 0x7fd7ece29170&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

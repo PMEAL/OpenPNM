@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using Labels and Defining Domains &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Using Labels and Defining Domains &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/06_labels_and_domains';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Creating Phases" href="07_phases_and_mixtures.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="using-labels-and-defining-domains">
-<h1>Using Labels and Defining Domains<a class="headerlink" href="#using-labels-and-defining-domains" title="Permalink to this heading">#</a></h1>
+<h1>Using Labels and Defining Domains<a class="headerlink" href="#using-labels-and-defining-domains" title="Link to this heading">#</a></h1>
 <p>Labels are a way to ‘bookmark’ certain pores for easier lookup later, such as specifying boundary conditions.  When networks are generated they include a set of relevent labels that have been added for convenience.  It’s also possible for users to add their own labels.  This tutorial will cover how they work, how to add them, and how to use them.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -474,7 +471,7 @@ document.write(`
 </div>
 </div>
 <section id="using-predefined-labels">
-<h2>Using Predefined Labels<a class="headerlink" href="#using-predefined-labels" title="Permalink to this heading">#</a></h2>
+<h2>Using Predefined Labels<a class="headerlink" href="#using-predefined-labels" title="Link to this heading">#</a></h2>
 <p>The simple <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> network has several labels added during creating.  We can see these labels when we inspecting (i.e. <code class="docutils literal notranslate"><span class="pre">print</span></code>) the network,</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -485,7 +482,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
+net : &lt;openpnm.network.Cubic at 0x7fbbd2e7af20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -555,7 +552,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 </section>
 <section id="the-pores-and-throats-methods">
-<h2>The <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> methods<a class="headerlink" href="#the-pores-and-throats-methods" title="Permalink to this heading">#</a></h2>
+<h2>The <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> methods<a class="headerlink" href="#the-pores-and-throats-methods" title="Link to this heading">#</a></h2>
 <p>OpenPNM objects all have method for accessing pore and throat locations by label without calling <code class="docutils literal notranslate"><span class="pre">where</span></code> or building your own boolean logic filters.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -580,7 +577,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </ul>
 </div>
 <section id="using-the-mode-argument-in-the-pores-and-throats-methods">
-<h3>Using the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument in the <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> methods<a class="headerlink" href="#using-the-mode-argument-in-the-pores-and-throats-methods" title="Permalink to this heading">#</a></h3>
+<h3>Using the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument in the <code class="docutils literal notranslate"><span class="pre">pores</span></code> and <code class="docutils literal notranslate"><span class="pre">throats</span></code> methods<a class="headerlink" href="#using-the-mode-argument-in-the-pores-and-throats-methods" title="Link to this heading">#</a></h3>
 <p>The advantage of the using the OpenPNM method is that you can create more complex queries, such as pores that are ‘left’ <em>or</em> ‘back’:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -664,10 +661,10 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </section>
 </section>
 <section id="defining-custom-labels">
-<h2>Defining Custom Labels<a class="headerlink" href="#defining-custom-labels" title="Permalink to this heading">#</a></h2>
+<h2>Defining Custom Labels<a class="headerlink" href="#defining-custom-labels" title="Link to this heading">#</a></h2>
 <p>It is common in OpenPNM scripts to do some complex searching to find all pores that satisfy some set of conditions.  It can be helpful to label these for later use.  There are two ways to do this, by directly creating a boolean mask and storing it, or by calling the <code class="docutils literal notranslate"><span class="pre">set_label</span></code> method.</p>
 <section id="creating-boolean-masks">
-<h3>Creating Boolean Masks<a class="headerlink" href="#creating-boolean-masks" title="Permalink to this heading">#</a></h3>
+<h3>Creating Boolean Masks<a class="headerlink" href="#creating-boolean-masks" title="Link to this heading">#</a></h3>
 <p>Assume we want to label the ‘corner’ pore we found above.  First catch the result in a variable:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -708,7 +705,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 </section>
 <section id="using-set-label">
-<h3>Using <code class="docutils literal notranslate"><span class="pre">set_label</span></code><a class="headerlink" href="#using-set-label" title="Permalink to this heading">#</a></h3>
+<h3>Using <code class="docutils literal notranslate"><span class="pre">set_label</span></code><a class="headerlink" href="#using-set-label" title="Link to this heading">#</a></h3>
 <p>The process of creating an empty label array, then filling the <code class="docutils literal notranslate"><span class="pre">True</span></code> values is a bit annoying, so there is a helper/shortcut method on all OpenPNM objects.  It can be used to create a new label, or to edit an existing one.  Let’s label another corner pore as ‘pore.corner’:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -741,7 +738,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </section>
 </section>
 <section id="using-the-sytax-to-read-and-write-data">
-<h2>Using the &#64; sytax to read and write data<a class="headerlink" href="#using-the-sytax-to-read-and-write-data" title="Permalink to this heading">#</a></h2>
+<h2>Using the &#64; sytax to read and write data<a class="headerlink" href="#using-the-sytax-to-read-and-write-data" title="Link to this heading">#</a></h2>
 <p>The &#64; syntax provides a shortcut for reading and writing data to certain locations, defined by labels. The &#64; syntax is also used to define “domains” where pore network properties differ, but  first let’s look at using &#64;:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -844,7 +841,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 </section>
 <section id="defining-subdomains">
-<h2>Defining Subdomains<a class="headerlink" href="#defining-subdomains" title="Permalink to this heading">#</a></h2>
+<h2>Defining Subdomains<a class="headerlink" href="#defining-subdomains" title="Link to this heading">#</a></h2>
 <p>Using the &#64; symbol for data read/write as shown above is actually a side effect of a <em>major conceptual shift</em> made in V3. The <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> and <code class="docutils literal notranslate"><span class="pre">Physics</span></code> objects are now <em>gone</em>.  There was essentially only one use case for these, which was to model heterogeneous domains, like bimodal pore size distributions or layered structures.</p>
 <p>In V2 this was accomplished by using 2 (or more) <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> objects to represent each class of pores, with unique pore-scale models attached to each.  Without getting lost in the details, it is sufficient to say that having separate objects for managing each class of pores (and/or throats) created a <em>lot</em> of complications, both to the user and to the maintenence of the backend.</p>
 <p>In V3 we have developed what we think is a <em>much tidier approach</em> to managing heterogeneous domains.  Instead of creating multiple <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> objects (and consequently multiple <code class="docutils literal notranslate"><span class="pre">Physics</span></code> objects), you now add all the pore-scale models to the <code class="docutils literal notranslate"><span class="pre">Network</span></code> and <code class="docutils literal notranslate"><span class="pre">Phase</span></code> objects directly.  The trick is that when adding models you specify one additional argument: the  <code class="docutils literal notranslate"><span class="pre">domain</span></code> (i.e. pores or throats) to which the model applies, as follows:</p>
@@ -869,7 +866,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
+net : &lt;openpnm.network.Cubic at 0x7fbbd2e7af20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -917,7 +914,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
+net : &lt;openpnm.network.Cubic at 0x7fbbd2e7af20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -977,7 +974,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 <p>Appending <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> to the model name creates a unique dictionary key. OpenPNM recoginizes that the models in <code class="docutils literal notranslate"><span class="pre">'pore.seed&#64;left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.seed&#64;right'</span></code> both compute values of <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code>, and directs the outputs of each function to the correct locations, which it can infer from the <code class="docutils literal notranslate"><span class="pre">&#64;right/left</span></code> portion of the key.</p>
 <section id="defining-and-changing-subdomain-locations">
-<h3>Defining and Changing Subdomain Locations<a class="headerlink" href="#defining-and-changing-subdomain-locations" title="Permalink to this heading">#</a></h3>
+<h3>Defining and Changing Subdomain Locations<a class="headerlink" href="#defining-and-changing-subdomain-locations" title="Link to this heading">#</a></h3>
 <p>It becomes trivial to define and redefine the locations of a domain.  This simply requires changing where <code class="docutils literal notranslate"><span class="pre">pn['pore.left']</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.  This is demonstrated as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1008,7 +1005,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
+net : &lt;openpnm.network.Cubic at 0x7fbbd2e7af20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1038,7 +1035,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 <p>It can now been observed that <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values are found in 6 locations because the domain labelled <code class="docutils literal notranslate"><span class="pre">'left'</span></code> was expanded by 2 pores.</p>
 </section>
 <section id="mixing-full-domain-and-subdomain-models">
-<h3>Mixing Full Domain and Subdomain Models<a class="headerlink" href="#mixing-full-domain-and-subdomain-models" title="Permalink to this heading">#</a></h3>
+<h3>Mixing Full Domain and Subdomain Models<a class="headerlink" href="#mixing-full-domain-and-subdomain-models" title="Link to this heading">#</a></h3>
 <p>When defining two separate subdomains, the pore and throat sizes are often the only thing that is different.  In V2, however, it was recommended practice to include ALL the additional models on each subdomain object as well, such as volume calculations.  With the &#64; syntax, only models that actualy differ between the domains need to be specifically dealt with.</p>
 <p>This is demonstrated below by first deleting the individual <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> models applied above, and replacing them with a single model that applies uniform values on all locations, then applying two different normal distributions to the <code class="docutils literal notranslate"><span class="pre">'left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'right'</span></code> domains.</p>
 <div class="cell docutils container">
@@ -1088,7 +1085,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a2a203afc71ebb12deddb4a2509a343c9b3c1d5488fa9c6f78b0966e9148fcda.png" src="../../_images/a2a203afc71ebb12deddb4a2509a343c9b3c1d5488fa9c6f78b0966e9148fcda.png" />
+<img alt="../../_images/27c5d36f2309ceea9449a1ea7eeacd9df7f53e15448eaf23fb7c5c98a1b89cad.png" src="../../_images/27c5d36f2309ceea9449a1ea7eeacd9df7f53e15448eaf23fb7c5c98a1b89cad.png" />
 </div>
 </div>
 <p>And now we can apply a model to the full domain that computes the pore volume, using values of pore diameter that were computed uniquely for each domain:</p>
@@ -1112,12 +1109,12 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6c9761594f8c7097bfd80d2bdf987dc48e410a45d8be72af89ffaf481279d686.png" src="../../_images/6c9761594f8c7097bfd80d2bdf987dc48e410a45d8be72af89ffaf481279d686.png" />
+<img alt="../../_images/48c5408eeb3ac6abc4fa0826526f4e3ea6647c4c801a2f6a8916eef347790042.png" src="../../_images/48c5408eeb3ac6abc4fa0826526f4e3ea6647c4c801a2f6a8916eef347790042.png" />
 </div>
 </div>
 </section>
 <section id="mixing-many-subdomains-of-different-shape">
-<h3>Mixing Many Subdomains of Different Shape<a class="headerlink" href="#mixing-many-subdomains-of-different-shape" title="Permalink to this heading">#</a></h3>
+<h3>Mixing Many Subdomains of Different Shape<a class="headerlink" href="#mixing-many-subdomains-of-different-shape" title="Link to this heading">#</a></h3>
 <p>Because subdomains are now very abstract (actually just labels), it is possible to define multiple subdomains with different shape and apply models to each. So far we have added <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.diameter'</span></code> models to the <code class="docutils literal notranslate"><span class="pre">'left'</span></code> and <code class="docutils literal notranslate"><span class="pre">'right'</span></code> pores.  We can now freely add another set of models to the <code class="docutils literal notranslate"><span class="pre">'front'</span></code> and <code class="docutils literal notranslate"><span class="pre">'back'</span></code>, even though they partially overlap:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1152,7 +1149,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
+net : &lt;openpnm.network.Cubic at 0x7fbbd2e7af20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1240,8 +1237,8 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1264,7 +1261,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb56e441080&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

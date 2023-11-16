@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Steady State Transport &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Steady State Transport &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,41 +18,38 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/simulations/basic_transport';</script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Explanation of Units" href="explanation_of_units.html" />
@@ -128,13 +124,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -464,7 +461,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="steady-state-transport">
-<h1>Steady State Transport<a class="headerlink" href="#steady-state-transport" title="Permalink to this heading">#</a></h1>
+<h1>Steady State Transport<a class="headerlink" href="#steady-state-transport" title="Link to this heading">#</a></h1>
 <p>Simulating transport such as diffusion or flow is a key output of PNM.  This notebook will explain the underlying process for these simulations in OpenPNM.</p>
 <p>The transport of a species between pore <code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code> is dictated by the conductance <code class="docutils literal notranslate"><span class="pre">g</span></code> of the conduit between these pores.  <code class="docutils literal notranslate"><span class="pre">g</span></code> depends on the geometry as well as the fluid properties. Consider the case of diffusion which is described by Fick’s law:</p>
 <div class="math notranslate nohighlight">
@@ -484,7 +481,7 @@ document.write(`
 </div>
 </div>
 <section id="creating-the-coefficient-matrix">
-<h2>Creating the Coefficient Matrix<a class="headerlink" href="#creating-the-coefficient-matrix" title="Permalink to this heading">#</a></h2>
+<h2>Creating the Coefficient Matrix<a class="headerlink" href="#creating-the-coefficient-matrix" title="Link to this heading">#</a></h2>
 <p>The rate equation given above applies to each throat in the network. In a pore network we want to solve for the quantity of interest in each pore. Each pore in the network has many throats.  Depending on the concentrations in the neighboring pores the rate of diffusion through each throat may either be into or away from a given pore.  At steady state and in the absence of reaction, the net rate into pore <code class="docutils literal notranslate"><span class="pre">i</span></code> will be zero. Thus we can write the mass balance equation for pore <code class="docutils literal notranslate"><span class="pre">i</span></code> using summation notation as:</p>
 <div class="math notranslate nohighlight">
 \[ \Sigma g_{i, j} (x_j - x_i) = 0 \]</div>
@@ -502,17 +499,17 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.3668174   0.57226558  0.79455183  0.        ]
- [ 0.57226558 -0.88453681  0.          0.31227123]
- [ 0.79455183  0.         -1.16552284  0.37097101]
- [ 0.          0.31227123  0.37097101 -0.68324225]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.58564077  0.64761375  0.93802702  0.        ]
+ [ 0.64761375 -0.9941752   0.          0.34656145]
+ [ 0.93802702  0.         -1.37821462  0.4401876 ]
+ [ 0.          0.34656145  0.4401876  -0.78674905]]
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="applying-value-and-rate-boundary-conditions">
-<h2>Applying Value and Rate Boundary Conditions<a class="headerlink" href="#applying-value-and-rate-boundary-conditions" title="Permalink to this heading">#</a></h2>
+<h2>Applying Value and Rate Boundary Conditions<a class="headerlink" href="#applying-value-and-rate-boundary-conditions" title="Link to this heading">#</a></h2>
 <p>If <code class="docutils literal notranslate"><span class="pre">b=0</span></code> for all pores then <code class="docutils literal notranslate"><span class="pre">x=0</span></code> throughout the network. We must apply boundary conditions to obtain a non-trivial result. One option is to apply “rate” boundary conditions, such that the net movement of the species in or out of a pore is not zero, such that:</p>
 <div class="math notranslate nohighlight">
 \[ \Sigma g_{i, j} (x_j - x_i) = r_i \]</div>
@@ -535,9 +532,9 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.57226558 -0.88453681  0.          0.31227123]
- [ 0.79455183  0.         -1.16552284  0.37097101]
- [ 0.          0.31227123  0.37097101 -0.68324225]]
+ [ 0.64761375 -0.9941752   0.          0.34656145]
+ [ 0.93802702  0.         -1.37821462  0.4401876 ]
+ [ 0.          0.34656145  0.4401876  -0.78674905]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -546,7 +543,7 @@ The b matrix is:
 </div>
 </section>
 <section id="solving-the-system-of-equations">
-<h2>Solving the System of Equations<a class="headerlink" href="#solving-the-system-of-equations" title="Permalink to this heading">#</a></h2>
+<h2>Solving the System of Equations<a class="headerlink" href="#solving-the-system-of-equations" title="Link to this heading">#</a></h2>
 <p>One the coefficient matrix has been built from the system of equation, and boundary conditions are applied, we can solve the system <span class="math notranslate nohighlight">\(x = A^{-1}b\)</span> to find <span class="math notranslate nohighlight">\(x_i\)</span> in each pore.  This can be done using any number of numerical solvers</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -557,14 +554,14 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.61198673 1.65017592 0.90091695]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.66822832 1.69602145 1.04825196]
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="sparse-matrices">
-<h2>Sparse Matrices<a class="headerlink" href="#sparse-matrices" title="Permalink to this heading">#</a></h2>
+<h2>Sparse Matrices<a class="headerlink" href="#sparse-matrices" title="Link to this heading">#</a></h2>
 <p>In the above example the <code class="docutils literal notranslate"><span class="pre">A</span></code> matrix was small so we could convert it to dense form. In a real network the coefficient matrix will be much larger so requires dense representation. The above process is the same, but some of the numerical steps are different to account for the sparse nature of the coefficient matrix. In particular the application of value BCs is more complicated:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -643,9 +640,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.57226558 -0.88453681  0.          0.31227123]
- [ 0.79455183  0.         -1.16552284  0.37097101]
- [ 0.          0.31227123  0.37097101 -0.68324225]]
+ [ 0.64761375 -0.9941752   0.          0.34656145]
+ [ 0.93802702  0.         -1.37821462  0.4401876 ]
+ [ 0.          0.34656145  0.4401876  -0.78674905]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -662,7 +659,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.61198673 1.65017592 0.90091695]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.66822832 1.69602145 1.04825196]
 </pre></div>
 </div>
 </div>
@@ -710,8 +707,8 @@ The b matrix is:
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -734,7 +731,7 @@ The b matrix is:
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

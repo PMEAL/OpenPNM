@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/04_graph_queries_and_manipulation';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Assigning Geometric Properties" href="05_defining_geometry.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="network-representation-queries-and-manipulation">
-<h1>Network Representation, Queries, and Manipulation<a class="headerlink" href="#network-representation-queries-and-manipulation" title="Permalink to this heading">#</a></h1>
+<h1>Network Representation, Queries, and Manipulation<a class="headerlink" href="#network-representation-queries-and-manipulation" title="Link to this heading">#</a></h1>
 <p>To understand how to query and manipulate the network, we’ll first cover the various forms of network representation. Specifically, OpenPNM uses an adjacency matrix to represent topology, but occassionally invokes the incidence matrix since this makes it easier for some queries.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -475,7 +472,7 @@ document.write(`
 </div>
 </div>
 <section id="the-adjacency-matrix">
-<h2>The Adjacency Matrix<a class="headerlink" href="#the-adjacency-matrix" title="Permalink to this heading">#</a></h2>
+<h2>The Adjacency Matrix<a class="headerlink" href="#the-adjacency-matrix" title="Link to this heading">#</a></h2>
 <p>The basic adjacency matrix is an Np-by-Np array of 1’s and 0’s, where a 1 in location <code class="docutils literal notranslate"><span class="pre">[i,</span> <span class="pre">j]</span></code> indicates that pores <code class="docutils literal notranslate"><span class="pre">i</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code> are connected. Consider a simple network:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -512,7 +509,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/1a1f0e671f99f9013a69c2a915ca5debe3d7225d1f44d09f259528efae50d4b5.png" src="../../_images/1a1f0e671f99f9013a69c2a915ca5debe3d7225d1f44d09f259528efae50d4b5.png" />
+<img alt="../../_images/f3ec30ae294e5de290bfc128cbd8b2f021ff4ae790f1d0d0ad5c3fb67f39ea9f.png" src="../../_images/f3ec30ae294e5de290bfc128cbd8b2f021ff4ae790f1d0d0ad5c3fb67f39ea9f.png" />
 </div>
 </div>
 <p>There are a few notable features to point out:</p>
@@ -524,7 +521,7 @@ document.write(`
 <li><p>Since each pair of pores is connected by a single throat then each nonzero entry in the matrix corresponds to a throat</p></li>
 </ul>
 <section id="coo-sparse-format">
-<h3>COO Sparse Format<a class="headerlink" href="#coo-sparse-format" title="Permalink to this heading">#</a></h3>
+<h3>COO Sparse Format<a class="headerlink" href="#coo-sparse-format" title="Link to this heading">#</a></h3>
 <p>The fact that each row contains very few entries suggests that the matrix should be represented with a sparse format. This is especially important when we start to consider networks with millions of pores which would require a very large amount of memory to store an array of mostly 0’s. The most intuitive sparse storage scheme is the COOrdinate format. Since the matrix is symmetrical, we only need to store the upper (or lower) triangular part.  This gives:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -579,7 +576,7 @@ document.write(`
 </div>
 </section>
 <section id="other-sparse-formats">
-<h3>Other Sparse Formats<a class="headerlink" href="#other-sparse-formats" title="Permalink to this heading">#</a></h3>
+<h3>Other Sparse Formats<a class="headerlink" href="#other-sparse-formats" title="Link to this heading">#</a></h3>
 <p>The COO format described above is the basis for OpenPNMs data storage; however, it is not very suitable for performing “queries” such as which pores are neighbors to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>?  In fact, the only query that can be performed directly with the COO format is to find which pores are connected by throat <code class="docutils literal notranslate"><span class="pre">k</span></code>, which is just the <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j)</span></code> values on row <code class="docutils literal notranslate"><span class="pre">k</span></code>. Luckily, there are several other sparse formats we can use. The “List of Lists” format is quite useful.</p>
 <p>We can look for the locations of nonzeros, which tells us which pores are connected to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>:</p>
 <div class="cell docutils container">
@@ -652,7 +649,7 @@ document.write(`
 </section>
 </section>
 <section id="the-incidence-matrix">
-<h2>The Incidence Matrix<a class="headerlink" href="#the-incidence-matrix" title="Permalink to this heading">#</a></h2>
+<h2>The Incidence Matrix<a class="headerlink" href="#the-incidence-matrix" title="Link to this heading">#</a></h2>
 <p>The incidence matrix is a slight variation on the adjacency matrix, but is it tells us which pore is connected to which throat.  In other words, it is an Np-by-Nt array, with a nonzero value at location <code class="docutils literal notranslate"><span class="pre">[i,</span> <span class="pre">k]</span></code> indicating that pore <code class="docutils literal notranslate"><span class="pre">i</span></code> is connected to throat <code class="docutils literal notranslate"><span class="pre">k</span></code>.  It looks like:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -675,7 +672,7 @@ document.write(`
 <p>We can see that finding the locations of nonzeros values in row <code class="docutils literal notranslate"><span class="pre">i</span></code> tells us which throats are connected to pore <code class="docutils literal notranslate"><span class="pre">i</span></code>. This is the same information we can get from the COO format of the adjacency matrix. The incidence matrix is thus not really helpful.</p>
 </section>
 <section id="using-openpnm-methods-query-methods">
-<h2>Using OpenPNM Methods Query Methods<a class="headerlink" href="#using-openpnm-methods-query-methods" title="Permalink to this heading">#</a></h2>
+<h2>Using OpenPNM Methods Query Methods<a class="headerlink" href="#using-openpnm-methods-query-methods" title="Link to this heading">#</a></h2>
 <p>The above introduction was meant to provide some background on how neighbor queries are performed “behind the scenes”, but it is not very convenient to use those approaches directly. Instead, you can use the methods included in OpenPNM, specifically, the methods attached to the <em>Network</em> class:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -702,7 +699,7 @@ document.write(`
 </div>
 </div>
 <section id="find-neighoring-pores">
-<h3>Find Neighoring Pores<a class="headerlink" href="#find-neighoring-pores" title="Permalink to this heading">#</a></h3>
+<h3>Find Neighoring Pores<a class="headerlink" href="#find-neighoring-pores" title="Link to this heading">#</a></h3>
 <p>We now have two sets of pores that actually overlap each other, as illustrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -717,7 +714,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8ef237edd6b144026164324ec7a0fb90470b66044c3aafc555034d783d07ae74.png" src="../../_images/8ef237edd6b144026164324ec7a0fb90470b66044c3aafc555034d783d07ae74.png" />
+<img alt="../../_images/5a0d3df25c63eab36a65a268667174a50deb99911b60146eab04f77fa15141c2.png" src="../../_images/5a0d3df25c63eab36a65a268667174a50deb99911b60146eab04f77fa15141c2.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode='or'</span></code> finds all pores with one or more connections to the input pores</p>
@@ -753,7 +750,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b7dc69b85147e70d05e4468e0c53f29110c13d5b72a4000bacff4b3dc484a672.png" src="../../_images/b7dc69b85147e70d05e4468e0c53f29110c13d5b72a4000bacff4b3dc484a672.png" />
+<img alt="../../_images/763a8c749ca3cb1ac23ae9949d11ba9979aa9ef3c55d2b3a9b6722675969c970.png" src="../../_images/763a8c749ca3cb1ac23ae9949d11ba9979aa9ef3c55d2b3a9b6722675969c970.png" />
 </div>
 </div>
 <p>`mode=’xor’ finds all pores with exactly one connection to the input pores</p>
@@ -789,7 +786,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0c7ac0bcf71efad5b3262f20bd613c66b3e89395f73ff2b21cb29391b8fb179a.png" src="../../_images/0c7ac0bcf71efad5b3262f20bd613c66b3e89395f73ff2b21cb29391b8fb179a.png" />
+<img alt="../../_images/b2d06270c3647a7678eab26c3029bdfac8b005e626fc76453ae1ec4fd376dd3e.png" src="../../_images/b2d06270c3647a7678eab26c3029bdfac8b005e626fc76453ae1ec4fd376dd3e.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode='xnor'</span></code> finds all the pores with 2 or more connections to the input pores</p>
@@ -825,12 +822,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dfad4104cafd7706ab313ad4274dbfde91e625735da14dcbf560e711281c197f.png" src="../../_images/dfad4104cafd7706ab313ad4274dbfde91e625735da14dcbf560e711281c197f.png" />
+<img alt="../../_images/6161571e6411ce4e8d274dc8759bd66d333f237c1e857fee435cf9aae0485f9e.png" src="../../_images/6161571e6411ce4e8d274dc8759bd66d333f237c1e857fee435cf9aae0485f9e.png" />
 </div>
 </div>
 </section>
 <section id="find-neighboring-throats">
-<h3>Find Neighboring Throats<a class="headerlink" href="#find-neighboring-throats" title="Permalink to this heading">#</a></h3>
+<h3>Find Neighboring Throats<a class="headerlink" href="#find-neighboring-throats" title="Link to this heading">#</a></h3>
 <p>Neighbor throat queries follow essentially the same logic as the neighboring queries outlined above.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mode='or'</span></code> finds all throats connected to any of the input pores:</p>
 <div class="cell docutils container">
@@ -855,7 +852,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/907835244e9cdfe7b7e3bd7d3d622b3e9dd5fffe653bd5d158d97f2e75515117.png" src="../../_images/907835244e9cdfe7b7e3bd7d3d622b3e9dd5fffe653bd5d158d97f2e75515117.png" />
+<img alt="../../_images/47287328ba97724fffca30c9e322867607756fbe62435edfb9125586a4e3ab7f.png" src="../../_images/47287328ba97724fffca30c9e322867607756fbe62435edfb9125586a4e3ab7f.png" />
 </div>
 </div>
 <p>`mode=’xnor’ finds throats shared by input pores only</p>
@@ -881,7 +878,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ef0d5259176a7de0868bde3cd20a3c181f13824c25ff88a2b90c4105dc6c7ae7.png" src="../../_images/ef0d5259176a7de0868bde3cd20a3c181f13824c25ff88a2b90c4105dc6c7ae7.png" />
+<img alt="../../_images/41dbe7791bd6075a2f48896bd50084e70d2ba98229afac73e61abc307a9d47fc.png" src="../../_images/41dbe7791bd6075a2f48896bd50084e70d2ba98229afac73e61abc307a9d47fc.png" />
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode=xor</span></code> finds throats that are only connected to one input pore</p>
@@ -907,12 +904,12 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4a1b2a73424f5c0ca61921039be839dd057887e848f456f6a69574f72b8434d7.png" src="../../_images/4a1b2a73424f5c0ca61921039be839dd057887e848f456f6a69574f72b8434d7.png" />
+<img alt="../../_images/bd515427cccd389632180f1b454e94caedcb19cd7e58a5ff6be312e099c2bca9.png" src="../../_images/bd515427cccd389632180f1b454e94caedcb19cd7e58a5ff6be312e099c2bca9.png" />
 </div>
 </div>
 </section>
 <section id="find-connecting-throats">
-<h3>Find Connecting Throats<a class="headerlink" href="#find-connecting-throats" title="Permalink to this heading">#</a></h3>
+<h3>Find Connecting Throats<a class="headerlink" href="#find-connecting-throats" title="Link to this heading">#</a></h3>
 <p>Given two sets of pores, it is possible to find which throats connects them using the <code class="docutils literal notranslate"><span class="pre">find_connecting_throats</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -943,7 +940,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/02faa309f49fc4728974fedc3d4af889f8fce16b4583bcbae6d66ee500f9e783.png" src="../../_images/02faa309f49fc4728974fedc3d4af889f8fce16b4583bcbae6d66ee500f9e783.png" />
+<img alt="../../_images/7f44aab4b93ac8c7578a12b9c65d5f658f3cf4423fb7ef90a44e48d77022da7b.png" src="../../_images/7f44aab4b93ac8c7578a12b9c65d5f658f3cf4423fb7ef90a44e48d77022da7b.png" />
 </div>
 </div>
 <p>This function assumes that <code class="docutils literal notranslate"><span class="pre">P1</span></code> and <code class="docutils literal notranslate"><span class="pre">P2</span></code> are lined up, so that finds the connections between each pore <code class="docutils literal notranslate"><span class="pre">i</span></code>.  If there are no connections, then <code class="docutils literal notranslate"><span class="pre">nans</span></code> are returned (which also means that any valid connections are converted to <code class="docutils literal notranslate"><span class="pre">float</span></code>):</p>
@@ -964,7 +961,7 @@ document.write(`
 </div>
 </section>
 <section id="find-connected-pores">
-<h3>Find Connected Pores<a class="headerlink" href="#find-connected-pores" title="Permalink to this heading">#</a></h3>
+<h3>Find Connected Pores<a class="headerlink" href="#find-connected-pores" title="Link to this heading">#</a></h3>
 <p>Given a list of throats, finding which pores are on either end can be done using the <code class="docutils literal notranslate"><span class="pre">find_connected_pores</span></code> method <em>or</em> by looking at <code class="docutils literal notranslate"><span class="pre">pn['throat.conns']</span></code> directly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1026,7 +1023,7 @@ document.write(`
 </section>
 </section>
 <section id="removing-throats">
-<h2>Removing Throats<a class="headerlink" href="#removing-throats" title="Permalink to this heading">#</a></h2>
+<h2>Removing Throats<a class="headerlink" href="#removing-throats" title="Link to this heading">#</a></h2>
 <p>Removing throats may be useful for a number of reasons such as making a cubic network more heterogeneous, or to study the effect of blockages on flow.  Throat deletion is actualy trivial and requires simply removing the row(s) corresponding to the to-be deleted throats from all throat arrays.  For instance, let’s manually delete throats <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">3</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1037,7 +1034,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
+net : &lt;openpnm.network.Cubic at 0x7ff80d9136f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1074,7 +1071,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
+net : &lt;openpnm.network.Cubic at 0x7ff80d9136f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1108,7 +1105,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
+net : &lt;openpnm.network.Cubic at 0x7ff80d9136f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1143,12 +1140,12 @@ net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/94818a690d7d4ad6773724e3a4c74347afe1dd4679acb8495df21ad0b888e2e5.png" src="../../_images/94818a690d7d4ad6773724e3a4c74347afe1dd4679acb8495df21ad0b888e2e5.png" />
+<img alt="../../_images/9e0debb0664842b6b0c1bd34993b69c776ecf071d05a3fefbe7c4c1581738b83.png" src="../../_images/9e0debb0664842b6b0c1bd34993b69c776ecf071d05a3fefbe7c4c1581738b83.png" />
 </div>
 </div>
 </section>
 <section id="removing-pores">
-<h2>Removing Pores<a class="headerlink" href="#removing-pores" title="Permalink to this heading">#</a></h2>
+<h2>Removing Pores<a class="headerlink" href="#removing-pores" title="Link to this heading">#</a></h2>
 <p>Removing pores is <em>almost</em> as easy as removing throats, with <strong>two significant complications</strong>.</p>
 <ol class="arabic simple">
 <li><p>When a pore is removed, the values in the <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array must be updated. If pore 2 is removed, the pore 3 becomes the new pore 2.  This means that any throats which were pointing to pore 3 (i.e. [1, 3]) must now be updated to point to pore 2 instead (i.e. [1, 2]). This can be done manually as shown below, but OpenPNM’s <code class="docutils literal notranslate"><span class="pre">trim</span></code> function should be used.</p></li>
@@ -1222,7 +1219,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059813600&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb0576ff790&gt;
+net : &lt;openpnm.network.Cubic at 0x7ff80dada200&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1264,7 +1261,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb0576ff790&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e96ee0933f3f3c7dd88f3c9e1c375b31eaf5837eb5f9a58b148c61ec67c19ccb.png" src="../../_images/e96ee0933f3f3c7dd88f3c9e1c375b31eaf5837eb5f9a58b148c61ec67c19ccb.png" />
+<img alt="../../_images/8572a26d0cd5157d546b74a1ec52dbf5403d2281acd13a255bf026d9377d7c44.png" src="../../_images/8572a26d0cd5157d546b74a1ec52dbf5403d2281acd13a255bf026d9377d7c44.png" />
 </div>
 </div>
 <p>Of course, the easy way is just to use <code class="docutils literal notranslate"><span class="pre">trim</span></code> directly:</p>
@@ -1280,12 +1277,12 @@ net : &lt;openpnm.network.Cubic at 0x7fb0576ff790&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e96ee0933f3f3c7dd88f3c9e1c375b31eaf5837eb5f9a58b148c61ec67c19ccb.png" src="../../_images/e96ee0933f3f3c7dd88f3c9e1c375b31eaf5837eb5f9a58b148c61ec67c19ccb.png" />
+<img alt="../../_images/8572a26d0cd5157d546b74a1ec52dbf5403d2281acd13a255bf026d9377d7c44.png" src="../../_images/8572a26d0cd5157d546b74a1ec52dbf5403d2281acd13a255bf026d9377d7c44.png" />
 </div>
 </div>
 </section>
 <section id="adding-pores-and-throats">
-<h2>Adding Pores and Throats<a class="headerlink" href="#adding-pores-and-throats" title="Permalink to this heading">#</a></h2>
+<h2>Adding Pores and Throats<a class="headerlink" href="#adding-pores-and-throats" title="Link to this heading">#</a></h2>
 <p>Adding pores and throats can also be done by hand, but there is one significant complication: when you add a pore or throat, a decision must be made about what values to put into these new locations for all the arrays that already exist.</p>
 <p>This can be done manually as follows:</p>
 <div class="cell docutils container">
@@ -1300,7 +1297,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb0576ff790&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fb059a3aac0&gt;
+net : &lt;openpnm.network.Cubic at 0x7ff80b514ef0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1344,7 +1341,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059a3aac0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dc2572f9becf57a6e095da911895dd42c0b8aae26e79ea7c8633bbcabdca6a46.png" src="../../_images/dc2572f9becf57a6e095da911895dd42c0b8aae26e79ea7c8633bbcabdca6a46.png" />
+<img alt="../../_images/9d89f1d8b6f27a6a9a390c9f8dceb740de5e7632450992dfb2acc9600c301733.png" src="../../_images/9d89f1d8b6f27a6a9a390c9f8dceb740de5e7632450992dfb2acc9600c301733.png" />
 </div>
 </div>
 <p>Now let’s add throats to these new pores:</p>
@@ -1367,7 +1364,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059a3aac0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4b95a30a1ec57d3838fb5c8583846be86196ddd6c11b1f44ddd8be7a290aac85.png" src="../../_images/4b95a30a1ec57d3838fb5c8583846be86196ddd6c11b1f44ddd8be7a290aac85.png" />
+<img alt="../../_images/930810c9fae47b25f430ac9ed5c4e07ce2e266bcd251583d7ffe133c3c864b38.png" src="../../_images/930810c9fae47b25f430ac9ed5c4e07ce2e266bcd251583d7ffe133c3c864b38.png" />
 </div>
 </div>
 <p>Obviously, in practice we’d like to use OpenPNM’s <code class="docutils literal notranslate"><span class="pre">extend</span></code> method instead:</p>
@@ -1392,7 +1389,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059a3aac0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4b95a30a1ec57d3838fb5c8583846be86196ddd6c11b1f44ddd8be7a290aac85.png" src="../../_images/4b95a30a1ec57d3838fb5c8583846be86196ddd6c11b1f44ddd8be7a290aac85.png" />
+<img alt="../../_images/930810c9fae47b25f430ac9ed5c4e07ce2e266bcd251583d7ffe133c3c864b38.png" src="../../_images/930810c9fae47b25f430ac9ed5c4e07ce2e266bcd251583d7ffe133c3c864b38.png" />
 </div>
 </div>
 </section>
@@ -1449,8 +1446,8 @@ net : &lt;openpnm.network.Cubic at 0x7fb059a3aac0&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1473,7 +1470,7 @@ net : &lt;openpnm.network.Cubic at 0x7fb059a3aac0&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

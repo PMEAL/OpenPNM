@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Managing Clustered Networks &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Managing Clustered Networks &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../_static/clipboard.min.js"></script>
-    <script src="../../../_static/copybutton.js"></script>
-    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/networks/managing_clustered_networks';</script>
-    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Available Matrix Solvers" href="../simulations/available_matrix_solvers.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="managing-clustered-networks">
-<h1>Managing Clustered Networks<a class="headerlink" href="#managing-clustered-networks" title="Permalink to this heading">#</a></h1>
+<h1>Managing Clustered Networks<a class="headerlink" href="#managing-clustered-networks" title="Link to this heading">#</a></h1>
 <p>This tutorial will cover the common issue of a network that is “clustered”, meaning that some pores are not connected the main body of the network. This is fairly common when extracting networks from tomogram, but can occur when getting creative with networks like stitching two together. A clustered network causes problems for the numerical solvers because it leads to “singular” matrices (i.e. they cannot be solved). Below we will explain what this means, and how to fix it.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -481,11 +478,11 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b9f7c8c77264e74bcb72a7bed706d8c671eb12b279b93fa11a707030c93ef682.png" src="../../../_images/b9f7c8c77264e74bcb72a7bed706d8c671eb12b279b93fa11a707030c93ef682.png" />
+<img alt="../../../_images/93cb302fa79b2a345d8bc7d5762f75b9e15f6dd99bf3c2f0762c03ec4b237cfb.png" src="../../../_images/93cb302fa79b2a345d8bc7d5762f75b9e15f6dd99bf3c2f0762c03ec4b237cfb.png" />
 </div>
 </div>
 <section id="creating-a-clustered-network">
-<h2>Creating a Clustered Network<a class="headerlink" href="#creating-a-clustered-network" title="Permalink to this heading">#</a></h2>
+<h2>Creating a Clustered Network<a class="headerlink" href="#creating-a-clustered-network" title="Link to this heading">#</a></h2>
 <p>Now that we’ve created a network, lets <code class="docutils literal notranslate"><span class="pre">trim</span></code> some throats to create clusters of isolated pores:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -495,13 +492,13 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/8a8596386439ca6340a9134ce41e43eb5a70285d95da687a93080bdff2144983.png" src="../../../_images/8a8596386439ca6340a9134ce41e43eb5a70285d95da687a93080bdff2144983.png" />
+<img alt="../../../_images/a9cccee3c28db61549f05c842bdc0571a7f740f247a42deaf266122259ce2b5a.png" src="../../../_images/a9cccee3c28db61549f05c842bdc0571a7f740f247a42deaf266122259ce2b5a.png" />
 </div>
 </div>
 <p>Now we can have 3 total “clusters”, two small clusters at the bottom plus one large cluster which constitutes the rest of the network.</p>
 </section>
 <section id="illustrating-the-problem">
-<h2>Illustrating the Problem<a class="headerlink" href="#illustrating-the-problem" title="Permalink to this heading">#</a></h2>
+<h2>Illustrating the Problem<a class="headerlink" href="#illustrating-the-problem" title="Link to this heading">#</a></h2>
 <p>Let’s first see the problem this creates and why. This requires running (or attempting to run) a transport simulation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -540,13 +537,13 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c6e5c761fa6106e6b87271172fc928b3d52436ebdd9ffc48b35fd477f55f26b3.png" src="../../../_images/c6e5c761fa6106e6b87271172fc928b3d52436ebdd9ffc48b35fd477f55f26b3.png" />
+<img alt="../../../_images/69504b4b5f3dc5485c112571f09df6811579f8b45d205e31d65e8a56ea353e38.png" src="../../../_images/69504b4b5f3dc5485c112571f09df6811579f8b45d205e31d65e8a56ea353e38.png" />
 </div>
 </div>
 <p>Referring to the network visualization above we can see that pores 5 and 10 are connected to each other, but not to any other pores. Looking at the A matrix above we can this reflected in the pattern. We can see that on row 5 there is an entry in the diagonal (5, 5) and a second entry at column 10 (5, 10). Now looking at row 10 we see an entry on the diagonal (10, 10) and a entry at column 5 (10, 5). These off-diagonal entries represent the conductance values between pores 5 and 10 (and between 10 and 5). The key point to note is that NO OTHER entries are present on either row. This means that the mass balance equations for pores 5 and 10 are not coupled to the rest of the equations. Another way to say is that pores 5 and 10 form their own independent matrix which can be solved in isolation since they don’t exchange mass with any of the other pores…however, we can’t solve this ‘mini-system’ because we have not specified any boundary conditions for it.</p>
 </section>
 <section id="fixing-clustered-networks">
-<h2>Fixing Clustered Networks<a class="headerlink" href="#fixing-clustered-networks" title="Permalink to this heading">#</a></h2>
+<h2>Fixing Clustered Networks<a class="headerlink" href="#fixing-clustered-networks" title="Link to this heading">#</a></h2>
 <p>This is easy to see by eye, but we need to tell OpenPNM to find them so we can begin to fix the problem. In version 3 we added many new pore-scale models to the <code class="docutils literal notranslate"><span class="pre">models.network</span></code> libary, among them are <code class="docutils literal notranslate"><span class="pre">cluster_number</span></code> and <code class="docutils literal notranslate"><span class="pre">cluster_size</span></code>.  Let’s add these two models to the network and see what we get:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -560,7 +557,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f35c4f2c540&gt;
+net : &lt;openpnm.network.Demo at 0x7f0b9cdf6ed0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -639,7 +636,7 @@ net : &lt;openpnm.network.Demo at 0x7f35c4f2c540&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5c68e10a8f29792dca77a404d45c6aad670cb50867f94fc46e44086ed28993d7.png" src="../../../_images/5c68e10a8f29792dca77a404d45c6aad670cb50867f94fc46e44086ed28993d7.png" />
+<img alt="../../../_images/070497ea7abadc49bebd3d8391b93a247af35ff36ac1f67b44d92ee6c3edc9d9.png" src="../../../_images/070497ea7abadc49bebd3d8391b93a247af35ff36ac1f67b44d92ee6c3edc9d9.png" />
 </div>
 </div>
 <p>Now we can see only a single cluster.  Without even re-running the pore-scale models we can see that the pores with a cluster number other than 0 have been removed:</p>
@@ -669,9 +666,9 @@ net : &lt;openpnm.network.Demo at 0x7f35c4f2c540&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[200000.         200000.         200000.         200000.
- 200000.         158408.64191269 162613.38469494 173437.04000252
- 117593.0979589  130628.0269018  134213.55315931 102395.82735162
- 104668.79590209 108840.3111041  108910.4968744  105846.09719925
+ 200000.         135747.6746713  154021.60194544 148409.18420323
+ 127376.05045363 128131.02048412 133570.5868465  100378.5400881
+ 106459.20729653 119359.47573739 123196.99575746 125778.22131445
  100000.         100000.         100000.         100000.
  100000.        ]
 </pre></div>
@@ -690,12 +687,12 @@ net : &lt;openpnm.network.Demo at 0x7f35c4f2c540&gt;
   color_by = np.array(color_by, dtype=np.float16)
 </pre></div>
 </div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[11:49:38] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> nans or infs found in color_by array, setting to <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>                            <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_plottools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py#357" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">357</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[02:18:55] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> nans or infs found in color_by array, setting to <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>                            <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_plottools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py#357" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">357</span></a>
 </pre>
-</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f357f424280&gt;
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f0b974f35e0&gt;
 </pre></div>
 </div>
-<img alt="../../../_images/995a9be16a16e1486ac762dead063eef049f411d082a22eab36e03410620d2e6.png" src="../../../_images/995a9be16a16e1486ac762dead063eef049f411d082a22eab36e03410620d2e6.png" />
+<img alt="../../../_images/676103812d3043f1b581f0dcd8b0544331c1df2d1309ea2ffa24d1cf8b85c681.png" src="../../../_images/676103812d3043f1b581f0dcd8b0544331c1df2d1309ea2ffa24d1cf8b85c681.png" />
 </div>
 </div>
 </section>
@@ -739,8 +736,8 @@ net : &lt;openpnm.network.Demo at 0x7f35c4f2c540&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -763,7 +760,7 @@ net : &lt;openpnm.network.Demo at 0x7f35c4f2c540&gt;
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>

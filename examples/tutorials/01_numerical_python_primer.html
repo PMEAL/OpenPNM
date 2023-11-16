@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 
 
@@ -7,9 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Numerical Python Primer &#8212; OpenPNM 3.3.0.dev2 documentation</title>
+    <title>Numerical Python Primer &#8212; OpenPNM 3.3.0.dev4 documentation</title>
   
   
   
@@ -19,39 +18,36 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
-    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/01_numerical_python_primer';</script>
-    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Generating Networks and Quick Visualization" href="02_network_generation_and_visualization.html" />
@@ -126,13 +122,14 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -462,7 +459,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="numerical-python-primer">
-<h1>Numerical Python Primer<a class="headerlink" href="#numerical-python-primer" title="Permalink to this heading">#</a></h1>
+<h1>Numerical Python Primer<a class="headerlink" href="#numerical-python-primer" title="Link to this heading">#</a></h1>
 <p>OpenPNM uses two very common python data structures, so it’s best to get comfortable with them right away.  In this example we’ll cover:</p>
 <p>Topics Covered</p>
 <ul class="simple">
@@ -472,7 +469,7 @@ document.write(`
 <li><p>Subclassing a <code class="docutils literal notranslate"><span class="pre">dict</span></code></p></li>
 </ul>
 <section id="python-lists-flexible-but-slow">
-<h2>Python Lists: Flexible but Slow<a class="headerlink" href="#python-lists-flexible-but-slow" title="Permalink to this heading">#</a></h2>
+<h2>Python Lists: Flexible but Slow<a class="headerlink" href="#python-lists-flexible-but-slow" title="Link to this heading">#</a></h2>
 <p>First lets quickly look at Python’s version of an <em>array</em>, which is called a <code class="docutils literal notranslate"><span class="pre">list</span></code>.  It is indicated by square brackets:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -594,7 +591,7 @@ document.write(`
 <p>For a more detailed introduction to <code class="docutils literal notranslate"><span class="pre">list</span></code>s there are many resources on the internet, such as the <a class="reference external" href="https://docs.python.org/3/tutorial/datastructures.html">official docs</a> and other tutorials like <a class="reference external" href="https://realpython.com/python-lists-tuples/">this one</a></p>
 </section>
 <section id="numpy-ndarray-optimized-for-numerics">
-<h2>Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>: Optimized for Numerics<a class="headerlink" href="#numpy-ndarray-optimized-for-numerics" title="Permalink to this heading">#</a></h2>
+<h2>Numpy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>: Optimized for Numerics<a class="headerlink" href="#numpy-ndarray-optimized-for-numerics" title="Link to this heading">#</a></h2>
 <p>Given the above noted limitations of python for math, it is natural to wonder why use python for scientific work. The answer to this question is Numpy. Numpy has been around almost as long as python, and it is used almost exclusively in scientific python applications because as discussed above the native <code class="docutils literal notranslate"><span class="pre">list</span></code> is not very fast. Numpy arrays, or <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s, on the other hand are actually “C” arrays behind the scenes so are very fast. The downside is that you must learn a ‘mini-language’ to use them. The following few code blocks illustrate this.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -699,7 +696,7 @@ document.write(`
 </div>
 </div>
 <section id="vectorization">
-<h3>Vectorization<a class="headerlink" href="#vectorization" title="Permalink to this heading">#</a></h3>
+<h3>Vectorization<a class="headerlink" href="#vectorization" title="Link to this heading">#</a></h3>
 <p>And of course, math makes sense to an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> since <em>all</em> the elements are assured to be numbers.  This means that an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> can be multiplied by 2 or by another array (of the same length). This is called vectorization, since the array are operated on elementwise as you would do when adding two vectors. The alternative would be matrix operations, which are possible but are not the default behavior (unlike in Matlab where all operations are assumed to be matrix operations).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -739,7 +736,7 @@ document.write(`
 </div>
 </section>
 <section id="methods-versus-functions">
-<h3>Methods versus Functions<a class="headerlink" href="#methods-versus-functions" title="Permalink to this heading">#</a></h3>
+<h3>Methods versus Functions<a class="headerlink" href="#methods-versus-functions" title="Link to this heading">#</a></h3>
 <p>One of the tricks when first learning numpy is recognizing the difference (of lack thereof) between the methods attached to numpy objects, and the functions offered at the top level of the numpy package.  For instance, consider finding the sum of the following array:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -778,7 +775,7 @@ document.write(`
 </section>
 </section>
 <section id="dictionaries-holding-things-together">
-<h2>Dictionaries: Holding Things Together<a class="headerlink" href="#dictionaries-holding-things-together" title="Permalink to this heading">#</a></h2>
+<h2>Dictionaries: Holding Things Together<a class="headerlink" href="#dictionaries-holding-things-together" title="Link to this heading">#</a></h2>
 <p>The last piece of the puzzle is Python’s built-in <code class="docutils literal notranslate"><span class="pre">dict</span></code> which is much like a list, in the sense that it can act as a container for any datatype, but items are addressed by name instead of index number.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -880,7 +877,7 @@ document.write(`
 <p>For a more detailed overview of using <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, there are many internet tutorials such as <a class="reference external" href="https://python.land/python-data-types/dictionaries">this one</a>, <a class="reference external" href="https://towardsdatascience.com/a-complete-guide-to-dictionaries-in-python-5c3f4c132569">this one</a>, or <a class="reference external" href="https://realpython.com/python-dicts/">this one</a>.</p>
 </div>
 <section id="subclassing-dict">
-<h3>Subclassing <code class="docutils literal notranslate"><span class="pre">dict</span></code><a class="headerlink" href="#subclassing-dict" title="Permalink to this heading">#</a></h3>
+<h3>Subclassing <code class="docutils literal notranslate"><span class="pre">dict</span></code><a class="headerlink" href="#subclassing-dict" title="Link to this heading">#</a></h3>
 <p>This is may seem like an intimidating concept at first, but it’s actually beautifully simple once you get a feel for how it works. It’s also relevant to learning OpenPNM since it uses <code class="docutils literal notranslate"><span class="pre">dict</span></code>s extensively, and these are often subclassed to augment their functionality.  Subclassing means “taking the basic functionality of the <code class="docutils literal notranslate"><span class="pre">dict</span></code>, then adding to and/or changing it”. For a deep dive into the process of subclassing a <code class="docutils literal notranslate"><span class="pre">dict</span></code> refer to <a class="reference external" href="https://realpython.com/inherit-python-dict/">this tutorial</a>, but here we’ll give a more basic introduction.</p>
 <p>To illustrate the idea of subclasses, as it pertains to OpenPNM, let’s change how the reading and writing of items works. Whenever you use the square brackets <code class="docutils literal notranslate"><span class="pre">[</span> <span class="pre">]</span></code> to index into a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, this <em>actually</em> calls the <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> methods.  The double underscores indicate that these are intrinsic Python methods which the user should not call directly (sometimes called <a class="reference external" href="https://towardsdatascience.com/magic-methods-in-python-by-example-16b6826cae5c">magic methods</a>), but they do the bulk of the work.  So let’s try it out by creating a class that tells us what is going on each time we read and write something:</p>
 <div class="cell docutils container">
@@ -1106,8 +1103,8 @@ dict_keys([&#39;pore.test&#39;])
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1130,7 +1127,7 @@ dict_keys([&#39;pore.test&#39;])
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>
