@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assigning Geometric Properties &#8212; OpenPNM 3.3.0.dev4 documentation</title>
+    <title>Assigning Geometric Properties &#8212; OpenPNM 3.3.0.dev5 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../_static/documentation_options.js?v=d6ef320a"></script>
+    <script src="../../_static/documentation_options.js?v=7297b613"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev4 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -492,7 +492,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f636b1ae0c0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f805cfac400&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -931,40 +931,40 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f636d546b90&gt;,
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f8019676b90&gt;,
                    &#39;props&#39;: [&#39;pore.max_size&#39;, &#39;pore.seed&#39;]},
  &#39;pore.max_size&#39;: {&#39;iters&#39;: 10,
-                   &#39;model&#39;: &lt;function largest_sphere at 0x7f636b2ab2e0&gt;},
+                   &#39;model&#39;: &lt;function largest_sphere at 0x7f80173eb2e0&gt;},
  &#39;pore.seed&#39;: {&#39;element&#39;: &#39;pore&#39;,
-               &#39;model&#39;: &lt;function random at 0x7f636d546560&gt;,
+               &#39;model&#39;: &lt;function random at 0x7f8019676560&gt;,
                &#39;num_range&#39;: [0.2, 0.7],
                &#39;seed&#39;: None},
- &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f636b2ab6d0&gt;,
+ &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f80173eb6d0&gt;,
                  &#39;pore_diameter&#39;: &#39;pore.diameter&#39;},
- &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f636b2c0430&gt;,
+ &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f8017400430&gt;,
                                  &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.diameter&#39;: {&#39;factor&#39;: 0.5,
-                     &#39;model&#39;: &lt;function scaled at 0x7f636d546c20&gt;,
+                     &#39;model&#39;: &lt;function scaled at 0x7f8019676c20&gt;,
                      &#39;prop&#39;: &#39;throat.max_size&#39;},
- &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f636b302290&gt;,
+ &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f8017446290&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f636b3009d0&gt;,
+ &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f80174449d0&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f636b2c0e50&gt;,
+ &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f8017400e50&gt;,
                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f636b2c2050&gt;,
+ &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f8017402050&gt;,
                         &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                         &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.max_size&#39;: {&#39;mode&#39;: &#39;min&#39;,
-                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f636d546d40&gt;,
+                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f8019676d40&gt;,
                      &#39;prop&#39;: &#39;pore.diameter&#39;},
- &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f636b2c1e10&gt;,
+ &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f8017401e10&gt;,
                          &#39;throat_diameter&#39;: &#39;throat.diameter&#39;,
                          &#39;throat_length&#39;: &#39;throat.length&#39;},
- &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f636d546830&gt;,
+ &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f8019676830&gt;,
                    &#39;props&#39;: [&#39;throat.total_volume&#39;, &#39;throat.lens_volume&#39;]}}
 </pre></div>
 </div>
@@ -981,7 +981,7 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f6368e731a0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f8014fb9d50&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
