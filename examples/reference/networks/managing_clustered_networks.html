@@ -478,7 +478,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/93cb302fa79b2a345d8bc7d5762f75b9e15f6dd99bf3c2f0762c03ec4b237cfb.png" src="../../../_images/93cb302fa79b2a345d8bc7d5762f75b9e15f6dd99bf3c2f0762c03ec4b237cfb.png" />
+<img alt="../../../_images/afa5fb16559333069ecfd90b6a072a9ddf4f8dc511384fe14e9237fcefe1340b.png" src="../../../_images/afa5fb16559333069ecfd90b6a072a9ddf4f8dc511384fe14e9237fcefe1340b.png" />
 </div>
 </div>
 <section id="creating-a-clustered-network">
@@ -492,7 +492,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/a9cccee3c28db61549f05c842bdc0571a7f740f247a42deaf266122259ce2b5a.png" src="../../../_images/a9cccee3c28db61549f05c842bdc0571a7f740f247a42deaf266122259ce2b5a.png" />
+<img alt="../../../_images/301c59e93c706f003b87a2db924b3a2912e7ed9eaa0ab0ba07148cc98303bb44.png" src="../../../_images/301c59e93c706f003b87a2db924b3a2912e7ed9eaa0ab0ba07148cc98303bb44.png" />
 </div>
 </div>
 <p>Now we can have 3 total “clusters”, two small clusters at the bottom plus one large cluster which constitutes the rest of the network.</p>
@@ -537,7 +537,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/69504b4b5f3dc5485c112571f09df6811579f8b45d205e31d65e8a56ea353e38.png" src="../../../_images/69504b4b5f3dc5485c112571f09df6811579f8b45d205e31d65e8a56ea353e38.png" />
+<img alt="../../../_images/ff014bbf02d0bb997d7491a8dec8f5fac4f0a1739dab06141e020a949cce9cf5.png" src="../../../_images/ff014bbf02d0bb997d7491a8dec8f5fac4f0a1739dab06141e020a949cce9cf5.png" />
 </div>
 </div>
 <p>Referring to the network visualization above we can see that pores 5 and 10 are connected to each other, but not to any other pores. Looking at the A matrix above we can this reflected in the pattern. We can see that on row 5 there is an entry in the diagonal (5, 5) and a second entry at column 10 (5, 10). Now looking at row 10 we see an entry on the diagonal (10, 10) and a entry at column 5 (10, 5). These off-diagonal entries represent the conductance values between pores 5 and 10 (and between 10 and 5). The key point to note is that NO OTHER entries are present on either row. This means that the mass balance equations for pores 5 and 10 are not coupled to the rest of the equations. Another way to say is that pores 5 and 10 form their own independent matrix which can be solved in isolation since they don’t exchange mass with any of the other pores…however, we can’t solve this ‘mini-system’ because we have not specified any boundary conditions for it.</p>
@@ -557,7 +557,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f0b9cdf6ed0&gt;
+net : &lt;openpnm.network.Demo at 0x7f22ddd0bce0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -636,7 +636,7 @@ net : &lt;openpnm.network.Demo at 0x7f0b9cdf6ed0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/070497ea7abadc49bebd3d8391b93a247af35ff36ac1f67b44d92ee6c3edc9d9.png" src="../../../_images/070497ea7abadc49bebd3d8391b93a247af35ff36ac1f67b44d92ee6c3edc9d9.png" />
+<img alt="../../../_images/9232d9b2b6758e6febb92fe6430dd7d013ef03722e7e7712e9b973ae69bc1031.png" src="../../../_images/9232d9b2b6758e6febb92fe6430dd7d013ef03722e7e7712e9b973ae69bc1031.png" />
 </div>
 </div>
 <p>Now we can see only a single cluster.  Without even re-running the pore-scale models we can see that the pores with a cluster number other than 0 have been removed:</p>
@@ -666,9 +666,9 @@ net : &lt;openpnm.network.Demo at 0x7f0b9cdf6ed0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[200000.         200000.         200000.         200000.
- 200000.         135747.6746713  154021.60194544 148409.18420323
- 127376.05045363 128131.02048412 133570.5868465  100378.5400881
- 106459.20729653 119359.47573739 123196.99575746 125778.22131445
+ 200000.         194114.34368512 190500.06995692 177365.40812988
+ 159577.43431677 151420.16629351 136446.91013631 100553.50139901
+ 100844.15224451 117955.31559267 119993.91301133 124351.04542477
  100000.         100000.         100000.         100000.
  100000.        ]
 </pre></div>
@@ -687,12 +687,12 @@ net : &lt;openpnm.network.Demo at 0x7f0b9cdf6ed0&gt;
   color_by = np.array(color_by, dtype=np.float16)
 </pre></div>
 </div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[02:18:55] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> nans or infs found in color_by array, setting to <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>                            <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_plottools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py#357" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">357</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[09:44:35] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> nans or infs found in color_by array, setting to <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>                            <a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_plottools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/openpnm/visualization/_plottools.py#357" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">357</span></a>
 </pre>
-</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f0b974f35e0&gt;
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f2287d42ad0&gt;
 </pre></div>
 </div>
-<img alt="../../../_images/676103812d3043f1b581f0dcd8b0544331c1df2d1309ea2ffa24d1cf8b85c681.png" src="../../../_images/676103812d3043f1b581f0dcd8b0544331c1df2d1309ea2ffa24d1cf8b85c681.png" />
+<img alt="../../../_images/6f5981f718844a0fa5eb6cfa7d691c43160de91357a31bf5ba108a6d371b32e3.png" src="../../../_images/6f5981f718844a0fa5eb6cfa7d691c43160de91357a31bf5ba108a6d371b32e3.png" />
 </div>
 </div>
 </section>
