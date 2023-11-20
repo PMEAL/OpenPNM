@@ -65,7 +65,7 @@ def voronoi_delaunay_dual(
         points=points,
         shape=shape,
         reflect=reflect,
-        f=1,
+        f=f,
     )
 
     # Generate mask to remove any dims with all 0's
