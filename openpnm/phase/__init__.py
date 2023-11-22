@@ -6,6 +6,7 @@ This module contains classes generating and handling thermophysical properties
 
 """
 
+
 def _fetch_chemical_props(a):
     temp = {}
     k = 1.380649e-23  # Boltzmann constant
