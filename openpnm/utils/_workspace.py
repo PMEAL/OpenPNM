@@ -1,6 +1,7 @@
 import logging
 import pickle
 import re
+import sys
 from datetime import datetime
 from uuid import uuid4
 
@@ -39,7 +40,20 @@ class WorkspaceSettings(SettingsAttr):
                 may be unable to continue running.
         ======= ==============================================================
     """
-    default_solver = 'PardisoSpsolve'
+    # Pardiso requires MKL, which is not available on new Apple chips
+    if sys.platform == 'darwin':
+        default_solver = 'ScipySpsolve'
+    else:
+        try:
+            import pypardiso
+            default_solver = 'PardisoSpsolve'
+        except ImportError:
+            default_solver = 'ScipySpsolve'
+            msg = (
+                'PARDISO solver not installed, run `pip install pypardiso`. '
+                'Otherwise, simulations will be slow. Apple M chips not supported.'
+            )
+            logger.error(msg)
 
     @property
     def loglevel(self):

@@ -46,6 +46,11 @@ jobs:
             -r requirements.txt \
             -r requirements/tests.txt
 
+      - name: Install pypardiso on non-macOS
+        if: (matrix.os != 'macos-latest')
+        run: |
+          pip install pypardiso
+
       - name: Disable numba JIT for codecov to include jitted methods
         if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
         run: |

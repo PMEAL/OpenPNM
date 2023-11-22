@@ -150,7 +150,7 @@ def parse_points(shape, points, reflect=False, f=1):
 
     """
     # Deal with input arguments
-    shape = np.array(shape, dtype=int)
+    shape = np.array(shape, dtype=float)
     if isinstance(points, int):
         points = generate_base_points(num_points=points,
                                       domain_size=shape,

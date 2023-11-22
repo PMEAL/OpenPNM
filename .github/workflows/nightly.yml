@@ -49,6 +49,11 @@ jobs:
             -r requirements.txt \
             -r requirements/tests.txt
 
+      - name: Install pypardiso on non-macOS
+        if: (matrix.os != 'macos-latest')
+        run: |
+          pip install pypardiso            
+
       - name: Running tests
         run:
           pytest . --color=yes

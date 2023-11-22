@@ -36,6 +36,7 @@ jobs:
           pip install \
             -r requirements.txt \
             -r requirements/tests.txt
+          pip install pypardiso
 
       - name: Running tests
         run:
