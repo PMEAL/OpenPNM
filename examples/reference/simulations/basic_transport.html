@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Steady State Transport &#8212; OpenPNM 3.3.0.dev5 documentation</title>
+    <title>Steady State Transport &#8212; OpenPNM 3.3.0.dev6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7297b613"></script>
+    <script src="../../../_static/documentation_options.js?v=456f3c79"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -130,8 +130,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -382,6 +382,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/porosity.html">Predicting Porosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_permeability.html">Predicting relative permeability</a></li>
@@ -499,10 +500,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-0.99084803  0.53635087  0.45449716  0.        ]
- [ 0.53635087 -1.22259552  0.          0.68624465]
- [ 0.45449716  0.         -1.38894184  0.93444468]
- [ 0.          0.68624465  0.93444468 -1.62068933]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-0.60261618  0.30656585  0.29605033  0.        ]
+ [ 0.30656585 -0.41734961  0.          0.11078376]
+ [ 0.29605033  0.         -1.00310696  0.70705662]
+ [ 0.          0.11078376  0.70705662 -0.81784039]]
 </pre></div>
 </div>
 </div>
@@ -532,9 +533,9 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.53635087 -1.22259552  0.          0.68624465]
- [ 0.45449716  0.         -1.38894184  0.93444468]
- [ 0.          0.68624465  0.93444468 -1.62068933]]
+ [ 0.30656585 -0.41734961  0.          0.11078376]
+ [ 0.29605033  0.         -1.00310696  0.70705662]
+ [ 0.          0.11078376  0.70705662 -0.81784039]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -554,7 +555,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.53751238 1.4456635  1.17604416]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.54241766 0.78493336 0.27617512]
 </pre></div>
 </div>
 </div>
@@ -640,9 +641,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.53635087 -1.22259552  0.          0.68624465]
- [ 0.45449716  0.         -1.38894184  0.93444468]
- [ 0.          0.68624465  0.93444468 -1.62068933]]
+ [ 0.30656585 -0.41734961  0.          0.11078376]
+ [ 0.29605033  0.         -1.00310696  0.70705662]
+ [ 0.          0.11078376  0.70705662 -0.81784039]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -659,7 +660,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.53751238 1.4456635  1.17604416]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.54241766 0.78493336 0.27617512]
 </pre></div>
 </div>
 </div>

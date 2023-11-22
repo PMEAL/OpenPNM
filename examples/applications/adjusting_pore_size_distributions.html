@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.3.0.dev5 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.3.0.dev6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../_static/documentation_options.js?v=7297b613"></script>
+    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -380,6 +380,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porosity.html">Predicting Porosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="relative_permeability.html">Predicting relative permeability</a></li>
@@ -545,7 +546,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f0c6fe7e520&gt;
+net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -596,7 +597,7 @@ net : &lt;openpnm.network.Cubic at 0x7f0c6fe7e520&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/922369e405246b272d761d45de9357456f0b95eeaabe36ba37b586d7fff4301a.png" src="../../_images/922369e405246b272d761d45de9357456f0b95eeaabe36ba37b586d7fff4301a.png" />
+<img alt="../../_images/71a3dfcd1ef4f4dc8899d8461038e771019a5eb18822dc715361c8880d77cf67.png" src="../../_images/71a3dfcd1ef4f4dc8899d8461038e771019a5eb18822dc715361c8880d77cf67.png" />
 </div>
 </div>
 </section>
@@ -642,7 +643,7 @@ net : &lt;openpnm.network.Cubic at 0x7f0c6fe7e520&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/af195ac92aab3e17532ef7aa7b00a9b0fbc171c5c8a0551e3baeb664b3f3760f.png" src="../../_images/af195ac92aab3e17532ef7aa7b00a9b0fbc171c5c8a0551e3baeb664b3f3760f.png" />
+<img alt="../../_images/0bb9c8d59ab9069015aa08cb6d0fe5895182018025ffe98f9ece590376875f9c.png" src="../../_images/0bb9c8d59ab9069015aa08cb6d0fe5895182018025ffe98f9ece590376875f9c.png" />
 </div>
 </div>
 </section>
@@ -703,7 +704,7 @@ net : &lt;openpnm.network.Cubic at 0x7f0c6fe7e520&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e1b5d09ec2750d1ce5392ed823d4f28b5b42e89cf5575016c520f521ea2d3c60.png" src="../../_images/e1b5d09ec2750d1ce5392ed823d4f28b5b42e89cf5575016c520f521ea2d3c60.png" />
+<img alt="../../_images/79fcf79ae8af0e13d8ce82ab489adc0a3ce366e75c7f89bf79eb559ee44d78f0.png" src="../../_images/79fcf79ae8af0e13d8ce82ab489adc0a3ce366e75c7f89bf79eb559ee44d78f0.png" />
 </div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
@@ -727,7 +728,7 @@ net : &lt;openpnm.network.Cubic at 0x7f0c6fe7e520&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f911cb9aa13b2042b412b4460fc1f62a371981c272039a378e2b49da1591a38b.png" src="../../_images/f911cb9aa13b2042b412b4460fc1f62a371981c272039a378e2b49da1591a38b.png" />
+<img alt="../../_images/f607050df6a5eb675381f88d00ed979d7d993f7e14175fa3e29efdc70b94d5ac.png" src="../../_images/f607050df6a5eb675381f88d00ed979d7d993f7e14175fa3e29efdc70b94d5ac.png" />
 </div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
@@ -740,7 +741,7 @@ net : &lt;openpnm.network.Cubic at 0x7f0c6fe7e520&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ea257ebd7fd3c30a1612c819bf9930c24d70ddc4e7c75483334ad6f147296c4c.png" src="../../_images/ea257ebd7fd3c30a1612c819bf9930c24d70ddc4e7c75483334ad6f147296c4c.png" />
+<img alt="../../_images/78e23a25ee5575ec0b20d94d69e1a42e019c8630186ffbd71d5b568d5c0ca601.png" src="../../_images/78e23a25ee5575ec0b20d94d69e1a42e019c8630186ffbd71d5b568d5c0ca601.png" />
 </div>
 </div>
 </section>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The Workspace and Projects &#8212; OpenPNM 3.3.0.dev5 documentation</title>
+    <title>The Workspace and Projects &#8212; OpenPNM 3.3.0.dev6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7297b613"></script>
+    <script src="../../../_static/documentation_options.js?v=456f3c79"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -380,6 +380,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/porosity.html">Predicting Porosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_permeability.html">Predicting relative permeability</a></li>
@@ -508,7 +509,7 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7fe03d5e47c0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f19d52ec9a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -536,13 +537,13 @@ proj_01
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7fe03d5e47c0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f19d52ec9a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 proj_02
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Demo at 0x7fe03d64a890&gt;
+net : &lt;openpnm.network.Demo at 0x7f1a26044720&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -562,7 +563,7 @@ proj_01
 ══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Cubic at 0x7fe03d5e47c0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f19d52ec9a0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -602,7 +603,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe03d5e47c0&gt;
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
 Object Name : Object Class and ID
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-net : &lt;openpnm.network.Demo at 0x7fe03d128c70&gt;
+net : &lt;openpnm.network.Demo at 0x7f19d4e2d080&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -624,7 +625,7 @@ net : &lt;openpnm.network.Demo at 0x7fe03d128c70&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>net : &lt;openpnm.network.Demo at 0x7fe03d128c70&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>net : &lt;openpnm.network.Demo at 0x7f19d4e2d080&gt;
 </pre></div>
 </div>
 </div>

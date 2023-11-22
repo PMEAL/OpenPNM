@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Reactive Transport &#8212; OpenPNM 3.3.0.dev5 documentation</title>
+    <title>Reactive Transport &#8212; OpenPNM 3.3.0.dev6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../../_static/documentation_options.js?v=7297b613"></script>
+    <script src="../../../_static/documentation_options.js?v=456f3c79"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -130,8 +130,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -382,6 +382,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/porosity.html">Predicting Porosity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_permeability.html">Predicting relative permeability</a></li>
@@ -484,7 +485,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fd85384b650&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2d54ec8810&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -577,7 +578,7 @@ net : &lt;openpnm.network.Cubic at 0x7fd85384b650&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd85025eb60&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f2d0468efc0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -612,7 +613,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd85025eb60&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd85025eb60&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f2d0468efc0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -640,7 +641,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7fd85025eb60&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7fd89d8dd260&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f2d0468ebb0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -714,24 +715,24 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fd89d8dd260&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.61524495 -0.96787745  0.         -0.6473675   0.          0.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.67062099 -0.86153388  0.         -0.80908711  0.          0.
    0.          0.          0.        ]
- [-0.96787745  2.15664278 -0.20708598  0.         -0.98167935  0.
+ [-0.86153388  2.12905165 -0.27146033  0.         -0.99605744  0.
    0.          0.          0.        ]
- [ 0.         -0.20708598  1.18845009  0.          0.         -0.98136411
+ [ 0.         -0.27146033  0.27728641  0.          0.         -0.00582608
    0.          0.          0.        ]
- [-0.6473675   0.          0.          1.23406565 -0.53350818  0.
-  -0.05318997  0.          0.        ]
- [ 0.         -0.98167935  0.         -0.53350818  3.07598699 -0.91958706
-   0.         -0.64121239  0.        ]
- [ 0.          0.         -0.98136411  0.         -0.91958706  2.41084777
-   0.          0.         -0.50989659]
- [ 0.          0.          0.         -0.05318997  0.          0.
-   0.81457398 -0.761384    0.        ]
- [ 0.          0.          0.          0.         -0.64121239  0.
-  -0.761384    1.86007103 -0.45747463]
- [ 0.          0.          0.          0.          0.         -0.50989659
-   0.         -0.45747463  0.96737122]]
+ [-0.80908711  0.          0.          0.89986288 -0.01918518  0.
+  -0.07159059  0.          0.        ]
+ [ 0.         -0.99605744  0.         -0.01918518  2.0517292  -0.8736543
+   0.         -0.16283229  0.        ]
+ [ 0.          0.         -0.00582608  0.         -0.8736543   1.5878359
+   0.          0.         -0.70835553]
+ [ 0.          0.          0.         -0.07159059  0.          0.
+   0.43401788 -0.3624273   0.        ]
+ [ 0.          0.          0.          0.         -0.16283229  0.
+  -0.3624273   1.44344603 -0.91818644]
+ [ 0.          0.          0.          0.          0.         -0.70835553
+   0.         -0.91818644  1.62654197]]
 </pre></div>
 </div>
 </div>

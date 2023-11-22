@@ -1,0 +1,808 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Import an Extracted Network and Predict Transport Properties &#8212; OpenPNM 3.3.0.dev6 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/applications/network_extraction';</script>
+    <script src="../../_static/js/custom.js?v=d9a9f20e"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Predicting Porosity" href="porosity.html" />
+    <link rel="prev" title="Calibrating a Network Using Mercury Intrusion Data" href="mercury_intrusion.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../modules/index.html">
+                        Module Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+                    Issue Tracker
+                  </a>
+                </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+                    Get Help
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../modules/index.html">
+                        Module Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../_examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+                    Issue Tracker
+                  </a>
+                </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+                    Get Help
+                  </a>
+                </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_numerical_python_primer.html">Numerical Python Primer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_network_generation_and_visualization.html">Generating Networks and Quick Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_data_and_topology_storage.html">Storage of Network Data and Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_graph_queries_and_manipulation.html">Network Representation, Queries, and Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_defining_geometry.html">Assigning Geometric Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/06_labels_and_domains.html">Using Labels and Defining Domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/07_phases_and_mixtures.html">Creating Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_simulating_transport.html">Simulating Single Phase Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/09_simulating_invasion.html">Simulating Invasion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_visualization_options.html">Visualization options</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../_examples/applications.html">Applications</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="absolute_permeability.html">Predicting absolute permeability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
+<li class="toctree-l2"><a class="reference internal" href="effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="formation_factor.html">Predicting Formation Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Import an Extracted Network and Predict Transport Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="porosity.html">Predicting Porosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="relative_permeability.html">Predicting relative permeability</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/reference.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/architecture/pore_scale_models.html">Pore-Scale Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">Settings Attribute Machinery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/architecture/workspace_and_projects.html">The Workspace and Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/networks/managing_clustered_networks.html">Managing Clustered Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/available_matrix_solvers.html">Available Matrix Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/basic_transport.html">Steady State Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/explanation_of_units.html">Explanation of Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/reactive_transport.html">Reactive Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">Size Factors and Transport Conductance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/simulations/transient_transport.html">Transient Transport</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../_examples/index.html" class="nav-link">Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../_examples/applications.html" class="nav-link">Applications</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Import an...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="import-an-extracted-network-and-predict-transport-properties">
+<h1>Import an Extracted Network and Predict Transport Properties<a class="headerlink" href="#import-an-extracted-network-and-predict-transport-properties" title="Link to this heading">#</a></h1>
+<p>This example illustrates the process of both extracting a pore network from an image (that has already been binarized), then opening this image with OpenPNM to perform some simulations. The results of the simulations are compared to the known transport properties of the image and good agreement is obtained.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">os</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;porespy&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Load a small image of Berea sandstone:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+            <span class="s1">&#39;../../tests/fixtures/berea_100_to_300.npz&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;im&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note meta data for this image, which we’ll use to compare the network predictions too later:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="mf">5.345e-6</span><span class="p">,</span>
+    <span class="s1">&#39;porosity&#39;</span><span class="p">:</span> <span class="mf">19.6</span><span class="p">,</span>
+    <span class="s1">&#39;permeability&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;Kx&#39;</span><span class="p">:</span> <span class="mi">1360</span><span class="p">,</span>
+        <span class="s1">&#39;Ky&#39;</span><span class="p">:</span> <span class="mi">1304</span><span class="p">,</span>
+        <span class="s1">&#39;Kz&#39;</span><span class="p">:</span> <span class="mi">1193</span><span class="p">,</span>
+        <span class="s1">&#39;Kave&#39;</span><span class="p">:</span> <span class="mi">1286</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;formation factor&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;Fx&#39;</span><span class="p">:</span> <span class="mf">23.12</span><span class="p">,</span>
+        <span class="s1">&#39;Fy&#39;</span><span class="p">:</span> <span class="mf">23.99</span><span class="p">,</span>
+        <span class="s1">&#39;Fz&#39;</span><span class="p">:</span> <span class="mf">25.22</span><span class="p">,</span>
+        <span class="s1">&#39;Fave&#39;</span><span class="p">:</span> <span class="mf">24.08</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Perform extraction using <code class="docutils literal notranslate"><span class="pre">snow2</span></code> from <code class="docutils literal notranslate"><span class="pre">PoreSpy</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span>
+    <span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">voxel_size</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">],</span>
+    <span class="n">boundary_width</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> 
+    <span class="n">accuracy</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> 
+    <span class="n">parallelization</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>For more details on the use of the <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function see <a class="reference external" href="https://porespy.org/examples/networks/reference/snow2.html">this example</a>.  The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object with results attaches as attributes.  We can see these attributes if we print it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">snow</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Results of snow2 generated at Wed Nov 22 17:21:54 2023
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+network                   Dictionary with 26 items
+regions                   Array of size (206, 200, 200)
+phases                    Array of size (206, 200, 200)
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can open the network in OpenPNM easily as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">network_from_porespy</span><span class="p">(</span><span class="n">snow</span><span class="o">.</span><span class="n">network</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It’s usually helpful to inspect the network by printing it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Network at 0x183be2404f0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  throat.conns                                                  2510 / 2510
+  3  pore.coords                                                   1420 / 1420
+  4  pore.region_label                                             1420 / 1420
+  5  pore.phase                                                    1420 / 1420
+  6  throat.phases                                                 2510 / 2510
+  7  pore.region_volume                                            1420 / 1420
+  8  pore.equivalent_diameter                                      1420 / 1420
+  9  pore.local_peak                                               1420 / 1420
+ 10  pore.global_peak                                              1420 / 1420
+ 11  pore.geometric_centroid                                       1420 / 1420
+ 12  throat.global_peak                                            2510 / 2510
+ 13  pore.inscribed_diameter                                       1420 / 1420
+ 14  pore.extended_diameter                                        1420 / 1420
+ 15  throat.inscribed_diameter                                     2510 / 2510
+ 16  throat.total_length                                           2510 / 2510
+ 17  throat.direct_length                                          2510 / 2510
+ 18  throat.perimeter                                              2510 / 2510
+ 19  pore.volume                                                   1420 / 1420
+ 20  pore.surface_area                                             1420 / 1420
+ 21  throat.cross_sectional_area                                   2510 / 2510
+ 22  throat.equivalent_diameter                                    2510 / 2510
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.all                                                             1420
+  3  throat.all                                                           2510
+  4  pore.boundary                                                         180
+  5  pore.xmin                                                             103
+  6  pore.xmax                                                              77
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>When we update the SNOW algorithm to <code class="docutils literal notranslate"><span class="pre">snow2</span></code> we removed many of the opinionated decision that the original version made.  For instance, <code class="docutils literal notranslate"><span class="pre">snow2</span></code> does not pick which diameter should be the <em>definitive</em> one, so this decision needs to be made by the user once they can the network into OpenPNM. This is illustrated below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.equivalent_diameter&#39;</span><span class="p">]</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.inscribed_diameter&#39;</span><span class="p">]</span>
+<span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.spacing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.total_length&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The user also needs to decide which ‘shape’ to assume for the pores and throats, which impacts how the transport conductance values are computed.  Here we use the <code class="docutils literal notranslate"><span class="pre">pyramids_and_cuboid</span></code> models:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_size_factors&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">hydraulic_size_factors</span><span class="o">.</span><span class="n">pyramids_and_cuboids</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diffusive_size_factors&#39;</span><span class="p">,</span>
+             <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">diffusive_size_factors</span><span class="o">.</span><span class="n">pyramids_and_cuboids</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>More information about the “size factors” can be found in <a class="reference external" href="https://openpnm.org/examples/reference/simulations/size_factors_and_transport_conductance.html">this example</a>.</p>
+<p>One issue that can happen in extracted networks is that some pores can be isolated from the remainder of the network.  The problem with ‘disconnected networks’ is discussed in detail <a class="reference external" href="https://openpnm.org/examples/reference/networks/managing_clustered_networks.html">here</a>.  The end result is that we need to first check the network health, then deal with any problems:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">check_network_health</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Key                                 Value
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+headless_throats                    []
+looped_throats                      []
+isolated_pores                      [456, 574, 783, 1023, 1115, 1158, 1179]
+disconnected_pores                  [227, 246, 247, 319, 362, 456, 574, 783, 1023, 1115, 1158, 1179, 1181, 1189, 1204, 1345, 1346, 1347]
+duplicate_throats                   []
+bidirectional_throats               []
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>The above output shows there are both ‘single’ isolated pores as well as ‘groups’ of pores that are disconnected.  These all need to be “trimmed”.  We can use the list provided by <code class="docutils literal notranslate"><span class="pre">h['disconnected_pores']</span></code> directly in the <code class="docutils literal notranslate"><span class="pre">trim</span></code> function:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;disconnected_pores&#39;</span><span class="p">])</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">check_network_health</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Key                                 Value
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+headless_throats                    []
+looped_throats                      []
+isolated_pores                      []
+disconnected_pores                  []
+duplicate_throats                   []
+bidirectional_throats               []
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we are ready to perform some simulations, so let’s create a phase object to compute the thermophysical properties and transport conductances:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gas</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<span class="n">gas</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gas</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gas</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span><span class="p">)</span>
+<span class="n">gas</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[17:21:55] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py:480</span>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         <span style="color: #008000; text-decoration-color: #008000">'throat.surface_tension'</span>                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
+</pre>
+</div></div>
+</div>
+<p>Finally we can do a Fickian diffusion simulation to find the formation factor:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">gas</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmax&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dC</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">][</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">Deff</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="n">A</span><span class="p">)</span><span class="o">/</span><span class="n">dC</span>
+<span class="n">F</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">Deff</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Formation factor of the extracted network is </span><span class="si">{</span><span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The compares to a value of </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;formation factor&#39;</span><span class="p">][</span><span class="s1">&#39;Fx&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> from DNS&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;formation factor&#39;</span><span class="p">][</span><span class="s1">&#39;Fx&#39;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.09</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Formation factor of the extracted network is 25.098142684548733
+The compares to a value of 23.12 from DNS
+</pre></div>
+</div>
+</div>
+</div>
+<p>And a Stokes flow simulation to find Permeability coefficient:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sf</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">gas</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmax&#39;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">sf</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dP</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">][</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="n">A</span><span class="p">)</span><span class="o">/</span><span class="n">dP</span><span class="o">*</span><span class="mf">1e12</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Permeability coefficient is </span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> Darcy&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The compares to a value of </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;permeability&#39;</span><span class="p">][</span><span class="s1">&#39;Kx&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span><span class="si">}</span><span class="s2"> from DNS&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;permeability&#39;</span><span class="p">][</span><span class="s1">&#39;Kx&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Permeability coefficient is 1.3181940680110902 Darcy
+The compares to a value of 1.36 from DNS
+</pre></div>
+</div>
+</div>
+</div>
+<p>Both of the above simulations agree quite well with the known values for this sample.  This is not always the case because network extraction is not always perfect. One problem that can occur is that the pore sizes are much too small due to anisotropic materials.  In other cases the pores are too large and overlap each other too much.  Basically, the user really need to double, then triple check that their extraction is ‘sane’.  It is almost mandatory to compare the extraction to some known values as we have done above.  It’s also a good idea visualize the network in Paraview, as explained <a class="reference external" href="https://openpnm.org/examples/tutorials/10_visualization_options.html">here</a>, which can reveal problems.</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, PMEAL.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

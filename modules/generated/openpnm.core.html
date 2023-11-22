@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>core &#8212; OpenPNM 3.3.0.dev5 documentation</title>
+    <title>core &#8212; OpenPNM 3.3.0.dev6 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script src="../../_static/documentation_options.js?v=7297b613"></script>
+    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev5 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -1983,38 +1983,12 @@ document.write(`
 <span id="core"></span><h1>core<a class="headerlink" href="#module-openpnm.core" title="Link to this heading">#</a></h1>
 <section id="main-classes-of-openpnm">
 <h2>Main classes of OpenPNM<a class="headerlink" href="#main-classes-of-openpnm" title="Link to this heading">#</a></h2>
-<p>This module contains the main classes from which all other major objects
-(Network, Geometry, Physics, Phase, and Algorithm) derive.</p>
+<p>This module contains the main classes from which all other major objects derive.</p>
 <section id="the-base-class">
 <h3>The Base class<a class="headerlink" href="#the-base-class" title="Link to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">Base</span></code> class is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> that has added methods for indexing the pores
 and throats, applying labels, and managing the stored data. All OpenPNM
 object inherit from <code class="docutils literal notranslate"><span class="pre">Base</span></code> so possess these methods.</p>
-<hr class="docutils" />
-<p><code class="docutils literal notranslate"><span class="pre">Base</span></code> objects, Networks, Phase, Algorithms, are assigned to all locations
-in the domain.  The <code class="docutils literal notranslate"><span class="pre">Subdomain</span></code> class is a direct descendent of <code class="docutils literal notranslate"><span class="pre">Base</span></code>
-which has the added ability to be assigned to a subset of the domain.  Objects
-that inherit from <code class="docutils literal notranslate"><span class="pre">Subdomain</span></code> are Geomery and Physics.</p>
-<p>Boss objects refer to the Full Domain object it is associated with.  For
-Geomery objects this is the Network, and for Physics objects this is the
-Phase that was specified during instantiation.</p>
-<p>The associations between an object and it’s boss are tracked using labels in
-the boss.  So a Geometry object named <code class="docutils literal notranslate"><span class="pre">geom1</span></code> will put labels ‘pore.geom1’
-and ‘throat.geom1’ into the Network dictionary, with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
-where <code class="docutils literal notranslate"><span class="pre">geom1</span></code> applies.</p>
-</section>
-<section id="the-modelsmixin-class">
-<h3>The ModelsMixin class<a class="headerlink" href="#the-modelsmixin-class" title="Link to this heading">#</a></h3>
-<p><a class="reference external" href="https://en.wikipedia.org/wiki/Mixin">Mixins</a> are a useful feature of Python
-that allow a few methods to be added to a class that needs them. In OpenPNM,
-the ability to store and run ‘pore-scale’ models is not needed by some objects
-(Network, Algorithms), but is essential to Geometry, Physics, and Phase
-objects.</p>
-<p>In addition to these methods, the <code class="docutils literal notranslate"><span class="pre">ModelsMixin</span></code> also adds a <code class="docutils literal notranslate"><span class="pre">models</span></code>
-attribute to each object.  This is a dictionary that stores the pore-scale
-models and their associated parameters.  When <code class="docutils literal notranslate"><span class="pre">regenerate_models</span></code> is called
-the function and all the given parameters are retrieved from this dictionary
-and run.</p>
 </section>
 </section>
 <p class="rubric">Classes</p>
@@ -2066,7 +2040,6 @@ and run.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-classes-of-openpnm">Main classes of OpenPNM</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-base-class">The Base class</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-modelsmixin-class">The ModelsMixin class</a></li>
 </ul>
 </li>
 </ul>
