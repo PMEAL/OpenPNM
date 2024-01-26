@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Storage of Network Data and Topology &#8212; OpenPNM 3.3.0.dev6 documentation</title>
+    <title>Storage of Network Data and Topology &#8212; OpenPNM 3.4.0.dev3 documentation</title>
   
   
   
@@ -18,15 +18,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -36,11 +36,11 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
+    <script src="../../_static/documentation_options.js?v=b070f12b"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,10 +61,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -105,7 +104,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -115,6 +114,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -140,13 +140,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -193,6 +188,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -206,6 +202,7 @@
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -238,6 +235,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -257,10 +255,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -271,13 +272,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -324,6 +320,7 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -355,7 +352,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -457,11 +455,11 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="storage-of-network-data-and-topology">
 <h1>Storage of Network Data and Topology<a class="headerlink" href="#storage-of-network-data-and-topology" title="Link to this heading">#</a></h1>
-<p>As discussed in the first tutorial, OpenPNM uses Numpy <code class="docutils literal notranslate"><span class="pre">ndarrays</span></code> to store all data, and these arrays store all stored in <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, because all OpenPNM objects are subclassed python dictionaries. In this tutorial will take a deper dive into the details of the OpenPNM data storage scheme. The sections to be covered are:</p>
+<p>As discussed in the first tutorial, OpenPNM uses Numpy <code class="docutils literal notranslate"><span class="pre">ndarrays</span></code> to store all data, and these arrays are all stored in <code class="docutils literal notranslate"><span class="pre">dict</span></code>s, because all OpenPNM objects are subclassed python dictionaries. In this tutorial will take a deeper dive into the details of the OpenPNM data storage scheme. The sections to be covered are:</p>
 <ul class="simple">
 <li><p>The Spreadsheet Analogy</p></li>
 <li><p>Maintaining Data Integrity</p></li>
@@ -481,7 +479,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Let’s use <a class="reference external" href="https://pandas.pydata.org/">pandas</a> to express the geometric properties as a ‘spreadsheet’ and pull out all pore properties that are are a single column wide</p>
+<p>Let’s use <a class="reference external" href="https://pandas.pydata.org/">pandas</a> to express the geometric properties as a ‘spreadsheet’ and pull out all pore properties that are as wide as a single column.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -594,11 +592,11 @@ Name: pore.volume, dtype: float64
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The spreadsheet analogy is very apt, but it breaks down slightly when one considers data that is multiple colums wide such as <strong>‘pore.coords’</strong>.  The is stored as an Np-by-3 array in the network dictionary, but spreadsheets usually require that all data is only a single column wide.</p>
+<p>The spreadsheet analogy is very apt, but it breaks down slightly when one considers data that is multiple columns wide such as <strong>‘pore.coords’</strong>.  The is stored as an Np-by-3 array in the network dictionary, but spreadsheets usually require that all data is only a single column wide.</p>
 </div>
 <section id="rules-to-maintain-data-integrity">
 <h3>Rules to Maintain Data Integrity<a class="headerlink" href="#rules-to-maintain-data-integrity" title="Link to this heading">#</a></h3>
-<p>Several rules have been implemented to control the integrity of the data. This is implemented by subclassing the <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> method of the the <code class="docutils literal notranslate"><span class="pre">dict</span></code>. Each time data is assigned to a dictionary key, OpenPNM first checks the data type and dictionary key to ensure the rules are followed.  Each of these checks are explored below.</p>
+<p>Several rules have been implemented to control the integrity of the data. This is implemented by subclassing the <code class="docutils literal notranslate"><span class="pre">__setitem__</span></code> method of the <code class="docutils literal notranslate"><span class="pre">dict</span></code>. Each time data is assigned to a dictionary key, OpenPNM first checks the data type and dictionary key to ensure the rules are followed.  Each of these checks are explored below.</p>
 <section id="all-values-are-converted-to-numpy-arrays">
 <h4>All Values are Converted to Numpy Arrays<a class="headerlink" href="#all-values-are-converted-to-numpy-arrays" title="Link to this heading">#</a></h4>
 <p>Only Numpy arrays can be stored in an OpenPNM object, and any data that is written to an OpenPNM object (i.e. dictionary) will be converted to a Numpy array.  This is done to ensure that all mathematical operations throughout the code can be consistently done using vectorization.</p>
@@ -687,7 +685,7 @@ Name: pore.volume, dtype: float64
 </div>
 </div>
 <p>The above rule about expanding the scalar values to a numpy array have been applied.</p>
-<p>Requesting the top level of dictionary key returns both concentrations, but they can accessed directly too:</p>
+<p>Requesting the top level of dictionary key returns both concentrations, but they can be accessed directly too:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration.species_A&#39;</span><span class="p">])</span>
@@ -700,7 +698,7 @@ Name: pore.volume, dtype: float64
 </div>
 </div>
 </div>
-<p>You can also retreive a dictionary by requesting only the element (‘pore’ or ‘throat’) and the propname (‘concentration’):</p>
+<p>You can also retrieve a dictionary by requesting only the element (‘pore’ or ‘throat’) and the propname (‘concentration’):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span>
@@ -713,7 +711,7 @@ Name: pore.volume, dtype: float64
 </div>
 </div>
 </div>
-<p>The above retuns a ‘subdictionary’ which can be indexed into:</p>
+<p>The above returns a ‘subdictionary’ which can be indexed into:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="s1">&#39;species_A&#39;</span><span class="p">]</span>
@@ -787,7 +785,7 @@ Name: pore.volume, dtype: float64
 </section>
 <section id="dictionary-keys-with-a-leading-underscore-are-hidden">
 <h4>Dictionary Keys with a Leading Underscore are Hidden<a class="headerlink" href="#dictionary-keys-with-a-leading-underscore-are-hidden" title="Link to this heading">#</a></h4>
-<p>Following the Python convention, if a piece of data is not really meant to be seen or used by the user, it can be pre-pended with an underscore and it will no appear in any output.</p>
+<p>Following the Python convention, if a piece of data is not really meant to be seen or used by the user, it can be pre-pended with an underscore and it will not appear in any output.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore._hidden&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
@@ -853,7 +851,7 @@ Name: pore.volume, dtype: float64
 </section>
 <section id="the-param-prefix">
 <h2>The <code class="docutils literal notranslate"><span class="pre">param</span></code> prefix<a class="headerlink" href="#the-param-prefix" title="Link to this heading">#</a></h2>
-<p>Expanding all scalar values to arrays that are either Np or Nt long is done as a convenience or shorthand to mean “place this value of X in all pores”. This them means that you can later ask “what is the value of X in pore Y” and get an answer. This implies that X might take on different values in each pore/throat. However, there are properties which we know are constant, such as the molecular weight or critical temperature of a pure species. In V3 we have introduced the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute to all object, such that <code class="docutils literal notranslate"><span class="pre">pn.params</span></code> is a dictionary containing such scalar values. For convenience we have also added the ability to read and write to the <code class="docutils literal notranslate"><span class="pre">params</span></code> dictionary via the main get/set method. This is illustrated below:</p>
+<p>Expanding all scalar values to arrays that are either Np or Nt long is done as a convenience or shorthand to mean “place this value of X in all pores”. It means that you can later ask “what is the value of X in pore Y” and get an answer. This implies that X might take on different values in each pore/throat. However, there are properties which we know are constant, such as the molecular weight or critical temperature of a pure species. In V3 we have introduced the <code class="docutils literal notranslate"><span class="pre">params</span></code> attribute to all object, such that <code class="docutils literal notranslate"><span class="pre">pn.params</span></code> is a dictionary containing such scalar values. For convenience we have also added the ability to read and write to the <code class="docutils literal notranslate"><span class="pre">params</span></code> dictionary via the main get/set method. This is illustrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;lattice_connectivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
@@ -914,7 +912,7 @@ test                                2
 </div>
 <p>The basic premise of how OpenPNM stores topology can be stated in 1 sentence:</p>
 <p><strong>The pores on either end of a throat are just another property to be stored, along with diameter, length, etc.</strong></p>
-<p>In other words, referring to the above diagram, throat No. 5 has pores 1 and 4 on it’s ends.  Using the spreadsheet analogy, this implies a new colunm that stores the pair of pores connected by each throat.  OpenPNM calls this property <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code>:</p>
+<p>In other words, referring to the above diagram, throat No. 5 has pores 1 and 4 on its ends.  Using the spreadsheet analogy, this implies a new column that stores the pair of pores connected by each throat.  OpenPNM calls this property <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">dn</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">])</span>
@@ -940,7 +938,7 @@ test                                2
 <li><p>Throats are non-directional, meaning that flow in either direction is equal
 Other general, but non-essential rules are:</p></li>
 <li><p>Pores can have an arbitrary number of throats, including zero; however, pores with zero throats lead to singular matrices and other problems so should be avoided.</p></li>
-<li><p>Two pores are generally connected by no more than one throat. It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorosly supported so unintended results may arise. For instance, when converting to CSR format the dual throats are merged into one, so re-converting back results in loss of such throats.</p></li>
+<li><p>Two pores are generally connected by no more than one throat. It is technically possible in OpenPNM to have multiple throats between a pair of pores, but it is not rigorously  supported so unintended results may arise. For instance, when converting to CSR format the dual throats are merged into one, so re-converting back results in loss of such throats.</p></li>
 </ol>
 </div>
 <section id="adjacency-matrices-dense-vs-sparse">
@@ -983,7 +981,7 @@ Other general, but non-essential rules are:</p></li>
 </div>
 </div>
 <p>In dense format the <em>Np-by-Np</em> shape is evident. The above matrix is symmetrical, so connections between pore <em>i</em> and <em>j</em> as well as between <em>j</em> and <em>i</em> are shown.</p>
-<p>An important feature of the adjacency matrix is that it is highly sparse (mostly zeros) and can be stored with a variety of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/sparse.html">sparse storage schemes</a> offered by Scipy.  OpenPNM stores the adjacency matrix in the ‘COO’ format, which essentially stores the coordinates (I,J) of the nonzero elements in an two-colume wide array.</p>
+<p>An important feature of the adjacency matrix is that it is highly sparse (mostly zeros) and can be stored with a variety of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/sparse.html">sparse storage schemes</a> offered by Scipy.  OpenPNM stores the adjacency matrix in the ‘COO’ format, which essentially stores the coordinates (I,J) of the nonzero elements in an two-column wide array.</p>
 <p>Thus the throat property called <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> is an <em>Nt</em>-by-2 array that gives the index of the two pores on either end of a given throat.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -999,7 +997,7 @@ Other general, but non-essential rules are:</p></li>
 </section>
 <section id="conduit-data">
 <h2><code class="docutils literal notranslate"><span class="pre">conduit</span></code> data<a class="headerlink" href="#conduit-data" title="Link to this heading">#</a></h2>
-<p>A <em>conduit</em> in OpenPNM refers to a ‘pore-throat-pore’ connection, where the pores and throats are each called <em>elements</em>. These <em>elements</em> act as resistors (or conductors) in series. Each <em>conduit</em> therefor contains exactly 1 throat and 2 pores. Transport within the network occurs via these interconnected <em>conduits</em>, so the geometric properties of these elements are often need for computing things like diffusive conductance. This is common enough that OpenPNM V3 includes a new helper function for obtaining this data, as illustrated below:</p>
+<p>A <em>conduit</em> in OpenPNM refers to a ‘pore-throat-pore’ connection, where the pores and throats are each called <em>elements</em>. These <em>elements</em> act as resistors (or conductors) in series. Each <em>conduit</em> therefor contains exactly 1 throat and 2 pores. Transport within the network occurs via these interconnected <em>conduits</em>, so the geometric properties of these elements are often needed for computing things like diffusive conductance. This is common enough that OpenPNM V3 includes a new helper function for obtaining this data, as illustrated below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">get_conduit_data</span><span class="p">(</span><span class="s1">&#39;diameter&#39;</span><span class="p">)</span>
@@ -1076,11 +1074,14 @@ Other general, but non-essential rules are:</p></li>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spreadsheet-analogy">Spreadsheet Analogy</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rules-to-maintain-data-integrity">Rules to Maintain Data Integrity</a><ul class="nav section-nav flex-column">
@@ -1116,8 +1117,8 @@ Other general, but non-essential rules are:</p></li>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1125,9 +1126,10 @@ Other general, but non-essential rules are:</p></li>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2023, PMEAL.
+      © Copyright 2024, PMEAL.
       <br/>
     
   </p>
@@ -1139,8 +1141,9 @@ Other general, but non-essential rules are:</p></li>
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
 </p></div>
       
     </div>

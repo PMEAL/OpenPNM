@@ -148,7 +148,7 @@
    "id": "3c85f5fa",
    "metadata": {},
    "source": [
-    "To update calculate the saturation based on occupancy from each pressure point, we created a costum function:"
+    "To update the saturation based on occupancy from each pressure point, we created a custom function:"
    ]
   },
   {
@@ -184,7 +184,7 @@
    "id": "7e4dc401",
    "metadata": {},
    "source": [
-    "Similar to the relative permeability example, the geometrical parameters in relative diffusivity can cancell out. Therefore,  the remaining fraction includes diffusion rates as follows:\n",
+    "Similar to the relative permeability example, the geometrical parameters in relative diffusivity can cancel out. Therefore,  the remaining fraction includes diffusion rates as follows:\n",
     "\n",
     "$$\n",
     "D_{r}=\\frac {D_\\text{eff-multiphase}}{D_\\text{eff-single phase}}=\\frac {Rate_\\text{multiphase}}{Rate_\\text{single phase}}\n",
@@ -193,7 +193,7 @@
     "Where $Rate_\\text{multiphase}$ is the inlet diffusion rate of the phase (water/air) for a Fickian diffusion algorithm with `multiphase conduit_conductance` assigned as conduit diffusive conductance model to account for the existence of the other phase. Whereas $Rate_\\text{single phase}$ is the inlet diffusion rate of the phase (water/air) for a Fickian diffusion algorithm with `generic_diffusive_conductance` assigned as diffusive conductance model for a single phase flow.\n",
     "\n",
     "\n",
-    "Note that $D_\\text{eff-single phase}$ is a property of the porous material, not the fluid. However, here to cancel out diffusivity in the $D_{r}$ fraction, the same phase must be used to calculate $Rate_\\text{single phase}$. Therefore, we only need to find the rate values for calcuating the relative permeability.\n",
+    "Note that $D_\\text{eff-single phase}$ is a property of the porous material, not the fluid. However, here to cancel out diffusivity in the $D_{r}$ fraction, the same phase must be used to calculate $Rate_\\text{single phase}$. Therefore, we only need to find the rate values for calculating the relative permeability.\n",
     "We define a function `Rate_calc`, which simulates a Fickian diffusion given the diffusive conductance keyword and returns the rate diffusion at inlet pores. "
    ]
   },
@@ -374,7 +374,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.16"
+   "version": "3.10.13"
   }
  },
  "nbformat": 4,

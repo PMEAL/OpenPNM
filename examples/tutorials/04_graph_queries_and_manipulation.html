@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 3.3.0.dev6 documentation</title>
+    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 3.4.0.dev3 documentation</title>
   
   
   
@@ -18,15 +18,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -36,11 +36,11 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
+    <script src="../../_static/documentation_options.js?v=b070f12b"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,10 +61,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -105,7 +104,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -115,6 +114,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -140,13 +140,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -193,6 +188,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -206,6 +202,7 @@
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -238,6 +235,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -257,10 +255,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -271,13 +272,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -324,6 +320,7 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -355,7 +352,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -457,11 +455,11 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="network-representation-queries-and-manipulation">
 <h1>Network Representation, Queries, and Manipulation<a class="headerlink" href="#network-representation-queries-and-manipulation" title="Link to this heading">#</a></h1>
-<p>To understand how to query and manipulate the network, we’ll first cover the various forms of network representation. Specifically, OpenPNM uses an adjacency matrix to represent topology, but occassionally invokes the incidence matrix since this makes it easier for some queries.</p>
+<p>To understand how to query and manipulate the network, we’ll first cover the various forms of network representation. Specifically, OpenPNM uses an adjacency matrix to represent topology, but occasionally invokes the incidence matrix since this makes it easier for some queries.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
@@ -501,7 +499,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>The adjacency matrix can also be plotted as a image for a helpful visualization:</p>
+<p>The adjacency matrix can also be plotted as an image for a helpful visualization:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
@@ -516,7 +514,7 @@ document.write(`
 <p>There are a few notable features to point out:</p>
 <ul class="simple">
 <li><p>The matrix is symmetrical, since pore <code class="docutils literal notranslate"><span class="pre">i</span></code> connects to <code class="docutils literal notranslate"><span class="pre">j</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span></code> connects to <code class="docutils literal notranslate"><span class="pre">i</span></code></p></li>
-<li><p>Each row contains only a few entries since a given pores only has a few neighbors.  It may not be obvious above since the network is small, but as the network grows to millions of pores, each pore only has on the order of 10 neighbors.</p></li>
+<li><p>Each row contains only a few entries since a given pore only has a few neighbors.  It may not be obvious above since the network is small, but as the network grows to millions of pores, each pore only has on the order of 10 neighbors.</p></li>
 <li><p>You can find which pores are neighbors of pore <code class="docutils literal notranslate"><span class="pre">i</span></code> by finding the locations on non-zeros in row <code class="docutils literal notranslate"><span class="pre">i</span></code> of the adjacency matrix</p></li>
 <li><p>No entries are found in the diagonal since this would indicate that a pore connects with itself which is not physically meaningful.</p></li>
 <li><p>Since each pair of pores is connected by a single throat then each nonzero entry in the matrix corresponds to a throat</p></li>
@@ -619,7 +617,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Another query we might wish to do is determine which throat connects which pair of pores. The “Dictionary of Keys” format is useful for this.  It is basically the COO format, but the <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j)</span></code> values are used as the dictionary keys.  This is helpful since dicionary lookups are actually quite fast thanks to some sophisticated data strutures used by python. Consider the following:</p>
+<p>Another query we might wish to do is determine which throat connects which pair of pores. The “Dictionary of Keys” format is useful for this.  It is basically the COO format, but the <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j)</span></code> values are used as the dictionary keys.  This is helpful since dictionary lookups are actually quite fast thanks to some sophisticated data structures used by python. Consider the following:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">am</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">create_adjacency_matrix</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;dok&#39;</span><span class="p">,</span> <span class="n">triu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -682,7 +680,7 @@ document.write(`
 </div>
 </div>
 </div>
-<p>Let’s start by finding all pores on the ‘left’ and ‘bottom’.  These labels are predefined on <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> networks, and we we cn use the <code class="docutils literal notranslate"><span class="pre">pores</span></code> method to find all pores with these labels:</p>
+<p>Let’s start by finding all pores on the ‘left’ and ‘bottom’.  These labels are predefined on <code class="docutils literal notranslate"><span class="pre">Cubic</span></code> networks, and we can use the <code class="docutils literal notranslate"><span class="pre">pores</span></code> method to find all pores with these labels:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">P_left</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
@@ -755,7 +753,7 @@ document.write(`
 </div>
 </div>
 <p>`mode=’xor’ finds all pores with exactly one connection to the input pores</p>
-<p>Given a set of pores find the pores that are neighbors of one and only one of the input pores.  This is called <strong>XOR</strong>, or ‘exclusve_or’ because it finds the pores that are neigbhors to the ‘bottom’ <em>or</em> the ‘left’, but <em>not</em> both.</p>
+<p>Given a set of pores find the pores that are neighbors of one and only one of the input pores.  This is called <strong>XOR</strong>, or ‘exclusive_or’ because it finds the pores that are neigbhors to the ‘bottom’ <em>or</em> the ‘left’, but <em>not</em> both.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
@@ -791,7 +789,7 @@ document.write(`
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">mode='xnor'</span></code> finds all the pores with 2 or more connections to the input pores</p>
-<p>This finds pores that are common to both ‘left’ and ‘bottom’ pores.  It is called <strong>XNOR</strong> since it is the opposite of <strong>XOR</strong> , incidated by the <em>N for not</em> .   Note that <strong>XNOR</strong> and <strong>NXOR</strong> are interchangable.</p>
+<p>This finds pores that are common to both ‘left’ and ‘bottom’ pores.  It is called <strong>XNOR</strong> since it is the opposite of <strong>XOR</strong> , indicated by the <em>N for not</em> .   Note that <strong>XNOR</strong> and <strong>NXOR</strong> are interchangeable.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">])</span>
@@ -1025,7 +1023,7 @@ document.write(`
 </section>
 <section id="removing-throats">
 <h2>Removing Throats<a class="headerlink" href="#removing-throats" title="Link to this heading">#</a></h2>
-<p>Removing throats may be useful for a number of reasons such as making a cubic network more heterogeneous, or to study the effect of blockages on flow.  Throat deletion is actualy trivial and requires simply removing the row(s) corresponding to the to-be deleted throats from all throat arrays.  For instance, let’s manually delete throats <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">3</span></code>:</p>
+<p>Removing throats may be useful for a number of reasons such as making a cubic network more heterogeneous, or to study the effect of blockages on flow.  Throat deletion is actually trivial and requires simply removing the row(s) corresponding to the to-be deleted throats from all throat arrays.  For instance, let’s manually delete throats <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">3</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
@@ -1035,7 +1033,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2acefb6e30&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1072,7 +1070,7 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2acefb6e30&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1106,7 +1104,7 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2acefb6e30&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1150,7 +1148,7 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
 <p>Removing pores is <em>almost</em> as easy as removing throats, with <strong>two significant complications</strong>.</p>
 <ol class="arabic simple">
 <li><p>When a pore is removed, the values in the <code class="docutils literal notranslate"><span class="pre">'throat.conns'</span></code> array must be updated. If pore 2 is removed, the pore 3 becomes the new pore 2.  This means that any throats which were pointing to pore 3 (i.e. [1, 3]) must now be updated to point to pore 2 instead (i.e. [1, 2]). This can be done manually as shown below, but OpenPNM’s <code class="docutils literal notranslate"><span class="pre">trim</span></code> function should be used.</p></li>
-<li><p>A throat cannot point to nothing, so when a pore is deleted, all of it’s neighboring throats must also be deleted.</p></li>
+<li><p>A throat cannot point to nothing, so when a pore is deleted, all of its neighboring throats must also be deleted.</p></li>
 </ol>
 <p>First we’ll see how to do this manually, then we’ll demonstrate the <code class="docutils literal notranslate"><span class="pre">trim</span></code> function, this time for pores.</p>
 <p>The first step is to create an array of 0’s with 1’s in the locations to be trimmed:</p>
@@ -1220,7 +1218,7 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77283b0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fdef7680d60&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2aced2e520&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1298,7 +1296,7 @@ net : &lt;openpnm.network.Cubic at 0x7fdef7680d60&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fdef77d10d0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f2acedc3ab0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1409,11 +1407,14 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77d10d0&gt;
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-adjacency-matrix">The Adjacency Matrix</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#coo-sparse-format">COO Sparse Format</a></li>
@@ -1447,8 +1448,8 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77d10d0&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1456,9 +1457,10 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77d10d0&gt;
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2023, PMEAL.
+      © Copyright 2024, PMEAL.
       <br/>
     
   </p>
@@ -1470,8 +1472,9 @@ net : &lt;openpnm.network.Cubic at 0x7fdef77d10d0&gt;
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
 </p></div>
       
     </div>

@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.3.0.dev6 documentation</title>
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.4.0.dev3 documentation</title>
   
   
   
@@ -18,15 +18,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -36,11 +36,11 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
+    <script src="../../_static/documentation_options.js?v=b070f12b"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -63,10 +63,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -107,7 +106,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -117,6 +116,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -130,8 +130,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -142,13 +142,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -195,6 +190,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -208,6 +204,7 @@
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -240,6 +237,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -259,10 +257,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -273,13 +274,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -326,6 +322,7 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -357,7 +354,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -459,7 +457,7 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="simulating-single-phase-transport">
 <h1>Simulating Single Phase Transport<a class="headerlink" href="#simulating-single-phase-transport" title="Link to this heading">#</a></h1>
@@ -482,7 +480,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
+net : &lt;openpnm.network.Demo at 0x7fae041b0130&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -542,7 +540,7 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f3b0012d080&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7fadb6d68f90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -598,24 +596,23 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f3b0012d080&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.55989938e-15 1.08063915e-13 1.29669383e-14 1.06168625e-14
- 1.11787982e-15 4.51794792e-16 4.63068734e-16 2.07447452e-15
- 1.19915615e-14 5.19508394e-16 5.42085525e-16 1.86693685e-15
- 2.96565334e-15 5.19485163e-15 7.23885064e-15 6.75523035e-15
- 6.20205811e-15 6.25035184e-15 1.34563270e-14 1.90652352e-14
- 1.99615034e-15 1.42236125e-15 6.24853266e-16 2.01476563e-15
- 1.52172712e-14 8.40332572e-15 1.14588689e-15 4.38526324e-16
- 2.10427546e-15 1.84068544e-15 3.74458633e-15 4.85851954e-15
- 5.50873827e-16 7.10395808e-15 1.78410092e-15 3.11579511e-15
- 4.68870775e-15 1.13196854e-14 8.54597730e-15 1.01745735e-14]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.97928439e-14 1.09774624e-14 5.32447079e-16 5.07589099e-16
+ 1.57360762e-15 2.41188161e-15 8.43569783e-15 2.12444521e-14
+ 3.49596195e-14 7.16734881e-15 5.89219982e-15 2.50821190e-15
+ 2.03704365e-14 1.87150914e-14 6.73196846e-14 1.18742961e-15
+ 1.05308541e-15 5.94701759e-14 5.50700368e-14 2.76087633e-15
+ 1.84411585e-15 3.12549859e-15 7.48019557e-15 5.89240869e-16
+ 4.12544488e-15 1.87079541e-15 3.14944472e-15 5.40036610e-15
+ 2.26996836e-14 2.49272724e-15 3.42805939e-14 2.07502360e-14
+ 6.52603780e-15 2.70915088e-14 8.62341806e-16 1.13115267e-15
+ 1.86572738e-14 6.07725876e-14 6.09095381e-14 8.62846470e-16]
 </pre></div>
 </div>
 </div>
 </div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Phase can do auotmatic interpolation to get throat values
-The <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class has a special ability to interpolate pore values to throats, and vice-versa. In PNM simulations all the balances are solved for each pore, so the thermodynamic properties like temperature, pressure, etc. are all defined on pores. Consequently, the physical properties are also defined in pores, like viscosity. However, as shown above we often want viscosity values in the throats. OpenPNM provides a shortcut for this, such that if you request a throat property that does not exist, it will attempt to fetch the pores values and do a linear interpolation of values to produce an array of throat values.  There is also a function for this, <code class="docutils literal notranslate"><span class="pre">water.interpolate_data('throat.viscosity')</span></code>, but the <code class="docutils literal notranslate"><span class="pre">water['throat.viscosity']</span></code> shortcut is very convenient. The automatic interpolation can be disabled in the <code class="docutils literal notranslate"><span class="pre">phase.settings</span></code>.</p>
+<div class="admonition-phase-can-do-automatic-interpolation-to-get-throat-values admonition">
+<p class="admonition-title">Phase can do automatic interpolation to get throat values</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Phase</span></code> class has a special ability to interpolate pore values to throats, and vice-versa. In PNM simulations all the balances are solved for each pore, so the thermodynamic properties like temperature, pressure, etc. are all defined on pores. Consequently, the physical properties are also defined in pores, like viscosity. However, as shown above we often want viscosity values in the throats. OpenPNM provides a shortcut for this, such that if you request a throat property that does not exist, it will attempt to fetch the pores values and do a linear interpolation of values to produce an array of throat values.  There is also a function for this, <code class="docutils literal notranslate"><span class="pre">water.interpolate_data('throat.viscosity')</span></code>, but the <code class="docutils literal notranslate"><span class="pre">water['throat.viscosity']</span></code> shortcut is very convenient. The automatic interpolation can be disabled in the <code class="docutils literal notranslate"><span class="pre">phase.settings</span></code>.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -668,7 +665,7 @@ The <code class="docutils literal notranslate"><span class="pre">Phase</span></c
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fadb6d6a1b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -698,7 +695,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fadb6d6a1b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -714,10 +711,9 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
 </div>
 </div>
 </div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>All boundary conditions are preceeded with ‘pore.bc’
-All boundary conditions are stored as ‘pore.bc.<type>’, which means that OpenPNM’s dictionary lookup tricks can be used to see all types and values of bc’s using: <code class="docutils literal notranslate"><span class="pre">sf['pore.bc']</span></code> which will return a <code class="docutils literal notranslate"><span class="pre">dict</span></code>. This can be used as shown below:</p>
+<div class="admonition-all-boundary-conditions-are-preceeded-with-pore-bc admonition">
+<p class="admonition-title">All boundary conditions are preceeded with ‘pore.bc’</p>
+<p>All boundary conditions are stored as ‘pore.bc.<type>’, which means that OpenPNM’s dictionary lookup tricks can be used to see all types and values of bc’s using: <code class="docutils literal notranslate"><span class="pre">sf['pore.bc']</span></code> which will return a <code class="docutils literal notranslate"><span class="pre">dict</span></code>. This can be used as shown below:</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -752,7 +748,7 @@ All boundary conditions are stored as ‘pore.bc.<type>’, which means that Ope
 </div>
 </div>
 </div>
-<p>The reason for the dict format is to provide a consistent API for single components and multiphysics, where multiple different quanties might be solved for.  However, these <code class="docutils literal notranslate"><span class="pre">'pore.pressure'</span></code> values are also written to the dictionary of the algorithm object as well:</p>
+<p>The reason for the dict format is to provide a consistent API for single components and multiphysics, where multiple different quantities might be solved for.  However, these <code class="docutils literal notranslate"><span class="pre">'pore.pressure'</span></code> values are also written to the dictionary of the algorithm object as well:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
@@ -761,7 +757,7 @@ All boundary conditions are stored as ‘pore.bc.<type>’, which means that Ope
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fadb6d6a1b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -787,8 +783,8 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([245442.21666962, 243019.76065208, 239795.02594576, 238440.7611962 ,
-       238199.18378343])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([204783.08730444, 162064.27205621, 161111.83161921, 160953.18276806,
+       189070.07254386])
 </pre></div>
 </div>
 </div>
@@ -809,7 +805,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f3b0012e750&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
+net : &lt;openpnm.network.Demo at 0x7fae041b0130&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -862,46 +858,46 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[5.88434325e-17, 2.28647895e-18, 1.55641580e-16],
-       [7.93263574e-16, 9.65217110e-17, 7.91991401e-16],
-       [3.19221005e-16, 1.15819519e-17, 1.85457161e-16],
-       [1.85457161e-16, 9.48288551e-18, 2.12057973e-16],
-       [6.27377390e-17, 9.98480138e-19, 3.86084960e-17],
-       [2.65319235e-17, 4.03539018e-19, 2.13285910e-17],
-       [2.13285910e-17, 4.13608801e-19, 3.09549097e-17],
-       [5.80615525e-17, 1.85290186e-18, 9.86483172e-17],
-       [2.89601121e-16, 1.07107542e-17, 1.81885445e-16],
-       [4.80924074e-17, 4.64020194e-19, 2.16901195e-17],
-       [2.16901195e-17, 4.84185884e-19, 5.55798100e-17],
-       [9.76563648e-17, 1.66753109e-18, 5.32515276e-17],
-       [7.97990004e-17, 2.64889471e-18, 8.96132170e-17],
-       [1.09797740e-16, 4.63999444e-18, 1.60984291e-16],
-       [1.86535421e-16, 6.46567586e-18, 1.39178056e-16],
-       [1.39178056e-16, 6.03371060e-18, 1.53272959e-16],
-       [1.46832992e-16, 5.53962216e-18, 1.31037925e-16],
-       [1.31037925e-16, 5.58275768e-18, 1.50430093e-16],
-       [1.91341614e-16, 1.20190695e-17, 3.21508938e-16],
-       [3.73821730e-16, 1.70288955e-17, 2.43897736e-16],
-       [5.88434325e-17, 1.78294341e-18, 8.15041639e-17],
-       [1.19062203e-16, 1.27044019e-18, 3.86084960e-17],
-       [8.12501788e-17, 5.58113280e-19, 2.13285910e-17],
-       [8.95322389e-17, 1.79957042e-18, 5.80615525e-17],
-       [2.49381742e-16, 1.35919289e-17, 2.39568690e-16],
-       [1.41607066e-16, 7.50577446e-18, 2.47869355e-16],
-       [3.86084960e-17, 1.02349580e-18, 6.89657969e-17],
-       [2.13285910e-17, 3.91687743e-19, 2.14567551e-17],
-       [5.80615525e-17, 1.87951979e-18, 1.03060703e-16],
-       [9.34817016e-17, 1.64408357e-18, 5.32515276e-17],
-       [1.73230816e-16, 3.34463061e-18, 7.97990004e-17],
-       [1.32116447e-16, 4.33958567e-18, 1.09797740e-16],
-       [2.16901195e-17, 4.92035515e-19, 5.83440265e-17],
-       [1.77449655e-16, 6.34519105e-18, 1.39178056e-16],
-       [5.32515276e-17, 1.59354279e-18, 8.41819665e-17],
-       [7.97990004e-17, 2.78299999e-18, 1.07681917e-16],
-       [1.09797740e-16, 4.18791131e-18, 1.17025332e-16],
-       [2.27511510e-16, 1.01106405e-17, 1.91341614e-16],
-       [1.39178056e-16, 7.63318956e-18, 2.63701788e-16],
-       [1.81622221e-16, 9.08783694e-18, 2.02137111e-16]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[3.26091761e-16, 2.66106985e-17, 4.65310514e-16],
+       [3.02563318e-16, 9.80497005e-18, 1.63160952e-16],
+       [4.69362482e-17, 4.75576911e-19, 2.22559168e-17],
+       [2.22559168e-17, 4.53373988e-19, 3.80876600e-17],
+       [5.18306037e-17, 1.40553208e-18, 5.69368242e-17],
+       [6.71778999e-17, 2.15427082e-18, 9.07021935e-17],
+       [1.51114703e-16, 7.53468893e-18, 2.15137890e-16],
+       [3.23394004e-16, 1.89753523e-17, 2.90224989e-16],
+       [3.61552018e-16, 3.12256157e-17, 5.02594207e-16],
+       [2.53285329e-16, 6.40181107e-18, 1.20270585e-16],
+       [1.20270585e-16, 5.26285954e-18, 1.69726338e-16],
+       [1.15963698e-16, 2.24031216e-18, 6.51487624e-17],
+       [3.91436356e-16, 1.81946895e-17, 2.52554417e-16],
+       [2.52554417e-16, 1.67161502e-17, 3.40372739e-16],
+       [5.65382277e-16, 6.01293329e-17, 6.61928190e-16],
+       [1.12206704e-16, 1.06060138e-18, 3.34496917e-17],
+       [3.26050670e-17, 9.40606355e-19, 9.39369858e-17],
+       [5.57045823e-16, 5.31182227e-17, 5.72256303e-16],
+       [5.53296393e-16, 4.91880584e-17, 5.28425159e-16],
+       [1.43421579e-16, 2.46598975e-18, 6.56946718e-17],
+       [1.03228356e-16, 1.64714758e-18, 5.18306037e-17],
+       [1.73330554e-16, 2.79166705e-18, 6.71778999e-17],
+       [1.55322001e-16, 6.68124297e-18, 1.51114703e-16],
+       [2.22559168e-17, 5.26304610e-19, 6.47755410e-17],
+       [9.36019953e-17, 3.68481002e-18, 1.42719422e-16],
+       [5.18306037e-17, 1.67097752e-18, 1.07296044e-16],
+       [6.71778999e-17, 2.81305552e-18, 1.75521129e-16],
+       [1.30621138e-16, 4.82355811e-18, 1.20270585e-16],
+       [3.33048422e-16, 2.02751519e-17, 3.04056019e-16],
+       [1.13943156e-16, 2.22648140e-18, 6.51487624e-17],
+       [3.61552018e-16, 3.06191162e-17, 4.89139844e-16],
+       [4.02218942e-16, 1.85339229e-17, 2.52554417e-16],
+       [1.20270585e-16, 5.82899788e-18, 2.14663647e-16],
+       [3.04056019e-16, 2.41978904e-17, 4.49769658e-16],
+       [4.27722127e-17, 7.70235895e-19, 3.34496917e-17],
+       [1.07931193e-16, 1.01033533e-18, 3.26050670e-17],
+       [2.52554417e-16, 1.66645080e-17, 3.38466352e-16],
+       [5.65382277e-16, 5.42815251e-17, 5.77726184e-16],
+       [6.34472756e-16, 5.44038480e-17, 5.28425159e-16],
+       [3.34496917e-17, 7.70686656e-19, 4.29069179e-17]])
 </pre></div>
 </div>
 </div>
@@ -929,16 +925,16 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.42978981e-15, 8.68996114e-14, 1.18017219e-14, 9.68823682e-15,
-       1.07305117e-15, 4.36884085e-16, 4.48382469e-16, 1.97438200e-15,
-       1.09424850e-14, 5.03867504e-16, 5.25768601e-16, 1.78076605e-15,
-       2.79053661e-15, 4.85009646e-15, 6.69570778e-15, 6.23913968e-15,
-       5.74263406e-15, 5.78888448e-15, 1.22308227e-14, 1.70931423e-14,
-       1.89716522e-15, 1.36296839e-15, 6.04870493e-16, 1.91682748e-15,
-       1.36939864e-14, 7.75725922e-15, 1.10038569e-15, 4.23035118e-16,
-       2.00291175e-15, 1.75560672e-15, 3.52856559e-15, 4.53063679e-15,
-       5.34248999e-16, 6.56953827e-15, 1.70099933e-15, 2.93743478e-15,
-       4.36594065e-15, 1.03161235e-14, 7.88526269e-15, 9.29188352e-15])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.61617486e-14, 1.00480187e-14, 5.16186701e-16, 4.91719169e-16,
+       1.49610401e-15, 2.28436995e-15, 7.77567282e-15, 1.88997968e-14,
+       3.04395220e-14, 6.64564261e-15, 5.48230740e-15, 2.38037003e-15,
+       1.82118821e-14, 1.67803262e-14, 5.62313512e-14, 1.14048763e-15,
+       1.01369169e-15, 5.00515106e-14, 4.65911760e-14, 2.61761150e-15,
+       1.76009626e-15, 2.95510052e-15, 6.88005846e-15, 5.71095507e-16,
+       3.87298312e-15, 1.78542916e-15, 2.97706776e-15, 5.01411044e-15,
+       2.01316897e-14, 2.36565462e-15, 2.98797315e-14, 1.85358498e-14,
+       6.06723474e-15, 2.39031978e-14, 8.28350801e-16, 1.08728300e-15,
+       1.67296924e-14, 5.10708726e-14, 5.12404095e-14, 8.28861492e-16])
 </pre></div>
 </div>
 </div>
@@ -954,8 +950,8 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([253992.98768804, 251479.16070639, 248078.35461064, 246596.72807572,
-       246333.75167113])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([211455.32908923, 167357.64183747, 166280.16181084, 166120.03803881,
+       195557.20846034])
 </pre></div>
 </div>
 </div>
@@ -984,8 +980,8 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([253992.98768804, 251479.16070639, 248078.35461064, 246596.72807572,
-       246333.75167113])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([211455.32908923, 167357.64183747, 166280.16181084, 166120.03803881,
+       195557.20846034])
 </pre></div>
 </div>
 </div>
@@ -1008,11 +1004,14 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-phase-viscosity">Define Phase Viscosity</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-conductance-calculation">Basic Conductance Calculation</a></li>
@@ -1039,8 +1038,8 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1048,9 +1047,10 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2023, PMEAL.
+      © Copyright 2024, PMEAL.
       <br/>
     
   </p>
@@ -1062,8 +1062,9 @@ net : &lt;openpnm.network.Demo at 0x7f3b028522f0&gt;
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
 </p></div>
       
     </div>

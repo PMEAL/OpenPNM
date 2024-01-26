@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Generating Networks and Quick Visualization &#8212; OpenPNM 3.3.0.dev6 documentation</title>
+    <title>Generating Networks and Quick Visualization &#8212; OpenPNM 3.4.0.dev3 documentation</title>
   
   
   
@@ -18,15 +18,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -36,11 +36,11 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
+    <script src="../../_static/documentation_options.js?v=b070f12b"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,10 +61,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -105,7 +104,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -115,6 +114,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -140,13 +140,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -193,6 +188,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -206,6 +202,7 @@
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -238,6 +235,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -257,10 +255,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -271,13 +272,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -324,6 +320,7 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -355,7 +352,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -457,11 +455,11 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="generating-networks-and-quick-visualization">
 <h1>Generating Networks and Quick Visualization<a class="headerlink" href="#generating-networks-and-quick-visualization" title="Link to this heading">#</a></h1>
-<p>OpenPNM includes a variety of network generators. This notebook cover the use of a few commons ones which is a good primer for for the rest of this tutorial series.  It also illustrates how to quickly visualize networks for inspection while developing and troubleshoot. Full visualization is best done in a dedicated software like paraview or draongfly.</p>
+<p>OpenPNM includes a variety of network generators. This notebook covers the use of a few commons ones which is a good primer for the rest of this tutorial series.  It also illustrates how to quickly visualize networks for inspection while developing and troubleshooting. Full visualization is best done in a dedicated software like paraview or Dragonfly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
@@ -545,7 +543,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f277b222bb0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fbcb2f5fbf0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -573,19 +571,19 @@ net : &lt;openpnm.network.Cubic at 0x7f277b222bb0&gt;
 </div>
 </div>
 </div>
-<p>The above printout reveals for instance that <code class="docutils literal notranslate"><span class="pre">pn</span></code> has only two “properties”: ‘pore.coords’ and ‘throat.conns’.  These are discussed further below. Also shown are a several “labels” that were added to the network during generation.  These are just <code class="docutils literal notranslate"><span class="pre">boolean</span></code> arrays with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating where the label is found, and <code class="docutils literal notranslate"><span class="pre">False</span></code> elsewhere.  This convention is discussed at length in the next tutorial. It is worth illustrating here how these can be used. Each OpenPNM object has a <code class="docutils literal notranslate"><span class="pre">pores</span></code> and a <code class="docutils literal notranslate"><span class="pre">throats</span></code> method, which returns the pore or throat indices where a given label or set of labels is present:</p>
+<p>The above printout reveals for instance that <code class="docutils literal notranslate"><span class="pre">pn</span></code> has only two “properties”: ‘pore.coords’ and ‘throat.conns’.  These are discussed further below. Also shown are several “labels” that were added to the network during generation.  These are just <code class="docutils literal notranslate"><span class="pre">boolean</span></code> arrays with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating where the label is found, and <code class="docutils literal notranslate"><span class="pre">False</span></code> elsewhere.  This convention is discussed at length in the next tutorial. It is worth illustrating here how these can be used. Each OpenPNM object has a <code class="docutils literal notranslate"><span class="pre">pores</span></code> and a <code class="docutils literal notranslate"><span class="pre">throats</span></code> method, which returns the pore or throat indices where a given label or set of labels is present:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The following pores are labelled &#39;back&#39;:&quot;</span><span class="p">,</span> <span class="n">Ps</span><span class="p">)</span>
 <span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">([</span><span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The following pores are labelled &#39;back&#39; AND &#39;left&#39;:&quot;</span><span class="p">,</span> <span class="n">Ps</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The following pores are labelled &#39;back&#39; OR &#39;left&#39;:&quot;</span><span class="p">,</span> <span class="n">Ps</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The following pores are labelled &#39;back&#39;: [12 13 14 15 28 29 30 31 44 45 46 47 60 61 62 63]
-The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 28 29 30 31 44 45 46 47
+The following pores are labelled &#39;back&#39; OR &#39;left&#39;: [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 28 29 30 31 44 45 46 47
  60 61 62 63]
 </pre></div>
 </div>
@@ -612,7 +610,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </section>
 <section id="cubictemplates">
 <h2>CubicTemplates<a class="headerlink" href="#cubictemplates" title="Link to this heading">#</a></h2>
-<p>It’s possible to make a cubic network with an arbitrary shape, like a sphere or cylinder, or even more complex, though it wil still have a cubic lattice topology. This might be useful for simulating transport in a catalyst pellet for instance.  This requires creating a boolean image with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the shape of the network.  OpenPNM has a few helper functions, but you are free to create any shape.</p>
+<p>It’s possible to make a cubic network with an arbitrary shape, like a sphere or cylinder, or even more complex, though it will still have a cubic lattice topology. This might be useful for simulating transport in a catalyst pellet for instance.  This requires creating a boolean image with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the shape of the network.  OpenPNM has a few helper functions, but you are free to create any shape.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">template_cylinder_annulus</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">r_outer</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">r_inner</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -629,7 +627,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </section>
 <section id="other-cubic-lattices">
 <h2>Other Cubic Lattices<a class="headerlink" href="#other-cubic-lattices" title="Link to this heading">#</a></h2>
-<p>Another useful and related set of networks are <code class="docutils literal notranslate"><span class="pre">FaceCenteredCubic</span></code> and <code class="docutils literal notranslate"><span class="pre">BodyCenteredCubic</span></code> lattices. These are very helpful for creating higher porosity networks since it jams extra pores into the interstial spaces:</p>
+<p>Another useful and related set of networks are <code class="docutils literal notranslate"><span class="pre">FaceCenteredCubic</span></code> and <code class="docutils literal notranslate"><span class="pre">BodyCenteredCubic</span></code> lattices. These are very helpful for creating higher porosity networks since it jams extra pores into the interstitial spaces:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fcc</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
@@ -643,14 +641,14 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 <div class="cell_output docutils container">
 <img alt="../../_images/64fb9c87e5568b1d5527d0b3da14d1692b11501882c1859b124de10e0114b7ce.png" src="../../_images/64fb9c87e5568b1d5527d0b3da14d1692b11501882c1859b124de10e0114b7ce.png" />
-<img alt="../../_images/3d711d2e87b22178f3c0dcce79102182a44c3c604579fb72041dac6a2df40a8e.png" src="../../_images/3d711d2e87b22178f3c0dcce79102182a44c3c604579fb72041dac6a2df40a8e.png" />
+<img alt="../../_images/275e881c19e4e41f56c44c4680b021d2751da3dc75b1a226f5dc5c813e746045.png" src="../../_images/275e881c19e4e41f56c44c4680b021d2751da3dc75b1a226f5dc5c813e746045.png" />
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>The meaning of shape in fcc and bcc lattices:</strong> Note that the 4x4x4 spacing refers to the number of corner sites, so it’s basically the same size and shape as would be obtained using <code class="docutils literal notranslate"><span class="pre">Cubic</span></code>, but it has the extra nodes placed between the corner sites.</p>
 </div>
-<p>The fcc and bcc lattices include labels indicating whether pores are are center, corner, or face pores, as well as labels for throats indidcating which type of pores they connect.  These labels can be used in the <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> and <code class="docutils literal notranslate"><span class="pre">plot_coordinates</span></code> functions to show only a portion of the pores and throats or to color them each differently.</p>
+<p>The fcc and bcc lattices include labels indicating whether pores are center, corner, or face pores, as well as labels for throats indicating which type of pores they connect.  These labels can be used in the <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> and <code class="docutils literal notranslate"><span class="pre">plot_coordinates</span></code> functions to show only a portion of the pores and throats or to color them each differently.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bcc</span><span class="p">)</span>
@@ -659,7 +657,7 @@ The following pores are labelled &#39;back&#39; AND &#39;left&#39;: [ 0  1  2  3
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
+net : &lt;openpnm.network.BodyCenteredCubic at 0x7fbcb3b27290&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -699,7 +697,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3567e7285c4e3317506e6c4cafaaae407d985e1db7571b99579cdabbacc52df0.png" src="../../_images/3567e7285c4e3317506e6c4cafaaae407d985e1db7571b99579cdabbacc52df0.png" />
+<img alt="../../_images/32fc0af613a313741562571268a7b745a1596ac0324ab8823ed77450eb269598.png" src="../../_images/32fc0af613a313741562571268a7b745a1596ac0324ab8823ed77450eb269598.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -712,7 +710,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/31c34a0810f3e5f4d6ce520523939fea8fd5eefdcaf4a443849ee3a1c36979e0.png" src="../../_images/31c34a0810f3e5f4d6ce520523939fea8fd5eefdcaf4a443849ee3a1c36979e0.png" />
+<img alt="../../_images/d1f20c9e591779fc13e591ce06d24911b1157217c33c964fc95b64b3fffeb011.png" src="../../_images/d1f20c9e591779fc13e591ce06d24911b1157217c33c964fc95b64b3fffeb011.png" />
 </div>
 </div>
 </section>
@@ -757,7 +755,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
 <img alt="../../_images/4915e210fd95f77e4fce0013298c77c146fb64b9888f89cc35edabb7e0d5c464.png" src="../../_images/4915e210fd95f77e4fce0013298c77c146fb64b9888f89cc35edabb7e0d5c464.png" />
 </div>
 </div>
-<p>It is also possible to create these lattices in cylindrical and spherical shapes.  This is done via the <code class="docutils literal notranslate"><span class="pre">shape</span></code> argument such that [x, y, z] assumes cartesian, [r, z] assumes cylindrical and [r] assumes spherical:</p>
+<p>It is also possible to create these lattices in cylindrical and spherical shapes.  This is done via the <code class="docutils literal notranslate"><span class="pre">shape</span></code> argument such that [x, y, z] assumes Cartesian, [r, z] assumes cylindrical and [r] assumes spherical:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cyl</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Voronoi</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
@@ -858,11 +856,14 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cubic">Cubic</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cubictemplates">CubicTemplates</a></li>
@@ -885,8 +886,8 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -894,9 +895,10 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2023, PMEAL.
+      © Copyright 2024, PMEAL.
       <br/>
     
   </p>
@@ -908,8 +910,9 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f277b61e020&gt;
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
 </p></div>
       
     </div>

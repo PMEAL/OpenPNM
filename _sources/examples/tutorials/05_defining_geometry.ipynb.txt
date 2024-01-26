@@ -7,9 +7,9 @@
    "source": [
     "# Assigning Geometric Properties\n",
     "\n",
-    "Geometric properties refer to the physical sizes of the pores and throats, such as pore diameter and throat lengths. The values are essential to the pore network modeling enterprize since they control all the transport and percolation behavior of the network. Unlike phase properties which can be normalized for, geometric properties define the network even more so than topological properties like connectivity. \n",
+    "Geometric properties refer to the physical sizes of the pores and throats, such as pore diameter and throat lengths. The values are essential to the pore network modeling enterprize since they control all the transport and percolation behavior of the network. Unlike phase properties which can be normalized for, geometric properties define the network even more than topological properties like connectivity. \n",
     "\n",
-    "Geometric properties *can* be calculated by various means, ranging from assigning random values to pores, extracting values from tomographic images. OpenPNM provides a library of functions, or 'pore-scale models' which can calcuate these geometric properties automatically. This tutorial will cover the following subjects:\n",
+    "Geometric properties *can* be calculated by various means, ranging from assigning random values to pores, to extracting values from tomographic images. OpenPNM provides a library of functions, or 'pore-scale models' which can calculate these geometric properties automatically. This tutorial will cover the following subjects:\n",
     "\n",
     "- Manually Calculating Pore and Throat Properties (⚠ Not Recommended!) \n",
     "- Using Pore-scale Models from the Library \n",
@@ -38,7 +38,7 @@
    "id": "f63bbaee",
    "metadata": {},
    "source": [
-    "Let's start by creating a blank Cubic network.  As we can see by printing it, there only coordinates, connections, and some labels, but no geometric properties:"
+    "Let's start by creating a blank Cubic network.  As we can see by printing it, there are only coordinates, connections, and some labels, but no geometric properties:"
    ]
   },
   {
@@ -109,7 +109,7 @@
     "\n",
     "```{warning} **Manual Calculation is Not Recommended**\n",
     "\n",
-    "  This is *not* the preferred way to do things, but does illustrate the processes very well. The preferred way is using pore-scale models, which allow for the automatic regeneration of dependent properities when something changes. \n",
+    "  This is *not* the preferred way to do things, but does illustrate the processes very well. The preferred way is using pore-scale models, which allow for the automatic regeneration of dependent properties  when something changes. \n",
     "  \n",
     "```\n",
     "\n",
@@ -325,7 +325,7 @@
    "source": [
     "```{tip}\n",
     "\n",
-    " **Indexing pore properties by conns:** Using the `conns` array to index into a pore property returns an Nt-by-2 array with the properties of the pores on the end of a throat in each column.  For instance, so see the diameter of the pore on each end of a throat, use `pn['pore.diameter'][pn.conns]`.  This approach is very powerful.  If you ever feel tempted to use a for-loop to scan over each pore, then inspect the properties of the neighboring throats, consider instead if you can \"loop\" over the throats then interogate each pore.  If yes, then you can use this conns-indexing trick.\n",
+    " **Indexing pore properties by conns:** Using the `conns` array to index into a pore property returns an Nt-by-2 array with the properties of the pores on the end of a throat in each column.  For instance, see the diameter of the pore on each end of a throat, use `pn['pore.diameter'][pn.conns]`.  This approach is very powerful.  If you ever feel tempted to use a for-loop to scan over each pore, then inspect the properties of the neighboring throats, consider instead if you can \"loop\" over the throats then interrogate  each pore.  If yes, then you can use this conns-indexing trick.\n",
     "    \n",
     "```"
    ]
@@ -431,7 +431,7 @@
    "metadata": {},
    "source": [
     "```{tip}\n",
-    "  Setting the `lo` and `hi` values of the the seeds prevents values that lie far out in the tail of a distribution from occurring which can lead to overly large pores or throats.\n",
+    "  Setting the `lo` and `hi` values of the seeds prevents values that lie far out in the tail of a distribution from occurring which can lead to overly large pores or throats.\n",
     "```"
    ]
   },
@@ -570,7 +570,7 @@
     "The above cell contains 3 complicated but powerful steps:\n",
     "1. The radii of the pores on each end of each throat are retrieved. `R1` and `R2` contain duplicates since each pore has numerous throats, so they appear once for each throat. This fact is used in step 3.\n",
     "2. The pore-to-pore distance is found by retrieving the coordinates of each pore, in the same was as was done for the radii. The Euclidean distance between each pair of pores is then computed by finding their difference (`np.diff`), squaring it, summing it (`np.sum`), then taking the square root (`np.sqrt`) of each. The `axis` argument is used throughout to tell numpy which way to apply the operation. This line is an example of how you must learn a *mini-language* to use numpy effectively. \n",
-    "3. The length of each throat is found as the spacing between pores, less the radii the pore on each end. This is where the duplicate values in `R1` and `R2` are necessary, since the radii of pore *i* must be subtracted from length of each of it's neighboring throats.\n",
+    "3. The length of each throat is found as the spacing between pores, less the radii of the pore on each end. This is where the duplicate values in `R1` and `R2` are necessary, since the radii of pore *i* must be subtracted from length of each of its neighboring throats.\n",
     "\n",
     "The main take-home message here is that throat properties can be computed in a vectorized way, even if some pore-properties are required. This avoids the use of a for-loop to scan through a list of throats followed by a nested for-loop to scan through each neighboring pore."
    ]
@@ -614,7 +614,7 @@
    "source": [
     "The above cell contains 2 lines of importance, which each do almost the same thing:\n",
     "1. The first line subtracts the throat cross-sectional area from each pore listed in the first column of the `pn.conns` array. Since a given pore is connected to potentially many throats, the subtraction must be done using `np.substract.at` which is a special version of the subtract function that subtracts every value in `At` from the locations in `SAp` indicated by `pn.conn[:, 0]`, and it does so in a cumulative fashion. Thus if pore *i* appears in `pn.conns[:, 0]` more than once, then more than one value of `At` is removed. The operation is performed *in-place* so that no array is returned.\n",
-    "2. Recall that `pn.conns` contains only the upper-triangular entries of the adjacency matrix, so this process only gets half of the connections. This means that the pore connectioned found in `pn.conns[:, 1]` must also be analyzed."
+    "2. Recall that `pn.conns` contains only the upper-triangular entries of the adjacency matrix, so this process only gets half of the connections. This means that the pore connections found in `pn.conns[:, 1]` must also be analyzed."
    ]
   },
   {
@@ -877,7 +877,7 @@
    "source": [
     "## Using Predefined Collections of Models\n",
     "\n",
-    "The process of selecting all the correct models from the `models` library can be tedious and error prone. In OpenPNM V3 we have introduced the concept of model *collections*, which are predfined dictionaries of models that form a complete and correct geometry. For instance, there is a collection called `spheres_and_cylinders`, which contains all the needed models to describe this geometry.  \n",
+    "The process of selecting all the correct models from the `models` library can be tedious and error prone. In OpenPNM V3 we have introduced the concept of model *collections*, which are predefined dictionaries of models that form a complete and correct geometry. For instance, there is a collection called `spheres_and_cylinders`, which contains all the needed models to describe this geometry.  \n",
     "\n",
     "These collections are found under `openpnm.models.collections`, and their use is outlined below:"
    ]
@@ -1225,7 +1225,7 @@
    "source": [
     "## Introduction to the Dependency Handler\n",
     "\n",
-    "Pore-scale models clearly make life easier since you don't have to produce the complex numpy functions by hand each time, but this is not even their best feature! The main benefit of pore-scale models is that they can be *recomputed* automatically. For instance, if we re-run the `'pore.seed'` model, then all the other models that depend on `'pore.seed'` will automatically be reomcomputed as well. This all occurs when we call `regenerate_models`, as demonstrated below:"
+    "Pore-scale models clearly make life easier since you don't have to produce the complex numpy functions by hand each time, but this is not even their best feature! The main benefit of pore-scale models is that they can be *recomputed* automatically. For instance, if we re-run the `'pore.seed'` model, then all the other models that depend on `'pore.seed'` will automatically be recomputed as well. This all occurs when we call `regenerate_models`, as demonstrated below:"
    ]
   },
   {
@@ -1292,7 +1292,7 @@
    "id": "8ed8615a",
    "metadata": {},
    "source": [
-    "As we can see above the initial values of `'pore.seed'` and `'throat.diameter'` are both changed after calling `regenerate_models()`. OpenPNM does this automaticall by inspecting the arguments to each function. \n",
+    "As we can see above the initial values of `'pore.seed'` and `'throat.diameter'` are both changed after calling `regenerate_models()`. OpenPNM does this automatically by inspecting the arguments to each function. \n",
     "\n",
     "Inspecting the `add_model` calls above we can see:\n",
     "\n",
@@ -1382,7 +1382,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.9.7"
+   "version": "3.10.13"
   }
  },
  "nbformat": 4,

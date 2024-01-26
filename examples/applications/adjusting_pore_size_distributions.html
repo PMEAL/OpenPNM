@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="../../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.3.0.dev6 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.4.0.dev3 documentation</title>
   
   
   
@@ -18,15 +18,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -36,11 +36,11 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=456f3c79"></script>
+    <script src="../../_static/documentation_options.js?v=b070f12b"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,10 +61,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -105,7 +104,7 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
 <div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
     <span class="fa-solid fa-bars"></span>
@@ -115,6 +114,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.3.0.dev6 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -140,13 +140,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -193,6 +188,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -206,6 +202,7 @@
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -238,6 +235,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -257,10 +255,13 @@ document.write(`
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -271,13 +272,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <ul class="bd-navbar-elements navbar-nav">
     
                     <li class="nav-item">
@@ -324,6 +320,7 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -355,7 +352,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -457,11 +455,11 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="adjusting-pore-size-distributions">
 <h1>Adjusting Pore Size Distributions<a class="headerlink" href="#adjusting-pore-size-distributions" title="Link to this heading">#</a></h1>
-<p>In this example we show how you can create your very own custom pore size distribution. We start by describing how the built in models work to calculate pore and throat sizes. Next we show how to add a custom pore size distribution using a weibull distribution. Included in this example is how we might visualize our pore and throat size distributions in a histogram.</p>
+<p>In this example we show how you can create your very own custom pore size distribution. We start by describing how the built-in models work to calculate pore and throat sizes. Next we show how to add a custom pore size distribution using a weibull distribution. Included in this example is how we might visualize our pore and throat size distributions in a histogram.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
@@ -546,7 +544,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
+net : &lt;openpnm.network.Cubic at 0x7f5dc281e070&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -585,7 +583,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 </div>
-<p>We can visualize the pore and throat size distribution from the built in geometry models using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>and their <code class="docutils literal notranslate"><span class="pre">hist</span></code> method.</p>
+<p>We can visualize the pore and throat size distribution from the built-in geometry models using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> and their <code class="docutils literal notranslate"><span class="pre">hist</span></code> method.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
@@ -597,7 +595,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/71a3dfcd1ef4f4dc8899d8461038e771019a5eb18822dc715361c8880d77cf67.png" src="../../_images/71a3dfcd1ef4f4dc8899d8461038e771019a5eb18822dc715361c8880d77cf67.png" />
+<img alt="../../_images/fba979b8862f5fa23fd0ec04f442bd627d56e967096c8bb4895ac2181a590b46.png" src="../../_images/fba979b8862f5fa23fd0ec04f442bd627d56e967096c8bb4895ac2181a590b46.png" />
 </div>
 </div>
 </section>
@@ -614,7 +612,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 </div>
-<p>We can generte a list of pores sizes by generating a list of numbers using the <code class="docutils literal notranslate"><span class="pre">rvs</span></code> method below. Note that for the <code class="docutils literal notranslate"><span class="pre">size</span></code> of the array we put the number of pores on the network, so that we can assign one value to each pore as follows:</p>
+<p>We can generate a list of pores sizes by generating a list of numbers using the <code class="docutils literal notranslate"><span class="pre">rvs</span></code> method below. Note that for the <code class="docutils literal notranslate"><span class="pre">size</span></code> of the array we put the number of pores on the network, so that we can assign one value to each pore as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">.4</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -643,7 +641,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0bb9c8d59ab9069015aa08cb6d0fe5895182018025ffe98f9ece590376875f9c.png" src="../../_images/0bb9c8d59ab9069015aa08cb6d0fe5895182018025ffe98f9ece590376875f9c.png" />
+<img alt="../../_images/93b88a8973db0ea64e74cd84dd4b746945cbee9f594790f251125227839e8f1f.png" src="../../_images/93b88a8973db0ea64e74cd84dd4b746945cbee9f594790f251125227839e8f1f.png" />
 </div>
 </div>
 </section>
@@ -679,7 +677,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 <blockquote>
 <div><p>OpenPNM will not break if this happens, but you’d need to check the consistency of the results very carefully.</p>
 </div></blockquote>
-<p>To ensure the thoats are always smaller than their connected pores, OpenPNM provides pore-scale model called <code class="docutils literal notranslate"><span class="pre">from_neighbor_pores</span></code>.  This can be used to either (a) fetch the minimum pore size (and maybe also scale that value down), or (b) fetch the seed values from the pores and use that in a distinct distribution. We will demonstrate the second approach.</p>
+<p>To ensure the throats are always smaller than their connected pores, OpenPNM provides pore-scale model called <code class="docutils literal notranslate"><span class="pre">from_neighbor_pores</span></code>.  This can be used to either (a) fetch the minimum pore size (and maybe also scale that value down), or (b) fetch the seed values from the pores and use that in a distinct distribution. We will demonstrate the second approach.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span>
@@ -692,7 +690,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 </div>
-<p>Here, the Weibull parameters were carefuly chosen to ensure a smaller distribution than the pore sizes, for reasons of geometrical consistency mentioned above. We can now visualize the resulting distribution.</p>
+<p>Here, the Weibull parameters were carefully chosen to ensure a smaller distribution than the pore sizes, for reasons of geometrical consistency mentioned above. We can now visualize the resulting distribution.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
@@ -704,7 +702,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/79fcf79ae8af0e13d8ce82ab489adc0a3ce366e75c7f89bf79eb559ee44d78f0.png" src="../../_images/79fcf79ae8af0e13d8ce82ab489adc0a3ce366e75c7f89bf79eb559ee44d78f0.png" />
+<img alt="../../_images/e8b0b917b125aa37dbc1ab66e844adf50efdb8e12b03786ba92759dc9a2c565a.png" src="../../_images/e8b0b917b125aa37dbc1ab66e844adf50efdb8e12b03786ba92759dc9a2c565a.png" />
 </div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
@@ -728,11 +726,11 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f607050df6a5eb675381f88d00ed979d7d993f7e14175fa3e29efdc70b94d5ac.png" src="../../_images/f607050df6a5eb675381f88d00ed979d7d993f7e14175fa3e29efdc70b94d5ac.png" />
+<img alt="../../_images/65143c42ecfc6de79f38f8bd80847bdb0b9b0fae344d25b74cd866f401d944bd.png" src="../../_images/65143c42ecfc6de79f38f8bd80847bdb0b9b0fae344d25b74cd866f401d944bd.png" />
 </div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
-<p>Plotting the network itself ahould ideally be done in Paraview, but a quick plot with <code class="docutils literal notranslate"><span class="pre">plot_networkx</span></code> shows the pore sizes.</p>
+<p>Plotting the network itself should ideally be done in Paraview, but a quick plot with <code class="docutils literal notranslate"><span class="pre">plot_networkx</span></code> shows the pore sizes.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
@@ -741,7 +739,7 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/78e23a25ee5575ec0b20d94d69e1a42e019c8630186ffbd71d5b568d5c0ca601.png" src="../../_images/78e23a25ee5575ec0b20d94d69e1a42e019c8630186ffbd71d5b568d5c0ca601.png" />
+<img alt="../../_images/cea607c93f6c6cdae8a13e86ce7cd93814cc0a7330aa8dbd3abe7164fbb76aaf.png" src="../../_images/cea607c93f6c6cdae8a13e86ce7cd93814cc0a7330aa8dbd3abe7164fbb76aaf.png" />
 </div>
 </div>
 </section>
@@ -761,11 +759,14 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network">Network</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry">Geometry</a></li>
@@ -790,8 +791,8 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -799,9 +800,10 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2023, PMEAL.
+      © Copyright 2024, PMEAL.
       <br/>
     
   </p>
@@ -813,8 +815,9 @@ net : &lt;openpnm.network.Cubic at 0x7faea714f100&gt;
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
 </p></div>
       
     </div>

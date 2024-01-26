@@ -3,7 +3,7 @@ Traceback (most recent call last):
     executenb(
   File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/nbclient/client.py", line 1314, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 173, in wrapped
+  File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
     return loop.run_until_complete(inner)
   File "/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
     return future.result()
@@ -15,21 +15,27 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import openpnm as op
-import porespy as ps
-import numpy as np
-import os
-from pathlib import Path
+path = Path(os.getcwd(),
+            '../../tests/fixtures/berea_100_to_300.npz')
+data = np.load(path.resolve())
+im = data['im']
 ------------------
 
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Cell [0;32mIn[1], line 2[0m
-[1;32m      1[0m [38;5;28;01mimport[39;00m [38;5;21;01mopenpnm[39;00m [38;5;28;01mas[39;00m [38;5;21;01mop[39;00m
-[0;32m----> 2[0m [38;5;28;01mimport[39;00m [38;5;21;01mporespy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mps[39;00m
-[1;32m      3[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
-[1;32m      4[0m [38;5;28;01mimport[39;00m [38;5;21;01mos[39;00m
+[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
+Cell [0;32mIn[2], line 3[0m
+[1;32m      1[0m path [38;5;241m=[39m Path(os[38;5;241m.[39mgetcwd(),
+[1;32m      2[0m             [38;5;124m'[39m[38;5;124m../../tests/fixtures/berea_100_to_300.npz[39m[38;5;124m'[39m)
+[0;32m----> 3[0m data [38;5;241m=[39m [43mnp[49m[38;5;241;43m.[39;49m[43mload[49m[43m([49m[43mpath[49m[38;5;241;43m.[39;49m[43mresolve[49m[43m([49m[43m)[49m[43m)[49m
+[1;32m      4[0m im [38;5;241m=[39m data[[38;5;124m'[39m[38;5;124mim[39m[38;5;124m'[39m]
 
-[0;31mModuleNotFoundError[0m: No module named 'porespy'
+File [0;32m/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/numpy/lib/npyio.py:427[0m, in [0;36mload[0;34m(file, mmap_mode, allow_pickle, fix_imports, encoding, max_header_size)[0m
+[1;32m    425[0m     own_fid [38;5;241m=[39m [38;5;28;01mFalse[39;00m
+[1;32m    426[0m [38;5;28;01melse[39;00m:
+[0;32m--> 427[0m     fid [38;5;241m=[39m stack[38;5;241m.[39menter_context([38;5;28;43mopen[39;49m[43m([49m[43mos_fspath[49m[43m([49m[43mfile[49m[43m)[49m[43m,[49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mrb[39;49m[38;5;124;43m"[39;49m[43m)[49m)
+[1;32m    428[0m     own_fid [38;5;241m=[39m [38;5;28;01mTrue[39;00m
+[1;32m    430[0m [38;5;66;03m# Code to distinguish from NumPy binary files and pickles.[39;00m
+
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '/home/runner/work/OpenPNM/OpenPNM/docs/tests/fixtures/berea_100_to_300.npz'
 
