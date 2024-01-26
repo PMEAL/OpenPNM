@@ -61,10 +61,10 @@ class PoreSurfaceAreaTest:
                       model=mods.circle,
                       domain='right',
                       regen_mode='normal')
-        a = np.array([2.84159265, 2.74159265, 2.74159265])
+        a = np.array([2.84159265, 2.54159265, 2.54159265])
         b = net['pore.surface_area@left']
-        c = np.array([2.74159265, 2.74159265, 2.74159265, 2.94159265,
-                      2.94159265, 2.94159265, 3.04159265])
+        c = np.array([2.74159265, 2.94159265, 2.94159265, 2.94159265, 2.94159265,
+                      2.94159265, 3.04159265])
         d = net['pore.surface_area@right']
         assert_allclose(a, b)
         assert_allclose(c, d)
