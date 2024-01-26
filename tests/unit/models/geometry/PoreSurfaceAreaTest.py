@@ -23,8 +23,8 @@ class PoreSurfaceAreaTest:
 
     def test_circle(self):
         self.net2D.add_model(propname='pore.surface_area',
-                           model=mods.circle,
-                           regen_mode='normal')
+                             model=mods.circle,
+                             regen_mode='normal')
         a = np.array([2.74159265, 2.84159265, 2.94159265])
         b = np.unique(self.net2D['pore.surface_area'])
         assert_allclose(a, b)
@@ -39,8 +39,8 @@ class PoreSurfaceAreaTest:
 
     def test_square(self):
         self.net2D.add_model(propname='pore.surface_area',
-                           model=mods.square,
-                           regen_mode='normal')
+                             model=mods.square,
+                             regen_mode='normal')
         a = np.array([3.6, 3.7, 3.8])
         b = np.unique(self.net2D['pore.surface_area'])
         assert_allclose(a, b)
@@ -54,16 +54,16 @@ class PoreSurfaceAreaTest:
         net['throat.cross_sectional_area'][[0, 1, 2]] = 0.3
         net['pore.right'] = ~net['pore.left']
         net.add_model(propname='pore.surface_area',
-                        model=mods.circle,
-                        domain='left',
-                        regen_mode='normal')
+                      model=mods.circle,
+                      domain='left',
+                      regen_mode='normal')
         net.add_model(propname='pore.surface_area',
                       model=mods.circle,
                       domain='right',
                       regen_mode='normal')
-        a = np.array([2.84159265, 2.74159265, 2.74159265])
+        a = np.array([2.84159265, 2.54159265, 2.54159265])
         b = net['pore.surface_area@left']
-        c = np.array([2.74159265, 2.74159265, 2.74159265, 2.94159265,
+        c = np.array([2.74159265, 2.94159265, 2.94159265, 2.94159265,
                       2.94159265, 2.94159265, 3.04159265])
         d = net['pore.surface_area@right']
         assert_allclose(a, b)

@@ -51,15 +51,31 @@ def spheres_and_cylinders(
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
         _raise_incompatible_data()
+
+    # If spheres do not overlap:
     L1 = np.sqrt(D1**2 - Dt**2) / 2
     L2 = np.sqrt(D2**2 - Dt**2) / 2
+    Lt = L_ctc - (L1 + L2)
 
-    # Handle throats w/ overlapping pores
-    _L1 = (4 * L_ctc**2 + D1**2 - D2**2) / (8 * L_ctc)
-    mask = L_ctc - 0.5 * (D1 + D2) < 0
-    L1[mask] = _L1[mask]
-    L2[mask] = (L_ctc - L1)[mask]
-    Lt = np.maximum(L_ctc - (L1 + L2), 1e-15)
+    if np.any(Lt < 0):  # Find pores that touch/overlap
+        # Find diameter of overlap between spheres
+        d = L_ctc
+        R1 = D1/2
+        R2 = D2/2
+        # Check distance to the intersection
+        L1_int = (d**2 - R2**2 + R1**2) / (2*d)
+        if np.any(L1_int < 0) or np.any(L1_int > L_ctc):
+            raise Exception('The pores overlap too much')
+        D_int = 2/(2*d) * np.sqrt(4*d**2 * R1**2 - (d**2 - R2**2 + R1**2)**2)
+        mask = D_int > Dt
+        if np.any(mask):
+            d = d[mask]
+            R1 = R1[mask]
+            R2 = R2[mask]
+            L1[mask] = (d**2 - R2**2 + R1**2) / (2*d)
+            L2[mask] = L_ctc[mask] - L1[mask]
+            Lt[mask] = 1e-15
+
     return np.vstack((L1, Lt, L2)).T
 
 

@@ -69,7 +69,6 @@ class BodyCenteredCubic(Network):
         Ps = self.pores(['left', 'right', 'top', 'bottom', 'front', 'back'])
         Ps = self.to_mask(pores=Ps)
         self['pore.surface'] = Ps
-        self['pore.coords'] *= np.array(spacing)
 
     def add_boundary_pores(self, labels, spacing):
         r"""

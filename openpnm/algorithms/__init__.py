@@ -1,3 +1,12 @@
+r"""
+Algorithms
+==========
+
+This module contains various algorithms for performing transport simulations
+
+
+"""
+
 from ._algorithm import *
 from ._transport import *
 
