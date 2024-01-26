@@ -21,10 +21,9 @@ class ConduitDiffusiveSizeFactorsTest:
                     'throat': SF[:, 1],
                     'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.93875728, 0.97459088]),
-            'throat': array([1.25663706e+14, 4.05813214e-01]),
-            'pore2': array([0.82884551, 0.94886745])
-        }
+            'pore1': array([1.06932839, 0.97459088]),
+            'throat': array([4.02746504, 0.40581321]),
+            'pore2': array([0.97459088, 0.94886745])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
 
@@ -34,10 +33,9 @@ class ConduitDiffusiveSizeFactorsTest:
                     'throat': SF[:, 1],
                     'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([1.53390798, 1.80140852]),
-            'throat': array([4.00000000e+14, 1.29174358e+00]),
-            'pore2': array([1.65097536, 2.07781253])
-        }
+            'pore1': array([1.62474893, 1.80140852]),
+            'throat': array([12.81981939,  1.29174358]),
+            'pore2': array([1.80140852, 2.07781253])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
 
@@ -112,10 +110,9 @@ class ConduitDiffusiveSizeFactorsTest:
                     'throat': SF[:, 1],
                     'pore2': SF[:, 2]}
         S_desired = {
-            'pore1': array([0.49260457, 0.77443401]),
-            'throat': array([1.25663706e+14, 4.05813214e-01]),
-            'pore2': array([0.563723, 0.84600371])
-        }
+            'pore1': array([0.69688454, 0.77443401]),
+            'throat': array([4.02746504, 0.40581321]),
+            'pore2': array([0.77443401, 0.84600371])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
 
