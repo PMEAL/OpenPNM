@@ -42,6 +42,7 @@ def sphere(
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns[:, 0], Tca)
     _np.subtract.at(value, network.conns[:, 1], Tca)
+    value = _np.clip(value, 1e-12, _np.inf)
     return value
 
 
@@ -72,6 +73,7 @@ def circle(
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns[:, 0], Tca)
     _np.subtract.at(value, network.conns[:, 1], Tca)
+    value = _np.clip(value, 1e-12, _np.inf)
     return value
 
 
@@ -99,6 +101,7 @@ def cube(
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns[:, 0], Tca)
     _np.subtract.at(value, network.conns[:, 1], Tca)
+    value = _np.clip(value, 1e-12, _np.inf)
     return value
 
 
@@ -126,4 +129,5 @@ def square(
     Tca = network[throat_cross_sectional_area]
     _np.subtract.at(value, network.conns[:, 0], Tca)
     _np.subtract.at(value, network.conns[:, 1], Tca)
+    value = _np.clip(value, 1e-12, _np.inf)
     return value
