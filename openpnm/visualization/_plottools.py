@@ -983,7 +983,7 @@ def set_mpl_style():  # pragma: no cover
     image_props = {'interpolation': 'none',
                    'cmap': 'viridis'}
     line_props = {'linewidth': 2,
-                  'markersize': 8,
+                  'markersize': 7,
                   'markerfacecolor': 'w'}
     font_props = {'size': sfont}
     axes_props = {'titlesize': lfont,
