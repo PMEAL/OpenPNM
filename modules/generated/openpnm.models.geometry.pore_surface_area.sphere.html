@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>sphere &#8212; OpenPNM 3.4.0.dev3 documentation</title>
+    <title>sphere &#8212; OpenPNM 3.4.1.dev3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../_static/documentation_options.js?v=b070f12b"></script>
+    <script src="../../_static/documentation_options.js?v=2f3265b1"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -128,8 +128,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.0.dev3 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.1.dev3 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.1.dev3 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -1989,7 +1989,7 @@ document.write(`
 <h1>sphere<a class="headerlink" href="#sphere" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.models.geometry.pore_surface_area.sphere">
-<span class="sig-name descname"><span class="pre">sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area/_funcs.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.sphere" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_diameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pore.diameter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_cross_sectional_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'throat.cross_sectional_area'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/models/geometry/pore_surface_area/_funcs.html#sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.models.geometry.pore_surface_area.sphere" title="Link to this definition">#</a></dt>
 <dd><p>Calculates internal surface area of pore bodies assuming they are spheres,
 then subtracts the areas of the neighboring throats</p>
 <dl class="field-list simple">
@@ -2003,6 +2003,8 @@ pore diameter values.</p>
 </dd>
 <dt>throat_cross_sectional_area<span class="classifier">str</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">network</span></code> containing the ndarray of
 throat cross-sectional area values.</p>
+</dd>
+<dt>amin<span class="classifier">float</span></dt><dd><p>The lower limit for surface area, useful for preventing</p>
 </dd>
 </dl>
 <dl class="field-list simple">
