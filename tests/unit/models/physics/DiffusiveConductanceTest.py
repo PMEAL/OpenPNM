@@ -120,6 +120,142 @@ class DiffusiveConductanceTest:
         desired = np.array([0.121193, 0.126131, 0.118578])
         assert_allclose(actual, desired, rtol=1e-5)
 
+    def test_spheres_and_cylinders(self):
+        pn = op.network.Cubic(shape=[2, 1, 1])
+        Dp1, Dp2 = 0.5, 0.25
+        Dt = 0.1
+        pn['pore.diameter'] = [Dp1, Dp2]
+        pn['throat.diameter'] = Dt
+
+        f = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
+        pn.add_model(propname='throat.diffusive_size_factors', model=f)
+        Scalc = pn['throat.diffusive_size_factors'].flatten()
+        # Pore 1
+        Lp1 = (Dp1/2)*np.cos(np.arcsin(Dt/Dp1))
+        Sp1 = 1/(np.pi*(Dp1/2))*np.arctanh(Lp1/(Dp1/2))
+        assert_allclose(1/Sp1, Scalc[0], rtol=1e-7)
+        # Pore 2
+        Lp2 = (Dp2/2)*np.cos(np.arcsin(Dt/Dp2))
+        Sp2 = 1/(np.pi*(Dp2/2))*np.arctanh(Lp2/(Dp2/2))
+        assert_allclose(1/Sp2, Scalc[2], rtol=1e-7)
+        # Throat
+        Lt = 1 - Lp1 - Lp2
+        St = Lt/(np.pi*(Dt/2)**2)
+        assert_allclose(1/St, Scalc[1], rtol=1e-6)
+        # Finally check conductance
+        f = op.models.physics.diffusive_conductance.generic_diffusive
+        phase = op.phase.Phase(network=pn)
+        phase['pore.diffusivity'] = 1.0
+        phase['throat.diffusivity'] = 1.0
+        phase.add_model(propname='throat.diffusive_conductance', model=f)
+        Gcalc = phase['throat.diffusive_conductance'][0]
+        G = (Sp1 + St + Sp2)**-1
+        assert_allclose(G, Gcalc, rtol=1e-7)
+
+    def test_spheres_and_cylinders_oversized(self):
+        pn = op.network.Cubic(shape=[2, 1, 1])
+        Dp1, Dp2 = 1.75, 1.25
+        Dt = 0.1
+        pn['pore.diameter'] = [Dp1, Dp2]
+        pn['throat.diameter'] = Dt
+
+        f = op.models.geometry.diffusive_size_factors.spheres_and_cylinders
+        pn.add_model(propname='throat.diffusive_size_factors', model=f)
+        Scalc = pn['throat.diffusive_size_factors'].flatten()
+        # Pore 1
+        Lp1 = (Dp1/2)*np.cos(np.arcsin(Dt/Dp1))
+        Sp1 = 1/(np.pi*(Dp1/2))*np.arctanh(Lp1/(Dp1/2))
+        assert_allclose(1/Sp1, Scalc[0], rtol=1e-7)
+        # Pore 2
+        Lp2 = (Dp2/2)*np.cos(np.arcsin(Dt/Dp2))
+        Sp2 = 1/(np.pi*(Dp2/2))*np.arctanh(Lp2/(Dp2/2))
+        assert_allclose(1/Sp2, Scalc[2], rtol=1e-7)
+        # Throat
+        Lt = 1 - Lp1 - Lp2
+        St = Lt/(np.pi*(Dt/2)**2)
+        assert_allclose(1/St, Scalc[1], rtol=1e-6)
+        # Finally check conductance
+        f = op.models.physics.diffusive_conductance.generic_diffusive
+        phase = op.phase.Phase(network=pn)
+        phase['pore.diffusivity'] = 1.0
+        phase['throat.diffusivity'] = 1.0
+        phase.add_model(propname='throat.diffusive_conductance', model=f)
+        Gcalc = phase['throat.diffusive_conductance'][0]
+        G = (Sp1 + St + Sp2)**-1
+        assert_allclose(G, Gcalc, rtol=1e-7)
+
+    def test_cones_and_cylinders(self):
+        pn = op.network.Cubic(shape=[2, 1, 1])
+        Dp1, Dp2 = 0.5, 0.25
+        Dt = 0.1
+        pn['pore.diameter'] = [Dp1, Dp2]
+        pn['throat.diameter'] = Dt
+
+        f = op.models.geometry.diffusive_size_factors.cones_and_cylinders
+        pn.add_model(propname='throat.diffusive_size_factors', model=f)
+        Scalc = pn['throat.diffusive_size_factors'].flatten()
+        # Pore 1
+        Sp1 = (Dp1/2)/(np.pi*(Dp1/2*Dt/2))
+        assert_allclose(1/Sp1, Scalc[0], rtol=1e-7)
+        # Pore 2
+        Sp2 = (Dp2/2)/(np.pi*(Dp2/2*Dt/2))
+        assert_allclose(1/Sp2, Scalc[2], rtol=1e-7)
+        # Throat
+        Lt = 1 - Dp1/2 - Dp2/2
+        St = Lt/(np.pi*(Dt/2)**2)
+        assert_allclose(1/St, Scalc[1], rtol=1e-6)
+        # Finally check conductance
+        f = op.models.physics.diffusive_conductance.generic_diffusive
+        phase = op.phase.Phase(network=pn)
+        phase['pore.diffusivity'] = 1.0
+        phase['throat.diffusivity'] = 1.0
+        phase.add_model(propname='throat.diffusive_conductance', model=f)
+        Gcalc = phase['throat.diffusive_conductance'][0]
+        G = (Sp1 + St + Sp2)**-1
+        assert_allclose(G, Gcalc, rtol=1e-7)
+
+    def test_intersecting_cones(self):
+        pn = op.network.Cubic(shape=[2, 1, 1])
+        Dp1, Dp2 = 0.5, 0.25
+        Dt = 0.1
+        pn['pore.diameter'] = [Dp1, Dp2]
+        pn['throat.diameter'] = Dt
+        pn['throat.coords'] = [[1.0, 0.5, 0.5]]
+
+        f = op.models.geometry.diffusive_size_factors.intersecting_cones
+        pn.add_model(propname='throat.diffusive_size_factors', model=f)
+        Scalc = pn['throat.diffusive_size_factors'].flatten()
+        # Pore 1
+        Lp1 = 0.5
+        Sp1 = (Lp1)/(np.pi*(Dp1/2*Dt/2))
+        assert_allclose(1/Sp1, Scalc[0], rtol=1e-7)
+        # Pore 2
+        Lp2 = 0.5
+        Sp2 = (Lp2)/(np.pi*(Dp2/2*Dt/2))
+        assert_allclose(1/Sp2, Scalc[2], rtol=1e-7)
+        # Throat
+        St = 0
+        # Finally check conductance
+        f = op.models.physics.diffusive_conductance.generic_diffusive
+        phase = op.phase.Phase(network=pn)
+        phase['pore.diffusivity'] = 1.0
+        phase['throat.diffusivity'] = 1.0
+        phase.add_model(propname='throat.diffusive_conductance', model=f)
+        Gcalc = phase['throat.diffusive_conductance'][0]
+        G = (Sp1 + St + Sp2)**-1
+        assert_allclose(G, Gcalc, rtol=1e-7)
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
 
