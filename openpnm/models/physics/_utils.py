@@ -54,11 +54,12 @@ def _poisson_conductance(phase,
         g1 = D1 * F1
         gt = Dt * Ft
         g2 = D2 * F2
-        return 1 / (1 / g1 + 1 / gt + 1 / g2)
+        G = 1 / (1 / g1 + 1 / gt + 1 / g2)
     else:
         # Otherwise, i.e., the size factor for the entire conduit is only known
         F = network[size_factors]
-        return Dt * F
+        G = Dt * F
+    return vstack((G, G)).T
 
 
 def _get_key_props(phase=None,
