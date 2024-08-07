@@ -85,7 +85,7 @@ def get_centroid(pts, mode='rigorous'):
     if mode == 'rigorous':
         tri = sptl.Delaunay(pts)
         CoM = center_of_mass(simplices=tri.simplices.astype(np.int_),
-                             points=tri.points.astype(np.float_))
+                             points=tri.points.astype(float))
     elif mode == 'fast':
         CoM = pts.mean(axis=0)
     return CoM
@@ -99,11 +99,11 @@ def get_centroid(pts, mode='rigorous'):
 # @njit
 def center_of_mass(simplices, points):
     A = []
-    centroids = np.zeros((simplices.shape[0], points.shape[1]), dtype=np.float_)
+    centroids = np.zeros((simplices.shape[0], points.shape[1]), dtype=float)
     for i, s in enumerate(simplices):
         xy = points[s]
         cen = np.sum(points[s], axis=0)/simplices.shape[1]
-        centroids[i, :] = cen.astype(np.float_)
+        centroids[i, :] = cen.astype(float)
         if xy.shape[1] == 2:  # In 2D
             # Use Heron's formula to find area of arbitrary triangle
             a = np.sqrt((xy[0, 0] - xy[1, 0])**2 + (xy[0, 1] - xy[1, 1])**2)
@@ -117,9 +117,9 @@ def center_of_mass(simplices, points):
             temp = np.abs(np.linalg.det(d))/6.0
             # temp = 0
         A.append(temp)
-    A = np.array(A, dtype=np.float_)
+    A = np.array(A, dtype=float)
     CoM = np.array([(centroids[:, i]*A/A.sum()*len(A)).mean()
-                    for i in range(centroids.shape[1])], dtype=np.float_)
+                    for i in range(centroids.shape[1])], dtype=float)
     return CoM
 
 

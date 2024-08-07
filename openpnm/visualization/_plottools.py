@@ -602,7 +602,7 @@ def plot_tutorial(network,
     fig = plt.gcf()
     fig.tight_layout()
     dims = op.topotools.dimensionality(network)
-    xy_range = network.coords.ptp(axis=0)[dims]
+    xy_range = np.ptp(network.coords, axis=0)[dims]
     aspect_ratio = xy_range[0] / xy_range[1]
     fig.set_size_inches(5, 5 / aspect_ratio)
 
@@ -781,7 +781,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     # Transform points to satisfy origin at (0, 0, 0)
     xyz0 = xyz.min(axis=0) - delta
     xyz += -xyz0
-    res = (xyz.ptp(axis=0).max() + 2 * delta) / max_dim
+    res = (np.ptp(xyz, axis=0).max() + 2 * delta) / max_dim
     shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2 * extra_clearance
 
     # Transforming from real coords to matrix coords
