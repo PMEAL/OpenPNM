@@ -33,12 +33,12 @@ geometry
       :toctree:
       :recursive:
    
-      openpnm.models.collections.geometry.circles_and_rectangles
-      openpnm.models.collections.geometry.cones_and_cylinders
-      openpnm.models.collections.geometry.cubes_and_cuboids
-      openpnm.models.collections.geometry.pyramids_and_cuboids
-      openpnm.models.collections.geometry.spheres_and_cylinders
-      openpnm.models.collections.geometry.squares_and_rectangles
-      openpnm.models.collections.geometry.trapezoids_and_rectangles
+      circles_and_rectangles
+      cones_and_cylinders
+      cubes_and_cuboids
+      pyramids_and_cuboids
+      spheres_and_cylinders
+      squares_and_rectangles
+      trapezoids_and_rectangles
    
    

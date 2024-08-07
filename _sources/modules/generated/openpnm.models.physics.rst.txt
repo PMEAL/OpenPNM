@@ -33,14 +33,14 @@ physics
       :toctree:
       :recursive:
    
-      openpnm.models.physics.ad_dif_conductance
-      openpnm.models.physics.capillary_pressure
-      openpnm.models.physics.diffusive_conductance
-      openpnm.models.physics.electrical_conductance
-      openpnm.models.physics.hydraulic_conductance
-      openpnm.models.physics.meniscus
-      openpnm.models.physics.multiphase
-      openpnm.models.physics.source_terms
-      openpnm.models.physics.thermal_conductance
+      ad_dif_conductance
+      capillary_pressure
+      diffusive_conductance
+      electrical_conductance
+      hydraulic_conductance
+      meniscus
+      multiphase
+      source_terms
+      thermal_conductance
    
    

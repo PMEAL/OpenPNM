@@ -8,44 +8,44 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Size Factors and Transport Conductance &#8212; OpenPNM 3.4.1.dev3 documentation</title>
+    <title>Size Factors and Transport Conductance &#8212; OpenPNM 3.4.1.dev4 documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../../_static/documentation_options.js?v=2f3265b1"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/documentation_options.js?v=e4bbf57c"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reference/simulations/size_factors_and_transport_conductance';</script>
@@ -63,27 +63,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -105,18 +101,25 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
 
+  
+    
   
 
 <a class="navbar-brand logo" href="../../../index.html">
@@ -130,8 +133,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.1.dev3 documentation - Home"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.1.dev3 documentation - Home"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.1.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.1.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -143,43 +146,43 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../installation.html">
-                        Installation
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../modules/index.html">
-                        Module Reference
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../../../_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modules/index.html">
+    Module Reference
+  </a>
+</li>
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
-                    Issue Tracker
-                  </a>
-                </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
-                    Get Help
-                  </a>
-                </li>
-                
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+    Get Help
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -193,7 +196,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -207,15 +210,15 @@
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -226,7 +229,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -240,7 +243,7 @@ document.write(`
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -251,9 +254,9 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -274,46 +277,49 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
-<nav class="navbar-nav">
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../installation.html">
-                        Installation
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../../modules/index.html">
-                        Module Reference
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../../../_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modules/index.html">
+    Module Reference
+  </a>
+</li>
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
-                    Issue Tracker
-                  </a>
-                </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
-                    Get Help
-                  </a>
-                </li>
-                
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+    Get Help
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -325,15 +331,15 @@ document.write(`
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -344,7 +350,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -360,7 +366,7 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_numerical_python_primer.html">Numerical Python Primer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_network_generation_and_visualization.html">Generating Networks and Quick Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_data_and_topology_storage.html">Storage of Network Data and Topology</a></li>
@@ -372,8 +378,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/09_simulating_invasion.html">Simulating Invasion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_visualization_options.html">Visualization options</a></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../_examples/applications.html">Applications</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../_examples/applications.html">Applications</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/absolute_permeability.html">Predicting absolute permeability</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
@@ -385,8 +391,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/relative_permeability.html">Predicting relative permeability</a></li>
 </ul>
-</li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../_examples/reference.html">Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../_examples/reference.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../architecture/pore_scale_models.html">Pore-Scale Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture/settings_attribute_machinery.html">Settings Attribute Machinery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture/workspace_and_projects.html">The Workspace and Projects</a></li>
@@ -398,7 +404,7 @@ document.write(`
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Size Factors and Transport Conductance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transient_transport.html">Transient Transport</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -413,13 +419,13 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -428,7 +434,7 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -464,7 +470,8 @@ document.write(`
 <section id="conductance-in-pore-network-models">
 <h2>Conductance in pore network models<a class="headerlink" href="#conductance-in-pore-network-models" title="Link to this heading">#</a></h2>
 <p>Consider an arbitrary pore network model such as the one shown below:</p>
-<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png"><img alt="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" src="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png"><img alt="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" src="https://user-images.githubusercontent.com/14086031/188179071-01413efc-ed04-4920-b9b1-d99288ced47b.png" style="width: 400px;" />
+</a>
 <p>For simulating transport in this network, we need to know lots of parameters such as pore sizes, physical properties, etc, but ultimately it comes down to knowing the conductance of the “conduits” in the network. For example, consider simulating Fickian diffusion in a pore network model under steady state conditions. Writing a mass balance around an arbitrary pore <span class="math notranslate nohighlight">\(i\)</span>, we have:</p>
 <div class="math notranslate nohighlight">
 \[
@@ -475,7 +482,8 @@ document.write(`
 <section id="conductance-of-a-single-conduit">
 <h2>Conductance of a single conduit<a class="headerlink" href="#conductance-of-a-single-conduit" title="Link to this heading">#</a></h2>
 <p>Consider a conduit in a pore network model, as shown by the following figure (we assumed spherical pores and cylindrical throats, but this is not necessary):</p>
-<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" />
+</a>
 <p>where L is length, A is the cross-sectional area, and the subscripts <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(k\)</span>, and <span class="math notranslate nohighlight">\(ik\)</span> denote pore <span class="math notranslate nohighlight">\(i\)</span>, pore <span class="math notranslate nohighlight">\(k\)</span>, and throat <span class="math notranslate nohighlight">\(ik\)</span>. Now, consider the diffusional mass transfer between pore <span class="math notranslate nohighlight">\(i\)</span> and pore <span class="math notranslate nohighlight">\(k\)</span> with a mass flow rate of <span class="math notranslate nohighlight">\(m_{ik}\)</span>, which can be described by the following equation:</p>
 <div class="math notranslate nohighlight" id="equation-mass-flow-rate">
 <span class="eqno">(1)<a class="headerlink" href="#equation-mass-flow-rate" title="Link to this equation">#</a></span>\[
@@ -497,7 +505,8 @@ R_{ik} = R_i^p + R_k^p + R_{ik}^t
 1/g_{ik} = 1/g_i^p + 1/g_k^p + 1/g_{ik}^t
 \]</div>
 <p>For simplicity, let’s assume that the shape of the pores and throats are cylindrical as shown in the figure below:</p>
-<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png"><img alt="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" src="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" style="width: 750px;" /></a>
+<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png"><img alt="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" src="https://user-images.githubusercontent.com/14086031/188184909-079977ba-d9a8-4760-99f7-4019b4e8f2a9.png" style="width: 750px;" />
+</a>
 <p>Based on this assumption, the diffusive conductance of each element can be expressed as (more on how to derive these equations comes later):</p>
 <div class="math notranslate nohighlight" id="equation-diffusive-size-factors-cylindrical">
 <span class="eqno">(3)<a class="headerlink" href="#equation-diffusive-size-factors-cylindrical" title="Link to this equation">#</a></span>\[
@@ -601,7 +610,8 @@ ncylinders_in_series
 <h2>Deriving the size factor for arbitrary-shaped pores and throats<a class="headerlink" href="#deriving-the-size-factor-for-arbitrary-shaped-pores-and-throats" title="Link to this heading">#</a></h2>
 <p>In this section, we will derive the equation for the size factor for arbitrary-shaped pores and throats, then we will apply it to the case of cylindrical pores and throats to retrieve the equations we used in the previous section.</p>
 <p>Consider the following conduit, which consists of pore <span class="math notranslate nohighlight">\(i\)</span>, throat <span class="math notranslate nohighlight">\(ik\)</span>, and pore <span class="math notranslate nohighlight">\(k\)</span>:</p>
-<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png"><img alt="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" src="https://user-images.githubusercontent.com/14086031/187992821-94dee392-25a1-4fba-bce4-6ee8be8c22f2.png" style="width: 500px;" />
+</a>
 <p>Note that the choice of spheres and cylinders in the above figure is arbitrary and will not be taken into account in the derivation.</p>
 <section id="diffusive-size-factor">
 <h3>Diffusive size factor<a class="headerlink" href="#diffusive-size-factor" title="Link to this heading">#</a></h3>
@@ -739,6 +749,8 @@ I_p^* = \frac{1}{4 \pi}
 <p>So far, we have derived individual equations for the size factor of each conduit element as well the entire conduit (based on resistors in series model). Note that eventually, only the size factor of the entire conduit is used by the algorithms, although as we discussed, it is directly calculated from the size factors of the individual elements.</p>
 <p>Almost all of the built-in size factor models in OpenPNM return an Nt by 3 array, where Nt is the number of conduits (same as the number of throats!). The first column is the size factor of the pore on the left side of the conduit, the second column is the size factor of the throat, and the third column is the size factor of the pore on the right side of the conduit.</p>
 <p>However, we do have one model (at the time of writing this notebook) that uses a machine learning method <a class="footnote-reference brackets" href="#misghaian-2022" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> to predict the diffusive size factor of the <strong>entire conduit</strong> directly from a voxel image of the porous medium. For this reason, it only returns an Nt by 1 vector. Our built-in conductance models (which take in the size factor and physical properties as input and return the conductance) are designed to work with both types of size factor models.</p>
+</section>
+</section>
 <hr class="footnotes docutils" />
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="akbari-2011" role="doc-footnote">
@@ -758,8 +770,6 @@ I_p^* = \frac{1}{4 \pi}
 <p>Misaghian, Niloo, et al. “Prediction of diffusional conductance in extracted pore network models using convolutional neural networks.” Computers &amp; Geosciences 162 (2022): 105086.</p>
 </aside>
 </aside>
-</section>
-</section>
 
 
                 </article>
@@ -809,8 +819,8 @@ I_p^* = \frac{1}{4 \pi}
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -835,7 +845,7 @@ I_p^* = \frac{1}{4 \pi}
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
 </p></div>
       
     </div>

@@ -33,7 +33,7 @@ physics
       :toctree:
       :recursive:
    
-      openpnm.models.collections.physics.basic
-      openpnm.models.collections.physics.standard
+      basic
+      standard
    
    

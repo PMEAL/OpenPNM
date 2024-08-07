@@ -40,16 +40,16 @@ phase
       :toctree:
       :recursive:
    
-      openpnm.models.phase.critical_props
-      openpnm.models.phase.density
-      openpnm.models.phase.diffusivity
-      openpnm.models.phase.heat_capacity
-      openpnm.models.phase.misc
-      openpnm.models.phase.mixtures
-      openpnm.models.phase.partition_coefficient
-      openpnm.models.phase.surface_tension
-      openpnm.models.phase.thermal_conductivity
-      openpnm.models.phase.vapor_pressure
-      openpnm.models.phase.viscosity
+      critical_props
+      density
+      diffusivity
+      heat_capacity
+      misc
+      mixtures
+      partition_coefficient
+      surface_tension
+      thermal_conductivity
+      vapor_pressure
+      viscosity
    
    

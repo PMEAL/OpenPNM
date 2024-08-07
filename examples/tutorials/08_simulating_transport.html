@@ -8,44 +8,44 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.4.1.dev3 documentation</title>
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.4.1.dev4 documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
-  <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=2f3265b1"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/documentation_options.js?v=e4bbf57c"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/design-tabs.js?v=36754332"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/tutorials/08_simulating_transport';</script>
@@ -63,27 +63,23 @@
 
   
   
-  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -105,18 +101,25 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
 
+  
+    
   
 
 <a class="navbar-brand logo" href="../../index.html">
@@ -130,8 +133,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.1.dev3 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.1.dev3 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.4.1.dev4 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.4.1.dev4 documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -143,43 +146,43 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../installation.html">
-                        Installation
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../modules/index.html">
-                        Module Reference
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../../_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../modules/index.html">
+    Module Reference
+  </a>
+</li>
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
-                    Issue Tracker
-                  </a>
-                </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
-                    Get Help
-                  </a>
-                </li>
-                
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+    Get Help
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -193,7 +196,7 @@
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -207,15 +210,15 @@
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -226,7 +229,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -240,7 +243,7 @@ document.write(`
 
  <script>
  document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
     <span class="search-button__default-text">Search</span>
     <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
@@ -251,9 +254,9 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
@@ -274,46 +277,49 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
-<nav class="navbar-nav">
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../installation.html">
-                        Installation
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../modules/index.html">
-                        Module Reference
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../../_examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../modules/index.html">
+    Module Reference
+  </a>
+</li>
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
-                    Issue Tracker
-                  </a>
-                </li>
-                
 
-                <li class="nav-item">
-                  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
-                    Get Help
-                  </a>
-                </li>
-                
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../_examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/issues">
+    Issue Tracker
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/PMEAL/OpenPNM/discussions">
+    Get Help
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -325,15 +331,15 @@ document.write(`
 
 <script>
 document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
   </button>
 `);
 </script></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -344,7 +350,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/PMEAL/OpenPNM" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
@@ -360,7 +366,7 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../_examples/tutorials.html">10 Steps to Learn OpenPNM</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="01_numerical_python_primer.html">Numerical Python Primer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_network_generation_and_visualization.html">Generating Networks and Quick Visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_data_and_topology_storage.html">Storage of Network Data and Topology</a></li>
@@ -372,8 +378,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="09_simulating_invasion.html">Simulating Invasion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="10_visualization_options.html">Visualization options</a></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/applications.html">Applications</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/applications.html">Applications</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../applications/absolute_permeability.html">Predicting absolute permeability</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
@@ -385,8 +391,8 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../applications/relative_diffusivity.html">Obtaining Relative Diffusivity Curves</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/relative_permeability.html">Predicting relative permeability</a></li>
 </ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/reference.html">Reference</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../_examples/reference.html">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/architecture/pore_scale_models.html">Pore-Scale Models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/architecture/settings_attribute_machinery.html">Settings Attribute Machinery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/architecture/workspace_and_projects.html">The Workspace and Projects</a></li>
@@ -398,7 +404,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/simulations/size_factors_and_transport_conductance.html">Size Factors and Transport Conductance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/simulations/transient_transport.html">Transient Transport</a></li>
 </ul>
-</li>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -413,13 +419,13 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -428,7 +434,7 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -480,7 +486,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
+net : &lt;openpnm.network.Demo at 0x7eff14835da0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -540,7 +546,7 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7fc6c80d85e0&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7eff139a9b70&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -596,16 +602,16 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fc6c80d85e0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[5.17774155e-15 4.32563283e-14 4.23115961e-14 5.53240830e-14
- 2.51424895e-15 2.39394208e-15 9.20259822e-15 1.00439200e-14
- 6.61702130e-15 1.38987405e-15 1.35774102e-15 5.42856431e-15
- 6.91071517e-15 8.46420127e-15 2.34135177e-14 1.09814325e-14
- 1.24347610e-14 1.15170466e-14 1.20213371e-14 7.96516839e-15
- 5.07225517e-15 2.56417254e-15 3.08067613e-14 9.74387823e-15
- 6.95474966e-14 7.83751250e-15 2.15267100e-15 1.54141439e-15
- 5.43421668e-15 9.91167311e-15 6.90703966e-15 6.62052663e-15
- 1.73221324e-15 5.82544371e-15 8.26488592e-15 1.10804240e-14
- 7.71509891e-15 1.26775566e-14 2.21254891e-14 6.71591108e-15]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.54558512e-15 3.18947878e-15 2.97814011e-15 1.20405922e-14
+ 4.84207833e-15 5.40095093e-15 2.89298077e-15 2.62723714e-15
+ 4.75218276e-15 1.33627764e-14 1.26606984e-14 1.33560616e-14
+ 2.06610098e-14 4.60632964e-14 3.87574263e-15 3.36136934e-15
+ 4.03338809e-14 2.49032644e-14 2.31143441e-14 1.67616009e-14
+ 1.35424056e-15 5.59156247e-15 3.08486119e-15 2.79330585e-15
+ 9.83739963e-15 4.63291622e-15 4.96723740e-15 3.16838524e-14
+ 2.65898265e-15 1.14609175e-14 4.92714044e-15 1.38224533e-14
+ 3.51107262e-14 3.38188055e-15 1.23866166e-14 2.00683796e-14
+ 5.05007291e-14 2.28968293e-14 3.90715744e-15 1.08462886e-14]
 </pre></div>
 </div>
 </div>
@@ -665,7 +671,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fc6c80d85e0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7eff139a9990&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -695,7 +701,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7eff139a9990&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -757,7 +763,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7eff139a9990&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -783,8 +789,8 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([158743.29503066, 158878.35773512, 156732.56588817, 153839.330863  ,
-       154823.32126502])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([149924.08068297, 149007.49511508, 149852.25674747, 152146.42671057,
+       151406.66977789])
 </pre></div>
 </div>
 </div>
@@ -805,7 +811,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc6c80d9490&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
+net : &lt;openpnm.network.Demo at 0x7eff14835da0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -858,46 +864,46 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.02039120e-16, 4.62471188e-18, 1.93770519e-16],
-       [4.90093817e-16, 3.86361608e-17, 4.51955394e-16],
-       [4.51955394e-16, 3.77923346e-17, 4.73008308e-16],
-       [5.13012612e-16, 4.94149701e-17, 5.81274008e-16],
-       [1.35663105e-16, 2.24570440e-18, 6.17747778e-17],
-       [6.17747778e-17, 2.13824740e-18, 1.20697663e-16],
-       [2.19673494e-16, 8.21967742e-18, 1.61811680e-16],
-       [1.61811680e-16, 8.97113842e-18, 2.63941093e-16],
-       [1.39003219e-16, 5.91026352e-18, 1.44261496e-16],
-       [7.12260995e-17, 1.24142292e-18, 4.49681644e-17],
-       [4.49681644e-17, 1.21272199e-18, 6.48053525e-17],
-       [1.20158545e-16, 4.84874450e-18, 1.33408896e-16],
-       [1.64644894e-16, 6.17258823e-18, 1.39056217e-16],
-       [1.39056217e-16, 7.56014795e-18, 2.59863055e-16],
-       [4.04213557e-16, 2.09127420e-17, 2.83030088e-16],
-       [2.18934742e-16, 9.80851608e-18, 1.88891381e-16],
-       [1.94914510e-16, 1.11066160e-17, 2.68188118e-16],
-       [2.59322348e-16, 1.02869218e-17, 1.84648847e-16],
-       [1.84648847e-16, 1.07373495e-17, 2.82305601e-16],
-       [2.35723654e-16, 7.11441630e-18, 1.38129245e-16],
-       [1.02039120e-16, 4.53049240e-18, 1.85669934e-16],
-       [1.41503475e-16, 2.29029570e-18, 6.17747778e-17],
-       [3.97232831e-16, 2.75163203e-17, 3.69294461e-16],
-       [2.48813267e-16, 8.70314383e-18, 1.61811680e-16],
-       [6.41428071e-16, 6.21191944e-17, 5.99475942e-16],
-       [2.25036784e-16, 7.00039521e-18, 1.39003219e-16],
-       [6.17747778e-17, 1.92274625e-18, 8.67498683e-17],
-       [9.89339997e-17, 1.37677738e-18, 4.49681644e-17],
-       [1.33869119e-16, 4.85379314e-18, 1.20158545e-16],
-       [2.62413969e-16, 8.85301670e-18, 1.60307514e-16],
-       [1.39003219e-16, 6.16930530e-18, 1.64605565e-16],
-       [1.44296623e-16, 5.91339446e-18, 1.39056217e-16],
-       [4.49681644e-17, 1.54719718e-18, 1.27701360e-16],
-       [1.20158545e-16, 5.20323359e-18, 1.65086800e-16],
-       [1.60307514e-16, 7.38212129e-18, 1.70067124e-16],
-       [2.03785305e-16, 9.89693437e-18, 1.94914510e-16],
-       [1.39056217e-16, 6.89105650e-18, 2.17455215e-16],
-       [3.10038184e-16, 1.13234788e-17, 1.84648847e-16],
-       [2.83030088e-16, 1.97622866e-17, 3.68105925e-16],
-       [1.54765439e-16, 5.99859098e-18, 1.38129245e-16]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[4.38545225e-17, 1.38050264e-18, 1.06785223e-16],
+       [1.48106343e-16, 2.84881357e-18, 7.38302452e-17],
+       [7.38302452e-17, 2.66004779e-18, 1.24650750e-16],
+       [2.32115151e-16, 1.07545480e-17, 2.00451915e-16],
+       [1.28557738e-16, 4.32490053e-18, 1.10248522e-16],
+       [1.10248522e-16, 4.82408048e-18, 1.75588638e-16],
+       [1.32947106e-16, 2.58398423e-18, 7.05025573e-17],
+       [7.05025573e-17, 2.34662443e-18, 9.99996095e-17],
+       [1.06795846e-16, 4.24460662e-18, 1.36807773e-16],
+       [2.09004938e-16, 1.19355109e-17, 2.64511102e-16],
+       [2.58296909e-16, 1.13084212e-17, 2.01183779e-16],
+       [2.01183779e-16, 1.19295133e-17, 2.88426024e-16],
+       [2.77160707e-16, 1.84542269e-17, 3.38573365e-16],
+       [4.78017564e-16, 4.11433194e-17, 4.93371460e-16],
+       [1.66372871e-16, 3.46177823e-18, 8.38662968e-17],
+       [8.38662968e-17, 3.00234467e-18, 1.13719085e-16],
+       [4.09911967e-16, 3.60258573e-17, 5.13733245e-16],
+       [4.17879266e-16, 2.22433703e-17, 2.94135150e-16],
+       [2.94135150e-16, 2.06455229e-17, 3.69453995e-16],
+       [3.21241050e-16, 1.49713102e-17, 2.34963568e-16],
+       [4.38545225e-17, 1.20959541e-18, 7.24290609e-17],
+       [1.90177013e-16, 4.99433298e-18, 1.10248522e-16],
+       [7.38302452e-17, 2.75537009e-18, 1.36826185e-16],
+       [1.21126579e-16, 2.49495550e-18, 7.05025573e-17],
+       [1.87511728e-16, 8.78667629e-18, 1.80640489e-16],
+       [1.26017235e-16, 4.13807882e-18, 1.06795846e-16],
+       [1.10248522e-16, 4.43669148e-18, 1.39548376e-16],
+       [3.83487059e-16, 2.82997302e-17, 3.87929780e-16],
+       [7.05025573e-17, 2.37497923e-18, 1.04166876e-16],
+       [1.80640489e-16, 1.02367878e-17, 2.69767977e-16],
+       [1.06795846e-16, 4.40087724e-18, 1.52214960e-16],
+       [2.09004938e-16, 1.23460902e-17, 2.83971035e-16],
+       [3.96066904e-16, 3.13605828e-17, 4.37804393e-16],
+       [1.16023570e-16, 3.02066509e-18, 8.38662968e-17],
+       [2.79086711e-16, 1.10636138e-17, 1.90796660e-16],
+       [2.77160707e-16, 1.79248950e-17, 3.19690317e-16],
+       [4.78017564e-16, 4.51067941e-17, 5.65557231e-16],
+       [3.63210261e-16, 2.04512407e-17, 2.94135150e-16],
+       [8.38662968e-17, 3.48983766e-18, 1.69225203e-16],
+       [1.90796660e-16, 9.68780681e-18, 2.05699347e-16]])
 </pre></div>
 </div>
 </div>
@@ -925,16 +931,16 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([4.84267728e-15, 3.71515524e-14, 3.63652445e-14, 4.68318485e-14,
-       2.38791253e-15, 2.27489818e-15, 8.45659540e-15, 9.21941807e-15,
-       6.10714777e-15, 1.32997715e-15, 1.29842661e-15, 5.04186404e-15,
-       6.38769417e-15, 7.81219269e-15, 2.08004484e-14, 1.00129057e-14,
-       1.13208411e-14, 1.05142097e-14, 1.09665263e-14, 7.36365582e-15,
-       4.74574617e-15, 2.43450966e-15, 2.69341545e-14, 8.94948399e-15,
-       5.79336703e-14, 7.24709748e-15, 2.04376032e-15, 1.47569740e-15,
-       5.04732575e-15, 9.10194541e-15, 6.38440117e-15, 6.11028129e-15,
-       1.65520919e-15, 5.41991869e-15, 7.58624436e-15, 1.00791486e-14,
-       7.13538164e-15, 1.15476507e-14, 1.96931771e-14, 6.20587148e-15])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.47986862e-15, 3.01514059e-15, 2.81655639e-15, 1.09461489e-14,
+       4.51319989e-15, 5.04182110e-15, 2.73933915e-15, 2.48614686e-15,
+       4.43809390e-15, 1.21234091e-14, 1.15098292e-14, 1.21346228e-14,
+       1.84294113e-14, 3.93884204e-14, 3.64918414e-15, 3.16453348e-15,
+       3.48302661e-14, 2.20606965e-14, 2.05265282e-14, 1.50961596e-14,
+       1.29681448e-15, 5.21814094e-15, 2.91724205e-15, 2.64521087e-15,
+       8.97981696e-15, 4.32342405e-15, 4.63346201e-15, 2.76293445e-14,
+       2.51681725e-15, 1.04702628e-14, 4.60428533e-15, 1.25368337e-14,
+       3.05095370e-14, 3.18428739e-15, 1.12848885e-14, 1.79063196e-14,
+       4.30116087e-14, 2.03376065e-14, 3.67824424e-15, 9.87937013e-15])
 </pre></div>
 </div>
 </div>
@@ -950,8 +956,8 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([163565.99290322, 163717.29917025, 161450.14687272, 158368.83547256,
-       159403.09400938])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([154311.22208279, 153293.70157404, 154186.46743381, 156702.31570417,
+       155884.74311745])
 </pre></div>
 </div>
 </div>
@@ -980,8 +986,8 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([163565.99290322, 163717.29917025, 161450.14687272, 158368.83547256,
-       159403.09400938])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([154311.22208279, 153293.70157404, 154186.46743381, 156702.31570417,
+       155884.74311745])
 </pre></div>
 </div>
 </div>
@@ -1038,8 +1044,8 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1064,7 +1070,7 @@ net : &lt;openpnm.network.Demo at 0x7fc7144e98f0&gt;
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
 </p></div>
       
     </div>

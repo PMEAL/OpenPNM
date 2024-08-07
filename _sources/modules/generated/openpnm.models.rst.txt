@@ -33,11 +33,11 @@ models
       :toctree:
       :recursive:
    
-      openpnm.models.collections
-      openpnm.models.geometry
-      openpnm.models.misc
-      openpnm.models.network
-      openpnm.models.phase
-      openpnm.models.physics
+      collections
+      geometry
+      misc
+      network
+      phase
+      physics
    
    
