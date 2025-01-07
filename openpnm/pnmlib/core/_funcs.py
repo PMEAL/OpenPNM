@@ -2,8 +2,8 @@ import fnmatch
 import numpy as np
 from copy import deepcopy, copy
 from collections.abc import Iterable
-from pnmlib import _reserved_prefixes as reserved_prefixes
-from pnmlib import _reserved_delimiters as reserved_delimiters
+from openpnm import pnmlib
+
 
 
 __all__ = [
@@ -256,6 +256,9 @@ def set_data(target, key, value, locs=...):
     This function operates "in-place" so nothing is returned.
 
     """
+    from pnmlib import _reserved_prefixes as reserved_prefixes
+    from pnmlib import _reserved_delimiters as reserved_delimiters
+
     # Trim leading and trailing /'s
     key = key.strip('/').rstrip('/')
 
@@ -1140,7 +1143,7 @@ def _parse_prop(target, propname, element):
 
 
 if __name__ == "__main__":
-    from pnmlib.inspect import tree
+    from openpnm.pnmlib.inspect import tree
     d1 = {'pore.all': np.ones(10, dtype=bool),
           'throat.all': np.ones(10, dtype=bool),
           'param.test': 2.2,

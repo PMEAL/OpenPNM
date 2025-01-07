@@ -1,0 +1,26 @@
+[project]
+name = "openpnm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+    "chemicals>=1.3.2",
+    "docrep>=0.3.2",
+    "h5py>=3.12.1",
+    "ipywidgets>=8.1.5",
+    "jsonschema>=4.23.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.0",
+    "networkx>=3.4.2",
+    "numba>=0.60.0",
+    "numpy<2",
+    "pandas>=2.2.3",
+    "pyamg>=5.2.1",
+    "rich>=13.9.4",
+    "scikit-image>=0.25.0",
+    "sympy>=1.13.3",
+    "thermo>=0.4.1",
+    "tqdm>=4.67.1",
+    "transforms3d>=0.4.2",
+]
