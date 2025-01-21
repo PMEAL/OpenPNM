@@ -1,17 +1,16 @@
 import numpy as np
-from openpnm import pnmlib
-# from pnmlib.core import (
-#     _parse_indices,
-#     _parse_element,
-#     count,
-#     get_data,
-#     set_data,
-#     num_pores,
-#     num_throats,
-#     get_prop_data,
-#     get_label_data,
-#     fold_dict,
-# )
+from openpnm.pnmlib.core import (
+    _parse_indices,
+    _parse_element,
+    count,
+    get_data,
+    set_data,
+    num_pores,
+    num_throats,
+    get_prop_data,
+    get_label_data,
+    fold_dict,
+)
 # from openpnm.pnmlib.models import get_model_args
 
 

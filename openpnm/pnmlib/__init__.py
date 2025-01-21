@@ -31,5 +31,5 @@ def info(network):
     print(d)
 
 
-from .tools import get_edge_prefix
-from .tools import get_node_prefix
+# from .tools import get_edge_prefix
+# from .tools import get_node_prefix

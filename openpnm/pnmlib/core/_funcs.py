@@ -2,7 +2,6 @@ import fnmatch
 import numpy as np
 from copy import deepcopy, copy
 from collections.abc import Iterable
-from openpnm import pnmlib
 
 
 

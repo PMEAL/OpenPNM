@@ -1,7 +1,6 @@
 import numpy as np
 from uuid import uuid4
-from openpnm import pnmlib
-# from pnmlib.core import get_data, set_data, count
+from openpnm.pnmlib.core import get_data, set_data, count
 
 
 __all__ = [
