@@ -17,8 +17,10 @@ from . import io
 from . import operations
 from . import queries
 from . import simulations
+from . import models
 from . import tools
 from . import visualization
+from . import utils
 
 
 def info(network):
@@ -31,5 +33,6 @@ def info(network):
     print(d)
 
 
-# from .tools import get_edge_prefix
-# from .tools import get_node_prefix
+def tree(network):
+    from openpnm.pnmlib.inspect import tree
+    tree(network)

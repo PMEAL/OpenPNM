@@ -85,7 +85,8 @@ def get_label_data(target, element=['pore', 'throat', 'conduit']):
 
 def flatten_dict(group, delim='/'):
     r"""
-    Takes a nested `dict` and returns a flattened version with the specified delimiter between keys
+    Takes a nested `dict` and returns a flattened version with the specified
+    delimiter between keys
 
     Parameters
     ----------
@@ -1143,42 +1144,45 @@ def _parse_prop(target, propname, element):
 
 if __name__ == "__main__":
     from openpnm.pnmlib.inspect import tree
-    d1 = {'pore.all': np.ones(10, dtype=bool),
-          'throat.all': np.ones(10, dtype=bool),
-          'param.test': 2.2,
-          'phase1': {
-              'pore.all': np.ones(10, dtype=bool),
-              'pore.test1': np.ones(10, dtype=int),
-              'throat.all': np.ones(20, dtype=bool),
-              'throat.test1': np.ones(20, dtype=float),
-              'param.test1': 2.2,
-              'phase3': {
-                  'pore.all': np.ones(10, dtype=bool),
-                  'pore.test3': np.ones(10, dtype=int),
-                  'throat.all': np.ones(20, dtype=bool),
-                  'throat.test3': np.ones(20, dtype=float),
-                  'param.test3': 2.2,
-                  },
+    d1 = {
+        'pore.all': np.ones(10, dtype=bool),
+        'throat.all': np.ones(10, dtype=bool),
+        'param.test': 2.2,
+        'phase1': {
+            'pore.all': np.ones(10, dtype=bool),
+            'pore.test1': np.ones(10, dtype=int),
+            'throat.all': np.ones(20, dtype=bool),
+            'throat.test1': np.ones(20, dtype=float),
+            'param.test1': 2.2,
+            'phase3': {
+                'pore.all': np.ones(10, dtype=bool),
+                'pore.test3': np.ones(10, dtype=int),
+                'throat.all': np.ones(20, dtype=bool),
+                'throat.test3': np.ones(20, dtype=float),
+                'param.test3': 2.2,
+            },
         },
-          'phase2': {
-              'pore.all': np.ones(10, dtype=bool),
-              'pore.test2': np.ones(10, dtype=int),
-              'throat.all': np.ones(20, dtype=bool),
-              'throat.test2': np.ones(20, dtype=float),
-              'param.test2': 2.2,
-              'phase3': {
-                  'pore.all': np.ones(10, dtype=bool),
-                  'pore.test4': np.ones(10, dtype=int),
-                  'throat.all': np.ones(20, dtype=bool),
-                  'throat.test4': np.ones(20, dtype=float),
-                  'param.test4': 2.2,
-                  },
-          },
+        'phase2': {
+            'pore.all': np.ones(10, dtype=bool),
+            'pore.test2': np.ones(10, dtype=int),
+            'throat.all': np.ones(20, dtype=bool),
+            'throat.test2': np.ones(20, dtype=float),
+            'param.test2': 2.2,
+            'phase3': {
+                'pore.all': np.ones(10, dtype=bool),
+                'pore.test4': np.ones(10, dtype=int),
+                'throat.all': np.ones(20, dtype=bool),
+                'throat.test4': np.ones(20, dtype=float),
+                'param.test4': 2.2,
+            },
+        },
     }
-    d1 = flatten_dict(d1)
+    d2 = flatten_dict(d1)
     key = '*.all'
     print(key)
     print('─'*10)
-    tree(get_data(target=d1, key=key))
+    tree(get_data(target=d2, key=key))
     print('─'*10)
-    tree(get_data(target=d1, key='phase1/*.*'))
+    tree(get_data(target=d2, key='phase1/*.*'))
+
+    # def test_

@@ -36,18 +36,18 @@ class SKGRGeneratorsTest:
         assert net['edge.conns'].shape[0] == 158
 
     def test_fcc(self):
-        net = gen.fcc([3, 3, 3], 1e-3, mode='triangulation')
+        net = gen.fcc([3, 3, 3], 1e-3, method='triangulation')
         assert net['node.coords'].shape[0] == 63
         assert net['edge.conns'].shape[0] == 294
-        net = gen.fcc([3, 3, 3], 1e-3, mode='kdtree')
+        net = gen.fcc([3, 3, 3], 1e-3, method='kdtree')
         assert net['node.coords'].shape[0] == 63
         assert net['edge.conns'].shape[0] == 294
 
     def test_bcc(self):
-        net = gen.bcc([3, 3, 3], 1e-3, mode='triangulation')
+        net = gen.bcc([3, 3, 3], 1e-3, method='triangulation')
         assert net['node.coords'].shape[0] == 35
         assert net['edge.conns'].shape[0] == 130
-        net = gen.bcc([3, 3, 3], 1e-3, mode='kdtree')
+        net = gen.bcc([3, 3, 3], 1e-3, method='kdtree')
         assert net['node.coords'].shape[0] == 35
         assert net['edge.conns'].shape[0] == 130
 

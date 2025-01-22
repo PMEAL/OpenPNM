@@ -239,8 +239,8 @@ def split_edges(network):
 
     """
     g = network
-    node_prefix = tools.get_node_prefix(g)
-    edge_prefix = tools.get_edge_prefix(g)
+    node_prefix = pnmlib.tools.get_node_prefix(g)
+    edge_prefix = pnmlib.tools.get_edge_prefix(g)
     conns = g[edge_prefix + '.conns']
     coords = g[node_prefix + '.coords']
     Nt = conns.shape[0]

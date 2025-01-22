@@ -17,8 +17,8 @@ d1 = {'pore.all': np.ones(10, dtype=bool),
               'throat.all': np.ones(20, dtype=bool),
               'throat.test3': np.ones(20, dtype=float),
               'param.test3': 2.2,
-              },
-    },
+          },
+      },
       'phase2': {
           'pore.all': np.ones(10, dtype=bool),
           'pore.test2': np.ones(10, dtype=int),
@@ -31,13 +31,13 @@ d1 = {'pore.all': np.ones(10, dtype=bool),
               'throat.all': np.ones(20, dtype=bool),
               'throat.test4': np.ones(20, dtype=float),
               'param.test4': 2.2,
-              },
+          },
       },
 }
 
 
 d2 = op.pnmlib.core.flatten_dict(d1)
-print('─'*10)
+print('\n' + '─'*30 + '\n')
 op.pnmlib.inspect.tree(op.pnmlib.core.get_data(target=d2, key='*.all'))
-print('─'*10)
+print('\n' + '─'*30 + '\n')
 op.pnmlib.inspect.tree(op.pnmlib.core.get_data(target=d2, key='phase1/*.*'))
