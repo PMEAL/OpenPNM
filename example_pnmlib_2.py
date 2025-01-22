@@ -48,7 +48,7 @@ geo_models2 = {
         'model': pnm.models.geometry.random_seeds,
         'num_range': [0.2, 0.8],
     },
-    'network/pore.size2': {
+    'network/pore.size2@left': {
         'model': pnm.models.geometry.product,
         'props': ['network/pore.seed', 'network/pore.seed'],
     },

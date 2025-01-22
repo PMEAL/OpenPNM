@@ -4,7 +4,6 @@ from copy import deepcopy, copy
 from collections.abc import Iterable
 
 
-
 __all__ = [
     # Parsing functions
     "_parse_indices",
@@ -256,8 +255,8 @@ def set_data(target, key, value, locs=...):
     This function operates "in-place" so nothing is returned.
 
     """
-    from pnmlib import _reserved_prefixes as reserved_prefixes
-    from pnmlib import _reserved_delimiters as reserved_delimiters
+    from openpnm.pnmlib import _reserved_prefixes as reserved_prefixes
+    from openpnm.pnmlib import _reserved_delimiters as reserved_delimiters
 
     # Trim leading and trailing /'s
     key = key.strip('/').rstrip('/')
@@ -298,6 +297,9 @@ def set_data(target, key, value, locs=...):
             _locs = get_data(target, group+'/'+element+'.'+domain)
         except KeyError:  # If not, check top level group
             _locs = get_data(target, element+'.'+domain)
+            # If value is a full-length array, then index into it
+        if (np.ndim(value) > 0) and (np.shape(value)[0] != np.sum(_locs)):
+            value = value[_locs]
         # Write values specified locations in array
         vals[_locs] = value
         # Finally write array to dict

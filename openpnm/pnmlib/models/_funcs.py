@@ -1,7 +1,6 @@
 import inspect
 from collections.abc import Iterable
-from pnmlib.core import set_data, get_group
-from pnmlib import _reserved_prefixes
+from openpnm.pnmlib.core import set_data, get_group
 
 
 __all__ = [
@@ -63,6 +62,7 @@ def is_valid_propname(propname):
         Whether or not ``propname`` is a valid name
 
     """
+    from openpnm.pnmlib import _reserved_prefixes
     if not isinstance(propname, str):
         return False
     for element in _reserved_prefixes:

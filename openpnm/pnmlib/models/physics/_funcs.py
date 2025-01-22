@@ -1,5 +1,5 @@
 import numpy as np
-from pnmlib.core import get_data
+from openpnm.pnmlib.core import get_data
 
 
 __all__ = [

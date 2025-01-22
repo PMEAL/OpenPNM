@@ -9,6 +9,8 @@ settings.missing_values = {'bool': False,
                            'float': _np.nan,
                            'object': None}
 
+_reserved_prefixes = ['pore', 'throat', 'param', 'attr', 'conduit']
+_reserved_delimiters = ['.', '@', '/', '|']
 
 from . import core
 from . import inspect

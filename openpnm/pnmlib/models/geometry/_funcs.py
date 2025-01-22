@@ -1,5 +1,5 @@
 import numpy as np
-from pnmlib.core import get_data, count
+from openpnm.pnmlib.core import get_data, count
 
 
 __all__ = [
