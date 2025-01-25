@@ -16,8 +16,7 @@ def get_group(project, name):
     temp = get_data(project, name+"/*")
     group = {}
     for k, v in temp.items():
-        if not hasattr(v, 'keys'):
-            group[k.rsplit('/', 1)[1]] = v
+        group[k.split('/', 1)[1]] = v
     return group
 
 

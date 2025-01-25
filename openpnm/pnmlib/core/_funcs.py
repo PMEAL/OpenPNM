@@ -16,6 +16,7 @@ __all__ = [
     "get_param_data",
     "get_prop_data",
     "get_label_data",
+    "get_components",
     # Setters
     "set_data",
     "set_label",
@@ -36,6 +37,18 @@ __all__ = [
     "flatten_list",
     "fold_dict",
 ]
+
+
+def get_components(target, mixture):
+    r"""
+    Returns a list of the component names associated with a given mixture
+    """
+    comps = set()
+    for key in target.keys():
+        if (mixture + '/' in key) and (key.count('/') > 1):
+            k = key.split('/', 1)[-1].rsplit('/', 1)[0]
+            comps.add(k)
+    return list(comps)
 
 
 def get_param_data(target, key=None):
