@@ -27,7 +27,7 @@ class Air(Phase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         from thermo import Mixture
-        a = Mixture(IDs=['o2', 'n2'], zs=[0.21, 0.79])
+        a = Mixture(IDs=['O2', 'N2'], zs=[0.21, 0.79])
         temp = _fetch_chemical_props(a)
         self.params.update(temp)
         self.models.update(air)
@@ -37,8 +37,8 @@ class Air(Phase):
 class _AirMixture(StandardGasMixture):  # pragma: no cover
 
     def __init__(self, network, **kwargs):
-        o2 = StandardGas(network=network, species='o2')
-        n2 = StandardGas(network=network, species='n2')
+        o2 = StandardGas(network=network, species='O2')
+        n2 = StandardGas(network=network, species='N2')
         super().__init__(network=network, components=[o2, n2], **kwargs)
         self.y(o2, 0.21)
         self.y(n2, 0.79)
