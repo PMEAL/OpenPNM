@@ -164,7 +164,7 @@ def find_connected_nodes(network, inds, flatten=True, logic='or'):
             if len(inds):
                 temp = temp.astype(float)
                 temp[inds] = np.nan
-            temp = np.reshape(a=temp, newshape=[len(edges), 2], order='F')
+            temp = np.reshape(temp, [len(edges), 2], order='F')
             neighbors = temp
         else:
             neighbors = [np.array([], dtype=np.int64) for i in range(len(edges))]
