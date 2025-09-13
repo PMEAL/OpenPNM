@@ -2,7 +2,6 @@ import os
 import platform
 
 import openpnm as op
-# import py
 import pytest
 from openpnm.models.misc import from_neighbor_pores
 
@@ -33,7 +32,7 @@ class STLTest:
 
 
 if __name__ == "__main__":
-
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = STLTest()
     self = t  # For interacting with the tests at the command line
@@ -41,5 +40,8 @@ if __name__ == "__main__":
     for item in t.__dir__():
         if item.startswith("test"):
             print(f"Running test: {item}")
-            t.__getattribute__(item)()
+            try:
+                t.__getattribute__(item)()
+            except TypeError:
+                t.__getattribute__(item)(tmpdir=py.path.local())
     t.teardown_class()
