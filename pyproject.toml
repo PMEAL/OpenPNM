@@ -17,7 +17,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 readme = "README.md"
-requires-python = ">=3.10,<=3.13"
+requires-python = ">=3.11,<=3.13"
 dependencies = [
     "docrep>=0.3.2",
     "h5py>=3.14.0",
