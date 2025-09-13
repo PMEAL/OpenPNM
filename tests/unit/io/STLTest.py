@@ -2,7 +2,7 @@ import os
 import platform
 
 import openpnm as op
-import py
+# import py
 import pytest
 from openpnm.models.misc import from_neighbor_pores
 
@@ -41,8 +41,5 @@ if __name__ == "__main__":
     for item in t.__dir__():
         if item.startswith("test"):
             print(f"Running test: {item}")
-            try:
-                t.__getattribute__(item)()
-            except TypeError:
-                t.__getattribute__(item)(tmpdir=py.path.local())
+            t.__getattribute__(item)()
     t.teardown_class()

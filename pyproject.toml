@@ -42,6 +42,8 @@ dependencies = [
 [project.optional-dependencies]
 extras = [
     "pypardiso",
+    "netgen",
+    "porespy",
 ]
 test = [
     "codecov",
@@ -71,4 +73,5 @@ interactive = [
     "ipywidgets",
     "jupyter",
     "jupyterlab_widgets",
+    "spyder-kernels>3.0.*",
 ]
