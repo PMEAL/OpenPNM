@@ -1014,8 +1014,5 @@ def set_mpl_style():  # pragma: no cover
     plt.rc('figure', **figure_props)
     plt.rc('image', **image_props)
 
-    try:
-        import IPython
-        IPython.display.set_matplotlib_formats('png2x')
-    except ModuleNotFoundError:
-        pass
+    import matplotlib_inline
+    matplotlib_inline.backend_inline.set_matplotlib_formats('retina')

@@ -24,6 +24,7 @@ dependencies = [
     "jsonschema>=4.25.1",
     "llvmlite>=0.44",
     "matplotlib>=3.10.6",
+    "matplotlib-inline>=0.1.7",
     "networkx>=3.5",
     "numba>=0.61",
     "numpy<2.2",
