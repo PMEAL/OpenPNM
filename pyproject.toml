@@ -73,5 +73,5 @@ interactive = [
     "ipywidgets",
     "jupyter",
     "jupyterlab_widgets",
-    "spyder-kernels>3.0.*",
+    "spyder-kernels>=3.0",
 ]
