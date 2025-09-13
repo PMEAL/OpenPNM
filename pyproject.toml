@@ -31,7 +31,7 @@ dependencies = [
     "pandas>=2.3.2",
     "pyamg>=5.3.0",
     "rich>=14.1.0",
-    "scikit-image>=0.25.2",
+    "scikit-image<0.24",
     "scipy>=1.16.2",
     "sympy>=1.14.0",
     "thermo>=0.4.2",
