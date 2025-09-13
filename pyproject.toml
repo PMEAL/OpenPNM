@@ -38,6 +38,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+extras = [
+    "pypardiso",
+]
 test = [
     "codecov",
     "coverage",

@@ -4,7 +4,6 @@ on: [pull_request]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -12,44 +11,37 @@ jobs:
 
     strategy:
       fail-fast: false
-      max-parallel: 9
+      max-parallel: 12
       matrix:
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-        - os: ubuntu-latest
-          path: ~/.cache/pip
-        - os: macos-latest
-          path: ~/Library/Caches/pip
-        - os: windows-latest
-          path: ~\AppData\Local\pip\Cache
 
     steps:
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ${{ matrix.path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+      - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
+          cache-dependency-glob: "**/pyproject.toml"
+          cache-suffix: "uv-${{ matrix.python-version }}-${{ matrix.os }}"
 
-      - name: Install dependencies
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
         run: |
-          pip install \
-            -r requirements.txt \
-            -r requirements/tests.txt
+          uv sync --extra test
 
-      - name: Install pypardiso on non-macOS
-        if: (matrix.os != 'macos-latest')
+      - name: Install dependencies (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          pip install pypardiso
+          uv sync --extra test --extra extras
+
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          uv sync --extra test --extra extras
 
       - name: Disable numba JIT for codecov to include jitted methods
         if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
@@ -57,27 +49,13 @@ jobs:
           echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
       - name: Running tests
-        run:
-          pytest .
-            --cov=.
-            --cov-report=xml
-            --color=yes
+        run: uv run pytest --cov=. --cov-report=xml --color=yes
 
       - name: Upload coverage to Codecov
-        if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
-        uses: codecov/codecov-action@v3
+        if: (matrix.python-version == 3.12) && (matrix.os == 'ubuntu-latest')
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
-
-
-      - name: flake8 Lint
-        if: (matrix.python-version == 3.9) && (matrix.os == 'ubuntu-latest')
-        uses: py-actions/flake8@v2
-        with:
-           ignore: "D100,E226,E402,E712,E741,F401,F403,N806,W503,WPS111,WPS211,WPS237,WPS300,WPS305,WPS319,WPS347,WPS410,WPS437"
-           exclude: "docs/,scripts/,tests/,openpnm/contrib/,setup.py,openpnm/models/_doctxt.py,openpnm/models/phase/_phasedocs.py,openpnm/models/geometry/_geodocs.py"
-           max-line-length: "90"
-           path: ".."
