@@ -49,6 +49,7 @@ test = [
     "codecov",
     "coverage",
     "nbval",
+    "py",
     "pytest",
     "pytest-cache",
     "pytest-cov",
@@ -74,4 +75,9 @@ interactive = [
     "jupyter",
     "jupyterlab_widgets",
     "spyder-kernels>=3.0",
+]
+dev = [
+    {include-group = "test"},
+    {include-group = "docs"},
+    {include-group = "interactive"},
 ]

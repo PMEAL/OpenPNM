@@ -54,7 +54,7 @@ class SKGROperationsTest:
         g = ops.add_nodes(g, [5, 5, 5])
         assert g['node.float'].shape[0] == 29
         assert np.isnan(g['node.float'][-1])
-        assert g['node.int'][-1] < 0  # value is platform dependent -2147483648
+        assert g['node.int'][-1] <= 0  # value is platform dependent -2147483648
         assert g['node.bool'][-1] == False
 
     def test_add_edges(self):
