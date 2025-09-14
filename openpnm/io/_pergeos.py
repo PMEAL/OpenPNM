@@ -175,7 +175,7 @@ def network_from_pergeos(filename):
                 data = s[key].split('\n')[1:]
                 data = ' '.join(data)
                 arr = np.fromstring(data, dtype=typemap[key], sep=' ')
-                arr = np.reshape(arr, newshape=shapemap[key])
+                arr = np.reshape(arr, shapemap[key])
                 net[propmap[key]] = arr
         # End file parsing
 
