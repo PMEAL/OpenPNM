@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.utils._misc &#8212; OpenPNM 3.5.0.dev2 documentation</title>
+    <title>openpnm.utils._misc &#8212; OpenPNM 3.5.0.dev3 documentation</title>
   
   
   
@@ -15,32 +15,35 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=68c4dfbd"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
@@ -51,6 +54,7 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -66,19 +70,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -86,7 +79,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -94,8 +86,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -128,8 +120,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev2 documentation - Home"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.5.0.dev2 documentation - Home"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
   
   
 </a></div>
@@ -189,29 +181,21 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
@@ -236,15 +220,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -261,7 +241,8 @@ document.write(`
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -322,15 +303,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
@@ -354,9 +331,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -374,8 +356,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -387,7 +367,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">openpnm.utils._misc</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">openpnm.utils._misc</span></li>
   </ul>
 </nav>
 </div>
@@ -405,16 +385,16 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for openpnm.utils._misc</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.lib.recfunctions</span> <span class="k">as</span> <span class="nn">rf</span>
-<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sparse</span>
-<span class="kn">from</span> <span class="nn">docrep</span> <span class="kn">import</span> <span class="n">DocstringProcessor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.lib.recfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">docrep</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocstringProcessor</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;Docorator&#39;</span><span class="p">,</span>
@@ -440,12 +420,12 @@ document.write(`
 
 <div class="viewcode-block" id="Docorator">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.Docorator.html#openpnm.utils.Docorator">[docs]</a>
-<span class="k">class</span> <span class="nc">Docorator</span><span class="p">(</span><span class="n">DocstringProcessor</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Docorator</span><span class="p">(</span><span class="n">DocstringProcessor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;OpenPNM&#39;s customized docstring processor.&quot;&quot;&quot;</span>
 
     <span class="n">__instance__</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">Docorator</span><span class="o">.</span><span class="n">__instance__</span> <span class="o">=</span> <span class="n">DocstringProcessor</span><span class="p">()</span>
 
@@ -467,7 +447,7 @@ document.write(`
 
 <div class="viewcode-block" id="PrintableList">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.PrintableList.html#openpnm.utils.PrintableList">[docs]</a>
-<span class="k">class</span> <span class="nc">PrintableList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrintableList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple subclass of ``list`` that has nice printing. Only works flat lists.</span>
 
@@ -486,7 +466,7 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">horizontal_rule</span> <span class="o">=</span> <span class="s2">&quot;―&quot;</span> <span class="o">*</span> <span class="mi">78</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">horizontal_rule</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
@@ -502,7 +482,7 @@ document.write(`
 
 <div class="viewcode-block" id="PrintableDict">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.PrintableDict.html#openpnm.utils.PrintableDict">[docs]</a>
-<span class="k">class</span> <span class="nc">PrintableDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PrintableDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple subclass of ``dict`` that has nicer printing.</span>
 
@@ -526,7 +506,7 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Key&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;Key&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">key</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -534,7 +514,7 @@ document.write(`
     <span class="c1"># def __repr__(self):  # pragma: no cover</span>
     <span class="c1">#     return self.__str__()</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;―&quot;</span> <span class="o">*</span> <span class="mi">78</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{0:&lt;35s}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">),</span> <span class="n">header</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
@@ -551,16 +531,16 @@ document.write(`
 
 <div class="viewcode-block" id="NestedDict">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.html#openpnm.utils.NestedDict">[docs]</a>
-<span class="k">class</span> <span class="nc">NestedDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NestedDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Brief explanation of &#39;NestedDict&#39;&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{},</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="o">=</span><span class="p">{},</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="n">delimiter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unravel</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -569,20 +549,20 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">NestedDict</span><span class="p">(</span><span class="n">delimiter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 <div class="viewcode-block" id="NestedDict.unravel">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.unravel.html#openpnm.utils.NestedDict.unravel">[docs]</a>
-    <span class="k">def</span> <span class="nf">unravel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unravel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NestedDict.to_dict">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.to_dict.html#openpnm.utils.NestedDict.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dct</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dct</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">dct</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="n">plain_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -597,7 +577,7 @@ document.write(`
 
 <div class="viewcode-block" id="NestedDict.keys">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.NestedDict.keys.html#openpnm.utils.NestedDict.keys">[docs]</a>
-    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dicts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">k</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">new_keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
@@ -610,8 +590,8 @@ document.write(`
         <span class="k">return</span> <span class="n">new_keys</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">print_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">print_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="s2">&quot;keys&quot;</span><span class="p">):</span>
                     <span class="n">p</span> <span class="o">=</span> <span class="n">print_level</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span> <span class="o">+</span> <span class="n">indent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -627,7 +607,7 @@ document.write(`
 
 <div class="viewcode-block" id="HealthDict">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.HealthDict.html#openpnm.utils.HealthDict">[docs]</a>
-<span class="k">class</span> <span class="nc">HealthDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">HealthDict</span><span class="p">(</span><span class="n">PrintableDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class adds a &#39;health&#39; check to a standard dictionary.</span>
 
@@ -636,10 +616,10 @@ document.write(`
 <span class="sd">    &#39;unhealthy&#39; the health method returns False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_health</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">health</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -652,19 +632,19 @@ document.write(`
 
     <span class="n">health</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_health</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">health</span></div>
 
 
 
 <div class="viewcode-block" id="flat_list">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.flat_list.html#openpnm.utils.flat_list">[docs]</a>
-<span class="k">def</span> <span class="nf">flat_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flat_list</span><span class="p">(</span><span class="n">input_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a list of nested lists of arbitrary depth, returns a single</span>
 <span class="sd">    level or &#39;flat&#39; list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">_flatten</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_flatten</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
                 <span class="k">yield from</span> <span class="n">_flatten</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
@@ -677,7 +657,7 @@ document.write(`
 
 <div class="viewcode-block" id="sanitize_dict">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.sanitize_dict.html#openpnm.utils.sanitize_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">sanitize_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sanitize_dict</span><span class="p">(</span><span class="n">input_dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a nested dictionary, ensures that all nested dicts are normal</span>
 <span class="sd">    Python dicts.  This is necessary for pickling, or just converting</span>
@@ -696,7 +676,7 @@ document.write(`
 
 <div class="viewcode-block" id="methods_to_table">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.methods_to_table.html#openpnm.utils.methods_to_table">[docs]</a>
-<span class="k">def</span> <span class="nf">methods_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">methods_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a methods on an object to a ReST compatible table</span>
 
@@ -740,7 +720,7 @@ document.write(`
 
 <div class="viewcode-block" id="models_to_table">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.models_to_table.html#openpnm.utils.models_to_table">[docs]</a>
-<span class="k">def</span> <span class="nf">models_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">models_to_table</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a all the models on an object to a ReST compatible table</span>
 
@@ -790,7 +770,7 @@ document.write(`
 
 <div class="viewcode-block" id="ignore_warnings">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.ignore_warnings.html#openpnm.utils.ignore_warnings">[docs]</a>
-<span class="k">def</span> <span class="nf">ignore_warnings</span><span class="p">(</span><span class="n">warning</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ignore_warnings</span><span class="p">(</span><span class="n">warning</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator for catching warnings. Useful in pore-scale models where</span>
 <span class="sd">    nans are inevitable, and numpy gets annoying by throwing lots of</span>
@@ -815,9 +795,9 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_ignore_warning</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ignore_warning</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">__ignore_warning</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">__ignore_warning</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                 <span class="c1"># Catch all warnings of this type</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;always&quot;</span><span class="p">,</span> <span class="n">warning</span><span class="p">)</span>
@@ -833,7 +813,7 @@ document.write(`
 
 <div class="viewcode-block" id="is_symmetric">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.is_symmetric.html#openpnm.utils.is_symmetric">[docs]</a>
-<span class="k">def</span> <span class="nf">is_symmetric</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_symmetric</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Is ``a`` a symmetric matrix?</span>
 
@@ -868,7 +848,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_mixture_model_args">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.get_mixture_model_args.html#openpnm.utils.get_mixture_model_args">[docs]</a>
-<span class="k">def</span> <span class="nf">get_mixture_model_args</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mixture_model_args</span><span class="p">(</span>
     <span class="n">phase</span><span class="p">,</span>
     <span class="n">composition</span><span class="o">=</span><span class="s1">&#39;xs&#39;</span><span class="p">,</span>
     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
@@ -879,7 +859,7 @@ document.write(`
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is used in tests to run models generically</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">openpnm.models.phase.misc</span> <span class="kn">import</span> <span class="n">mole_to_mass_fraction</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.models.phase.misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">mole_to_mass_fraction</span>
     <span class="n">vals</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">composition</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ws&#39;</span><span class="p">]:</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mole_to_mass_fraction</span><span class="p">(</span><span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))[:,</span> <span class="mi">0</span><span class="p">]</span>
@@ -896,7 +876,7 @@ document.write(`
 
 <div class="viewcode-block" id="dict_to_struct">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.dict_to_struct.html#openpnm.utils.dict_to_struct">[docs]</a>
-<span class="k">def</span> <span class="nf">dict_to_struct</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dict_to_struct</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a dictionary of numpy arrays to a numpy struct</span>
 
@@ -919,7 +899,7 @@ document.write(`
 
 <div class="viewcode-block" id="struct_to_dict">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.struct_to_dict.html#openpnm.utils.struct_to_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">struct_to_dict</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">struct_to_dict</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a numpy struct array into a dictionary using the struct labels as</span>
 <span class="sd">    keys</span>
@@ -943,7 +923,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_printable_props">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.get_printable_props.html#openpnm.utils.get_printable_props">[docs]</a>
-<span class="k">def</span> <span class="nf">get_printable_props</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="o">=</span><span class="mi">78</span><span class="o">*</span><span class="s1">&#39;―&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_printable_props</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="o">=</span><span class="mi">78</span><span class="o">*</span><span class="s1">&#39;―&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is used by the __str__ methods on all classes to get a</span>
 <span class="sd">    nicely formatted list of properties on the object.</span>
@@ -1004,7 +984,7 @@ document.write(`
 
 <div class="viewcode-block" id="get_printable_labels">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.get_printable_labels.html#openpnm.utils.get_printable_labels">[docs]</a>
-<span class="k">def</span> <span class="nf">get_printable_labels</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="o">=</span><span class="mi">78</span><span class="o">*</span><span class="s1">&#39;―&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_printable_labels</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="o">=</span><span class="mi">78</span><span class="o">*</span><span class="s1">&#39;―&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is used by the __str__ methods on all classes to get a</span>
 <span class="sd">    nicely formatted list of labels on the object.</span>
@@ -1062,7 +1042,7 @@ document.write(`
 
 <div class="viewcode-block" id="is_transient">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.is_transient.html#openpnm.utils.is_transient">[docs]</a>
-<span class="k">def</span> <span class="nf">is_transient</span><span class="p">(</span><span class="n">algorithms</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_transient</span><span class="p">(</span><span class="n">algorithms</span><span class="p">):</span>
     <span class="c1"># check that algorithms is a list</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">algorithms</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
         <span class="n">algorithms</span> <span class="o">=</span> <span class="p">[</span><span class="n">algorithms</span><span class="p">]</span>
@@ -1078,7 +1058,7 @@ document.write(`
 
 <div class="viewcode-block" id="is_valid_propname">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.utils.is_valid_propname.html#openpnm.utils.is_valid_propname">[docs]</a>
-<span class="k">def</span> <span class="nf">is_valid_propname</span><span class="p">(</span><span class="n">propname</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_valid_propname</span><span class="p">(</span><span class="n">propname</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if ``propname`` is a valid OpenPNM propname, i.e. starts with</span>
 <span class="sd">    &#39;pore.&#39; or &#39;throat.&#39;</span>
@@ -1108,7 +1088,7 @@ document.write(`
 
 
 
-<span class="k">def</span> <span class="nf">nbr_to_str</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nbr_to_str</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts a scalar into a string in scientific (exponential) notation</span>
 <span class="sd">    without the decimal point.</span>
@@ -1125,7 +1105,7 @@ document.write(`
 <span class="sd">    num : str</span>
 <span class="sd">        The string represenation of the given number in scientific notation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span> <span class="k">as</span> <span class="n">dc</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span> <span class="k">as</span> <span class="n">dc</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="n">dc</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">)))</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">()</span><span class="o">.</span><span class="n">exponent</span>
             <span class="o">*</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">)))</span>
     <span class="n">nbr_str</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nbr</span><span class="p">,</span> <span class="n">t_precision</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;e-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">))</span>
@@ -1153,8 +1133,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1165,7 +1145,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, PMEAL.
+      © Copyright 2025, PMEAL.
       <br/>
     
   </p>
@@ -1179,7 +1159,8 @@ document.write(`
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

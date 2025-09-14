@@ -21,7 +21,6 @@ visualization
       :toctree:
    
       draw_conduit
-      generate_voxel_image
       plot_connections
       plot_coordinates
       plot_networkx

@@ -1,6 +1,0 @@
-generate\_voxel\_image
-======================
-
-.. currentmodule:: openpnm.visualization
-
-.. autofunction:: generate_voxel_image

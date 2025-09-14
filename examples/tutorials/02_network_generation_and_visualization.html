@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Generating Networks and Quick Visualization &#8212; OpenPNM 3.5.0.dev2 documentation</title>
+    <title>Generating Networks and Quick Visualization &#8212; OpenPNM 3.5.0.dev3 documentation</title>
   
   
   
@@ -16,32 +16,35 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=225ff6af" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=68c4dfbd"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -54,6 +57,7 @@
     <link rel="prev" title="Numerical Python Primer" href="01_numerical_python_primer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -69,19 +73,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -89,7 +82,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -97,8 +89,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -131,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev2 documentation - Home"/>
-    <script>document.write(`<img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.5.0.dev2 documentation - Home"/>`);</script>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
   
   
 </a></div>
@@ -192,29 +184,21 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
@@ -239,15 +223,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -266,7 +246,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -327,15 +308,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
@@ -410,9 +387,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -430,8 +412,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -446,7 +426,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../_examples/tutorials.html" class="nav-link">10 Steps to Learn OpenPNM</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Generating...</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Generating Networks and Quick Visualization</span></li>
   </ul>
 </nav>
 </div>
@@ -468,9 +448,9 @@ document.write(`
 <p>OpenPNM includes a variety of network generators. This notebook covers the use of a few commons ones which is a good primer for the rest of this tutorial series.  It also illustrates how to quickly visualize networks for inspection while developing and troubleshooting. Full visualization is best done in a dedicated software like paraview or Dragonfly.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -488,7 +468,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/565518d4157eab2e9e0114995ba6beba6dc4ac4e324d1435ae2d13e1bf86f57e.png"><img alt="../../_images/565518d4157eab2e9e0114995ba6beba6dc4ac4e324d1435ae2d13e1bf86f57e.png" src="../../_images/565518d4157eab2e9e0114995ba6beba6dc4ac4e324d1435ae2d13e1bf86f57e.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/d70eed4117fdfd56e1c71bbde4f645047284fd9a1872945ebac3a0028fbe0b5b.png"><img alt="../../_images/d70eed4117fdfd56e1c71bbde4f645047284fd9a1872945ebac3a0028fbe0b5b.png" src="../../_images/d70eed4117fdfd56e1c71bbde4f645047284fd9a1872945ebac3a0028fbe0b5b.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -506,7 +486,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/653612898a52d026fa18f1b8d7c6bb2803383d3bc354b5fe62b30c3182b3abbb.png"><img alt="../../_images/653612898a52d026fa18f1b8d7c6bb2803383d3bc354b5fe62b30c3182b3abbb.png" src="../../_images/653612898a52d026fa18f1b8d7c6bb2803383d3bc354b5fe62b30c3182b3abbb.png" style="width: 499px; height: 467px;" />
+<a class="reference internal image-reference" href="../../_images/dbdb8293a232ae1e425fca36e8a50d699418a1c58789d643ae108c2ecc136085.png"><img alt="../../_images/dbdb8293a232ae1e425fca36e8a50d699418a1c58789d643ae108c2ecc136085.png" src="../../_images/dbdb8293a232ae1e425fca36e8a50d699418a1c58789d643ae108c2ecc136085.png" style="width: 499px; height: 467px;" />
 </a>
 </div>
 </div>
@@ -520,7 +500,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/a28e439b43d08805d8addb89ad238ce3c72902e27c38a330ec9402a90fd03f25.png"><img alt="../../_images/a28e439b43d08805d8addb89ad238ce3c72902e27c38a330ec9402a90fd03f25.png" src="../../_images/a28e439b43d08805d8addb89ad238ce3c72902e27c38a330ec9402a90fd03f25.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/9ac58c90b3859951fba8c7502a15a81f5f51e7fc019d401955443b95b0cc9543.png"><img alt="../../_images/9ac58c90b3859951fba8c7502a15a81f5f51e7fc019d401955443b95b0cc9543.png" src="../../_images/9ac58c90b3859951fba8c7502a15a81f5f51e7fc019d401955443b95b0cc9543.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -537,7 +517,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/18ae8f13617b3a6ecc22ac4584253b1ee98255514d1e71ef6c085730dfaddcf6.png"><img alt="../../_images/18ae8f13617b3a6ecc22ac4584253b1ee98255514d1e71ef6c085730dfaddcf6.png" src="../../_images/18ae8f13617b3a6ecc22ac4584253b1ee98255514d1e71ef6c085730dfaddcf6.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/b545e19ed3768a89fd06e5cafe0e0aa846dfbf6f0c1cfbc12870883c1b523877.png"><img alt="../../_images/b545e19ed3768a89fd06e5cafe0e0aa846dfbf6f0c1cfbc12870883c1b523877.png" src="../../_images/b545e19ed3768a89fd06e5cafe0e0aa846dfbf6f0c1cfbc12870883c1b523877.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -553,7 +533,7 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f9beb5f6ac0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f053eaeddf0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -631,7 +611,7 @@ The following pores are labelled &#39;back&#39; OR &#39;left&#39;: [ 0  1  2  3 
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/72786990d2761741ea8f3bdda96e400990fd3f2beace3321be0413bc81aec0ac.png"><img alt="../../_images/72786990d2761741ea8f3bdda96e400990fd3f2beace3321be0413bc81aec0ac.png" src="../../_images/72786990d2761741ea8f3bdda96e400990fd3f2beace3321be0413bc81aec0ac.png" style="width: 475px; height: 472px;" />
+<a class="reference internal image-reference" href="../../_images/4804a4095615c19b10f91d51f9b0b13395c8661f430c187ec2c3d20123321643.png"><img alt="../../_images/4804a4095615c19b10f91d51f9b0b13395c8661f430c187ec2c3d20123321643.png" src="../../_images/4804a4095615c19b10f91d51f9b0b13395c8661f430c187ec2c3d20123321643.png" style="width: 475px; height: 472px;" />
 </a>
 </div>
 </div>
@@ -651,9 +631,9 @@ The following pores are labelled &#39;back&#39; OR &#39;left&#39;: [ 0  1  2  3 
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/b50f6b94759ee985ff018d516252d2d3ea8930a3815e8a005707aa4ef2a72c3c.png"><img alt="../../_images/b50f6b94759ee985ff018d516252d2d3ea8930a3815e8a005707aa4ef2a72c3c.png" src="../../_images/b50f6b94759ee985ff018d516252d2d3ea8930a3815e8a005707aa4ef2a72c3c.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/4cea92d80f722c2630f351c643b54f4bdf75449b447f221474898f4abfa5f241.png"><img alt="../../_images/4cea92d80f722c2630f351c643b54f4bdf75449b447f221474898f4abfa5f241.png" src="../../_images/4cea92d80f722c2630f351c643b54f4bdf75449b447f221474898f4abfa5f241.png" style="width: 483px; height: 475px;" />
 </a>
-<a class="reference internal image-reference" href="../../_images/3905e6a1ea9f6b266a4c3f01a0298bfe97fbb0555b3890eefaa6efdfd6d39f3d.png"><img alt="../../_images/3905e6a1ea9f6b266a4c3f01a0298bfe97fbb0555b3890eefaa6efdfd6d39f3d.png" src="../../_images/3905e6a1ea9f6b266a4c3f01a0298bfe97fbb0555b3890eefaa6efdfd6d39f3d.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/9f0e80bf4010a6397a9b9b595b2bdab58da93303f4596fd0082d155b6cff4607.png"><img alt="../../_images/9f0e80bf4010a6397a9b9b595b2bdab58da93303f4596fd0082d155b6cff4607.png" src="../../_images/9f0e80bf4010a6397a9b9b595b2bdab58da93303f4596fd0082d155b6cff4607.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -670,7 +650,7 @@ The following pores are labelled &#39;back&#39; OR &#39;left&#39;: [ 0  1  2  3 
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
+net : &lt;openpnm.network.BodyCenteredCubic at 0x7f053c2ad3f0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -710,7 +690,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/59b6a8507eae7bc3adfd8076f27ecbd2d591aa7b0189bec523094a1716b1927b.png"><img alt="../../_images/59b6a8507eae7bc3adfd8076f27ecbd2d591aa7b0189bec523094a1716b1927b.png" src="../../_images/59b6a8507eae7bc3adfd8076f27ecbd2d591aa7b0189bec523094a1716b1927b.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/3dc50fca8315f5c394a89095ba7b6ebbb0b114260fb29aec0fa885a8e41b7647.png"><img alt="../../_images/3dc50fca8315f5c394a89095ba7b6ebbb0b114260fb29aec0fa885a8e41b7647.png" src="../../_images/3dc50fca8315f5c394a89095ba7b6ebbb0b114260fb29aec0fa885a8e41b7647.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -724,7 +704,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/f142e79b443fbba625f8174fe2d03af20725c91674127fa29895cf7ec34bf31d.png"><img alt="../../_images/f142e79b443fbba625f8174fe2d03af20725c91674127fa29895cf7ec34bf31d.png" src="../../_images/f142e79b443fbba625f8174fe2d03af20725c91674127fa29895cf7ec34bf31d.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/fe8c2aa7068d33dd82030851eaf0ca5f2e061b742eef8d9a1ca7a4187ff76a90.png"><img alt="../../_images/fe8c2aa7068d33dd82030851eaf0ca5f2e061b742eef8d9a1ca7a4187ff76a90.png" src="../../_images/fe8c2aa7068d33dd82030851eaf0ca5f2e061b742eef8d9a1ca7a4187ff76a90.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -741,7 +721,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/9c4143464400b0446829494138ba65f6d11596d10936b0c6b0196b82c330b3c3.png"><img alt="../../_images/9c4143464400b0446829494138ba65f6d11596d10936b0c6b0196b82c330b3c3.png" src="../../_images/9c4143464400b0446829494138ba65f6d11596d10936b0c6b0196b82c330b3c3.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/6125ccf3213154476d237df6e241a55265dc2cf78ca1d524009c838f9640636e.png"><img alt="../../_images/6125ccf3213154476d237df6e241a55265dc2cf78ca1d524009c838f9640636e.png" src="../../_images/6125ccf3213154476d237df6e241a55265dc2cf78ca1d524009c838f9640636e.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -755,7 +735,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/a5c997790999d774b74f43fa88ba198e38497d854ef69936bd5c82ed365e0411.png"><img alt="../../_images/a5c997790999d774b74f43fa88ba198e38497d854ef69936bd5c82ed365e0411.png" src="../../_images/a5c997790999d774b74f43fa88ba198e38497d854ef69936bd5c82ed365e0411.png" style="width: 481px; height: 470px;" />
+<a class="reference internal image-reference" href="../../_images/81faf7dcd33345561eee4b2d8a13453c83a6e516dba670e5e6ff4dbd1e74274a.png"><img alt="../../_images/81faf7dcd33345561eee4b2d8a13453c83a6e516dba670e5e6ff4dbd1e74274a.png" src="../../_images/81faf7dcd33345561eee4b2d8a13453c83a6e516dba670e5e6ff4dbd1e74274a.png" style="width: 481px; height: 470px;" />
 </a>
 </div>
 </div>
@@ -769,7 +749,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/b50ab1ffc55d1a2e030df15a1a9ca8f2cf71779030e821065a58660b5fd927d6.png"><img alt="../../_images/b50ab1ffc55d1a2e030df15a1a9ca8f2cf71779030e821065a58660b5fd927d6.png" src="../../_images/b50ab1ffc55d1a2e030df15a1a9ca8f2cf71779030e821065a58660b5fd927d6.png" style="width: 483px; height: 475px;" />
+<a class="reference internal image-reference" href="../../_images/d78dbb9bd31ae6c2c186cf9b2854902305bc86b6b0217322c8bc160f3353e868.png"><img alt="../../_images/d78dbb9bd31ae6c2c186cf9b2854902305bc86b6b0217322c8bc160f3353e868.png" src="../../_images/d78dbb9bd31ae6c2c186cf9b2854902305bc86b6b0217322c8bc160f3353e868.png" style="width: 483px; height: 475px;" />
 </a>
 </div>
 </div>
@@ -783,7 +763,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/e2e4b8f9245b3427091eb0dcd6e2a5dea608dd528de2b3dd5bea2bd6c81cf62c.png"><img alt="../../_images/e2e4b8f9245b3427091eb0dcd6e2a5dea608dd528de2b3dd5bea2bd6c81cf62c.png" src="../../_images/e2e4b8f9245b3427091eb0dcd6e2a5dea608dd528de2b3dd5bea2bd6c81cf62c.png" style="width: 487px; height: 465px;" />
+<a class="reference internal image-reference" href="../../_images/daf258ee1cbb846f35bbfbf56a15701c64588278d3eea4a4d45bae365b06e525.png"><img alt="../../_images/daf258ee1cbb846f35bbfbf56a15701c64588278d3eea4a4d45bae365b06e525.png" src="../../_images/daf258ee1cbb846f35bbfbf56a15701c64588278d3eea4a4d45bae365b06e525.png" style="width: 487px; height: 465px;" />
 </a>
 </div>
 </div>
@@ -796,7 +776,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/fc566140722f27c3ac0a01859053574681f3f3f9333e91d184b84e71eb7e68a8.png"><img alt="../../_images/fc566140722f27c3ac0a01859053574681f3f3f9333e91d184b84e71eb7e68a8.png" src="../../_images/fc566140722f27c3ac0a01859053574681f3f3f9333e91d184b84e71eb7e68a8.png" style="width: 489px; height: 465px;" />
+<a class="reference internal image-reference" href="../../_images/4ec8f1d2e638f431d6a977f92f97f07b23823b2e8fe300bcc756a37e22682eed.png"><img alt="../../_images/4ec8f1d2e638f431d6a977f92f97f07b23823b2e8fe300bcc756a37e22682eed.png" src="../../_images/4ec8f1d2e638f431d6a977f92f97f07b23823b2e8fe300bcc756a37e22682eed.png" style="width: 489px; height: 465px;" />
 </a>
 </div>
 </div>
@@ -835,7 +815,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/d27ed1dd586cdb197c1439263168d7d238140eb6d1423abd889a85428564037a.png"><img alt="../../_images/d27ed1dd586cdb197c1439263168d7d238140eb6d1423abd889a85428564037a.png" src="../../_images/d27ed1dd586cdb197c1439263168d7d238140eb6d1423abd889a85428564037a.png" style="width: 622px; height: 461px;" />
+<a class="reference internal image-reference" href="../../_images/9614b70a6b081fbaf7b6846bd69229d891c4bb0610cb6fab8d664983676e6ed7.png"><img alt="../../_images/9614b70a6b081fbaf7b6846bd69229d891c4bb0610cb6fab8d664983676e6ed7.png" src="../../_images/9614b70a6b081fbaf7b6846bd69229d891c4bb0610cb6fab8d664983676e6ed7.png" style="width: 622px; height: 461px;" />
 </a>
 </div>
 </div>
@@ -857,7 +837,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/e60612b411680a6cb7c9d78daa91959a8da11444f0a0acadaf41bb63820e1fdc.png"><img alt="../../_images/e60612b411680a6cb7c9d78daa91959a8da11444f0a0acadaf41bb63820e1fdc.png" src="../../_images/e60612b411680a6cb7c9d78daa91959a8da11444f0a0acadaf41bb63820e1fdc.png" style="width: 622px; height: 461px;" />
+<a class="reference internal image-reference" href="../../_images/178c7fc2cae44c5a366f294975699144f775f301cb197493781adee7be5d720d.png"><img alt="../../_images/178c7fc2cae44c5a366f294975699144f775f301cb197493781adee7be5d720d.png" src="../../_images/178c7fc2cae44c5a366f294975699144f775f301cb197493781adee7be5d720d.png" style="width: 622px; height: 461px;" />
 </a>
 </div>
 </div>
@@ -876,7 +856,8 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -908,8 +889,8 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -920,7 +901,7 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
 
   <p class="copyright">
     
-      © Copyright 2024, PMEAL.
+      © Copyright 2025, PMEAL.
       <br/>
     
   </p>
@@ -934,7 +915,8 @@ net : &lt;openpnm.network.BodyCenteredCubic at 0x7f9beb491760&gt;
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

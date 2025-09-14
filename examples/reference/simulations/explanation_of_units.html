@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Explanation of Units &#8212; OpenPNM 3.5.0.dev2 documentation</title>
+    <title>Explanation of Units &#8212; OpenPNM 3.5.0.dev3 documentation</title>
   
   
   
@@ -16,32 +16,35 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-  
-  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=225ff6af" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=68c4dfbd"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
@@ -56,6 +59,7 @@
     <link rel="prev" title="Steady State Transport" href="basic_transport.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -71,19 +75,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -91,7 +84,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -99,8 +91,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -133,8 +125,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev2 documentation - Home"/>
-    <script>document.write(`<img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark" alt="OpenPNM 3.5.0.dev2 documentation - Home"/>`);</script>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
   
   
 </a></div>
@@ -194,29 +186,21 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
@@ -241,15 +225,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -268,7 +248,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -329,15 +310,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
@@ -412,9 +389,14 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -432,8 +414,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -448,7 +428,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../../_examples/reference.html" class="nav-link">Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Explanation of Units</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Explanation of Units</span></li>
   </ul>
 </nav>
 </div>
@@ -504,8 +484,8 @@ document.write(`
 <p>To demonstrate the importance of defining parameter values with correct units, a pore-scale model is examined in this section.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
@@ -520,6 +500,71 @@ document.write(`
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
 <span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">pn</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:476,</span> in <span class="ni">ModelsMixin2.regenerate_models</span><span class="nt">(self, propnames, exclude)</span>
+<span class="g g-Whitespace">    </span><span class="mi">474</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">475</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">476</span>         <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">477</span>     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">478</span>         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> was not run since the following property&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">479</span>                <span class="sa">f</span><span class="s2">&quot; is missing: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:507,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
+<span class="g g-Whitespace">    </span><span class="mi">505</span>             <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">506</span>                 <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">507</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">508</span> <span class="k">else</span><span class="p">:</span>  <span class="c1"># domain was given explicitly</span>
+<span class="g g-Whitespace">    </span><span class="mi">509</span>     <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:521,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
+<span class="g g-Whitespace">    </span><span class="mi">519</span> <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">520</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">521</span>     <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">522</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
+<span class="g g-Whitespace">    </span><span class="mi">523</span>         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/models/misc/_neighbor_lookups.py:123,</span> in <span class="ni">from_neighbor_pores</span><span class="nt">(target, prop, mode, ignore_nans)</span>
+<span class="g g-Whitespace">    </span><span class="mi">121</span> <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
+<span class="g g-Whitespace">    </span><span class="mi">122</span> <span class="n">throats</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">Ts</span>
+<span class="ne">--&gt; </span><span class="mi">123</span> <span class="n">P12</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">124</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">P12</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">125</span> <span class="k">if</span> <span class="n">ignore_nans</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_network.py:443,</span> in <span class="ni">Network.find_connected_pores</span><span class="nt">(self, throats, flatten, mode)</span>
+<span class="g g-Whitespace">    </span><span class="mi">391</span><span class="w"> </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="sd"> Return a list of pores connected to the given list of throats</span>
+<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">440</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">441</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">442</span> <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">443</span> <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">444</span>                                        <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">445</span> <span class="k">return</span> <span class="n">pores</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/topotools/_graphtools.py:37,</span> in <span class="ni">find_connected_sites</span><span class="nt">(bonds, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="k">def</span><span class="w"> </span><span class="nf">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">37</span>     <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_connected_nodes</span><span class="p">(</span><span class="n">inds</span><span class="o">=</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/_skgraph/queries/_funcs.py:167,</span> in <span class="ni">find_connected_nodes</span><span class="nt">(network, inds, flatten, logic)</span>
+<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">166</span>         <span class="n">temp</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="ne">--&gt; </span><span class="mi">167</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">168</span>     <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span>
+<span class="g g-Whitespace">    </span><span class="mi">169</span> <span class="k">else</span><span class="p">:</span>
+
+<span class="ne">TypeError</span>: reshape() got some positional-only arguments passed as keyword arguments: &#39;a&#39;
 </pre></div>
 </div>
 </div>
@@ -559,7 +604,8 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -588,8 +634,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -600,7 +646,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2024, PMEAL.
+      © Copyright 2025, PMEAL.
       <br/>
     
   </p>
@@ -614,7 +660,8 @@ document.write(`
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>
