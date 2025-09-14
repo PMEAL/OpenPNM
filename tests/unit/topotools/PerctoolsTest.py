@@ -31,7 +31,7 @@ class PerctoolsTest:
         elif ver < tuple((1, 16, 0)):
             assert np.all(nodes[0] == [0, 1, 5, 9, 13, 14, 15])
             assert np.all(edges[0] == [0, 13, 17, 21, 10, 11])
-        else:
+        else:  # And they changed it again!
             assert np.all(nodes[0] == [0, 4, 8, 12, 13, 14, 15])
             assert np.all(edges[0] == [12, 16, 20, 9, 10, 11])
         nodes, edges = op.topotools.find_path(
@@ -46,7 +46,7 @@ class PerctoolsTest:
         elif ver < tuple((1, 16, 0)):
             assert np.all(nodes[0] == [0, 1, 5, 9, 13, 14, 15])
             assert np.all(edges[0] == [0, 13, 17, 21, 10, 11])
-        else:
+        else:  # And they changed it again!
             assert np.all(nodes[0] == [0, 4, 8, 12, 13, 14, 15])
             assert np.all(edges[0] == [12, 16, 20, 9, 10, 11])
 
