@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 import openpnm as op
 from openpnm._skgraph.tools import cyl2cart, sph2cart
+import platform
 
 
 ver = tuple([int(i) for i in sp.__version__.split('.')])
@@ -136,7 +137,7 @@ class VoronoiTest:
         np.random.seed(0)
         dual = op.network.DelaunayVoronoiDual(points=10, shape=[1, 1, 1])
         f = dual.find_throat_facets(throats=[1, 5])
-        if ver < tuple((1, 16, 2)):
+        if platform.system() != "Darwin":
             assert np.all(f[0] == [48, 49, 50, 55, 57])
             assert np.all(f[1] == [48, 33, 30, 49])
         else:
@@ -147,7 +148,7 @@ class VoronoiTest:
         np.random.seed(0)
         dual = op.network.DelaunayVoronoiDual(points=10, shape=[1, 1, 1])
         f = dual.find_pore_hulls(pores=[0, 5])
-        if ver < tuple((1, 16, 2)):
+        if platform.system() != "Darwin":
             assert np.all(f[0] == [12, 14, 15, 19, 20, 21, 30,
                                    33, 35, 48, 49, 50, 55, 57])
             assert np.all(f[1] == [36, 37, 38, 39, 40, 41, 42,
