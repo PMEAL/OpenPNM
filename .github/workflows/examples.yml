@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies (Linux)
         run: |
           uv sync --extra test --extra extras --extra docs --extra interactive
-          uv build
+          uv pip install -e . --no-deps
           uv pip install pypardiso
 
       - name: Running tests
