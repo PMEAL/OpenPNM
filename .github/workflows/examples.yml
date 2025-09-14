@@ -30,7 +30,8 @@ jobs:
 
       - name: Install dependencies (Linux)
         run: |
-          uv sync --extra test --extra extras
+          uv sync --extra test --extra extras --extra docs --extra interactive
+          uv pip install pypardiso
 
       - name: Running tests
         run: uv run pytest examples/ --nbval-lax
