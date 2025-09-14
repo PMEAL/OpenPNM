@@ -28,9 +28,12 @@ class PerctoolsTest:
         if ver < tuple((1, 10, 0)):
             assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
             assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
-        else:
+        elif ver < tuple((1, 16, 0)):
             assert np.all(nodes[0] == [0, 1, 5, 9, 13, 14, 15])
             assert np.all(edges[0] == [0, 13, 17, 21, 10, 11])
+        else:  # And they changed it again!
+            assert np.all(nodes[0] == [0, 4, 8, 12, 13, 14, 15])
+            assert np.all(edges[0] == [12, 16, 20, 9, 10, 11])
         nodes, edges = op.topotools.find_path(
             network=pn,
             pore_pairs=[[0, 15], [1, 15]]).values()
@@ -40,9 +43,12 @@ class PerctoolsTest:
         if ver < tuple((1, 10, 0)):
             assert np.all(nodes[0] == [0, 4, 8, 9, 13, 14, 15])
             assert np.all(edges[0] == [12, 16, 6, 21, 10, 11])
-        else:
+        elif ver < tuple((1, 16, 0)):
             assert np.all(nodes[0] == [0, 1, 5, 9, 13, 14, 15])
             assert np.all(edges[0] == [0, 13, 17, 21, 10, 11])
+        else:  # And they changed it again!
+            assert np.all(nodes[0] == [0, 4, 8, 12, 13, 14, 15])
+            assert np.all(edges[0] == [12, 16, 20, 9, 10, 11])
 
     def test_ispercolating(self):
         pn = op.network.Demo(shape=[4, 4, 1])

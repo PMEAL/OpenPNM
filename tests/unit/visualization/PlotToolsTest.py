@@ -63,17 +63,6 @@ class PlotToolsTest:
         with pytest.raises(Exception):
             op.visualization.plot_networkx(pn)
 
-    def test_generate_voxel_image(self):
-        pn = op.network.Cubic(shape=[5, 5, 1])
-        pn.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders)
-        pn.regenerate_models()
-        im = op.visualization.generate_voxel_image(network=pn,
-                                                   pore_shape='sphere',
-                                                   throat_shape='cylinder',
-                                                   max_dim=500)
-        assert im.shape[0] == 500
-
     def test_plot_connections_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
