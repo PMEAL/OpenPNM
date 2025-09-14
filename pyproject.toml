@@ -41,9 +41,8 @@ dependencies = [
 
 [project.optional-dependencies]
 extras = [
-    "pypardiso",
-    "netgen",
     "porespy",
+    "ngsolve",
 ]
 test = [
     "codecov",
