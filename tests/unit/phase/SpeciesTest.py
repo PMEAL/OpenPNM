@@ -27,7 +27,7 @@ class SpeciesTest:
         pn = op.network.Demo()
         h2o = op.phase.StandardLiquid(network=pn, species='water')
         h2o.regenerate_models()
-        a = Chemical('h2o')
+        a = Chemical('H2O')
         assert_allclose(h2o['pore.density'].mean(), a.rho, rtol=0.01)
         assert_allclose(h2o['pore.heat_capacity'].mean(), a.Cplm, rtol=0.5)
         assert_allclose(h2o['pore.thermal_conductivity'].mean(), a.kl, rtol=0.2)
@@ -36,9 +36,9 @@ class SpeciesTest:
 
     def test_standard_gas(self):
         pn = op.network.Demo()
-        o2 = op.phase.StandardGas(network=pn, species='o2')
+        o2 = op.phase.StandardGas(network=pn, species='O2')
         o2.regenerate_models()
-        a = Chemical('o2')
+        a = Chemical('O2')
         assert_allclose(o2['pore.density'].mean(), a.rhog, rtol=0.01)
         assert_allclose(o2['pore.heat_capacity'].mean(), a.Cpgm, rtol=0.01)
         assert_allclose(o2['pore.thermal_conductivity'].mean(), a.kg, rtol=0.5)
@@ -46,8 +46,8 @@ class SpeciesTest:
 
     def test_get_mixture(self):
         net = op.network.Demo()
-        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.StandardGas(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         assert air is o2.mixture
         assert air is n2.mixture
