@@ -4,6 +4,9 @@ import openpnm as op
 from openpnm._skgraph.tools import cyl2cart, sph2cart
 
 
+ver = tuple([int(i) for i in sp.__version__.split('.')])
+
+
 class VoronoiTest:
 
     def setup_class(self):
@@ -130,7 +133,6 @@ class VoronoiTest:
         assert dual.num_pores('voronoi') == 567
 
     def test_find_throat_facets(self):
-        ver = tuple([int(i) for i in sp.__version__.split('.')])
         np.random.seed(0)
         dual = op.network.DelaunayVoronoiDual(points=10, shape=[1, 1, 1])
         f = dual.find_throat_facets(throats=[1, 5])
@@ -142,7 +144,6 @@ class VoronoiTest:
             assert np.all(f[1] == [32, 50, 51, 31])
 
     def test_find_pore_hulls(self):
-        ver = tuple([int(i) for i in sp.__version__.split('.')])
         np.random.seed(0)
         dual = op.network.DelaunayVoronoiDual(points=10, shape=[1, 1, 1])
         f = dual.find_pore_hulls(pores=[0, 5])

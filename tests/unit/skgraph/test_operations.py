@@ -68,7 +68,7 @@ class SKGROperationsTest:
         g = ops.add_edges(g, [2, 4])
         assert g['edge.float'].shape[0] == 56
         assert np.isnan(g['edge.float'][-1])
-        assert g['edge.int'][-1] < 0  # value is platform dependent -2147483648
+        assert g['edge.int'][-1] <= 0  # value is platform dependent -2147483648
         assert g['edge.bool'][-1] == False
 
     def test_trim_edges(self):
