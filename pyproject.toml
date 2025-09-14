@@ -73,6 +73,13 @@ interactive = [
     "ipykernel",
     "ipywidgets",
     "jupyter",
-    "jupyterlab_widgets",
+    "jupyterlab-widgets",
     "spyder-kernels>=3.0",
+]
+
+[dependency-groups]
+dev = [
+    {include-group = "test"},
+    {include-group = "docs"},
+    {include-group = "interactive"},
 ]
