@@ -30,6 +30,7 @@ dependencies = [
     "numpy<2.2",
     "pandas>=2.3.2",
     "pyamg>=5.3.0",
+    "pypardiso; platform_machine=='x86_64' or platform_machine=='AMD64'",
     "rich>=14.1.0",
     "scikit-image<0.24",
     "scipy>=1.16.2",

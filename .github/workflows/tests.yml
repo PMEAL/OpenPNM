@@ -37,13 +37,11 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           uv sync --extra test --extra extras
-          uv pip install pypardiso
 
       - name: Install dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
           uv sync --extra test --extra extras
-          uv pip install pypardiso
 
       - name: Disable numba JIT for codecov to include jitted methods
         if: (matrix.python-version == 3.12) && (matrix.os == 'ubuntu-latest')
