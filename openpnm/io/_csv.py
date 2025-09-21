@@ -1,9 +1,11 @@
-from openpnm.io._pandas import project_to_pandas, network_to_pandas
-from openpnm.io import _parse_filename
-from openpnm.utils import Project
-from pandas import read_table
 import re
+
 import numpy as np
+from pandas import read_csv
+
+from openpnm.io import _parse_filename
+from openpnm.io._pandas import network_to_pandas, project_to_pandas
+from openpnm.utils import Project
 
 
 def project_to_csv(project, filename=''):
@@ -27,6 +29,7 @@ def project_to_csv(project, filename=''):
 
 
 def network_to_csv(network, filename=''):
+    """Exports a network to a CSV file."""
     proj = Project()
     proj.append(network)
     df = network_to_pandas(network=network, join=True, delim='.')
@@ -37,15 +40,15 @@ def network_to_csv(network, filename=''):
 
 
 def network_from_csv(filename):
+    """Loads a network from a CSV file."""
     from openpnm.network import Network
     fname = _parse_filename(filename=filename, ext='csv')
 
-    a = read_table(filepath_or_buffer=fname,
-                   sep=',',
-                   skipinitialspace=True,
-                   index_col=False,
-                   true_values=['T', 't', 'True', 'true', 'TRUE'],
-                   false_values=['F', 'f', 'False', 'false', 'FALSE'])
+    a = read_csv(filepath_or_buffer=fname,
+                 sep=',',
+                 skipinitialspace=True,
+                 header=0,
+                 low_memory=False)
 
     # First parse through all the items and re-merge columns
     dct = {}
@@ -82,6 +85,15 @@ def network_from_csv(filename):
             dct[k] = v[:Np, ...]
         if k.startswith('throat.'):
             dct[k] = v[:Nt, ...]
+
+    # This is a fix for pandas loading in all data types as dtype('O')
+    # if it encounters mixed types in the file. For whatever reason
+    # the conversion to type 'float64' works without problem, however for
+    # boolean values, the dtype 'O' persists. That can lead to difficult
+    # to debug errors later on. Therefore here this fix:
+    for k, v in dct.items():
+        if type(v[0]) is bool:
+            dct[k] = v.astype(bool)
 
     network = Network()
     network.update(dct)

@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: release  # the production branch name (for proper version #)
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: '3.9'
 
     - name: Set env variables
       run: |
@@ -49,15 +49,15 @@ jobs:
 
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_TOKEN }}
-        skip_existing: true
+        skip-existing: true
 
     # - name: Publish distribution 📦 to TestPyPI
     #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-    #   uses: pypa/gh-action-pypi-publish@master
+    #   uses: pypa/gh-action-pypi-publish@release/v1
     #   with:
     #     user: __token__
     #     password: ${{ secrets.TESTPYPI_TOKEN }}

@@ -1,5 +1,6 @@
 import pyamg
 from scipy.sparse import csr_matrix
+
 from ._base import IterativeSolver
 
 __all__ = ['PyamgRugeStubenSolver']
@@ -7,7 +8,7 @@ __all__ = ['PyamgRugeStubenSolver']
 
 # write a PyamgRugeStubenSolver class
 class PyamgRugeStubenSolver(IterativeSolver):
-    """Brief description of 'PyamgRugeStubenSolver'"""
+    """Iterative solver based on PyAMG's `ruge_stuben_solver`."""
 
     def solve(self, A, b, x0=None):
         if not isinstance(A, csr_matrix):

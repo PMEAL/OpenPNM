@@ -1,12 +1,13 @@
 from scipy.integrate import solve_ivp
-from openpnm.integrators import Integrator
+
 from openpnm.algorithms._solution import TransientSolution
+from openpnm.integrators import Integrator
 
 __all__ = ['ScipyRK45']
 
 
 class ScipyRK45(Integrator):
-    """Brief description of 'ScipyRK45'"""
+    """Integrator class based on SciPy's implementation of RK45"""
 
     def __init__(self, atol=1e-6, rtol=1e-6, verbose=False, linsolver=None):
         self.atol = atol

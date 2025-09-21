@@ -24,12 +24,23 @@ class ConduitLengthsTest:
         with pytest.raises(Exception):
             L_actual = mods.spheres_and_cylinders(self.net)
         self.net["pore.diameter"][1] = 0.9
-        # Overlapping pores
+        # Slightly Overlapping pores
         self.net["pore.diameter"][0] = 1.2
+        L_actual = mods.spheres_and_cylinders(self.net)
+        L_desired = np.array([[0.56568542, 0.03120169, 0.40311289],
+                              [0.40311289, 0.30965898, 0.28722813]])
+        assert_allclose(L_actual, L_desired)
+        # Moderately overlapping pores
+        self.net["throat.diameter"][0] = 0.2
         L_actual = mods.spheres_and_cylinders(self.net)
         L_desired = np.array([[5.78750000e-01, 1.00000000e-15, 4.21250000e-01],
                               [4.03112887e-01, 3.09658980e-01, 2.87228132e-01]])
         assert_allclose(L_actual, L_desired)
+        self.net["throat.diameter"][0] = 0.4
+        # Strongly overlapping pores
+        self.net["pore.diameter"][0] = 2.5
+        with pytest.raises(Exception):
+            mods.spheres_and_cylinders(self.net)
         self.net["pore.diameter"][0] = 0.5
 
     def test_circles_and_rectangles(self):
@@ -40,14 +51,25 @@ class ConduitLengthsTest:
         # Incompatible data with model assumptions
         self.net["pore.diameter"][1] = 0.3
         with pytest.raises(Exception):
-            L_actual = mods.circles_and_squares(self.net)
+            L_actual = mods.spheres_and_cylinders(self.net)
         self.net["pore.diameter"][1] = 0.9
-        # Overlapping pores
+        # Slightly Overlapping pores
         self.net["pore.diameter"][0] = 1.2
-        L_actual = mods.circles_and_rectangles(self.net)
+        L_actual = mods.spheres_and_cylinders(self.net)
+        L_desired = np.array([[0.56568542, 0.03120169, 0.40311289],
+                              [0.40311289, 0.30965898, 0.28722813]])
+        assert_allclose(L_actual, L_desired)
+        # Moderately overlapping pores
+        self.net["throat.diameter"][0] = 0.2
+        L_actual = mods.spheres_and_cylinders(self.net)
         L_desired = np.array([[5.78750000e-01, 1.00000000e-15, 4.21250000e-01],
                               [4.03112887e-01, 3.09658980e-01, 2.87228132e-01]])
         assert_allclose(L_actual, L_desired)
+        self.net["throat.diameter"][0] = 0.4
+        # Strongly overlapping pores
+        self.net["pore.diameter"][0] = 2.5
+        with pytest.raises(Exception):
+            mods.spheres_and_cylinders(self.net)
         self.net["pore.diameter"][0] = 0.5
 
     def test_cones_and_cylinders(self):

@@ -5,8 +5,16 @@ from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
 
 
-def voronoi(points, shape=[1, 1, 1], trim=True, reflect=False, relaxation=0,
-            node_prefix='node', edge_prefix='edge'):
+def voronoi(
+    points,
+    shape=[1, 1, 1],
+    trim=True,
+    reflect=False,
+    f=1,
+    relaxation=0,
+    node_prefix='node',
+    edge_prefix='edge',
+):
     r"""
     Generate a network based on a Voronoi tessellation of base points
 
@@ -24,6 +32,12 @@ def voronoi(points, shape=[1, 1, 1], trim=True, reflect=False, relaxation=0,
         If ``True`` then points are reflected across each face of the domain
         prior to performing the tessellation. Enabling this behavior creates
         flat faces on all sizes of the domain.
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
     relaxation : int, optional (default = 0)
         The number of iterations to use for relaxing the base points. This is
         sometimes called `Lloyd's algorithm
@@ -42,7 +56,7 @@ def voronoi(points, shape=[1, 1, 1], trim=True, reflect=False, relaxation=0,
         The Voronoi tessellation object produced by ``scipy.spatial.Voronoi``
 
     """
-    points = tools.parse_points(points=points, shape=shape, reflect=reflect)
+    points = tools.parse_points(points=points, shape=shape, reflect=reflect, f=f)
     mask = ~np.all(points == 0, axis=0)
     # Perform tessellation
     vor = sptl.Voronoi(points=points[:, mask])

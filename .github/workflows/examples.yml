@@ -13,31 +13,25 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [3.8]
+        python-version: ['3.12']
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v6
         with:
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
+          cache-dependency-glob: "**/pyproject.toml"
+          cache-suffix: "uv-${{ matrix.python-version }}-${{ matrix.os }}"
 
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install dependencies (pip)
+      - name: Install dependencies (Linux)
         run: |
-          pip install \
-            -r requirements.txt \
-            -r requirements/tests.txt
+          uv sync --extra test --extra extras --extra docs --extra interactive
+          uv pip install -e . --no-deps
 
       - name: Running tests
-        run:
-          pytest examples/
-            --nbval-lax
+        run: uv run pytest examples/ --nbval-lax

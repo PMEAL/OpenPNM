@@ -1,7 +1,8 @@
-import openpnm as op
-import openpnm.models.geometry.pore_volume as mods
 import numpy as np
 from numpy.testing import assert_approx_equal
+
+import openpnm as op
+import openpnm.models.geometry.pore_volume as mods
 
 
 class PoreVolumeTest:
@@ -60,5 +61,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

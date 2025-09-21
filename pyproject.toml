@@ -1,0 +1,87 @@
+[project]
+name = "openpnm"
+dynamic = ["version"]
+description = "A framework for conducting pore network modeling simulations of multiphase transport in porous materials"
+authors = [{ name = "OpenPNM Team", email = "jgostick@gmail.com" }]
+maintainers = [
+    { name = "Jeff Gostick", email = "jgostick@gmail.com" },
+    { name = "Amin Sadeghi", email = "amin.sadeghi@live.com" },
+]
+license = "MIT"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "docrep>=0.3.2",
+    "h5py>=3.14.0",
+    "jsonschema>=4.25.1",
+    "llvmlite>=0.44",
+    "matplotlib>=3.10.6",
+    "matplotlib-inline>=0.1.7",
+    "networkx>=3.5",
+    "numba>=0.61",
+    "numpy<2.2",
+    "pandas>=2.3.2",
+    "pyamg>=5.3.0",
+    "pypardiso; platform_machine=='x86_64' or platform_machine=='AMD64'",
+    "rich>=14.1.0",
+    "scikit-image<0.24",
+    "scipy>=1.16.2",
+    "sympy>=1.14.0",
+    "thermo>=0.4.2",
+    "tqdm>=4.67.1",
+    "transforms3d>=0.4.2",
+]
+
+[project.optional-dependencies]
+extras = [
+    "porespy",
+    "ngsolve",
+]
+test = [
+    "codecov",
+    "coverage",
+    "nbval",
+    "py",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "pytest-custom-exit-code",
+    "pytest-split",
+]
+docs = [
+    "mock",
+    "myst-nb",
+    "nbstripout>=0.8.1",
+    "pandoc",
+    "pydata-sphinx-theme",
+    "sphinx",
+    "sphinx-autoapi",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "tensorflow",
+    "plotly",
+]
+interactive = [
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab-widgets",
+    "spyder-kernels>=3.0",
+    "plotly",
+]
+
+[dependency-groups]
+dev = [
+    "openpnm[test]",
+    "openpnm[docs]",
+    "openpnm[interactive]",
+]

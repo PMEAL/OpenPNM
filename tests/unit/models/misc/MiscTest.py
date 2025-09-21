@@ -1,8 +1,9 @@
 import numpy as np
+import scipy.stats as spst
+from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
+
 import openpnm as op
 import openpnm.models.misc as mods
-from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
-import scipy.stats as spst
 
 
 class MiscTest:
@@ -292,5 +293,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

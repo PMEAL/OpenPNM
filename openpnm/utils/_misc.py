@@ -1,13 +1,13 @@
-import os
-import inspect
-import warnings
 import functools
-import numpy as np
-import scipy.sparse as sparse
+import inspect
+import os
+import warnings
 from collections.abc import Iterable
-from docrep import DocstringProcessor
-import numpy.lib.recfunctions as rf
 
+import numpy as np
+import numpy.lib.recfunctions as rf
+import scipy.sparse as sparse
+from docrep import DocstringProcessor
 
 __all__ = [
     'Docorator',
@@ -32,6 +32,7 @@ __all__ = [
 
 
 class Docorator(DocstringProcessor):
+    """OpenPNM's customized docstring processor."""
 
     __instance__ = None
 

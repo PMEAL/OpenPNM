@@ -11,6 +11,7 @@ The examples are categorized into the following categories:
 .. toctree::
    :maxdepth: 2
 
+   ../examples/getting_started
    tutorials
    applications
    reference

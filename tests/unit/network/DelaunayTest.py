@@ -1,6 +1,6 @@
 import numpy as np
-import openpnm as op
 from numpy.testing import assert_array_almost_equal
+import openpnm as op
 
 
 class DelaunayGabrielTest:
@@ -114,5 +114,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

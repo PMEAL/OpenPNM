@@ -57,12 +57,12 @@ class Phase(Domain):
         if '@' not in key:
             super().__setitem__(key, value)
         else:
+            # Deal with the fact that the label might only exist on the network
             propname, domain = key.split('@')
             element, prop = propname.split('.', 1)
-            # Fetch array from self
-            try:
+            try:  # Fetch array from self if present
                 temp = self[element + '.' + prop]
-            except KeyError:
+            except KeyError:  # Otherwise create it
                 temp = self._initialize_empty_array_like(value, element)
                 self[element + '.' + prop] = temp
             # Insert values into masked locations
@@ -95,13 +95,16 @@ class Phase(Domain):
         if element + '.' + prop in self.keys():
             vals = super().__getitem__(element + '.' + prop)
         else:  # If above are not triggered then try to interpolate
-            if self.settings['auto_interpolate']:
-                if (element == 'pore') and ('throat.'+prop not in self.keys()):
+            try:
+                if self.settings['auto_interpolate']:
+                    if (element == 'pore') and ('throat.'+prop not in self.keys()):
+                        raise KeyError(key)
+                    elif (element == 'throat') and ('pore.'+prop not in self.keys()):
+                        raise KeyError(key)
+                    vals = self.interpolate_data(element + '.' + prop)
+                else:
                     raise KeyError(key)
-                elif (element == 'throat') and ('pore.'+prop not in self.keys()):
-                    raise KeyError(key)
-                vals = self.interpolate_data(element + '.' + prop)
-            else:
+            except AttributeError:
                 raise KeyError(key)
 
         # Finally get locs

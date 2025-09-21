@@ -1,8 +1,7 @@
 import logging
-from openpnm.phase import Phase, _fetch_chemical_props
-from openpnm.models.collections.phase import standard_liquid
-from openpnm.models.collections.phase import standard_gas
 
+from openpnm.models.collections.phase import standard_gas, standard_liquid
+from openpnm.phase import Phase, _fetch_chemical_props
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +56,7 @@ class Species(Phase):
 
 
 class StandardLiquid(Species):
+    """A ``Species`` object with built-in standard liquid-phase models."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,6 +65,7 @@ class StandardLiquid(Species):
 
 
 class StandardGas(Species):
+    """A ``Species`` object with built-in standard gas-phase models."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

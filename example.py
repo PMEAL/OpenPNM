@@ -2,11 +2,12 @@ import openpnm as op
 from openpnm.models.physics import source_terms
 from openpnm.models import collections
 import matplotlib.pyplot as plt
+
+
 op.visualization.set_mpl_style()
 ws = op.Workspace()
 ws.settings['default_solver'] = 'ScipySpsolve'
 ws.clear()
-
 
 pn = op.network.Cubic(shape=[25, 25, 1], spacing=1e-4)
 

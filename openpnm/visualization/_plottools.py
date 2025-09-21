@@ -1,8 +1,13 @@
-import numpy as np
-import openpnm as op
-from tqdm.auto import tqdm
-from matplotlib.pyplot import cm
+import logging
+
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.pyplot import cm
+from tqdm.auto import tqdm
+
+import openpnm as op
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [
@@ -12,7 +17,6 @@ __all__ = [
     'plot_tutorial',
     'plot_notebook',
     'plot_vispy',
-    'generate_voxel_image',
     'set_mpl_style',
 ]
 
@@ -22,6 +26,7 @@ def plot_connections(network,
                      ax=None,
                      size_by=None,
                      color_by=None,
+                     label_by=None,
                      cmap='jet',
                      color='b',
                      alpha=1.0,
@@ -50,8 +55,10 @@ def plot_connections(network,
         An ndarray of throat values (e.g. alg['throat.rate']).  These
         values are used to scale the ``linewidth``, so if the lines are too
         thin, then increase ``linewidth``.
-    color_by : str or array_like (optional)
+    color_by : array_like (optional)
         An ndarray of throat values (e.g. alg['throat.rate']).
+    label_by : array_like (optional)
+        An array or list of values to use as labels
     cmap : str or cmap object (optional)
         The matplotlib colormap to use if specfying a throat property
         for ``color_by``
@@ -66,6 +73,9 @@ def plot_connections(network,
         Controls the thickness of drawn lines.  Is used to scale the thickness
         if ``size_by`` is given. Default is 1. If a value is provided for
         ``size_by`` then they are used to scale the ``linewidth``.
+    font : dict
+        A dictionary of key-value pairs that are used to control the font
+        appearance if `label_by` is provided.
     **kwargs : dict
         All other keyword arguments are passed on to the ``Line3DCollection``
         class of matplotlib, so check their documentation for additional
@@ -109,9 +119,10 @@ def plot_connections(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from matplotlib import colors as mcolors
-    from mpl_toolkits.mplot3d import Axes3D
     from matplotlib.collections import LineCollection
+    from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
     from openpnm.topotools import dimensionality
 
     Ts = network.Ts if throats is None else network._parse_indices(throats)
@@ -143,14 +154,35 @@ def plot_connections(network,
     if 'c' in kwargs.keys():
         color = kwargs.pop('c')
     color = mcolors.to_rgb(color) + tuple([alpha])
+    if isinstance(cmap, str):
+        try:
+            cmap = plt.colormaps.get_cmap(cmap)
+        except AttributeError:
+            cmap = plt.cm.get_cmap(cmap)
     # Override colors with color_by if given
     if color_by is not None:
+        color_by = np.array(color_by, dtype=np.float16)
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
-        color = cm.get_cmap(name=cmap)(color_by / color_by.max())
+        if not np.all(np.isfinite(color_by)):
+            color_by[~np.isfinite(color_by)] = 0
+            logger.warning('nans or infs found in color_by array, setting to 0')
+        vmin = kwargs.pop('vmin', color_by.min())
+        vmax = kwargs.pop('vmax', color_by.max())
+        cscale = (color_by - vmin) / (vmax - vmin)
+        color = cmap(cscale)
         color[:, 3] = alpha
     if size_by is not None:
+        if len(size_by) != len(Ts):
+            size_by = size_by[Ts]
+        if not np.all(np.isfinite(size_by)):
+            size_by[~np.isfinite(size_by)] = 0
+            logger.warning('nans or infs found in size_by array, setting to 0')
         linewidth = size_by / size_by.max() * linewidth
+    if label_by is not None:
+        if len(label_by) != len(Ts):
+            label_by = label_by[Ts]
+    fontkws = kwargs.pop('font', {})
 
     if ThreeD:
         lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
@@ -160,6 +192,12 @@ def plot_connections(network,
         lc = LineCollection(throat_pos, colors=color, cmap=cmap,
                             linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
+        if label_by is not None:
+            for count, (P1, P2) in enumerate(network.conns[Ts, :]):
+                i, j, k = np.mean(network.coords[[P1, P2], :], axis=0)
+                ax.text(i, j, label_by[count],
+                        ha='center', va='center',
+                        **fontkws)
     ax.add_collection(lc)
 
     if np.size(Ts) > 0:
@@ -175,6 +213,7 @@ def plot_coordinates(network,
                      ax=None,
                      size_by=None,
                      color_by=None,
+                     label_by=None,
                      cmap='jet',
                      color='r',
                      alpha=1.0,
@@ -198,9 +237,13 @@ def plot_coordinates(network,
         well as throat connections from ``plot_connections``.
     size_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']). These
-        values are normalized by scaled by ``markersize``.
+        values are normalized by scaled by ``markersize``.  Note that this controls
+        the marker *area*, so if you want the markers to be proportional to diameter
+        you should do `size_by=net['pore.diameter']**2`.
     color_by : str or array_like
         An ndarray of pore values (e.g. alg['pore.concentration']).
+    label_by : array_like (optional)
+        An array or list of values to use as labels
     cmap : str or cmap object
         The matplotlib colormap to use if specfying a pore property
         for ``color_by``
@@ -214,6 +257,9 @@ def plot_coordinates(network,
     markersize : scalar
         Controls size of marker, default is 1.0.  This value is used to scale
         the ``size_by`` argument if given.
+    font : dict
+        A dictionary of key-value pairs that are used to control the font
+        appearance if `label_by` is provided.
     **kwargs
         All other keyword arguments are passed on to the ``scatter``
         function of matplotlib, so check their documentation for additional
@@ -260,6 +306,7 @@ def plot_coordinates(network,
     import matplotlib.pyplot as plt
     from matplotlib import cm
     from mpl_toolkits.mplot3d import Axes3D
+
     from openpnm.topotools import dimensionality
 
     Ps = network.Ps if pores is None else network._parse_indices(pores)
@@ -295,12 +342,33 @@ def plot_coordinates(network,
         color = kwargs.pop('c')
     if 's' in kwargs.keys():
         markersize = kwargs.pop('s')
+    if isinstance(cmap, str):
+        try:
+            cmap = plt.colormaps.get_cmap(cmap)
+        except AttributeError:
+            cmap = plt.cm.get_cmap(cmap)
     if color_by is not None:
-        color_by = color_by[Ps]
-        color = cm.get_cmap(name=cmap)(color_by / color_by.max())
+        color_by = np.array(color_by, dtype=np.float16)
+        if len(color_by) != len(Ps):
+            color_by = color_by[Ps]
+        if not np.all(np.isfinite(color_by)):
+            color_by[~np.isfinite(color_by)] = 0
+            logger.warning('nans or infs found in color_by array, setting to 0')
+        vmin = kwargs.pop('vmin', color_by.min())
+        vmax = kwargs.pop('vmax', color_by.max())
+        cscale = (color_by - vmin) / (vmax - vmin)
+        color = cmap(cscale)
     if size_by is not None:
+        if len(size_by) != len(Ps):
+            size_by = size_by[Ps]
+        if not np.all(np.isfinite(size_by)):
+            size_by[~np.isfinite(size_by)] = 0
+            logger.warning('nans or infs found in size_by array, setting to 0')
         markersize = size_by / size_by.max() * markersize
-
+    if label_by is not None:
+        if len(label_by) != len(Ps):
+            label_by = label_by[Ps]
+    fontkws = kwargs.pop('font', {})
     if ThreeD:
         sc = ax.scatter(X, Y, Z,
                         c=color,
@@ -317,6 +385,11 @@ def plot_coordinates(network,
                         marker=marker,
                         alpha=alpha,
                         **kwargs)
+        if label_by is not None:
+            for count, (i, j, k) in enumerate(network.coords[Ps, :]):
+                ax.text(i, j, label_by[count],
+                        ha='center', va='center',
+                        **fontkws)
         _scale_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl))
 
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
@@ -365,7 +438,7 @@ def plot_networkx(network,
                   ax=None,
                   alpha=1.0):  # pragma: no cover
     r"""
-    Creates a pretty 2d plot for 2d OpenPNM networks.
+    Creates a pretty 2D plot for 2D OpenPNM networks.
 
     Parameters
     ----------
@@ -386,7 +459,8 @@ def plot_networkx(network,
     """
     import matplotlib.pyplot as plt
     from matplotlib.collections import PathCollection
-    from networkx import Graph, draw_networkx_nodes, draw_networkx_edges
+    from networkx import Graph, draw_networkx_edges, draw_networkx_nodes
+
     from openpnm.topotools import dimensionality
 
     dims = dimensionality(network)
@@ -453,6 +527,8 @@ def plot_networkx(network,
 
 
 def plot_tutorial(network,
+                  pore_labels=None,
+                  throat_labels=None,
                   font_size=12,
                   line_width=2,
                   node_color='b',
@@ -466,6 +542,12 @@ def plot_tutorial(network,
     network : Network
         The network to plot, should be 2D, since the z-coordinate will be
         ignored.
+    pore_labels : array_like
+        A list of values to use for labeling the pores. If not provided then pore
+        index is used.
+    throat_labels : array_like
+        A list of values to use for labeling the throat. If not provided then throat
+        index is used.
     font_size : int
         Size of font to use for labels.
     line_width : int
@@ -482,14 +564,22 @@ def plot_tutorial(network,
     g : NetworkX plot object
 
     """
-    import networkx as nx
     import matplotlib.pyplot as plt
+    import networkx as nx
+
     from openpnm.io import network_to_networkx
 
     G = network_to_networkx(network=network)
     pos = {i: network['pore.coords'][i, 0:2] for i in network.Ps}
-    labels = {i: i for i in network.Ps}
-    edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
+    if pore_labels is None:
+        labels = {i: i for i in network.Ps}
+    else:
+        labels = {i: pore_labels[i] for i in network.Ps}
+    if throat_labels is None:
+        edge_labels = {tuple(network['throat.conns'][i, :]): i for i in network.Ts}
+    else:
+        edge_labels = {tuple(network['throat.conns'][i, :]): throat_labels[i]
+                       for i in network.Ts}
 
     gplot = nx.draw_networkx_nodes(G, pos,
                                    node_size=node_size,
@@ -511,7 +601,7 @@ def plot_tutorial(network,
     fig = plt.gcf()
     fig.tight_layout()
     dims = op.topotools.dimensionality(network)
-    xy_range = network.coords.ptp(axis=0)[dims]
+    xy_range = np.ptp(network.coords, axis=0)[dims]
     aspect_ratio = xy_range[0] / xy_range[1]
     fig.set_size_inches(5, 5 / aspect_ratio)
 
@@ -645,156 +735,6 @@ def plot_notebook(network,
     return fig
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
-    r"""
-    Generates a 3d numpy array from an OpenPNM network
-
-    Parameters
-    ----------
-    network : OpenPNM Network
-        Network from which voxel image is to be generated
-    pore_shape : str
-        Shape of pores in the network, valid choices are "sphere", "cube"
-    throat_shape : str
-        Shape of throats in the network, valid choices are "cylinder", "cuboid"
-    max_dim : int
-        Number of voxels in the largest dimension of the network
-
-    Returns
-    -------
-    im : ndarray
-        Voxelated image corresponding to the given pore network model
-
-    Notes
-    -----
-    (1) The generated voxel image is labeled with 0s, 1s and 2s signifying
-    solid phase, pores, and throats respectively.
-
-    """
-    from skimage.morphology import cube, ball
-    from porespy.tools import overlay, insert_cylinder
-    xyz = network["pore.coords"]
-    cn = network["throat.conns"]
-
-    # Distance bounding box from the network by a fixed amount
-    delta = network["pore.diameter"].mean() / 2
-    if isinstance(network, op.network.Cubic):
-        try:
-            delta = op.topotools.get_spacing(network).mean() / 2
-        except AttributeError:
-            delta = network.spacing.mean() / 2
-
-    # Shift everything to avoid out-of-bounds
-    extra_clearance = int(max_dim * 0.05)
-
-    # Transform points to satisfy origin at (0, 0, 0)
-    xyz0 = xyz.min(axis=0) - delta
-    xyz += -xyz0
-    res = (xyz.ptp(axis=0).max() + 2 * delta) / max_dim
-    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2 * extra_clearance
-
-    # Transforming from real coords to matrix coords
-    xyz = np.rint(xyz / res).astype(int) + extra_clearance
-    pore_radi = np.rint(network["pore.diameter"] * 0.5 / res).astype(int)
-    throat_radi = np.rint(network["throat.diameter"] * 0.5 / res).astype(int)
-
-    im_pores = np.zeros(shape, dtype=np.uint8)
-    im_throats = np.zeros_like(im_pores)
-
-    if pore_shape == "cube":
-        pore_elem = cube
-        rp = pore_radi * 2 + 1  # +1 since num_voxel must be odd
-        rp_max = int(2 * round(delta / res)) + 1
-    if pore_shape == "sphere":
-        pore_elem = ball
-        rp = pore_radi
-        rp_max = int(round(delta / res))
-    if throat_shape == "cuboid":
-        raise Exception("Not yet implemented, try 'cylinder'.")
-
-    # Generating voxels for pores
-    for i, pore in enumerate(tqdm(network.Ps)):
-        elem = pore_elem(rp[i])
-        try:
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-        except ValueError:
-            elem = pore_elem(rp_max)
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-    # Get rid of pore overlaps
-    im_pores[im_pores > 0] = 1
-
-    # Generating voxels for throats
-    for i, throat in enumerate(tqdm(network.Ts)):
-        try:
-            im_throats = insert_cylinder(
-                im_throats, r=throat_radi[i], xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
-        except ValueError:
-            im_throats = insert_cylinder(
-                im_throats, r=rp_max, xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
-    # Get rid of throat overlaps
-    im_throats[im_throats > 0] = 1
-
-    # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(np.uint8)
-    im = im_pores * 1 + im_throats * 2
-
-    return im[extra_clearance:-extra_clearance,
-              extra_clearance:-extra_clearance,
-              extra_clearance:-extra_clearance]
-
-
-def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
-                         max_dim=None, rtol=0.1):
-    r"""
-    Generate a voxel image from a Network
-
-    Parameters
-    ----------
-    network : OpenPNM Network
-        Network from which voxel image is to be generated
-    pore_shape : str
-        Shape of pores in the network, valid choices are "sphere", "cube"
-    throat_shape : str
-        Shape of throats in the network, valid choices are "cylinder", "cuboid"
-    max_dim : int
-        Number of voxels in the largest dimension of the network
-    rtol : float
-        Stopping criteria for finding the smallest voxel image such that
-        further increasing the number of voxels in each dimension by 25% would
-        improve the predicted porosity of the image by less that ``rtol``
-
-    Returns
-    -------
-    im : ndarray
-        Voxelated image corresponding to the given pore network model
-
-    Notes
-    -----
-    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
-    solid phase, pores, and throats respectively.
-
-    (2) If max_dim is not provided, the method calculates it such that the
-    further increasing it doesn't change porosity by much.
-
-    """
-    # If max_dim is provided, generate voxel image using max_dim
-    if max_dim is not None:
-        return _generate_voxel_image(
-            network, pore_shape, throat_shape, max_dim=max_dim)
-    max_dim = 200
-    # If max_dim is not provided, find best max_dim that predicts porosity
-    err = 100
-    eps_old = 200
-    while err > rtol:
-        im = _generate_voxel_image(
-            network, pore_shape, throat_shape, max_dim=max_dim)
-        eps = im.astype(bool).sum() / np.prod(im.shape)
-        err = abs(1 - eps / eps_old)
-        eps_old = eps
-        max_dim = int(max_dim * 1.25)
-    return im
-
-
 def create_pore_colors_from_array(a, cmap='viridis'):
     colormap = cm.get_cmap(cmap)
     return colormap(a/a.max())
@@ -814,6 +754,7 @@ def plot_vispy(
     bgcolor='grey',
 ):
     r"""
+    Creates a pretty network plot using VisPy.
 
     Parameters
     ----------
@@ -891,7 +832,7 @@ def set_mpl_style():  # pragma: no cover
     image_props = {'interpolation': 'none',
                    'cmap': 'viridis'}
     line_props = {'linewidth': 2,
-                  'markersize': 8,
+                  'markersize': 7,
                   'markerfacecolor': 'w'}
     font_props = {'size': sfont}
     axes_props = {'titlesize': lfont,
@@ -922,8 +863,5 @@ def set_mpl_style():  # pragma: no cover
     plt.rc('figure', **figure_props)
     plt.rc('image', **image_props)
 
-    try:
-        import IPython
-        IPython.display.set_matplotlib_formats('png2x')
-    except ModuleNotFoundError:
-        pass
+    import matplotlib_inline
+    matplotlib_inline.backend_inline.set_matplotlib_formats('retina')

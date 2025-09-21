@@ -1,9 +1,11 @@
-import openpnm as op
-import chemicals
 import inspect
+
+import chemicals
 import numpy as np
+from numpy.testing import assert_allclose, assert_array_almost_equal
 from thermo import Chemical
-from numpy.testing import assert_array_almost_equal, assert_allclose
+
+import openpnm as op
 from openpnm.utils import get_mixture_model_args
 
 
@@ -152,5 +154,5 @@ if __name__ == '__main__':
     self = t
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

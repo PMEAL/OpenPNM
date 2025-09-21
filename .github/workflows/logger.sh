@@ -48,6 +48,12 @@ function filter_commits_by_tag_interval {
     temp=$(git log --merges "${1}..${2}" --format=%B)
     # Remove those merge commits for updating feature branches
     temp=$(echo "${temp}" | grep -v -E "Merge branch")
+    # Remove default merge commit messages
+    temp=$(echo "${temp}" | grep -v -E "Merge pull request")
+    # Remove merge backs from release to dev (which is done after every release)
+    temp=$(echo "${temp}" | grep -v -E "back into dev")
+    # Find lines that start with "# " and replace them with ""
+    temp=$(echo "${temp}" | sed -r 's/^# //')
     echo "$temp"
 }
 

@@ -1,12 +1,12 @@
-import numpy as np
-from matplotlib.patches import Circle, Polygon, Rectangle
-from matplotlib.collections import PatchCollection
 import matplotlib.pyplot as plt
-from openpnm.topotools import find_connected_sites
-from openpnm.network import Network
-from openpnm.models.geometry import throat_length, throat_endpoints
-from openpnm._skgraph.tools import rotate_coords
+import numpy as np
+from matplotlib.collections import PatchCollection
+from matplotlib.patches import Circle, Polygon, Rectangle
 
+from openpnm._skgraph.tools import rotate_coords
+from openpnm.models.geometry import throat_endpoints, throat_length
+from openpnm.network import Network
+from openpnm.topotools import find_connected_sites
 
 __all__ = [
     'draw_conduit',
@@ -14,6 +14,7 @@ __all__ = [
 
 
 def draw_conduit(network, throat):
+    """Draws a subset of a network given throat numbers."""
     pn = network
     P1, P2 = find_connected_sites(g=pn, bonds=throat)
     new_net = Network(coords=pn.coords[[P1, P2], :], conns=np.atleast_2d([0, 1]))

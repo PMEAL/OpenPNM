@@ -1,6 +1,6 @@
-from pypardiso import spsolve
+from scipy.sparse import csc_matrix, csr_matrix
+
 from openpnm.solvers import DirectSolver
-from scipy.sparse import csr_matrix, csc_matrix
 
 __all__ = ['PardisoSpsolve']
 
@@ -10,6 +10,8 @@ class PardisoSpsolve(DirectSolver):
 
     def solve(self, A, b, **kwargs):
         """Solves the given linear system of equations Ax=b."""
+        from pypardiso import spsolve
+
         if not isinstance(A, (csr_matrix, csc_matrix)):
             A = A.tocsr()
         return (spsolve(A, b), 0)

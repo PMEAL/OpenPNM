@@ -1,5 +1,5 @@
 r"""
-contrib
+Contrib
 -------
 
 This module contains contributions to OpenPNM, both from the developers as
@@ -9,5 +9,5 @@ removed.
 
 """
 
-from ._transient_multiphysics import *
 from ._multiphase import *
+from ._transient_multiphysics import *

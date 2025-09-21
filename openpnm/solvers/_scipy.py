@@ -23,4 +23,7 @@ class ScipyCG(IterativeSolver):
         if not isinstance(A, (csr_matrix, csc_matrix)):
             A = A.tocsr()
         atol = self._get_atol(b)
-        return cg(A, b, tol=self.tol, atol=atol, **kwargs)
+        try:
+            return cg(A, b, tol=self.tol, atol=atol, **kwargs)
+        except TypeError:
+            return cg(A, b, rtol=self.tol, atol=atol, **kwargs)

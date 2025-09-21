@@ -1,5 +1,6 @@
 from openpnm.network import Network
 from openpnm.utils import Docorator
+from openpnm.topotools import label_faces
 from openpnm._skgraph.generators import voronoi
 
 
@@ -37,6 +38,15 @@ class Voronoi(Network):
         all the faces of the domain prior to performing the tessellation. This
         feature is best combined with ``trim=True`` to make nice flat faces
         on all sides of the domain.
+    f : float
+        The fraction of points which should be reflected.  The default is 1 which
+        reflects all the points in the domain, but this can lead to a lot of
+        unnecessary points, so setting to 0.1 or 0.2 helps speed, but risks that
+        the tessellation may not have smooth faces if not enough points are
+        reflected.
+    relaxation : int
+        The number of time to iteratively relax the base points by moving them to
+        the centroid of their respective Voronoi hulls. The default it 0.
 
     %(Network.parameters)s
 
@@ -57,13 +67,27 @@ class Voronoi(Network):
 
     """
 
-    def __init__(self, shape, points, trim=False, reflect=False, **kwargs):
+    def __init__(
+        self,
+        shape,
+        points,
+        trim=True,
+        reflect=True,
+        f=1,
+        relaxation=0,
+        **kwargs
+    ):
         super().__init__(**kwargs)
-        net, vor = voronoi(points=points,
-                           shape=shape,
-                           trim=trim,
-                           reflect=reflect,
-                           node_prefix='pore',
-                           edge_prefix='throat')
+        net, vor = voronoi(
+            points=points,
+            shape=shape,
+            trim=trim,
+            reflect=reflect,
+            f=f,
+            relaxation=relaxation,
+            node_prefix='pore',
+            edge_prefix='throat',
+        )
         self.update(net)
+        self._post_init()
         self.vor = vor

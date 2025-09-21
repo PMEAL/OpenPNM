@@ -1,7 +1,9 @@
-import pytest
-import numpy as np
-import openpnm as op
 from time import sleep
+
+import numpy as np
+import pytest
+
+import openpnm as op
 
 
 class UtilsTest:
@@ -102,5 +104,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

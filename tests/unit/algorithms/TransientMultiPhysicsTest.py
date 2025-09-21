@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.testing as nt
+
 import openpnm as op
 import openpnm.models.geometry.diffusive_size_factors as gd
 import openpnm.models.physics as pm
@@ -48,7 +49,6 @@ class TransientMultiPhysicsTest:
             "cache_A": False,
             "cache_b": False
         }
-        self.pardiso = op.solvers.PardisoSpsolve()
         self.rk45 = op.integrators.ScipyRK45(verbose=True)
 
         # First algorithm, transient fourier conduction

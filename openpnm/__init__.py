@@ -8,25 +8,34 @@ porous materials.
 
 """
 
-from . import _skgraph
-from . import utils
-from . import core
-from . import models
-from . import topotools
-from . import network
-from . import phase
-from . import algorithms
-from . import solvers
-from . import integrators
-from . import io
-from . import contrib
-from . import visualization
+import logging
 
-from .utils import Workspace, Project
+from rich.logging import RichHandler
+
+FORMAT = "%(message)s"
+logging.basicConfig(
+    format=FORMAT, datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
+)
 
 import numpy as _np
+
+from . import (
+    _skgraph,
+    algorithms,
+    contrib,
+    core,
+    integrators,
+    io,
+    models,
+    network,
+    phase,
+    solvers,
+    topotools,
+    utils,
+    visualization,
+)
+from .utils import Project, Workspace
+
 _np.seterr(divide='ignore', invalid='ignore')
 
 __version__ = utils._get_version()
-
-utils._setup_logger_rich()

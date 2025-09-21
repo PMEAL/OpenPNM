@@ -7,22 +7,22 @@ Installation
 OpenPNM depends heavily on the SciPy Stack. The best way to get a fully
 functional environment is the `Anaconda
 distribution <https://www.anaconda.com/products/individual#Downloads>`__.
-Be sure to get the Python 3.7+ version.
+Be sure to get the Python 3.9+ version.
 
-Once you've installed *Anaconda* you can then install ``openpnm``. It is
+Once you've installed Anaconda you can then install ``openpnm``. It is
 available on `conda-forge <https://anaconda.org/conda-forge/openpnm>`__
-and can be installed by typing the following at the *conda* prompt::
+and can be installed by typing the following at the ``conda`` prompt::
 
-   $ conda install -c conda-forge openpnm
+   conda install -c conda-forge openpnm
 
 It's possible to use ``pip install openpnm``, but this will not result
-in a full installation and some features won't work (e.g., outputing to
-paraview).
+in a full installation and some features won't work (e.g., outputting to
+ParaView).
 
 Installing the dev version
 ##########################
 We frequently publish new releases every couple of months, but if you
-still want to use the latest features available on the `dev` branch,
+still want to use the latest features available on the ``dev`` branch,
 (but not yet officially released), you have two options:
 
 The easy way
@@ -30,7 +30,7 @@ The easy way
 If you're looking for an easy way to install the development version of
 ``openpnm`` and use the latest features, you can install it using::
 
-   $ pip install git+https://github.com/PMEAL/OpenPNM.git@dev
+   pip install git+https://github.com/PMEAL/OpenPNM.git@dev
 
 .. warning::
    This approach is not recommended if you are a OpenPNM contributor or
@@ -48,25 +48,31 @@ Open up the terminal/cmd and ``cd`` to the directory you want to clone ``openpnm
 
 Clone the repo somewhere in your disk using::
 
-   $ git clone https://github.com/PMEAL/OpenPNM
+   git clone https://github.com/PMEAL/OpenPNM
 
 ``cd`` to the root folder of ``openpnm``::
 
-   $ cd OpenPNM
+   cd OpenPNM
 
-Install ``openpnm`` dependencies::
+Install ``openpnm`` dependencies, either through ``conda``::
 
-   $ conda install --file requirements/conda.txt -c conda-forge --override-channels
+   conda install --file requirements/conda.txt -c conda-forge
+
+or through ``pip`` (as a last resort, since ``conda`` and ``pip`` are not very compatible)::
+
+   pip install -r requirements.txt
 
 Install ``openpnm`` in "editable" mode::
 
-   $ pip install --no-deps -e .
+   pip install -e .
 
 Voila! You can now use the latest features available on the ``dev`` branch. To
 keep your "local" ``openpnm`` installation up to date, every now and then, ``cd``
 to the root folder of ``openpnm`` and pull the latest changes::
 
-   $ git pull
+   git pull
+
+Of course, it'll be much easier if you use a GUI for ``git`` (e.g., GitFork, GitKraken, etc.).
 
 .. warning::
    For the development version of ``openpnm`` to work, you need to first remove
@@ -74,14 +80,14 @@ to the root folder of ``openpnm`` and pull the latest changes::
    ``pip uninstall openpnm``) or ``conda`` (via ``conda remove openpnm``).
 
 Where's my ``conda`` prompt?
-###################################
+############################
 All the commands in this page need to be typed in the ``conda`` prompt.
 
 Windows
 -------
 On Windows you should have a shortcut to the "Anaconda prompt" in the
 Anaconda program group in the start menu. This will open a Windows
-command console with access to the Python features added by *conda*,
+command console with access to the Python features added by ``conda``,
 such as installing things via ``conda``.
 
 Mac and Linux
