@@ -2,7 +2,6 @@ import os
 import platform
 
 import openpnm as op
-import py
 import pytest
 from openpnm.models.misc import from_neighbor_pores
 
@@ -33,7 +32,7 @@ class STLTest:
 
 
 if __name__ == "__main__":
-
+    import py
     # All the tests in this file can be run with 'playing' this file
     t = STLTest()
     self = t  # For interacting with the tests at the command line
