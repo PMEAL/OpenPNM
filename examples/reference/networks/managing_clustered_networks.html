@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Managing Clustered Networks &#8212; OpenPNM 3.5.0.dev3 documentation</title>
+    <title>Managing Clustered Networks &#8212; OpenPNM 3.5.1.dev7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../../_static/documentation_options.js?v=af8fd599"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
   
   
 </a></div>
@@ -454,6 +454,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:40:52] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -463,72 +468,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span> <span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_tutorial</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_demo.py:27,</span> in <span class="ni">Demo.__init__</span><span class="nt">(self, shape, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">25</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">27</span> <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:476,</span> in <span class="ni">ModelsMixin2.regenerate_models</span><span class="nt">(self, propnames, exclude)</span>
-<span class="g g-Whitespace">    </span><span class="mi">474</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">475</span>     <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">476</span>         <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">477</span>     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">478</span>         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> was not run since the following property&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">479</span>                <span class="sa">f</span><span class="s2">&quot; is missing: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:507,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
-<span class="g g-Whitespace">    </span><span class="mi">505</span>             <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">506</span>                 <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">507</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">508</span> <span class="k">else</span><span class="p">:</span>  <span class="c1"># domain was given explicitly</span>
-<span class="g g-Whitespace">    </span><span class="mi">509</span>     <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:521,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
-<span class="g g-Whitespace">    </span><span class="mi">519</span> <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">520</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">521</span>     <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">522</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
-<span class="g g-Whitespace">    </span><span class="mi">523</span>         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/models/misc/_neighbor_lookups.py:123,</span> in <span class="ni">from_neighbor_pores</span><span class="nt">(target, prop, mode, ignore_nans)</span>
-<span class="g g-Whitespace">    </span><span class="mi">121</span> <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
-<span class="g g-Whitespace">    </span><span class="mi">122</span> <span class="n">throats</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">Ts</span>
-<span class="ne">--&gt; </span><span class="mi">123</span> <span class="n">P12</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">124</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">P12</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">125</span> <span class="k">if</span> <span class="n">ignore_nans</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_network.py:443,</span> in <span class="ni">Network.find_connected_pores</span><span class="nt">(self, throats, flatten, mode)</span>
-<span class="g g-Whitespace">    </span><span class="mi">391</span><span class="w"> </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="sd"> Return a list of pores connected to the given list of throats</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">440</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">441</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">442</span> <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">443</span> <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">444</span>                                        <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">445</span> <span class="k">return</span> <span class="n">pores</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/topotools/_graphtools.py:37,</span> in <span class="ni">find_connected_sites</span><span class="nt">(bonds, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="k">def</span><span class="w"> </span><span class="nf">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">37</span>     <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_connected_nodes</span><span class="p">(</span><span class="n">inds</span><span class="o">=</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/_skgraph/queries/_funcs.py:167,</span> in <span class="ni">find_connected_nodes</span><span class="nt">(network, inds, flatten, logic)</span>
-<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">166</span>         <span class="n">temp</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="ne">--&gt; </span><span class="mi">167</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">168</span>     <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span>
-<span class="g g-Whitespace">    </span><span class="mi">169</span> <span class="k">else</span><span class="p">:</span>
-
-<span class="ne">TypeError</span>: reshape() got some positional-only arguments passed as keyword arguments: &#39;a&#39;
-</pre></div>
-</div>
+<img alt="../../../_images/8e41279c15b78f2c311a85322f55ff3860352d94b219e55317dd66290ae4c21c.png" src="../../../_images/8e41279c15b78f2c311a85322f55ff3860352d94b219e55317dd66290ae4c21c.png" />
 </div>
 </div>
 <section id="creating-a-clustered-network">
@@ -542,7 +482,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c7ec4aa8bbe5d6882db41cc411ebc85fe957cec9473c60541bc13fdce3b23fa0.png" src="../../../_images/c7ec4aa8bbe5d6882db41cc411ebc85fe957cec9473c60541bc13fdce3b23fa0.png" />
+<img alt="../../../_images/bd50de656b272cb9a70eaa849109cfd3d07ed1da60497d734a5ff20d1d6d1b8b.png" src="../../../_images/bd50de656b272cb9a70eaa849109cfd3d07ed1da60497d734a5ff20d1d6d1b8b.png" />
 </div>
 </div>
 <p>Now we can have 3 total “clusters”, two small clusters at the bottom plus one large cluster which constitutes the rest of the network.</p>
@@ -587,7 +527,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e9741e93235a7ef44aadea7b0c139b1d0d8a448ae520b9d99cf8d845b317ee1d.png" src="../../../_images/e9741e93235a7ef44aadea7b0c139b1d0d8a448ae520b9d99cf8d845b317ee1d.png" />
+<img alt="../../../_images/beb1a3c7b217a51fd1b1b26ea9a3208ceead06e0d361469e6ed926efc4ccd966.png" src="../../../_images/beb1a3c7b217a51fd1b1b26ea9a3208ceead06e0d361469e6ed926efc4ccd966.png" />
 </div>
 </div>
 <p>Referring to the network visualization above we can see that pores 5 and 10 are connected to each other, but not to any other pores. Looking at the A matrix above we can this reflected in the pattern. We can see that on row 5 there is an entry in the diagonal (5, 5) and a second entry at column 10 (5, 10). Now looking at row 10 we see an entry on the diagonal (10, 10) and a entry at column 5 (10, 5). These off-diagonal entries represent the conductance values between pores 5 and 10 (and between 10 and 5). The key point to note is that NO OTHER entries are present on either row. This means that the mass balance equations for pores 5 and 10 are not coupled to the rest of the equations. Another way to say is that pores 5 and 10 form their own independent matrix which can be solved in isolation since they don’t exchange mass with any of the other pores…however, we can’t solve this ‘mini-system’ because we have not specified any boundary conditions for it.</p>
@@ -607,7 +547,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x1b2c0709ef0&gt;
+net : &lt;openpnm.network.Demo at 0x7fd7d184ce50&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -633,12 +573,16 @@ net : &lt;openpnm.network.Demo at 0x1b2c0709ef0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.surface                                                           16
-  3  throat.surface                                                         14
-  4  pore.left                                                               5
-  5  pore.right                                                              5
-  6  pore.front                                                              5
-  7  pore.back                                                               5
+  2  pore.xmin                                                               5
+  3  pore.xmax                                                               5
+  4  pore.ymin                                                               5
+  5  pore.ymax                                                               5
+  6  pore.surface                                                           16
+  7  throat.surface                                                         14
+  8  pore.left                                                               5
+  9  pore.right                                                              5
+ 10  pore.front                                                              5
+ 11  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -682,7 +626,7 @@ net : &lt;openpnm.network.Demo at 0x1b2c0709ef0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5c49e0569c633d520fb8030756b821d97c2870c86f9391c550b453ebc4df3208.png" src="../../../_images/5c49e0569c633d520fb8030756b821d97c2870c86f9391c550b453ebc4df3208.png" />
+<img alt="../../../_images/7353e2cb870979d7fc42fce7824fb3dcc9111e7fad6f26c9634d5c7564138cff.png" src="../../../_images/7353e2cb870979d7fc42fce7824fb3dcc9111e7fad6f26c9634d5c7564138cff.png" />
 </div>
 </div>
 <p>Now we can see only a single cluster.  Without even re-running the pore-scale models we can see that the pores with a cluster number other than 0 have been removed:</p>
@@ -712,9 +656,9 @@ net : &lt;openpnm.network.Demo at 0x1b2c0709ef0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[200000.         200000.         200000.         200000.
- 200000.         174104.35922877 171699.02786866 175326.59446026
- 148814.66711071 164144.88530979 169904.06100996 101634.55634677
- 103828.91192167 109554.37137998 125747.64122525 134332.28799001
+ 200000.         183669.30600128 174979.86010504 178379.73805855
+ 143880.16666539 140331.79990148 150844.25138922 101357.69291458
+ 107990.18934268 115524.86018242 121720.64369869 135458.62319026
  100000.         100000.         100000.         100000.
  100000.        ]
 </pre></div>
@@ -729,10 +673,16 @@ net : &lt;openpnm.network.Demo at 0x1b2c0709ef0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x1b2f6fa4820&gt;
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/visualization/_plottools.py:351: RuntimeWarning: overflow encountered in cast
+  color_by = np.array(color_by, dtype=np.float16)
 </pre></div>
 </div>
-<img alt="../../../_images/23b23e6e9eed4ae9d000ef1cb362ccf2bfdd3b9e999f23f57273dd650b1a947a.png" src="../../../_images/23b23e6e9eed4ae9d000ef1cb362ccf2bfdd3b9e999f23f57273dd650b1a947a.png" />
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:40:56] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> nans or infs found in color_by array, setting to <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>                            <a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/visualization/_plottools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_plottools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/visualization/_plottools.py#356" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">356</span></a>
+</pre>
+</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7fd7c9290070&gt;
+</pre></div>
+</div>
+<img alt="../../../_images/f46c624dca527f970e902813a3a8b3985d197a4764f3c96d0d54d414b8ce8de5.png" src="../../../_images/f46c624dca527f970e902813a3a8b3985d197a4764f3c96d0d54d414b8ce8de5.png" />
 </div>
 </div>
 </section>

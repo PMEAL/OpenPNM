@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 3.5.0.dev3 documentation</title>
+    <title>Network Representation, Queries, and Manipulation &#8212; OpenPNM 3.5.1.dev7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../_static/documentation_options.js?v=af8fd599"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
   
   
 </a></div>
@@ -455,6 +455,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:41:21] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 <section id="the-adjacency-matrix">
 <h2>The Adjacency Matrix<a class="headerlink" href="#the-adjacency-matrix" title="Link to this heading">#</a></h2>
@@ -971,36 +976,9 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">30</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_network.py:443,</span> in <span class="ni">Network.find_connected_pores</span><span class="nt">(self, throats, flatten, mode)</span>
-<span class="g g-Whitespace">    </span><span class="mi">391</span><span class="w"> </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="sd"> Return a list of pores connected to the given list of throats</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">440</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">441</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">442</span> <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">443</span> <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">444</span>                                        <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">445</span> <span class="k">return</span> <span class="n">pores</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/topotools/_graphtools.py:37,</span> in <span class="ni">find_connected_sites</span><span class="nt">(bonds, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="k">def</span><span class="w"> </span><span class="nf">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">37</span>     <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_connected_nodes</span><span class="p">(</span><span class="n">inds</span><span class="o">=</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/_skgraph/queries/_funcs.py:167,</span> in <span class="ni">find_connected_nodes</span><span class="nt">(network, inds, flatten, logic)</span>
-<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">166</span>         <span class="n">temp</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="ne">--&gt; </span><span class="mi">167</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">168</span>     <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span>
-<span class="g g-Whitespace">    </span><span class="mi">169</span> <span class="k">else</span><span class="p">:</span>
-
-<span class="ne">TypeError</span>: reshape() got some positional-only arguments passed as keyword arguments: &#39;a&#39;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1]
+ [1 2]
+ [2 3]]
 </pre></div>
 </div>
 </div>
@@ -1061,21 +1039,25 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
+net : &lt;openpnm.network.Cubic at 0x7fc15bfc3600&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                         6 / 6
-  2  throat.conns                                                        7 / 7
+  2  pore.coords                                                         6 / 6
+  3  throat.conns                                                        7 / 7
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               3
-  2  pore.front                                                              3
-  3  pore.left                                                               2
-  4  pore.right                                                              2
-  5  pore.surface                                                            6
-  6  throat.surface                                                          7
+  2  pore.xmin                                                               2
+  3  pore.xmax                                                               2
+  4  pore.ymin                                                               3
+  5  pore.ymax                                                               3
+  6  pore.surface                                                            6
+  7  throat.surface                                                          7
+  8  pore.left                                                               2
+  9  pore.right                                                              2
+ 10  pore.front                                                              3
+ 11  pore.back                                                               3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1094,21 +1076,25 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
+net : &lt;openpnm.network.Cubic at 0x7fc15bfc3600&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                         6 / 6
-  2  throat.conns                                                        5 / 5
+  2  pore.coords                                                         6 / 6
+  3  throat.conns                                                        5 / 5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               3
-  2  pore.front                                                              3
-  3  pore.left                                                               2
-  4  pore.right                                                              2
-  5  pore.surface                                                            6
-  6  throat.surface                                                          5
+  2  pore.xmin                                                               2
+  3  pore.xmax                                                               2
+  4  pore.ymin                                                               3
+  5  pore.ymax                                                               3
+  6  pore.surface                                                            6
+  7  throat.surface                                                          5
+  8  pore.left                                                               2
+  9  pore.right                                                              2
+ 10  pore.front                                                              3
+ 11  pore.back                                                               3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1124,23 +1110,25 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
+net : &lt;openpnm.network.Cubic at 0x7fc15bfc3600&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                         6 / 6
-  2  throat.conns                                                        3 / 3
+  2  pore.coords                                                         6 / 6
+  3  throat.conns                                                        3 / 3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                6
-  2  pore.back                                                               3
-  3  pore.front                                                              3
-  4  pore.left                                                               2
-  5  pore.right                                                              2
+  2  pore.xmin                                                               2
+  3  pore.xmax                                                               2
+  4  pore.ymin                                                               3
+  5  pore.ymax                                                               3
   6  pore.surface                                                            6
-  7  throat.all                                                              3
-  8  throat.surface                                                          3
+  7  throat.surface                                                          3
+  8  pore.left                                                               2
+  9  pore.right                                                              2
+ 10  pore.front                                                              3
+ 11  pore.back                                                               3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1157,7 +1145,8 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0611207b12369e8e711045afb34f427f111b9ffd0e084dab72d56ed6cb31b9c4.png" src="../../_images/0611207b12369e8e711045afb34f427f111b9ffd0e084dab72d56ed6cb31b9c4.png" />
+<a class="reference internal image-reference" href="../../_images/75fc43c42821c373ae1d9f7c0bf8629d9ddb5dd670c9166ea709b15f87aef861.png"><img alt="../../_images/75fc43c42821c373ae1d9f7c0bf8629d9ddb5dd670c9166ea709b15f87aef861.png" src="../../_images/75fc43c42821c373ae1d9f7c0bf8629d9ddb5dd670c9166ea709b15f87aef861.png" style="width: 622px; height: 460px;" />
+</a>
 </div>
 </div>
 </section>
@@ -1236,23 +1225,25 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea245c20&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x1f7ea249db0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fc15e4d6570&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                         4 / 4
-  2  throat.conns                                                        3 / 3
+  2  pore.coords                                                         4 / 4
+  3  throat.conns                                                        3 / 3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                                4
-  2  pore.back                                                               3
-  3  pore.front                                                              1
-  4  pore.left                                                               2
-  5  pore.right                                                              1
+  2  pore.xmin                                                               2
+  3  pore.xmax                                                               1
+  4  pore.ymin                                                               1
+  5  pore.ymax                                                               3
   6  pore.surface                                                            4
-  7  throat.all                                                              3
-  8  throat.surface                                                          3
+  7  throat.surface                                                          3
+  8  pore.left                                                               2
+  9  pore.right                                                              1
+ 10  pore.front                                                              1
+ 11  pore.back                                                               3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1276,7 +1267,8 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea249db0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f7368c8efdd1ea16df5bed0c6414f921ac6fe1b3b4585e06f995306ee908ad15.png" src="../../_images/f7368c8efdd1ea16df5bed0c6414f921ac6fe1b3b4585e06f995306ee908ad15.png" />
+<a class="reference internal image-reference" href="../../_images/43487775cc973f3775ccabfc2dd24b9bf4b93d3a3eca4a51bdc2a6159588ee76.png"><img alt="../../_images/43487775cc973f3775ccabfc2dd24b9bf4b93d3a3eca4a51bdc2a6159588ee76.png" src="../../_images/43487775cc973f3775ccabfc2dd24b9bf4b93d3a3eca4a51bdc2a6159588ee76.png" style="width: 622px; height: 460px;" />
+</a>
 </div>
 </div>
 <p>Of course, the easy way is just to use <code class="docutils literal notranslate"><span class="pre">trim</span></code> directly:</p>
@@ -1292,7 +1284,8 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea249db0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f7368c8efdd1ea16df5bed0c6414f921ac6fe1b3b4585e06f995306ee908ad15.png" src="../../_images/f7368c8efdd1ea16df5bed0c6414f921ac6fe1b3b4585e06f995306ee908ad15.png" />
+<a class="reference internal image-reference" href="../../_images/43487775cc973f3775ccabfc2dd24b9bf4b93d3a3eca4a51bdc2a6159588ee76.png"><img alt="../../_images/43487775cc973f3775ccabfc2dd24b9bf4b93d3a3eca4a51bdc2a6159588ee76.png" src="../../_images/43487775cc973f3775ccabfc2dd24b9bf4b93d3a3eca4a51bdc2a6159588ee76.png" style="width: 622px; height: 460px;" />
+</a>
 </div>
 </div>
 </section>
@@ -1312,21 +1305,25 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea249db0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x1f7ea32dcc0&gt;
+net : &lt;openpnm.network.Cubic at 0x7fc15c1b51c0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coords                                                         8 / 8
-  2  throat.conns                                                        7 / 7
+  2  pore.coords                                                         8 / 8
+  3  throat.conns                                                        7 / 7
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               3
-  2  pore.front                                                              3
-  3  pore.left                                                               2
-  4  pore.right                                                              2
-  5  pore.surface                                                            6
-  6  throat.surface                                                          7
+  2  pore.xmin                                                               2
+  3  pore.xmax                                                               2
+  4  pore.ymin                                                               3
+  5  pore.ymax                                                               3
+  6  pore.surface                                                            6
+  7  throat.surface                                                          7
+  8  pore.left                                                               2
+  9  pore.right                                                              2
+ 10  pore.front                                                              3
+ 11  pore.back                                                               3
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1352,7 +1349,8 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea32dcc0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6918906c2d3394f8bc7a0f30ced2371efcc2e6c2489530aebb109e3fdf80888a.png" src="../../_images/6918906c2d3394f8bc7a0f30ced2371efcc2e6c2489530aebb109e3fdf80888a.png" />
+<a class="reference internal image-reference" href="../../_images/4fdcaf0d48b6e7d5c18ebb41fcd919240be66fdc56058979ca219db52e8bcc92.png"><img alt="../../_images/4fdcaf0d48b6e7d5c18ebb41fcd919240be66fdc56058979ca219db52e8bcc92.png" src="../../_images/4fdcaf0d48b6e7d5c18ebb41fcd919240be66fdc56058979ca219db52e8bcc92.png" style="width: 622px; height: 461px;" />
+</a>
 </div>
 </div>
 <p>Now let’s add throats to these new pores:</p>
@@ -1375,7 +1373,8 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea32dcc0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0c0a5eb617097dfd450d196a093dffbf3ccc813c4d3e6624e1dd227780ed3b5a.png" src="../../_images/0c0a5eb617097dfd450d196a093dffbf3ccc813c4d3e6624e1dd227780ed3b5a.png" />
+<a class="reference internal image-reference" href="../../_images/10036097543842fae270701b3304d5487869791578bce2acfe633e87def511a2.png"><img alt="../../_images/10036097543842fae270701b3304d5487869791578bce2acfe633e87def511a2.png" src="../../_images/10036097543842fae270701b3304d5487869791578bce2acfe633e87def511a2.png" style="width: 622px; height: 461px;" />
+</a>
 </div>
 </div>
 <p>Obviously, in practice we’d like to use OpenPNM’s <code class="docutils literal notranslate"><span class="pre">extend</span></code> method instead:</p>
@@ -1400,7 +1399,8 @@ net : &lt;openpnm.network.Cubic at 0x1f7ea32dcc0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0c0a5eb617097dfd450d196a093dffbf3ccc813c4d3e6624e1dd227780ed3b5a.png" src="../../_images/0c0a5eb617097dfd450d196a093dffbf3ccc813c4d3e6624e1dd227780ed3b5a.png" />
+<a class="reference internal image-reference" href="../../_images/10036097543842fae270701b3304d5487869791578bce2acfe633e87def511a2.png"><img alt="../../_images/10036097543842fae270701b3304d5487869791578bce2acfe633e87def511a2.png" src="../../_images/10036097543842fae270701b3304d5487869791578bce2acfe633e87def511a2.png" style="width: 622px; height: 461px;" />
+</a>
 </div>
 </div>
 </section>

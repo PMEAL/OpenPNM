@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assigning Geometric Properties &#8212; OpenPNM 3.5.0.dev3 documentation</title>
+    <title>Assigning Geometric Properties &#8212; OpenPNM 3.5.1.dev7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../_static/documentation_options.js?v=af8fd599"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
   
   
 </a></div>
@@ -465,6 +465,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:41:27] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 <p>Let’s start by creating a blank Cubic network.  As we can see by printing it, there are only coordinates, connections, and some labels, but no geometric properties:</p>
 <div class="cell docutils container">
@@ -477,7 +482,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fef19695670&gt;
+net : &lt;openpnm.network.Cubic at 0x7f097e5d8f90&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -800,74 +805,6 @@ net : &lt;openpnm.network.Cubic at 0x7fef19695670&gt;
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">21</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_seed</span><span class="o">.</span><span class="n">from_neighbor_pores</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span> 
-<span class="g g-Whitespace">      </span><span class="mi">3</span>              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>              <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:404,</span> in <span class="ni">ModelsMixin2.add_model</span><span class="nt">(self, propname, model, domain, regen_mode, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">402</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">]</span> <span class="o">=</span> <span class="n">ModelWrapper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">403</span> <span class="k">if</span> <span class="n">regen_mode</span> <span class="o">!=</span> <span class="s1">&#39;deferred&#39;</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">404</span>     <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s1">&#39;@&#39;</span><span class="o">+</span><span class="n">domain</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:502,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
-<span class="g g-Whitespace">    </span><span class="mi">500</span> <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">propname</span><span class="p">:</span>  <span class="c1"># Get domain from propname if present</span>
-<span class="g g-Whitespace">    </span><span class="mi">501</span>     <span class="n">propname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">propname</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">502</span>     <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">503</span> <span class="k">else</span><span class="p">:</span>  <span class="c1"># No domain means run model for ALL domains</span>
-<span class="g g-Whitespace">    </span><span class="mi">504</span>     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:521,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
-<span class="g g-Whitespace">    </span><span class="mi">519</span> <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">520</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">521</span>     <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">522</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
-<span class="g g-Whitespace">    </span><span class="mi">523</span>         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/models/geometry/throat_seed/_funcs.py:17,</span> in <span class="ni">from_neighbor_pores</span><span class="nt">(network, prop, mode)</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="k">def</span><span class="w"> </span><span class="nf">from_neighbor_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">17</span>     <span class="k">return</span> <span class="n">_misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">prop</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">18</span>                                      <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/models/misc/_neighbor_lookups.py:123,</span> in <span class="ni">from_neighbor_pores</span><span class="nt">(target, prop, mode, ignore_nans)</span>
-<span class="g g-Whitespace">    </span><span class="mi">121</span> <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
-<span class="g g-Whitespace">    </span><span class="mi">122</span> <span class="n">throats</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">Ts</span>
-<span class="ne">--&gt; </span><span class="mi">123</span> <span class="n">P12</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">124</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">P12</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">125</span> <span class="k">if</span> <span class="n">ignore_nans</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_network.py:443,</span> in <span class="ni">Network.find_connected_pores</span><span class="nt">(self, throats, flatten, mode)</span>
-<span class="g g-Whitespace">    </span><span class="mi">391</span><span class="w"> </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="sd"> Return a list of pores connected to the given list of throats</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">440</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">441</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">442</span> <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">443</span> <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">444</span>                                        <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">445</span> <span class="k">return</span> <span class="n">pores</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/topotools/_graphtools.py:37,</span> in <span class="ni">find_connected_sites</span><span class="nt">(bonds, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="k">def</span><span class="w"> </span><span class="nf">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">37</span>     <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_connected_nodes</span><span class="p">(</span><span class="n">inds</span><span class="o">=</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/_skgraph/queries/_funcs.py:167,</span> in <span class="ni">find_connected_nodes</span><span class="nt">(network, inds, flatten, logic)</span>
-<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">166</span>         <span class="n">temp</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="ne">--&gt; </span><span class="mi">167</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">168</span>     <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span>
-<span class="g g-Whitespace">    </span><span class="mi">169</span> <span class="k">else</span><span class="p">:</span>
-
-<span class="ne">TypeError</span>: reshape() got some positional-only arguments passed as keyword arguments: &#39;a&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -888,7 +825,8 @@ net : &lt;openpnm.network.Cubic at 0x7fef19695670&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8359c110546448fdcb78160bef8411936a0b520ee7e8d6bc75bde5b536ffb784.png" src="../../_images/8359c110546448fdcb78160bef8411936a0b520ee7e8d6bc75bde5b536ffb784.png" />
+<a class="reference internal image-reference" href="../../_images/38d285e0b3cab8541c8b800c8ff977790ab55acde170e773b555e72242726ff0.png"><img alt="../../_images/38d285e0b3cab8541c8b800c8ff977790ab55acde170e773b555e72242726ff0.png" src="../../_images/38d285e0b3cab8541c8b800c8ff977790ab55acde170e773b555e72242726ff0.png" style="width: 623px; height: 463px;" />
+</a>
 </div>
 </div>
 <p>And similarly we fetch a model for the throat sizes as well:</p>
@@ -905,7 +843,8 @@ net : &lt;openpnm.network.Cubic at 0x7fef19695670&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9b3f6c41c4218cf2a4f28f8ff7a02460f145b0dfb0871228955a95a0ce57ffd2.png" src="../../_images/9b3f6c41c4218cf2a4f28f8ff7a02460f145b0dfb0871228955a95a0ce57ffd2.png" />
+<a class="reference internal image-reference" href="../../_images/4350f5d0d2017e26f9c9a3c03dcf75f740fb4afe8eaf21a67f5c76e0c538ac10.png"><img alt="../../_images/4350f5d0d2017e26f9c9a3c03dcf75f740fb4afe8eaf21a67f5c76e0c538ac10.png" src="../../_images/4350f5d0d2017e26f9c9a3c03dcf75f740fb4afe8eaf21a67f5c76e0c538ac10.png" style="width: 623px; height: 463px;" />
+</a>
 </div>
 </div>
 <p>Now that we have pore and throat sizes, we can compute their volumes (and other properties). The volume will depend on the shape of the pores and throats.  In OpenPNM we do not explicitly track such <em>shapes</em>.  Instead we offer several models that calculate the property of interest for a given shape. This is illustrated below:</p>
@@ -961,9 +900,9 @@ net : &lt;openpnm.network.Cubic at 0x7fef19695670&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Volumes of full throats: [4.06671058e-12 4.49724923e-12 4.03844746e-12]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Volumes of full throats: [2.27203214e-14 2.58686910e-14 2.44028684e-14]
 Volumes of lenses: [6.92245838e-15 8.40091924e-15 7.59556144e-15]
-Actual throat volumes: [4.05978813e-12 4.48884831e-12 4.03085190e-12]
+Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </pre></div>
 </div>
 </div>
@@ -990,40 +929,40 @@ Actual throat volumes: [4.05978813e-12 4.48884831e-12 4.03085190e-12]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x0000026C1FECB790&gt;,
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f0963cb8ca0&gt;,
                    &#39;props&#39;: [&#39;pore.max_size&#39;, &#39;pore.seed&#39;]},
  &#39;pore.max_size&#39;: {&#39;iters&#39;: 10,
-                   &#39;model&#39;: &lt;function largest_sphere at 0x0000026C20E30790&gt;},
+                   &#39;model&#39;: &lt;function largest_sphere at 0x7f0961d62680&gt;},
  &#39;pore.seed&#39;: {&#39;element&#39;: &#39;pore&#39;,
-               &#39;model&#39;: &lt;function random at 0x0000026C1FEC2E50&gt;,
+               &#39;model&#39;: &lt;function random at 0x7f0963cb8700&gt;,
                &#39;num_range&#39;: [0.2, 0.7],
                &#39;seed&#39;: None},
- &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x0000026C20E30E50&gt;,
+ &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f0961d629e0&gt;,
                  &#39;pore_diameter&#39;: &#39;pore.diameter&#39;},
- &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x0000026C20E3C430&gt;,
+ &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f0961d63130&gt;,
                                  &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.diameter&#39;: {&#39;factor&#39;: 0.5,
-                     &#39;model&#39;: &lt;function scaled at 0x0000026C1FECB820&gt;,
+                     &#39;model&#39;: &lt;function scaled at 0x7f0963cb8d30&gt;,
                      &#39;prop&#39;: &#39;throat.max_size&#39;},
- &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x0000026C20E9AD30&gt;,
+ &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f0961bafb50&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x0000026C20E8F820&gt;,
+ &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f0961bae680&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x0000026C20E56160&gt;,
+ &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f0961d637f0&gt;,
                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x0000026C20E620D0&gt;,
+ &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f0961b8c550&gt;,
                         &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                         &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.max_size&#39;: {&#39;mode&#39;: &#39;min&#39;,
-                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x0000026C1FECBA60&gt;,
+                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f0963cb8e50&gt;,
                      &#39;prop&#39;: &#39;pore.diameter&#39;},
- &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x0000026C20E56EE0&gt;,
+ &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f0961b8c0d0&gt;,
                          &#39;throat_diameter&#39;: &#39;throat.diameter&#39;,
                          &#39;throat_length&#39;: &#39;throat.length&#39;},
- &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x0000026C1FECB430&gt;,
+ &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f0963cb8940&gt;,
                    &#39;props&#39;: [&#39;throat.total_volume&#39;, &#39;throat.lens_volume&#39;]}}
 </pre></div>
 </div>
@@ -1040,7 +979,7 @@ Actual throat volumes: [4.05978813e-12 4.48884831e-12 4.03085190e-12]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x26c22f00900&gt;
+net : &lt;openpnm.network.Cubic at 0x7f095f7a38d0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1064,14 +1003,20 @@ net : &lt;openpnm.network.Cubic at 0x26c22f00900&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.surface                                                         2168
-  3  throat.surface                                                       4332
-  4  pore.left                                                             400
-  5  pore.right                                                            400
-  6  pore.front                                                            400
-  7  pore.back                                                             400
-  8  pore.bottom                                                           400
-  9  pore.top                                                              400
+  2  pore.xmin                                                             400
+  3  pore.xmax                                                             400
+  4  pore.ymin                                                             400
+  5  pore.ymax                                                             400
+  6  pore.zmin                                                             400
+  7  pore.zmax                                                             400
+  8  pore.surface                                                         2168
+  9  throat.surface                                                       4332
+ 10  pore.left                                                             400
+ 11  pore.right                                                            400
+ 12  pore.front                                                            400
+ 13  pore.back                                                             400
+ 14  pore.bottom                                                           400
+ 15  pore.top                                                              400
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -1147,7 +1092,8 @@ pore.diameter             model:                    normal
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5ec700c717c9b98e42e497b5eae1b3212e95d84ee90a1e389742382cc6df9f91.png" src="../../_images/5ec700c717c9b98e42e497b5eae1b3212e95d84ee90a1e389742382cc6df9f91.png" />
+<a class="reference internal image-reference" href="../../_images/b39152b6e8fdf19f469cc4b58701c5f8e34878d0d7ffc52d726fa9ec1f89cac7.png"><img alt="../../_images/b39152b6e8fdf19f469cc4b58701c5f8e34878d0d7ffc52d726fa9ec1f89cac7.png" src="../../_images/b39152b6e8fdf19f469cc4b58701c5f8e34878d0d7ffc52d726fa9ec1f89cac7.png" style="width: 623px; height: 463px;" />
+</a>
 </div>
 </div>
 <p>This distribution is quite truncated, due to the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values that were used.  Let’s reach into that model and change this.  First print the model:</p>
@@ -1181,7 +1127,8 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/beff61304911c25fe95161dd0a68a6fb9bf7295c1089c4248ae0968e0d0a2985.png" src="../../_images/beff61304911c25fe95161dd0a68a6fb9bf7295c1089c4248ae0968e0d0a2985.png" />
+<a class="reference internal image-reference" href="../../_images/8f59f4b61183aa904b064308320c881def846f066f3172b7f3100460bbea4cf3.png"><img alt="../../_images/8f59f4b61183aa904b064308320c881def846f066f3172b7f3100460bbea4cf3.png" src="../../_images/8f59f4b61183aa904b064308320c881def846f066f3172b7f3100460bbea4cf3.png" style="width: 623px; height: 463px;" />
+</a>
 </div>
 </div>
 </section>
@@ -1250,7 +1197,8 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a903853b75cbeb698bfd27eb7104eec2528d888d62d6764577b3e1e0a4d5909c.png" src="../../_images/a903853b75cbeb698bfd27eb7104eec2528d888d62d6764577b3e1e0a4d5909c.png" />
+<a class="reference internal image-reference" href="../../_images/c99d9182b80dc279a88a4a52875d60c5b5ca1cc285970f892edfe634131b4e1b.png"><img alt="../../_images/c99d9182b80dc279a88a4a52875d60c5b5ca1cc285970f892edfe634131b4e1b.png" src="../../_images/c99d9182b80dc279a88a4a52875d60c5b5ca1cc285970f892edfe634131b4e1b.png" style="width: 623px; height: 463px;" />
+</a>
 </div>
 </div>
 <p>The green circles are pore properties and the orange squares are throat properties. We can also see that there are two models which are not dependent on anything else: <code class="docutils literal notranslate"><span class="pre">'throat.spacing'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.coordination_number'</span></code>.  These are added to all networks during generation but not run, hence their values do no show up when doing <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code>.</p>
@@ -1266,7 +1214,8 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9496569e395395648ce747d8a1fea60285f7301edeb661470f5ede39089ff36d.png" src="../../_images/9496569e395395648ce747d8a1fea60285f7301edeb661470f5ede39089ff36d.png" />
+<a class="reference internal image-reference" href="../../_images/a693404acaff68a7983b8b671a75da2fa4d8ca5e588c0989d2955d94bf1634f2.png"><img alt="../../_images/a693404acaff68a7983b8b671a75da2fa4d8ca5e588c0989d2955d94bf1634f2.png" src="../../_images/a693404acaff68a7983b8b671a75da2fa4d8ca5e588c0989d2955d94bf1634f2.png" style="width: 484px; height: 484px;" />
+</a>
 </div>
 </div>
 </section>

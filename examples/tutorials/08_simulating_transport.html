@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.5.0.dev3 documentation</title>
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.5.1.dev7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../_static/documentation_options.js?v=af8fd599"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
   
   
 </a></div>
@@ -465,72 +465,45 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Demo</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">5e-5</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_demo.py:27,</span> in <span class="ni">Demo.__init__</span><span class="nt">(self, shape, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">25</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
-<span class="ne">---&gt; </span><span class="mi">27</span> <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:476,</span> in <span class="ni">ModelsMixin2.regenerate_models</span><span class="nt">(self, propnames, exclude)</span>
-<span class="g g-Whitespace">    </span><span class="mi">474</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">propnames</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">475</span>     <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">476</span>         <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">477</span>     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">478</span>         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2"> was not run since the following property&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">479</span>                <span class="sa">f</span><span class="s2">&quot; is missing: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:507,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
-<span class="g g-Whitespace">    </span><span class="mi">505</span>             <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">propname</span><span class="o">+</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">506</span>                 <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">507</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">run_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="n">propname</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">508</span> <span class="k">else</span><span class="p">:</span>  <span class="c1"># domain was given explicitly</span>
-<span class="g g-Whitespace">    </span><span class="mi">509</span>     <span class="n">domain</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/core/_models.py:521,</span> in <span class="ni">ModelsMixin2.run_model</span><span class="nt">(self, propname, domain)</span>
-<span class="g g-Whitespace">    </span><span class="mi">519</span> <span class="k">if</span> <span class="s1">&#39;domain&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">520</span>     <span class="n">_</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">521</span>     <span class="n">vals</span> <span class="o">=</span> <span class="n">mod_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">522</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># Handle models that return a dict</span>
-<span class="g g-Whitespace">    </span><span class="mi">523</span>         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/models/misc/_neighbor_lookups.py:123,</span> in <span class="ni">from_neighbor_pores</span><span class="nt">(target, prop, mode, ignore_nans)</span>
-<span class="g g-Whitespace">    </span><span class="mi">121</span> <span class="n">network</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
-<span class="g g-Whitespace">    </span><span class="mi">122</span> <span class="n">throats</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">Ts</span>
-<span class="ne">--&gt; </span><span class="mi">123</span> <span class="n">P12</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">find_connected_pores</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">124</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">prop</span><span class="p">][</span><span class="n">P12</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">125</span> <span class="k">if</span> <span class="n">ignore_nans</span><span class="p">:</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/network/_network.py:443,</span> in <span class="ni">Network.find_connected_pores</span><span class="nt">(self, throats, flatten, mode)</span>
-<span class="g g-Whitespace">    </span><span class="mi">391</span><span class="w"> </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">392</span><span class="sd"> Return a list of pores connected to the given list of throats</span>
-<span class="g g-Whitespace">    </span><span class="mi">393</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">440</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">441</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">442</span> <span class="n">Ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_indices</span><span class="p">(</span><span class="n">throats</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">443</span> <span class="n">pores</span> <span class="o">=</span> <span class="n">topotools</span><span class="o">.</span><span class="n">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="o">=</span><span class="n">Ts</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">444</span>                                        <span class="n">flatten</span><span class="o">=</span><span class="n">flatten</span><span class="p">,</span> <span class="n">logic</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">445</span> <span class="k">return</span> <span class="n">pores</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/topotools/_graphtools.py:37,</span> in <span class="ni">find_connected_sites</span><span class="nt">(bonds, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="k">def</span><span class="w"> </span><span class="nf">find_connected_sites</span><span class="p">(</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">37</span>     <span class="k">return</span> <span class="n">queries</span><span class="o">.</span><span class="n">find_connected_nodes</span><span class="p">(</span><span class="n">inds</span><span class="o">=</span><span class="n">bonds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/_skgraph/queries/_funcs.py:167,</span> in <span class="ni">find_connected_nodes</span><span class="nt">(network, inds, flatten, logic)</span>
-<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">166</span>         <span class="n">temp</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-<span class="ne">--&gt; </span><span class="mi">167</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">),</span> <span class="mi">2</span><span class="p">],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">168</span>     <span class="n">neighbors</span> <span class="o">=</span> <span class="n">temp</span>
-<span class="g g-Whitespace">    </span><span class="mi">169</span> <span class="k">else</span><span class="p">:</span>
-
-<span class="ne">TypeError</span>: reshape() got some positional-only arguments passed as keyword arguments: &#39;a&#39;
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:41:39] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
+net : &lt;openpnm.network.Demo at 0x7f75261854e0&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Properties                                                   Valid Values
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.coords                                                       25 / 25
+  3  throat.conns                                                      40 / 40
+  4  pore.coordination_number                                          25 / 25
+  5  pore.max_size                                                     25 / 25
+  6  throat.spacing                                                    40 / 40
+  7  pore.seed                                                         25 / 25
+  8  pore.diameter                                                     25 / 25
+  9  throat.max_size                                                   40 / 40
+ 10  throat.diameter                                                   40 / 40
+ 11  throat.cross_sectional_area                                       40 / 40
+ 12  throat.hydraulic_size_factors                                     40 / 40
+ 13  throat.diffusive_size_factors                                     40 / 40
+ 14  throat.lens_volume                                                40 / 40
+ 15  throat.length                                                     40 / 40
+ 16  throat.total_volume                                               40 / 40
+ 17  throat.volume                                                     40 / 40
+ 18  pore.volume                                                       25 / 25
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  #  Labels                                                 Assigned Locations
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+  2  pore.xmin                                                               5
+  3  pore.xmax                                                               5
+  4  pore.ymin                                                               5
+  5  pore.ymax                                                               5
+  6  pore.surface                                                           16
+  7  throat.surface                                                         16
+  8  pore.left                                                               5
+  9  pore.right                                                              5
+ 10  pore.front                                                              5
+ 11  pore.back                                                               5
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
 </div>
@@ -556,18 +529,18 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x2564c657180&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7f7525924950&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.pressure                                                     25 / 25
   2  pore.temperature                                                  25 / 25
-  3  pore.viscosity                                                    25 / 25
+  3  pore.pressure                                                     25 / 25
+  4  pore.viscosity                                                    25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -612,16 +585,16 @@ phase_01 : &lt;openpnm.phase.Phase at 0x2564c657180&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.00220815e-15 1.05133682e-15 2.65744048e-15 2.69017014e-15
- 9.59190878e-15 1.36708286e-14 6.66830487e-14 7.08737841e-14
- 1.99903177e-15 2.00595117e-15 4.79376978e-15 4.31484439e-15
- 3.19680625e-15 2.81277856e-15 5.16906031e-15 4.79857420e-15
- 8.55176371e-15 1.52083335e-15 1.23450963e-15 2.47324217e-15
- 9.86091431e-15 9.79143235e-16 3.16100872e-14 2.89691924e-15
- 3.71177597e-14 1.01109214e-14 1.90884769e-15 2.45494330e-14
- 5.38067275e-15 7.13185895e-15 2.56325956e-14 1.72969382e-15
- 2.28431461e-14 4.24865495e-15 5.99267859e-15 9.64675766e-15
- 2.86021000e-15 1.49648281e-15 2.35465588e-15 9.68639559e-15]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1.46535960e-15 1.78621451e-15 5.04274107e-14 1.95272456e-14
+ 8.30223053e-15 2.93927814e-14 2.64872630e-14 1.82729825e-14
+ 1.61050162e-14 2.87529929e-15 2.98437797e-15 2.87522158e-14
+ 5.07131361e-16 7.89534066e-16 9.37690067e-16 1.51212146e-14
+ 2.91545781e-15 3.23488518e-15 4.04475718e-14 5.93634606e-16
+ 5.95026805e-15 1.77846305e-15 2.95543536e-14 2.86712099e-14
+ 1.75041253e-14 7.43954239e-15 1.81292752e-14 3.00727867e-15
+ 2.45315995e-14 2.12996329e-14 5.37384953e-16 1.02427839e-14
+ 7.30144041e-16 2.78019160e-14 1.56043803e-14 5.45663856e-16
+ 2.69152910e-15 9.37770302e-16 4.04428961e-14 5.45193917e-16]
 </pre></div>
 </div>
 </div>
@@ -681,17 +654,17 @@ phase_01 : &lt;openpnm.phase.Phase at 0x2564c657180&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f7525925e40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.bc.rate                                                       0 / 25
-  2  pore.bc.value                                                      0 / 25
+  2  pore.bc.rate                                                       0 / 25
+  3  pore.bc.value                                                      0 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -711,17 +684,17 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f7525925e40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.bc.rate                                                       5 / 25
-  2  pore.bc.value                                                      5 / 25
+  2  pore.bc.rate                                                       5 / 25
+  3  pore.bc.value                                                      5 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -750,34 +723,8 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                       
-</pre></div>
 </div>
-</div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> method solves the mass balance around each pore and computes the pressure within each pore that is required to sustain the flow defined by the boundary conditions.  The <code class="docutils literal notranslate"><span class="pre">soln</span></code> object that is returned is a dictionary with the key corresponding to the quantity that was solved for.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">soln</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.pressure&#39;: SteadyStateSolution([100000.        , 100000.        , 100000.        ,
-                     100000.        , 100000.        , 111994.91786881,
-                     109021.80858086, 106007.58742924, 105515.18852917,
-                     104499.41168208, 126513.73814012, 120297.06671979,
-                     113401.97906307, 115761.92671225, 117822.18393838,
-                     132725.59341895, 133551.80327216, 120247.96545073,
-                     129309.20272742, 135160.97831439, 148957.44526658,
-                     155574.17873369, 168444.33285769, 161719.71531674,
-                     148786.89313432])}
-</pre></div>
-</div>
-</div>
-</div>
-<p>The reason for the dict format is to provide a consistent API for single components and multiphysics, where multiple different quantities might be solved for.  However, these <code class="docutils literal notranslate"><span class="pre">'pore.pressure'</span></code> values are also written to the dictionary of the algorithm object as well:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> method solves the mass balance around each pore and computes the pressure within each pore that is required to sustain the flow defined by the boundary conditions.  <code class="docutils literal notranslate"><span class="pre">soln</span></code> return None, instead the <code class="docutils literal notranslate"><span class="pre">'pore.pressure'</span></code> values are written to the dictionary of the algorithm object:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
@@ -786,19 +733,19 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7f7525925e40&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.bc.rate                                                       5 / 25
-  2  pore.bc.value                                                      5 / 25
-  3  pore.initial_guess                                                25 / 25
+  2  pore.bc.rate                                                       5 / 25
+  3  pore.bc.value                                                      5 / 25
   4  pore.pressure                                                     25 / 25
+  5  pore.initial_guess                                                25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.all                                                               25
-  2  throat.all                                                             40
+  2  pore.all                                                               25
+  3  throat.all                                                             40
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -812,8 +759,8 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([148957.44526658, 155574.17873369, 168444.33285769, 161719.71531674,
-       148786.89313432])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([185577.7826785 , 159737.38379699, 136236.20556317, 132154.87461758,
+       214488.14669713])
 </pre></div>
 </div>
 </div>
@@ -834,38 +781,40 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x2564c673f40&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x25645ed9b30&gt;
+net : &lt;openpnm.network.Demo at 0x7f75261854e0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.coordination_number                                          25 / 25
   2  pore.coords                                                       25 / 25
-  3  pore.diameter                                                     25 / 25
-  4  pore.max_size                                                     25 / 25
-  5  pore.seed                                                         25 / 25
-  6  pore.volume                                                       25 / 25
-  7  throat.conns                                                      40 / 40
-  8  throat.cross_sectional_area                                       40 / 40
-  9  throat.diameter                                                   40 / 40
- 10  throat.diffusive_size_factors                                     40 / 40
- 11  throat.hydraulic_size_factors                                     40 / 40
- 12  throat.length                                                     40 / 40
- 13  throat.lens_volume                                                40 / 40
- 14  throat.max_size                                                   40 / 40
- 15  throat.spacing                                                    40 / 40
+  3  throat.conns                                                      40 / 40
+  4  pore.coordination_number                                          25 / 25
+  5  pore.max_size                                                     25 / 25
+  6  throat.spacing                                                    40 / 40
+  7  pore.seed                                                         25 / 25
+  8  pore.diameter                                                     25 / 25
+  9  throat.max_size                                                   40 / 40
+ 10  throat.diameter                                                   40 / 40
+ 11  throat.cross_sectional_area                                       40 / 40
+ 12  throat.hydraulic_size_factors                                     40 / 40
+ 13  throat.diffusive_size_factors                                     40 / 40
+ 14  throat.lens_volume                                                40 / 40
+ 15  throat.length                                                     40 / 40
  16  throat.total_volume                                               40 / 40
  17  throat.volume                                                     40 / 40
+ 18  pore.volume                                                       25 / 25
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  1  pore.back                                                               5
-  2  pore.domain_1                                                          25
-  3  pore.front                                                              5
-  4  pore.left                                                               5
-  5  pore.right                                                              5
+  2  pore.xmin                                                               5
+  3  pore.xmax                                                               5
+  4  pore.ymin                                                               5
+  5  pore.ymax                                                               5
   6  pore.surface                                                           16
-  7  throat.domain_1                                                        40
-  8  throat.surface                                                         16
+  7  throat.surface                                                         16
+  8  pore.left                                                               5
+  9  pore.right                                                              5
+ 10  pore.front                                                              5
+ 11  pore.back                                                               5
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -885,46 +834,46 @@ net : &lt;openpnm.network.Demo at 0x25645ed9b30&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[7.17224268e-17, 8.95163251e-19, 3.41740957e-17],
-       [3.41740957e-17, 9.39044534e-19, 8.24868939e-17],
-       [1.25531646e-16, 2.37360178e-18, 6.67669730e-17],
-       [6.67669730e-17, 2.40283561e-18, 1.29499002e-16],
-       [1.77366727e-16, 8.56740609e-18, 1.85484559e-16],
-       [2.00896764e-16, 1.22106603e-17, 3.02192896e-16],
-       [6.01031396e-16, 5.95606954e-17, 6.03870375e-16],
-       [6.09032656e-16, 6.33038224e-17, 6.44196320e-16],
-       [1.03665992e-16, 1.78551708e-18, 5.54807336e-17],
-       [5.54807336e-17, 1.79169742e-18, 1.04696234e-16],
-       [1.54582938e-16, 4.28175177e-18, 1.03819232e-16],
-       [1.03819232e-16, 3.85397995e-18, 1.10662774e-16],
-       [1.74675531e-16, 2.85535840e-18, 6.83639178e-17],
-       [6.83639178e-17, 2.51234835e-18, 1.35228170e-16],
-       [1.77395616e-16, 4.61695788e-18, 1.05679867e-16],
-       [1.05679867e-16, 4.28604303e-18, 1.46233002e-16],
-       [1.49269368e-16, 7.63835793e-18, 2.28705429e-16],
-       [1.05688678e-16, 1.35839458e-18, 4.33964312e-17],
-       [4.33964312e-17, 1.10265282e-18, 5.10502986e-17],
-       [6.76662146e-17, 2.20907752e-18, 9.62504448e-17],
-       [2.00160225e-16, 8.80767939e-18, 1.77366727e-16],
-       [3.41740957e-17, 8.74561874e-19, 6.63512743e-17],
-       [3.60328718e-16, 2.82338438e-17, 4.34693093e-16],
-       [6.67669730e-17, 2.58750204e-18, 1.52739862e-16],
-       [3.91422673e-16, 3.31532469e-17, 4.87753350e-16],
-       [1.77366727e-16, 9.03098345e-18, 2.13610710e-16],
-       [8.97176659e-17, 1.70496547e-18, 5.54807336e-17],
-       [3.89612755e-16, 2.19273313e-17, 3.02360428e-16],
-       [2.01412829e-16, 4.80596819e-18, 1.03819232e-16],
-       [2.38528795e-16, 6.37011185e-18, 1.23932048e-16],
-       [2.94518073e-16, 2.28948023e-17, 4.35296440e-16],
-       [5.54807336e-17, 1.54494686e-18, 5.98270528e-17],
-       [3.02360428e-16, 2.04032913e-17, 3.41440656e-16],
-       [1.03819232e-16, 3.79486014e-18, 1.04478685e-16],
-       [1.23932048e-16, 5.35260627e-18, 1.61465149e-16],
-       [2.85250597e-16, 8.61639662e-18, 1.49269368e-16],
-       [6.83639178e-17, 2.55471368e-18, 1.40619360e-16],
-       [1.01687811e-16, 1.33664490e-18, 4.33964312e-17],
-       [7.96485950e-17, 2.10315731e-18, 6.76662146e-17],
-       [2.00119660e-16, 8.65180085e-18, 1.74681839e-16]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[6.88159863e-17, 1.30884593e-18, 4.72967577e-17],
+       [4.72967577e-17, 1.59543063e-18, 1.22143300e-16],
+       [5.32061626e-16, 4.50413067e-17, 4.97604689e-16],
+       [3.34182718e-16, 1.74415590e-17, 2.64947318e-16],
+       [1.41963403e-16, 7.41547715e-18, 2.41033106e-16],
+       [4.18002465e-16, 2.62533663e-17, 3.44099464e-16],
+       [3.44099464e-16, 2.36581835e-17, 3.44943037e-16],
+       [2.91983587e-16, 1.63212626e-17, 2.64917027e-16],
+       [2.66087150e-16, 1.43848547e-17, 2.45786915e-16],
+       [1.15156320e-16, 2.56819130e-18, 7.33257280e-17],
+       [7.33257280e-17, 2.66561938e-18, 1.28151404e-16],
+       [3.26024952e-16, 2.56812189e-17, 4.41889852e-16],
+       [2.13073105e-17, 4.52965141e-19, 4.76027205e-17],
+       [5.82830804e-17, 7.05204680e-19, 2.94329986e-17],
+       [2.94329986e-17, 8.37536279e-19, 9.27800389e-17],
+       [3.22112496e-16, 1.35061320e-17, 2.13368800e-16],
+       [1.29079914e-16, 2.60406052e-18, 7.16921747e-17],
+       [7.16921747e-17, 2.88937016e-18, 1.63145769e-16],
+       [4.92919854e-16, 3.61274050e-17, 4.22331648e-16],
+       [6.65053671e-17, 5.30229056e-19, 2.21987250e-17],
+       [1.29608876e-16, 5.31472556e-18, 1.33908133e-16],
+       [4.72967577e-17, 1.58850710e-18, 1.21054702e-16],
+       [4.21837213e-16, 2.63976811e-17, 3.44099464e-16],
+       [3.95309172e-16, 2.56088652e-17, 3.46473283e-16],
+       [2.64927809e-16, 1.56345262e-17, 2.64917027e-16],
+       [1.41963403e-16, 6.64493192e-18, 1.88640080e-16],
+       [3.38952482e-16, 1.61929045e-17, 2.45786915e-16],
+       [1.30788784e-16, 2.68607408e-18, 7.33257280e-17],
+       [3.33195394e-16, 2.19114026e-17, 3.26024952e-16],
+       [2.64917027e-16, 1.90246393e-17, 3.88435030e-16],
+       [5.76273121e-17, 4.79987375e-19, 2.13073105e-17],
+       [2.03226252e-16, 9.14876189e-18, 1.82351031e-16],
+       [4.13057306e-17, 6.52158048e-19, 2.94329986e-17],
+       [3.26024952e-16, 2.48324197e-17, 4.19217481e-16],
+       [3.39599811e-16, 1.39376912e-17, 2.13368800e-16],
+       [2.13073105e-17, 4.87382017e-19, 6.01923685e-17],
+       [1.01405768e-16, 2.40404943e-18, 7.16921747e-17],
+       [2.94329986e-17, 8.37607945e-19, 9.27959254e-17],
+       [4.92832867e-16, 3.61232287e-17, 4.22331648e-16],
+       [5.17778467e-17, 4.86962271e-19, 2.21987250e-17]])
 </pre></div>
 </div>
 </div>
@@ -952,16 +901,16 @@ net : &lt;openpnm.network.Demo at 0x25645ed9b30&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([9.64890861e-16, 1.01200775e-15, 2.52019344e-15, 2.55102875e-15,
-       8.76379447e-15, 1.24146226e-14, 5.56745682e-14, 5.89529400e-14,
-       1.90491669e-15, 1.91150861e-15, 4.48459671e-15, 4.02523528e-15,
-       3.02123137e-15, 2.66531163e-15, 4.83218689e-15, 4.48520822e-15,
-       7.88493570e-15, 1.45652099e-15, 1.17908308e-15, 2.34297724e-15,
-       9.01642545e-15, 9.42596730e-16, 2.76479432e-14, 2.74408781e-15,
-       3.22015299e-14, 9.24896606e-15, 1.81841007e-15, 2.17482514e-14,
-       5.02794728e-15, 6.61517491e-15, 2.26770426e-14, 1.64158955e-15,
-       2.02647323e-14, 3.96006729e-15, 5.56764422e-15, 8.86707390e-15,
-       2.70972049e-15, 1.43348763e-15, 2.22665273e-15, 8.86413983e-15])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1.39999046e-15, 1.70636628e-15, 4.29107170e-14, 1.74658871e-14,
+       7.66595248e-15, 2.58034541e-14, 2.32887883e-14, 1.63515622e-14,
+       1.44752948e-14, 2.71940606e-15, 2.82303136e-15, 2.52902910e-14,
+       4.91990738e-16, 7.62054894e-16, 9.03812632e-16, 1.36815177e-14,
+       2.75955191e-15, 3.05751041e-15, 3.49036387e-14, 5.75306331e-16,
+       5.50596316e-15, 1.69910112e-15, 2.59409561e-14, 2.51790114e-14,
+       1.56562077e-14, 6.87552385e-15, 1.62790730e-14, 2.84465116e-15,
+       2.16524864e-14, 1.90041037e-14, 5.21299702e-16, 9.35252824e-15,
+       7.03450935e-16, 2.44863987e-14, 1.41042064e-14, 5.29271776e-16,
+       2.54580671e-15, 9.03888521e-16, 3.48997672e-14, 5.28626070e-16])
 </pre></div>
 </div>
 </div>
@@ -977,11 +926,8 @@ net : &lt;openpnm.network.Demo at 0x25645ed9b30&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                       
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([153381.08855867, 160388.98970566, 173533.16165927, 166629.27675144,
-       153163.58781883])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([192058.45077292, 165049.57796685, 140837.66727974, 136194.73290163,
+       220551.22185391])
 </pre></div>
 </div>
 </div>
@@ -1010,11 +956,8 @@ net : &lt;openpnm.network.Demo at 0x25645ed9b30&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>                                                                                                                       
-</pre></div>
-</div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([153381.08855867, 160388.98970566, 173533.16165927, 166629.27675144,
-       153163.58781883])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([192058.45077292, 165049.57796685, 140837.66727974, 136194.73290163,
+       220551.22185391])
 </pre></div>
 </div>
 </div>

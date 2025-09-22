@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Steady State Transport &#8212; OpenPNM 3.5.0.dev3 documentation</title>
+    <title>Steady State Transport &#8212; OpenPNM 3.5.1.dev7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../../_static/documentation_options.js?v=af8fd599"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
   
   
 </a></div>
@@ -464,6 +464,11 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:40:57] </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ERROR   </span> PARDISO solver not installed, run `pip install pypardiso`. Otherwise,          <a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         simulations will be slow. Apple M chips not supported.                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 <section id="creating-the-coefficient-matrix">
 <h2>Creating the Coefficient Matrix<a class="headerlink" href="#creating-the-coefficient-matrix" title="Link to this heading">#</a></h2>
@@ -484,10 +489,10 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.15210142  0.15685148  0.99524994  0.        ]
- [ 0.15685148 -0.30806842  0.          0.15121694]
- [ 0.99524994  0.         -1.60393376  0.60868382]
- [ 0.          0.15121694  0.60868382 -0.75990076]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-0.74161748  0.63518057  0.10643691  0.        ]
+ [ 0.63518057 -1.52756544  0.          0.89238487]
+ [ 0.10643691  0.         -0.21415698  0.10772007]
+ [ 0.          0.89238487  0.10772007 -1.00010495]]
 </pre></div>
 </div>
 </div>
@@ -517,9 +522,9 @@
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.15685148 -0.30806842  0.          0.15121694]
- [ 0.99524994  0.         -1.60393376  0.60868382]
- [ 0.          0.15121694  0.60868382 -0.75990076]]
+ [ 0.63518057 -1.52756544  0.          0.89238487]
+ [ 0.10643691  0.         -0.21415698  0.10772007]
+ [ 0.          0.89238487  0.10772007 -1.00010495]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -539,7 +544,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.46022288 1.58268256 0.90033296]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.31207614 1.40768546 0.82242657]
 </pre></div>
 </div>
 </div>
@@ -625,9 +630,9 @@ The b matrix is:
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The A matrix is:
  [[ 1.          0.          0.          0.        ]
- [ 0.15685148 -0.30806842  0.          0.15121694]
- [ 0.99524994  0.         -1.60393376  0.60868382]
- [ 0.          0.15121694  0.60868382 -0.75990076]]
+ [ 0.63518057 -1.52756544  0.          0.89238487]
+ [ 0.10643691  0.         -0.21415698  0.10772007]
+ [ 0.          0.89238487  0.10772007 -1.00010495]]
 The b matrix is:
  [2.  0.  0.  0.5]
 </pre></div>
@@ -644,7 +649,7 @@ The b matrix is:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.46022288 1.58268256 0.90033296]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2.         1.31207614 1.40768546 0.82242657]
 </pre></div>
 </div>
 </div>

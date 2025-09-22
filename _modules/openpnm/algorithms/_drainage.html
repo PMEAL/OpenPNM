@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.algorithms._drainage &#8212; OpenPNM 3.5.0.dev3 documentation</title>
+    <title>openpnm.algorithms._drainage &#8212; OpenPNM 3.5.1.dev7 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ccbc5ba4"></script>
+    <script src="../../../_static/documentation_options.js?v=af8fd599"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.0.dev3 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.1.dev7 documentation - Home"/>
   
   
 </a></div>
@@ -631,6 +631,12 @@
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pseq</span><span class="p">):</span>
             <span class="n">s</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">site_percolation</span><span class="p">(</span><span class="n">conns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">,</span>
                                     <span class="n">occupied_sites</span><span class="o">=</span><span class="n">pseq</span> <span class="o">&gt;</span> <span class="n">p</span><span class="p">)</span>
+            <span class="c1"># Identify uninvaded throats between previously invaded pores within same cluster   </span>
+            <span class="n">both_pores_invaded</span> <span class="o">=</span> <span class="p">(</span><span class="n">pseq</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pseq</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span>
+            <span class="n">same_cluster</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
+            <span class="n">uninvaded_throat</span> <span class="o">=</span> <span class="n">tseq</span> <span class="o">&gt;</span> <span class="n">p</span>
+            <span class="n">trap_condition</span> <span class="o">=</span> <span class="n">both_pores_invaded</span> <span class="o">&amp;</span> <span class="n">same_cluster</span> <span class="o">&amp;</span> <span class="n">uninvaded_throat</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.trapped&#39;</span><span class="p">][</span><span class="n">trap_condition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="c1"># Identify cluster numbers connected to the outlets</span>
             <span class="n">clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc.outlet&#39;</span><span class="p">]])</span>
             <span class="c1"># Find ALL throats connected to any trapped site, since these</span>
