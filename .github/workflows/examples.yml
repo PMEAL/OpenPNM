@@ -32,7 +32,6 @@ jobs:
         run: |
           uv sync --extra test --extra extras --extra docs --extra interactive
           uv pip install -e . --no-deps
-          uv pip install pypardiso
 
       - name: Running tests
         run: uv run pytest examples/ --nbval-lax
