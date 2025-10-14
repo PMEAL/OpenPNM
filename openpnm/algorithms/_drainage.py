@@ -228,6 +228,12 @@ class Drainage(Algorithm):
         for p in np.unique(pseq):
             s, b = site_percolation(conns=self.network.conns,
                                     occupied_sites=pseq > p)
+            # Identify uninvaded throats between previously invaded pores within same cluster
+            both_pores_invaded = (pseq[self.network.conns[:, 0]] <= p) & (pseq[self.network.conns[:, 1]] <= p)
+            same_cluster = s[self.network.conns[:, 0]] == s[self.network.conns[:, 1]]
+            uninvaded_throat = tseq > p
+            trap_condition = both_pores_invaded & same_cluster & uninvaded_throat
+            self['throat.trapped'][trap_condition] = True
             # Identify cluster numbers connected to the outlets
             clusters = np.unique(s[self['pore.bc.outlet']])
             # Find ALL throats connected to any trapped site, since these
@@ -248,6 +254,15 @@ class Drainage(Algorithm):
         self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
+        # Make some adjustments
+        Pmask = self['pore.invasion_sequence'] < 0
+        Tmask = self['throat.invasion_sequence'] < 0
+        self['pore.invasion_sequence'] = \
+            self['pore.invasion_sequence'].astype(float)
+        self['pore.invasion_sequence'][Pmask] = np.inf
+        self['throat.invasion_sequence'] = \
+            self['throat.invasion_sequence'].astype(float)
+        self['throat.invasion_sequence'][Tmask] = np.inf
 
     def pc_curve(self, pressures=None):
         if pressures is None:

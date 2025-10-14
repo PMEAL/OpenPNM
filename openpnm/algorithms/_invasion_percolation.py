@@ -252,8 +252,10 @@ class InvasionPercolation(Algorithm):
         pvols /= tot_vol
         tvols /= tot_vol
         # Remove trapped volume
-        pmask = self['pore.invasion_sequence'] >= 0
-        tmask = self['throat.invasion_sequence'] >= 0
+        # pmask = self['pore.invasion_sequence'] >= 0
+        pmask = np.isfinite(self['pore.invasion_sequence'])
+        # tmask = self['throat.invasion_sequence'] >= 0
+        tmask = np.isfinite(self['throat.invasion_sequence'])
         pvols = pvols[pmask]
         tvols = tvols[tmask]
         pseq = self['pore.invasion_sequence'][pmask]
