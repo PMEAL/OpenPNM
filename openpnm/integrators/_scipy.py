@@ -3,17 +3,18 @@ from scipy.integrate import solve_ivp
 from openpnm.algorithms._solution import TransientSolution
 from openpnm.integrators import Integrator
 
-__all__ = ['ScipyRK45']
+__all__ = ['ScipySolveIVP', 'ScipyRK45']
 
 
-class ScipyRK45(Integrator):
-    """Integrator class based on SciPy's implementation of RK45"""
+class ScipySolveIVP(Integrator):
+    """Integrator class based on SciPy's SolveIVP"""
 
-    def __init__(self, atol=1e-6, rtol=1e-6, verbose=False, linsolver=None):
+    def __init__(self, atol=1e-6, rtol=1e-6, verbose=False, linsolver=None, method='RK45'):
         self.atol = atol
         self.rtol = rtol
         self.verbose = verbose
         self.linsolver = linsolver
+        self.method = method
 
     def solve(self, rhs, x0, tspan, saveat, **kwargs):
         """
@@ -46,11 +47,19 @@ class ScipyRK45(Integrator):
         options = {
             "atol": self.atol,
             "rtol": self.rtol,
+            "method": self.method,
             "t_eval": saveat,
             # FIXME: uncomment next line when/if scipy#11815 is merged
             # "verbose": self.verbose,
         }
-        sol = solve_ivp(rhs, tspan, x0, method="RK45", **options)
+        sol = solve_ivp(rhs, tspan, x0, **options)
         if sol.success:
             return TransientSolution(sol.t, sol.y)
         raise Exception(sol.message)
+
+class ScipyRK45(ScipySolveIVP):
+    """Integrator class based on SciPy's implementation of RK45
+    This is simply an alias for ScipySolveIVP with method='RK45'
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs, method='RK45')
