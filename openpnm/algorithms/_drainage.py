@@ -194,7 +194,7 @@ class Drainage(Algorithm):
  
         Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure']
         hasPressureToSnapOff = pressure > Pc_snapoff
-        hasAdjancentPoresFilledWith_nwp = self['pore.invaded'][self.network.conns[:,0]] & self['pore.invaded'][self.network.conns[:,1]]
+        hasAdjancentPoresFilledWith_nwp = ~self['pore.invaded'][self.network.conns[:,0]] & ~self['pore.invaded'][self.network.conns[:,1]]
         isThroatFilledWith_nwp = ~self['throat.invaded']
 
         snapOffHappens = hasPressureToSnapOff & hasAdjancentPoresFilledWith_nwp & isThroatFilledWith_nwp
