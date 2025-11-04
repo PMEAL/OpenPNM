@@ -44,12 +44,13 @@ class DrainageSettings:
 class Drainage(Algorithm):
     """A class to simulate drainage."""
 
-    def __init__(self, phase, name='drainage_?', **kwargs):
+    def __init__(self, phase, isImbibition=False, name='drainage_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
         self['pore.bc.inlet'] = False
         self['pore.bc.outlet'] = False
+        self.isImbibition = isImbibition
         self.reset()
 
     def reset(self):
@@ -168,6 +169,8 @@ class Drainage(Algorithm):
             tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
             self['throat.invasion_pressure'][tmask] = p
             self['throat.invasion_sequence'][tmask] = i
+            if self.isImbibition:
+                self._snap_off(p)
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.bc.outlet']):
             self.apply_trapping()
@@ -186,6 +189,16 @@ class Drainage(Algorithm):
         # Add result to existing invaded locations
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
+
+    def _snap_off(self, pressure):
+ 
+        Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure']
+        hasPressureToSnapOff = pressure > Pc_snapoff
+        hasAdjancentPoresFilledWith_nwp = self['pore.invaded'][self.network.conns[:,0]] & self['pore.invaded'][self.network.conns[:,1]]
+        isThroatFilledWith_nwp = ~self['throat.invaded']
+
+        snapOffHappens = hasPressureToSnapOff & hasAdjancentPoresFilledWith_nwp & isThroatFilledWith_nwp
+        self['throat.invaded'][snapOffHappens] = True
 
     def apply_trapping(self):
         r"""
