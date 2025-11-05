@@ -241,7 +241,7 @@ class Drainage(Algorithm):
         for p in np.unique(pseq):
             s, b = site_percolation(conns=self.network.conns,
                                     occupied_sites=pseq > p)
-            # Identify uninvaded throats between previously invaded pores within same cluster
+            # Identify uninvaded throats between previously invaded pores within same cluster   
             both_pores_invaded = (pseq[self.network.conns[:, 0]] <= p) & (pseq[self.network.conns[:, 1]] <= p)
             same_cluster = s[self.network.conns[:, 0]] == s[self.network.conns[:, 1]]
             uninvaded_throat = tseq > p

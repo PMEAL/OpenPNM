@@ -50,10 +50,10 @@ class WorkspaceSettings(SettingsAttr):
         except ImportError:
             default_solver = 'ScipySpsolve'
             msg = (
-                'PARDISO solver not installed, run `pip install pypardiso`. '
-                'Otherwise, simulations will be slow. Apple M chips not supported.'
+                'PARDISO solver not installed on this platform. '
+                'Simulations will be slow.'
             )
-            logger.error(msg)
+            logger.warning(msg)
 
     @property
     def loglevel(self):

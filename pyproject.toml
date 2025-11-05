@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "openpnm"
 dynamic = ["version"]
@@ -30,6 +34,7 @@ dependencies = [
     "numpy<2.2",
     "pandas>=2.3.2",
     "pyamg>=5.3.0",
+    "pypardiso; platform_machine=='x86_64' or platform_machine=='AMD64'",
     "rich>=14.1.0",
     "scikit-image<0.24",
     "scipy>=1.16.2",
@@ -38,6 +43,11 @@ dependencies = [
     "tqdm>=4.67.1",
     "transforms3d>=0.4.2",
 ]
+
+[project.urls]
+Documentation = "https://openpnm.org"
+Repository = "https://github.com/PMEAL/OpenPNM"
+Issues = "https://github.com/PMEAL/OpenPNM/issues"
 
 [project.optional-dependencies]
 extras = [
@@ -84,3 +94,6 @@ dev = [
     "openpnm[docs]",
     "openpnm[interactive]",
 ]
+
+[tool.setuptools.dynamic]
+version = {attr = "openpnm.__version__.__version__"}
