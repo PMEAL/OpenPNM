@@ -44,13 +44,13 @@ class DrainageSettings:
 class Drainage(Algorithm):
     """A class to simulate drainage."""
 
-    def __init__(self, phase, isImbibition=False, name='drainage_?', **kwargs):
+    def __init__(self, phase, is_imbibition=False, name='drainage_?', **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(DrainageSettings())
         self.settings['phase'] = phase.name
         self['pore.bc.inlet'] = False
         self['pore.bc.outlet'] = False
-        self.isImbibition = isImbibition
+        self.is_imbibition = is_imbibition
         self.reset()
 
     def reset(self):
@@ -169,7 +169,7 @@ class Drainage(Algorithm):
             tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
             self['throat.invasion_pressure'][tmask] = p
             self['throat.invasion_sequence'][tmask] = i
-            if self.isImbibition:
+            if self.is_imbibition:
                 self._snap_off(p)
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.bc.outlet']):
