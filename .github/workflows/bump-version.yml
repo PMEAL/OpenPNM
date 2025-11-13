@@ -56,6 +56,16 @@ jobs:
         bump_version major $VERSION_FILE
         echo "TAG_NEW=v$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
+    - name: Strip .dev0 suffix from version file
+      if:
+        contains(github.event.head_commit.message, '#patch') ||
+        contains(github.event.head_commit.message, '#minor') ||
+        contains(github.event.head_commit.message, '#major')
+      run: |
+        # Remove .dev0 suffix from the version file for releases
+        sed -i "s/\.dev0'/'/g" $VERSION_FILE
+        echo "Release version: $(cat $VERSION_FILE)"
+
     - name: Commit files
       if:
         contains(github.event.head_commit.message, '#patch') ||
