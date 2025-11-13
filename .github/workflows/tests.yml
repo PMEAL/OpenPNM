@@ -48,6 +48,11 @@ jobs:
         run: |
           echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
+      - name: Disable numba JIT for Python 3.13 due to performance issues
+        if: matrix.python-version == '3.13'
+        run: |
+          echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
+
       - name: Running tests
         run: uv run pytest --cov=. --cov-report=xml --color=yes
 
