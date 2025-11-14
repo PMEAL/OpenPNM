@@ -8,7 +8,7 @@
 
 # Overview of OpenPNM
 
-OpenPNM is a comprehensive framework for performing pore network simulations of porous materials.
+OpenPNM is a framework for performing pore network simulations of porous materials.
 
 ## More Information
 
@@ -37,7 +37,7 @@ For developers who intend to change the source code or contribute to OpenPNM, th
 pip install -e 'path/to/downloaded/files'
 ```
 
-The advantage to installing from the source code is that you can edit the files and have access to your changes each time you import OpenPNM.
+The advantage of installing from the source code is that you can edit the files and have access to your changes each time you import OpenPNM.
 
 OpenPNM requires the Scipy Stack (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the [Anaconda Distribution](https://www.anaconda.com/download/).
 
@@ -50,10 +50,6 @@ Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) fun
 OpenPNM is developed by the Porous Materials Engineering and Analysis Lab [(PMEAL)](http://pmeal.com), in the [Department of Chemical Engineering](https://uwaterloo.ca/chemical-engineering/) at the [University of Waterloo](https://uwaterloo.ca/) in Waterloo, Ontario, Canada.
 
 The lead developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
-
-## Acknowledgements
-
-OpenPNM is grateful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to OpenPNM since it's inception in 2011.
 
 ## Citation
 
