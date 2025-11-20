@@ -95,8 +95,8 @@ dev = [
 requires = ["setuptools>=80"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["openpnm"]
+# [tool.setuptools]
+# packages = ["openpnm"]
 
 [tool.setuptools.dynamic]
 version = {attr = "openpnm.__version__.__version__"}
