@@ -1,6 +1,6 @@
 [project]
 name = "openpnm"
-dynamic = ["version"]
+version = "3.5.5"
 description = "A framework for conducting pore network modeling simulations of multiphase transport in porous materials"
 authors = [{ name = "OpenPNM Team", email = "jgostick@gmail.com" }]
 maintainers = [
@@ -95,8 +95,35 @@ dev = [
 requires = ["setuptools>=80"]
 build-backend = "setuptools.build_meta"
 
-# [tool.setuptools]
-# packages = ["openpnm"]
+[tool.bumpversion]
+current_version = "3.5.5"
+parse = """(?x)
+    (?P<major>0|[1-9]\\d*)\\.
+    (?P<minor>0|[1-9]\\d*)\\.
+    (?P<patch>0|[1-9]\\d*)
+    (?:
+        -                             # dash separator for pre-release section
+        (?P<pre_l>[a-zA-Z-]+)         # pre-release label
+        (?P<pre_n>0|[1-9]\\d*)        # pre-release version number
+    )?                                # pre-release section is optional
+"""
+serialize = [
+    "{major}.{minor}.{patch}-{pre_l}{distance_to_latest_tag}",
+    "{major}.{minor}.{patch}",
+]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+tag = false
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = false
+message = "Bump version: {current_version} → {new_version}"
+commit_args = ""
 
-[tool.setuptools.dynamic]
-version = {attr = "openpnm.__version__.__version__"}
+[tool.bumpversion.parts.pre_l]
+values = ["dev", "rc", "final"]
+optional_value = "final"

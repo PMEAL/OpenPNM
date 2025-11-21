@@ -1,0 +1,60 @@
+name: Bump Version (release)
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  build:
+
+    name: Bump version
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        pip install bump-my-version
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Bump version (patch)
+      if: contains(github.event.head_commit.message, '#patch')
+      run: |
+        bump-my-version bump patch --commit --message "Bump version number on release"
+        git push origin HEAD:release
+        git push --tags
+
+    - name: Bump version (minor)
+      if: contains(github.event.head_commit.message, '#minor')
+      run: |
+        bump-my-version bump minor --commit --message "Bump version number on release"
+        git push origin HEAD:release
+        git push --tags
+
+    - name: Bump version (major)
+      if: contains(github.event.head_commit.message, '#major')
+      run: |
+        bump-my-version bump major --commit --message "Bump version number on release"
+        git push origin HEAD:release
+        git push --tags
+
+    - name: Create Pull Request to merge back release into dev
+      uses: repo-sync/pull-request@v2
+      with:
+        source_branch: "release"                          # If blank, default: triggered branch
+        destination_branch: "dev"                         # If blank, default: master
+        pr_title: "Merge release branch back into dev"
+        pr_body: "Changes made to the release branch (if any), plus the version bump."
+        pr_assignee: "jgostick"                           # Comma-separated list (no spaces)
+        pr_label: "high priority"                         # Comma-separated list (no spaces)
+        pr_draft: false                                   # Creates pull request as draft
+        pr_allow_empty: true                              # Creates pull request even if there are no changes
+        github_token: ${{ secrets.GITHUB_TOKEN }}
