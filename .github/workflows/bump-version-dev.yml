@@ -1,0 +1,34 @@
+name: Bump Version (dev)
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+
+    name: Bump version
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        pip install bump-my-version
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Bump version (build)
+      shell: bash
+      run: |
+        bump-my-version bump pre_n --commit --message "Bump version number on dev"
+        git push origin HEAD:dev
+        git push --tags
+        
