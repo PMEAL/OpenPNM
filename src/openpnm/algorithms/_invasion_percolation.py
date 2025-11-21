@@ -6,7 +6,7 @@ import numpy as np
 from numba import jit, njit
 from tqdm.auto import tqdm
 
-from openpnm._skgraph.queries import qupc_initialize, qupc_reduce, qupc_update
+from openpnm._skgraph.queries import qupc_find, qupc_union
 from openpnm._skgraph.simulations import bond_percolation, site_percolation
 from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator
@@ -351,60 +351,43 @@ class InvasionPercolation(Algorithm):
 @jit(forceobj=True)
 def _find_trapped_pores(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
+    inv_seq[outlets] =max(inv_seq) + 1
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
-    cluster = -np.ones(Np, dtype=np.int_)
     trapped_pores = np.zeros(Np, dtype=bool)
-    trapped_clusters = np.zeros(Np, dtype=bool)
-    # cluster_map = qupc_initialize(Np)
+    # The algorithm described by Masson could be simplify as below:
+    # For each pore in sorted_seq
+    # 1) union the pore with all neighbors that are invaded later than itself()
+    # 2) if the pore is still not connected to an outlet, mark it as trapped
+    # so you don't have to maintain a list of trapped clusters because when initilizing a union-find set
+    # each pore is its own cluster. Therefore, you don't have to check the isolated pore situation.
+    # you also don't have to check the one-neighbor situation because it's exact the same as the general case
+
+    has_outlet = np.zeros(Np, dtype=bool)
+    has_outlet[outlets] = True
     cluster_map = np.arange(Np, dtype=np.int_)
-    next_cluster_num = 0
+
     i = -1
     for step, pore in sorted_seq:
         i += 1
         step, pore = sorted_seq[i, :]
         n = indices[indptr[pore]:indptr[pore+1]]
-        nc = cluster_map[cluster[n]][inv_seq[n] > step]
-        nc_uniq = np.unique(nc)
-        if nc.size == 0:
-            # Found an isolated pore, start a new cluster
-            cluster[pore] = next_cluster_num
-            # If pore is an outlet then note cluster as no longer trapped
-            if pore in outlets:
-                trapped_clusters[next_cluster_num] = False
-            else:  # Otherwise note this cluster as being a trapped cluster
-                trapped_clusters[next_cluster_num] = True
-                # Note this pore as trapped as well
-                trapped_pores[pore] = True
-            # Increment cluster number for next time
-            next_cluster_num += 1
-        elif nc_uniq.size == 1:
-            c = nc_uniq[0]
-            # Neighbors have one unique cluster number, so assign it to current pore
-            cluster[pore] = c
-            # If pore is an outlet then note cluster as no longer trapped
-            if pore in outlets:
-                trapped_clusters[c] = False
-                # Also set all joined clusters to not trapped
-                cluster_map = qupc_reduce(cluster_map)
-                hits = np.where(cluster_map == cluster_map[c])[0]
-                trapped_clusters[hits] = False
-            # If this cluster number is part of a trapped cluster then
-            # mark pore as trapped
-            if trapped_clusters[c]:
-                trapped_pores[pore] = True
-        elif nc_uniq.size > 1:
-            cluster[pore] = min(nc_uniq)
-            # Merge all clusters into a single cluster
-            for c in nc:
-                qupc_update(cluster_map, c, min(nc_uniq))
-            cluster_map = qupc_reduce(cluster_map)
-            # If all neighboring clusters are trapped, then set current pore to
-            # trapped as well
-            if np.all(trapped_clusters[nc]):
-                trapped_pores[pore] = True
-            else:  # Otherwise set all neighbor clusters to untrapped!
-                trapped_clusters[nc] = False
+        for neighbor in n:
+            if inv_seq[neighbor] > step:
+                porep=qupc_find(cluster_map, pore)
+                neighborp=qupc_find(cluster_map, neighbor)
+                if porep==neighborp:
+                    continue
+                if has_outlet[qupc_find(cluster_map,neighbor)]:
+                    #Since the qupc implements union-find set whihout rank,
+                    #we just need to make sure the root with outlet is always the new root after union
+                    qupc_union(cluster_map, pore, neighbor)
+                else:
+                    qupc_union(cluster_map, neighbor, pore)
+
+        if not has_outlet[qupc_find(cluster_map,pore)]:
+            trapped_pores[pore] = True
+
     return trapped_pores
 
 
