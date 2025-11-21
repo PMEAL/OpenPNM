@@ -8,6 +8,8 @@ __all__ = [
     'qupc_update',
     'qupc_compress',
     'qupc_reduce',
+    'qupc_union',
+    'qupc_find',
 ]
 
 
@@ -41,6 +43,20 @@ def qupc_reduce(arr):
     for i in range(len(arr)-1, 0, -1):
         arr[i] = arr[arr[i]]
     return arr
+
+@njit
+def qupc_union(arr, ind, val):
+    indp=qupc_find(arr, ind)
+    valp=qupc_find(arr, val)
+    arr[indp]=valp
+    return arr
+
+@njit
+def qupc_find(arr, ind):
+    while arr[ind] != ind:
+        arr[ind] = arr[arr[ind]]
+        ind = arr[ind]
+    return ind
 
 
 if __name__ == '__main__':
