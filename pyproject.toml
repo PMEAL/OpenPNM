@@ -108,14 +108,14 @@ parse = """(?x)
     )?                                # pre-release section is optional
 """
 serialize = [
-    "{major}.{minor}.{patch}-{pre_l}{distance_to_latest_tag}",
+    "{major}.{minor}.{patch}-{pre_l}{pre_n}",
     "{major}.{minor}.{patch}",
 ]
 search = "{current_version}"
 replace = "{new_version}"
 regex = false
 ignore_missing_version = false
-tag = false
+tag = true
 sign_tags = false
 tag_name = "v{new_version}"
 tag_message = "Bump version: {current_version} → {new_version}"
@@ -126,4 +126,4 @@ commit_args = ""
 
 [tool.bumpversion.parts.pre_l]
 values = ["dev", "rc", "final"]
-optional_value = "final"
+optional_value = "dev"
