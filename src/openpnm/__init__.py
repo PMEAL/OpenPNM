@@ -15,12 +15,12 @@ import numpy as _np
 from rich.logging import RichHandler
 
 
-try:
-    __version__ = _metadata.version(__package__ or __name__)
-except _metadata.PackageNotFoundError:
-    with open("./pyproject.toml", "rb") as f:
-        data = _toml.load(f)
-        __version__ = data["project"]["version"]
+# try:
+#     __version__ = _metadata.version(__package__ or __name__)
+# except _metadata.PackageNotFoundError:
+with open("./pyproject.toml", "rb") as f:
+    data = _toml.load(f)
+    __version__ = data["project"]["version"]
 
 FORMAT = "%(message)s"
 logging.basicConfig(
