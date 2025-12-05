@@ -1,0 +1,51 @@
+name: Bump Version
+
+on:
+  push:
+    branches: [dev, release]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.PAT }}
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+          enable-cache: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+
+      - name: Bump version (dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          uvx bump-my-version bump pre_n --no-tag
+          git push
+
+      - name: Bump version (release)
+        if: github.ref == 'refs/heads/release'
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" == *"#patch"* ]]; then
+            uvx bump-my-version bump patch
+          elif [[ "${{ github.event.head_commit.message }}" == *"#minor"* ]]; then
+            uvx bump-my-version bump minor
+          elif [[ "${{ github.event.head_commit.message }}" == *"#major"* ]]; then
+            uvx bump-my-version bump major
+          fi
+          git push --follow-tags
+
+      - name: Merge release back into dev
+        if: github.ref == 'refs/heads/release'
+        run: |
+          git fetch origin dev
+          git checkout dev
+          git merge --no-ff origin/release -m "Merge release into dev [no ci]"
+          git push origin dev
