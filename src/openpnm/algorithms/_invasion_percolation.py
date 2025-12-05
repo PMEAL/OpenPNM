@@ -12,7 +12,7 @@ from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator
 
 __all__ = [
-    'InvasionPercolation',
+    "InvasionPercolation",
 ]
 
 
@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sections(base='IPSettings',
-                     sections=['Parameters', 'Other Parameters'])
+@docstr.get_sections(base="IPSettings", sections=["Parameters", "Other Parameters"])
 @docstr.dedent
 class IPSettings:
     r"""
@@ -37,10 +36,11 @@ class IPSettings:
         The dictionary key for the throat capillary pressure
 
     """
-    phase = ''
-    pore_volume = 'pore.volume'
-    throat_volume = 'throat.volume'
-    entry_pressure = 'throat.entry_pressure'
+
+    phase = ""
+    pore_volume = "pore.volume"
+    throat_volume = "throat.volume"
+    entry_pressure = "throat.entry_pressure"
 
 
 class InvasionPercolation(Algorithm):
@@ -64,48 +64,48 @@ class InvasionPercolation(Algorithm):
 
     """
 
-    def __init__(self, phase, name='ip_?', **kwargs):
+    def __init__(self, phase, name="ip_?", **kwargs):
         super().__init__(name=name, **kwargs)
         self.settings._update(IPSettings())
-        self.settings['phase'] = phase.name
-        self['pore.bc.inlet'] = False
-        self['pore.bc.outlet'] = False
+        self.settings["phase"] = phase.name
+        self["pore.bc.inlet"] = False
+        self["pore.bc.outlet"] = False
         self.reset()
 
     def reset(self):
-        self['pore.invasion_sequence'] = -1
-        self['throat.invasion_sequence'] = -1
-        self['pore.trapped'] = False
-        self['throat.trapped'] = False
+        self["pore.invasion_sequence"] = -1
+        self["throat.invasion_sequence"] = -1
+        self["pore.trapped"] = False
+        self["throat.trapped"] = False
         # self['pore.residual'] = False
         # self['throat.residual'] = False
 
-    def _set_residual(self, pores=None, throats=None, mode='add'):  # pragma: no cover
+    def _set_residual(self, pores=None, throats=None, mode="add"):  # pragma: no cover
         raise NotImplementedError("The ability to add residual nwp is not ready yet")
-        if mode == 'add':
+        if mode == "add":
             if pores is not None:
-                self['pore.residual'][pores] = True
+                self["pore.residual"][pores] = True
             if throats is not None:
-                self['throat.residual'][throats] = True
-        elif mode == 'drop':
+                self["throat.residual"][throats] = True
+        elif mode == "drop":
             if pores is not None:
-                self['pore.residual'][pores] = False
+                self["pore.residual"][pores] = False
             if throats is not None:
-                self['throat.residual'][throats] = False
-        elif mode == 'clear':
+                self["throat.residual"][throats] = False
+        elif mode == "clear":
             if pores is not None:
-                self['pore.residual'] = False
+                self["pore.residual"] = False
             if throats is not None:
-                self['throat.residual'] = False
-        elif mode == 'overwrite':
+                self["throat.residual"] = False
+        elif mode == "overwrite":
             if pores is not None:
-                self['pore.residual'] = False
-                self['pore.residual'][pores] = True
+                self["pore.residual"] = False
+                self["pore.residual"][pores] = True
             if throats is not None:
-                self['throat.residual'] = False
-                self['throat.residual'][throats] = True
+                self["throat.residual"] = False
+                self["throat.residual"][throats] = True
 
-    def set_inlet_BC(self, pores=None, mode='add'):
+    def set_inlet_BC(self, pores=None, mode="add"):
         r"""
         Specifies which pores are treated as inlets for the invading phase
 
@@ -139,11 +139,11 @@ class InvasionPercolation(Algorithm):
             results add ``'overwrite'``.
 
         """
-        self.set_BC(pores=pores, bcvalues=True, bctype='inlet', mode=mode)
+        self.set_BC(pores=pores, bcvalues=True, bctype="inlet", mode=mode)
         self.reset()
-        self['pore.invasion_sequence'][self['pore.bc.inlet']] = 0
+        self["pore.invasion_sequence"][self["pore.bc.inlet"]] = 0
 
-    def set_outlet_BC(self, pores=None, mode='add'):
+    def set_outlet_BC(self, pores=None, mode="add"):
         r"""
         Specifies which pores are treated as outlets for the defending phase
 
@@ -179,7 +179,7 @@ class InvasionPercolation(Algorithm):
             results add ``'overwrite'``.
 
         """
-        self.set_BC(pores=pores, bcvalues=True, bctype='outlet', mode=mode)
+        self.set_BC(pores=pores, bcvalues=True, bctype="outlet", mode=mode)
 
     def run(self):
         r"""
@@ -193,50 +193,50 @@ class InvasionPercolation(Algorithm):
         n_steps = np.inf
 
         # Create incidence matrix for use in _run_accelerated which is jit
-        im = self.network.create_incidence_matrix(fmt='csr')
+        im = self.network.create_incidence_matrix(fmt="csr")
 
         # Perform initial analysis on input pores
-        Ts = self.project.network.find_neighbor_throats(pores=self['pore.bc.inlet'])
-        t_start = self['throat.order'][Ts]
-        t_inv, p_inv, p_inv_t = \
-            _run_accelerated(
-                t_start=t_start,
-                t_sorted=self['throat.sorted'],
-                t_order=self['throat.order'],
-                t_inv=self['throat.invasion_sequence'],
-                p_inv=self['pore.invasion_sequence'],
-                p_inv_t=np.zeros_like(self['pore.invasion_sequence']),
-                conns=self.project.network['throat.conns'],
-                idx=im.indices,
-                indptr=im.indptr,
-                n_steps=n_steps)
+        Ts = self.project.network.find_neighbor_throats(pores=self["pore.bc.inlet"])
+        t_start = self["throat.order"][Ts]
+        t_inv, p_inv, p_inv_t = _run_accelerated(
+            t_start=t_start,
+            t_sorted=self["throat.sorted"],
+            t_order=self["throat.order"],
+            t_inv=self["throat.invasion_sequence"],
+            p_inv=self["pore.invasion_sequence"],
+            p_inv_t=np.zeros_like(self["pore.invasion_sequence"]),
+            conns=self.project.network["throat.conns"],
+            idx=im.indices,
+            indptr=im.indptr,
+            n_steps=n_steps,
+        )
 
         # Transfer results onto algorithm object
-        self['throat.invasion_sequence'] = t_inv
-        self['pore.invasion_sequence'] = p_inv
-        self['throat.invasion_pressure'] = self['throat.entry_pressure']
-        self['pore.invasion_pressure'] = self['throat.entry_pressure'][p_inv_t]
+        self["throat.invasion_sequence"] = t_inv
+        self["pore.invasion_sequence"] = p_inv
+        self["throat.invasion_pressure"] = self["throat.entry_pressure"]
+        self["pore.invasion_pressure"] = self["throat.entry_pressure"][p_inv_t]
         # Set invasion pressure of inlets to 0
-        self['pore.invasion_pressure'][self['pore.invasion_sequence'] == 0] = 0.0
+        self["pore.invasion_pressure"][self["pore.invasion_sequence"] == 0] = 0.0
         # Set invasion sequence and pressure of any residual pores/throats to 0
         # self['throat.invasion_sequence'][self['throat.residual']] = 0
         # self['pore.invasion_sequence'][self['pore.residual']] = 0
 
     def _run_setup(self):
-        self['pore.invasion_sequence'][self['pore.bc.inlet']] = 0
+        self["pore.invasion_sequence"][self["pore.bc.inlet"]] = 0
         # self['pore.invasion_sequence'][self['pore.residual']] = 0
         # self['throat.invasion_sequence'][self['throat.residual']] = 0
         # Set throats between inlets as trapped
-        Ts = self.network.find_neighbor_throats(self['pore.bc.inlet'], mode='xnor')
-        self['throat.trapped'][Ts] = True
+        Ts = self.network.find_neighbor_throats(self["pore.bc.inlet"], mode="xnor")
+        self["throat.trapped"][Ts] = True
         # Get throat capillary pressures from phase and update
-        phase = self.project[self.settings['phase']]
-        self['throat.entry_pressure'] = phase[self.settings['entry_pressure']]
+        phase = self.project[self.settings["phase"]]
+        self["throat.entry_pressure"] = phase[self.settings["entry_pressure"]]
         # self['throat.entry_pressure'][self['throat.residual']] = 0.0
         # Generated indices into t_entry giving a sorted list
-        self['throat.sorted'] = np.argsort(self['throat.entry_pressure'], axis=0)
-        self['throat.order'] = 0
-        self['throat.order'][self['throat.sorted']] = np.arange(0, self.Nt)
+        self["throat.sorted"] = np.argsort(self["throat.entry_pressure"], axis=0)
+        self["throat.order"] = 0
+        self["throat.order"][self["throat.sorted"]] = np.arange(0, self.Nt)
 
     def pc_curve(self):
         r"""
@@ -245,29 +245,29 @@ class InvasionPercolation(Algorithm):
 
         """
         net = self.project.network
-        pvols = net[self.settings['pore_volume']]
-        tvols = net[self.settings['throat_volume']]
+        pvols = net[self.settings["pore_volume"]]
+        tvols = net[self.settings["throat_volume"]]
         tot_vol = np.sum(pvols) + np.sum(tvols)
         # Normalize
         pvols /= tot_vol
         tvols /= tot_vol
         # Remove trapped volume
-        pmask = np.isfinite(self['pore.invasion_sequence'])
-        tmask = np.isfinite(self['throat.invasion_sequence'])
+        pmask = np.isfinite(self["pore.invasion_sequence"])
+        tmask = np.isfinite(self["throat.invasion_sequence"])
         pvols = pvols[pmask]
         tvols = tvols[tmask]
-        pseq = self['pore.invasion_sequence'][pmask]
-        tseq = self['throat.invasion_sequence'][tmask]
-        pPc = self['pore.invasion_pressure'][pmask]
-        tPc = self['throat.invasion_pressure'][tmask]
+        pseq = self["pore.invasion_sequence"][pmask]
+        tseq = self["throat.invasion_sequence"][tmask]
+        pPc = self["pore.invasion_pressure"][pmask]
+        tPc = self["throat.invasion_pressure"][tmask]
         vols = np.concatenate((pvols, tvols))
         seqs = np.concatenate((pseq, tseq))
         Pcs = np.concatenate((pPc, tPc))
-        data = np.rec.fromarrays([seqs, vols, Pcs],
-                                 formats=['i', 'f', 'f'],
-                                 names=['seq', 'vol', 'Pc'])
-        data.sort(axis=0, order='seq')
-        pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
+        data = np.rec.fromarrays(
+            [seqs, vols, Pcs], formats=["i", "f", "f"], names=["seq", "vol", "Pc"]
+        )
+        data.sort(axis=0, order="seq")
+        pc_curve = namedtuple("pc_curve", ("pc", "snwp"))
         data = pc_curve(data.Pc, np.cumsum(data.vol))
         return data
 
@@ -297,52 +297,46 @@ class InvasionPercolation(Algorithm):
         [1] Masson, Y. https://doi.org/10.1016/j.cageo.2016.02.003
 
         """
-        outlets = np.where(self['pore.bc.outlet'])[0]
-        am = self.network.create_adjacency_matrix(fmt='csr')
-        inv_seq = self['pore.invasion_sequence']
-        self['pore.trapped'] = _find_trapped_pores(inv_seq, am.indices,
-                                                   am.indptr, outlets)
+        outlets = np.where(self["pore.bc.outlet"])[0]
+        am = self.network.create_adjacency_matrix(fmt="csr")
+        inv_seq = self["pore.invasion_sequence"]
+        self["pore.trapped"] = _find_trapped_pores(inv_seq, am.indices, am.indptr, outlets)
         # Update invasion sequence
-        self['pore.invasion_sequence'][self['pore.trapped']] = -1
+        self["pore.invasion_sequence"][self["pore.trapped"]] = -1
         # Find which throats are trapped, including throats which were invaded
         # after both of it's pores were invaded (hence have a unique invasion
         # sequence number).
-        pmask = self['pore.invasion_sequence'][self.network.conns]
-        tmask = np.stack((self['throat.invasion_sequence'],
-                          self['throat.invasion_sequence'])).T
+        pmask = self["pore.invasion_sequence"][self.network.conns]
+        tmask = np.stack((self["throat.invasion_sequence"], self["throat.invasion_sequence"])).T
         hits = ~np.any(pmask == tmask, axis=1)
-        self['throat.trapped'] = hits
-        self['throat.invasion_sequence'][hits] = -1
+        self["throat.trapped"] = hits
+        self["throat.invasion_sequence"][hits] = -1
         # Make some adjustments
-        Pmask = self['pore.invasion_sequence'] < 0
-        Tmask = self['throat.invasion_sequence'] < 0
-        self['pore.invasion_sequence'] = \
-            self['pore.invasion_sequence'].astype(float)
-        self['pore.invasion_sequence'][Pmask] = np.inf
-        self['throat.invasion_sequence'] = \
-            self['throat.invasion_sequence'].astype(float)
-        self['throat.invasion_sequence'][Tmask] = np.inf
+        Pmask = self["pore.invasion_sequence"] < 0
+        Tmask = self["throat.invasion_sequence"] < 0
+        self["pore.invasion_sequence"] = self["pore.invasion_sequence"].astype(float)
+        self["pore.invasion_sequence"][Pmask] = np.inf
+        self["throat.invasion_sequence"] = self["throat.invasion_sequence"].astype(float)
+        self["throat.invasion_sequence"][Tmask] = np.inf
 
-    def _apply_trapping_slow(self, step_size=1, mode='mixed'):  # pragma: no cover
+    def _apply_trapping_slow(self, step_size=1, mode="mixed"):  # pragma: no cover
         # TODO: Make sure this function actually works and keep it for debugging
-        N = self['throat.invasion_sequence'].max()
-        pseq = self['pore.invasion_sequence']
-        tseq = self['throat.invasion_sequence']
-        msg = 'Evaluating trapping'
+        N = self["throat.invasion_sequence"].max()
+        pseq = self["pore.invasion_sequence"]
+        tseq = self["throat.invasion_sequence"]
+        msg = "Evaluating trapping"
         for i in tqdm(range(0, int(N), step_size), msg):
-            if mode == 'bond':
+            if mode == "bond":
                 i += 1
-                s, b = bond_percolation(conns=self.network.conns,
-                                        occupied_bonds=tseq > i)
-            elif mode == 'site':
-                s, b = site_percolation(conns=self.network.conns,
-                                        occupied_sites=pseq > i)
-            clusters = np.unique(s[self['pore.bc.outlet']])
-            self['pore.trapped'] += np.isin(s, clusters, invert=True)*(pseq > i)
-            self['throat.trapped'] += np.isin(b, clusters, invert=True)*(tseq > i)
+                s, b = bond_percolation(conns=self.network.conns, occupied_bonds=tseq > i)
+            elif mode == "site":
+                s, b = site_percolation(conns=self.network.conns, occupied_sites=pseq > i)
+            clusters = np.unique(s[self["pore.bc.outlet"]])
+            self["pore.trapped"] += np.isin(s, clusters, invert=True) * (pseq > i)
+            self["throat.trapped"] += np.isin(b, clusters, invert=True) * (tseq > i)
         # Set trapped pores/throats to uninvaded and adjust invasion sequence
-        self['pore.invasion_sequence'][self['pore.trapped']] = -1
-        self['throat.invasion_sequence'][self['throat.trapped']] = -1
+        self["pore.invasion_sequence"][self["pore.trapped"]] = -1
+        self["throat.invasion_sequence"][self["throat.trapped"]] = -1
         # Set any residual pores within trapped clusters back to untrapped
         # self['pore.trapped'][self['pore.residual']] = False
         # self['throat.trapped'][self['throat.residual']] = False
@@ -351,7 +345,7 @@ class InvasionPercolation(Algorithm):
 @jit(forceobj=True)
 def _find_trapped_pores(inv_seq, indices, indptr, outlets):
     Np = len(inv_seq)
-    inv_seq[outlets] =max(inv_seq) + 1
+    inv_seq[outlets] = max(inv_seq) + 1
     sorted_seq = np.vstack((inv_seq.astype(np.int_), np.arange(Np, dtype=np.int_))).T
     sorted_seq = sorted_seq[sorted_seq[:, 0].argsort()][::-1]
     trapped_pores = np.zeros(Np, dtype=bool)
@@ -371,29 +365,30 @@ def _find_trapped_pores(inv_seq, indices, indptr, outlets):
     for step, pore in sorted_seq:
         i += 1
         step, pore = sorted_seq[i, :]
-        n = indices[indptr[pore]:indptr[pore+1]]
+        n = indices[indptr[pore] : indptr[pore + 1]]
         for neighbor in n:
             if inv_seq[neighbor] > step:
-                porep=qupc_find(cluster_map, pore)
-                neighborp=qupc_find(cluster_map, neighbor)
-                if porep==neighborp:
+                porep = qupc_find(cluster_map, pore)
+                neighborp = qupc_find(cluster_map, neighbor)
+                if porep == neighborp:
                     continue
-                if has_outlet[qupc_find(cluster_map,neighbor)]:
-                    #Since the qupc implements union-find set whihout rank,
-                    #we just need to make sure the root with outlet is always the new root after union
+                if has_outlet[qupc_find(cluster_map, neighbor)]:
+                    # Since the qupc implements union-find set whihout rank,
+                    # we just need to make sure the root with outlet is always the new root after union
                     qupc_union(cluster_map, pore, neighbor)
                 else:
                     qupc_union(cluster_map, neighbor, pore)
 
-        if not has_outlet[qupc_find(cluster_map,pore)]:
+        if not has_outlet[qupc_find(cluster_map, pore)]:
             trapped_pores[pore] = True
 
     return trapped_pores
 
 
 @njit
-def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
-                     conns, idx, indptr, n_steps):  # pragma: no cover
+def _run_accelerated(
+    t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t, conns, idx, indptr, n_steps
+):  # pragma: no cover
     r"""
     Numba-jitted run method for InvasionPercolation class.
 
@@ -435,7 +430,7 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
             p_inv_t[Ps] = t_next
             for i in Ps:
                 # Get neighboring throat numbers from im in csr format
-                Ts = idx[indptr[i]:indptr[i+1]]
+                Ts = idx[indptr[i] : indptr[i + 1]]
                 # Keep only throats which are uninvaded
                 Ts = Ts[t_inv[Ts] < 0]
             for i in Ts:  # Add throat to the queue
@@ -447,7 +442,7 @@ def _run_accelerated(t_start, t_sorted, t_order, t_inv, p_inv, p_inv_t,
 
 
 # %%
-if __name__ == '__main__':
+if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     import openpnm as op
@@ -457,57 +452,57 @@ if __name__ == '__main__':
     pn = op.network.Cubic(shape=[Nx, Ny, Nz], spacing=1e-4)
     pn.add_model_collection(op.models.collections.geometry.spheres_and_cylinders)
     pn.regenerate_models()
-    pn['pore.volume@left'] = 0.0
+    pn["pore.volume@left"] = 0.0
     # op.topotools.trim(pn, pores=[380, 395])
 
-    water = op.phase.Water(network=pn, name='h2o')
+    water = op.phase.Water(network=pn, name="h2o")
     water.add_model_collection(op.models.collections.physics.standard)
     water.regenerate_models()
 
     ip = InvasionPercolation(network=pn, phase=water)
-    ip.set_inlet_BC(pn.pores('left'))
+    ip.set_inlet_BC(pn.pores("left"))
     ip.run()
-    ip.set_outlet_BC(pn.pores('right'))
+    ip.set_outlet_BC(pn.pores("right"))
     # ip.apply_trapping()
 
     # %%
     if 0:
-        pseq = np.copy(ip['pore.invasion_sequence'])
-        tseq = np.copy(ip['throat.invasion_sequence'])
-        ax = op.topotools.plot_connections(pn, tseq >= 0, linestyle='--', c='b',
-                                           linewidth=3)
-        op.topotools.plot_coordinates(pn, pseq >= 0, c='r', marker='x',
-                                      markersize=100, ax=ax)
-        op.topotools.plot_coordinates(pn, pseq < 0, c='c', marker='o',
-                                      markersize=100, ax=ax)
+        pseq = np.copy(ip["pore.invasion_sequence"])
+        tseq = np.copy(ip["throat.invasion_sequence"])
+        ax = op.topotools.plot_connections(pn, tseq >= 0, linestyle="--", c="b", linewidth=3)
+        op.topotools.plot_coordinates(pn, pseq >= 0, c="r", marker="x", markersize=100, ax=ax)
+        op.topotools.plot_coordinates(pn, pseq < 0, c="c", marker="o", markersize=100, ax=ax)
 
     # %%
     if 1:
         drn = op.algorithms.Drainage(network=pn, phase=water)
-        drn.set_inlet_BC(pn.pores('left'))
-        pressures = np.unique(ip['pore.invasion_pressure'])
+        drn.set_inlet_BC(pn.pores("left"))
+        pressures = np.unique(ip["pore.invasion_pressure"])
         # pressures = np.logspace(np.log10(0.1e3), np.log10(2e4), 100)
         drn.run(pressures=pressures)
-        drn.set_outlet_BC(pn.pores('right'))
+        drn.set_outlet_BC(pn.pores("right"))
         # drn.apply_trapping()
 
         fig, ax = plt.subplots(1, 1)
-        ax.step(*ip.pc_curve(), 'b', where='post')
-        ax.step(*drn.pc_curve(), 'r--', where='post')
+        ax.step(*ip.pc_curve(), "b", where="post")
+        ax.step(*drn.pc_curve(), "r--", where="post")
         ax.set_ylim([0, 1])
 
     # %%
     if 0:
-        pseq = ip['pore.invasion_sequence']
+        pseq = ip["pore.invasion_sequence"]
         pseq[pseq == -1] = pseq.max() + 1
-        tseq = ip['throat.invasion_sequence']
+        tseq = ip["throat.invasion_sequence"]
         tseq[tseq == -1] = tseq.max() + 1
         for j, i in enumerate(tqdm(np.unique(tseq)[:-1])):
-            ax = op.topotools.plot_connections(pn, tseq <= i, linestyle='--',
-                                               c='r', linewidth=3)
-            op.topotools.plot_coordinates(pn, pseq <= i, c='b', marker='x',
-                                          markersize=100, ax=ax)
-            op.topotools.plot_coordinates(pn, ip['pore.trapped'], c='c',
-                                          marker='o', markersize=100, ax=ax)
+            ax = op.topotools.plot_connections(
+                pn, tseq <= i, linestyle="--", c="r", linewidth=3
+            )
+            op.topotools.plot_coordinates(
+                pn, pseq <= i, c="b", marker="x", markersize=100, ax=ax
+            )
+            op.topotools.plot_coordinates(
+                pn, ip["pore.trapped"], c="c", marker="o", markersize=100, ax=ax
+            )
             plt.savefig(f"{str(j).zfill(3)}.png")
             plt.close()

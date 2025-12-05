@@ -2,30 +2,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
 from matplotlib import colors as mcolors
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import LineCollection
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
-from openpnm._skgraph.tools import dimensionality
-from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
+from openpnm._skgraph.tools import dimensionality, get_edge_prefix, get_node_prefix
 
 __all__ = [
-    'plot_edges',
-    'plot_nodes',
+    "plot_edges",
+    "plot_nodes",
 ]
 
 
-def plot_edges(network,
-               edges=None,
-               ax=None,
-               size_by=None,
-               color_by=None,
-               cmap='jet',
-               color='b',
-               alpha=1.0,
-               linestyle='solid',
-               linewidth=1,
-               **kwargs):  # pragma: no cover
+def plot_edges(
+    network,
+    edges=None,
+    ax=None,
+    size_by=None,
+    color_by=None,
+    cmap="jet",
+    color="b",
+    alpha=1.0,
+    linestyle="solid",
+    linewidth=1,
+    **kwargs,
+):  # pragma: no cover
     r"""
     Produce a 3D plot of the network topology
 
@@ -88,8 +89,8 @@ def plot_edges(network,
     """
     node_prefix = get_node_prefix(network)
     edge_prefix = get_edge_prefix(network)
-    conns = network[edge_prefix+'.conns']
-    coords = network[node_prefix+'.coords']
+    conns = network[edge_prefix + ".conns"]
+    coords = network[node_prefix + ".coords"]
     Ts = np.arange(conns.shape[0]) if edges is None else edges
     dim = dimensionality(network)
     ThreeD = True if dim.sum() == 3 else False
@@ -104,9 +105,9 @@ def plot_edges(network,
     else:
         # The next line is necessary if ax was created using plt.subplots()
         fig, ax = ax.get_figure(), ax.get_figure().gca()
-    if ThreeD and ax.name != '3d':
+    if ThreeD and ax.name != "3d":
         fig.delaxes(ax)
-        ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111, projection="3d")
 
     # Collect coordinates
     Ps = np.unique(conns[Ts])
@@ -116,8 +117,8 @@ def plot_edges(network,
     throat_pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
 
     # Deal with optional style related arguments
-    if 'c' in kwargs.keys():
-        color = kwargs.pop('c')
+    if "c" in kwargs.keys():
+        color = kwargs.pop("c")
     color = mcolors.to_rgb(color) + tuple([alpha])
     # Override colors with color_by if given
     if color_by is not None:
@@ -127,13 +128,25 @@ def plot_edges(network,
         linewidth = size_by / size_by.max() * linewidth
 
     if ThreeD:
-        lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
-                              linestyles=linestyle, linewidths=linewidth,
-                              antialiaseds=np.ones_like(Ts), **kwargs)
+        lc = Line3DCollection(
+            throat_pos,
+            colors=color,
+            cmap=cmap,
+            linestyles=linestyle,
+            linewidths=linewidth,
+            antialiaseds=np.ones_like(Ts),
+            **kwargs,
+        )
     else:
-        lc = LineCollection(throat_pos, colors=color, cmap=cmap,
-                            linestyles=linestyle, linewidths=linewidth,
-                            antialiaseds=np.ones_like(Ts), **kwargs)
+        lc = LineCollection(
+            throat_pos,
+            colors=color,
+            cmap=cmap,
+            linestyles=linestyle,
+            linewidths=linewidth,
+            antialiaseds=np.ones_like(Ts),
+            **kwargs,
+        )
     ax.add_collection(lc)
 
     _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
@@ -143,17 +156,19 @@ def plot_edges(network,
     return lc
 
 
-def plot_nodes(network,
-               nodes=None,
-               ax=None,
-               size_by=None,
-               color_by=None,
-               cmap='jet',
-               color='r',
-               alpha=1.0,
-               marker='o',
-               markersize=10,
-               **kwargs):  # pragma: no cover
+def plot_nodes(
+    network,
+    nodes=None,
+    ax=None,
+    size_by=None,
+    color_by=None,
+    cmap="jet",
+    color="r",
+    alpha=1.0,
+    marker="o",
+    markersize=10,
+    **kwargs,
+):  # pragma: no cover
     r"""
     Produce a 3D plot showing specified nodecoordinates as markers.
 
@@ -210,7 +225,7 @@ def plot_nodes(network,
 
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     Ps = np.arange(coords.shape[0]) if nodes is None else nodes
     dim = dimensionality(network)
     ThreeD = True if dim.sum() == 3 else False
@@ -228,9 +243,9 @@ def plot_nodes(network,
     else:
         # The next line is necessary if ax was created using plt.subplots()
         fig, ax = ax.get_figure(), ax.get_figure().gca()
-    if ThreeD and ax.name != '3d':
+    if ThreeD and ax.name != "3d":
         fig.delaxes(ax)
-        ax = fig.add_subplot(111, projection='3d')
+        ax = fig.add_subplot(111, projection="3d")
 
     # Collect specified coordinates
     X, Y, Z = coords[Ps].T
@@ -239,23 +254,21 @@ def plot_nodes(network,
     Xl, Yl, Zl = coords.T
 
     # Parse formatting kwargs
-    if 'c' in kwargs.keys():
-        color = kwargs.pop('c')
-    if 's' in kwargs.keys():
-        markersize = kwargs.pop('s')
+    if "c" in kwargs.keys():
+        color = kwargs.pop("c")
+    if "s" in kwargs.keys():
+        markersize = kwargs.pop("s")
     if color_by is not None:
         color = cm.get_cmap(name=cmap)(color_by / color_by.max())
     if size_by is not None:
         markersize = size_by / size_by.max() * markersize
 
     if ThreeD:
-        sc = ax.scatter(X, Y, Z, c=color, s=markersize, marker=marker,
-                        alpha=alpha, **kwargs)
+        sc = ax.scatter(X, Y, Z, c=color, s=markersize, marker=marker, alpha=alpha, **kwargs)
         _scale_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
     else:
         _X, _Y = np.column_stack((X, Y, Z))[:, dim].T
-        sc = ax.scatter(_X, _Y, c=color, s=markersize, marker=marker,
-                        alpha=alpha, **kwargs)
+        sc = ax.scatter(_X, _Y, c=color, s=markersize, marker=marker, alpha=alpha, **kwargs)
         _scale_axes(ax=ax, X=Xl, Y=Yl, Z=np.zeros_like(Yl))
 
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)

@@ -1,41 +1,42 @@
 import numpy as np
 import scipy.sparse as sprs
-from scipy.spatial import KDTree, distance_matrix
-from scipy.spatial import ConvexHull
-from scipy.spatial import Delaunay
 from scipy.sparse import csgraph
-from openpnm._skgraph.tools import generate_points_on_sphere
-from openpnm._skgraph.tools import generate_points_on_circle
-from openpnm._skgraph.tools import cart2sph, sph2cart, cart2cyl, cyl2cart
+from scipy.spatial import ConvexHull, Delaunay, KDTree, distance_matrix
 
+from openpnm._skgraph.tools import (
+    cart2cyl,
+    cart2sph,
+    generate_points_on_circle,
+    generate_points_on_sphere,
+)
 
 # Once a function has been stripped of all its OpenPNM dependent code it
 # can be added to this list of functions to import
 __all__ = [
-    'get_edge_prefix',
-    'get_node_prefix',
-    'change_prefix',
-    'isoutside',
-    'dimensionality',
-    'find_surface_nodes',
-    'find_surface_nodes_cubic',
-    'find_coincident_nodes',
-    'internode_distance',
-    'tri_to_am',
-    'vor_to_am',
-    'conns_to_am',
-    'dict_to_am',
-    'dict_to_im',
-    'istriu',
-    'istril',
-    'isgtriu',
-    'istriangular',
-    'issymmetric',
-    'get_cubic_shape',
-    'get_cubic_spacing',
-    'is_fully_connected',
-    'get_domain_length',
-    'get_domain_area',
+    "get_edge_prefix",
+    "get_node_prefix",
+    "change_prefix",
+    "isoutside",
+    "dimensionality",
+    "find_surface_nodes",
+    "find_surface_nodes_cubic",
+    "find_coincident_nodes",
+    "internode_distance",
+    "tri_to_am",
+    "vor_to_am",
+    "conns_to_am",
+    "dict_to_am",
+    "dict_to_im",
+    "istriu",
+    "istril",
+    "isgtriu",
+    "istriangular",
+    "issymmetric",
+    "get_cubic_shape",
+    "get_cubic_spacing",
+    "is_fully_connected",
+    "get_domain_length",
+    "get_domain_area",
 ]
 
 
@@ -63,8 +64,8 @@ def get_edge_prefix(network):
     to ensure the ``'conns'`` array is near the beginning of the list.
     """
     for item in network.keys():
-        if item.endswith('.conns'):
-            return item.split('.')[0]
+        if item.endswith(".conns"):
+            return item.split(".")[0]
 
 
 def get_node_prefix(network):
@@ -91,8 +92,8 @@ def get_node_prefix(network):
     to ensure the ``'conns'`` array is near the beginning of the list.
     """
     for item in network.keys():
-        if item.endswith('.coords'):
-            return item.split('.')[0]
+        if item.endswith(".coords"):
+            return item.split(".")[0]
 
 
 def change_prefix(network, old_prefix, new_prefix):
@@ -115,8 +116,8 @@ def change_prefix(network, old_prefix, new_prefix):
     """
     for key in list(network.keys()):
         if key.startswith(old_prefix):
-            temp = key.split('.', 1)[1]
-            network[new_prefix + '.' + temp] = network.pop(key)
+            temp = key.split(".", 1)[1]
+            network[new_prefix + "." + temp] = network.pop(key)
     return network
 
 
@@ -169,34 +170,34 @@ def isoutside(network, shape, rtol=0.0):
     """
     try:
         node_prefix = get_node_prefix(network)
-        coords = network[node_prefix+'.coords']
+        coords = network[node_prefix + ".coords"]
     except AttributeError:
         coords = network
     shape = np.array(shape, dtype=float)
     if np.isscalar(rtol):
-        tolerance = np.array([rtol]*len(shape))
+        tolerance = np.array([rtol] * len(shape))
     else:
         tolerance = np.array(rtol)
     # Label external pores for trimming below
     if len(shape) == 1:  # Spherical
         # Find external points
         R, Q, P = cart2sph(*coords.T)
-        thresh = tolerance[0]*shape[0]
+        thresh = tolerance[0] * shape[0]
         Ps = R > (shape[0] + thresh)
     elif len(shape) == 2:  # Cylindrical
         # Find external pores outside radius
         R, Q, Z = cart2cyl(*coords.T)
-        thresh = tolerance[0]*shape[0]
-        Ps = R > shape[0]*(1 + thresh)
+        thresh = tolerance[0] * shape[0]
+        Ps = R > shape[0] * (1 + thresh)
         # Find external pores above and below cylinder
         if shape[1] > 0:
-            thresh = tolerance[1]*shape[1]
+            thresh = tolerance[1] * shape[1]
             Ps = Ps + (coords[:, 2] > (shape[1] + thresh))
             Ps = Ps + (coords[:, 2] < (0 - thresh))
         else:
             pass
     elif len(shape) == 3:  # Rectilinear
-        thresh = tolerance*shape
+        thresh = tolerance * shape
         Ps1 = np.any(coords > (shape + thresh), axis=1)
         Ps2 = np.any(coords < (0 - thresh), axis=1)
         Ps = Ps1 + Ps2
@@ -230,10 +231,9 @@ def dimensionality(network, cache=True):
         except (KeyError, AttributeError):
             pass
     n = get_node_prefix(network)
-    coords = network[n+'.coords']
+    coords = network[n + ".coords"]
     eps = np.finfo(float).resolution
-    dims_unique = \
-        [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
+    dims_unique = [not np.allclose(xk, xk.mean(), atol=0, rtol=eps) for xk in coords.T]
     if cache:
         network["params.dimensionality"] = np.array(dims_unique)
     return np.array(dims_unique)
@@ -256,7 +256,7 @@ def find_surface_nodes_cubic(network):
         on the surfaces.
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     hits = np.zeros(coords.shape[0], dtype=bool)
     dims = dimensionality(network)
     for d in range(3):
@@ -291,7 +291,7 @@ def find_coincident_nodes(network):
     coincident that are not.
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     hashed = [hash(row.tobytes()) for row in coords]
     uniq, counts = np.unique(hashed, return_counts=True)
     hits = np.where(counts > 1)[0]
@@ -326,12 +326,12 @@ def find_surface_nodes(network):
 
     """
     node_prefix = get_node_prefix(network)
-    coords = np.copy(network[node_prefix+'.coords'])
+    coords = np.copy(network[node_prefix + ".coords"])
     shift = np.mean(coords, axis=0)
     coords = coords - shift
     tmp = cart2sph(*coords.T)
     hits = np.zeros(coords.shape[0], dtype=bool)
-    r = 2*tmp[0].max()
+    r = 2 * tmp[0].max()
     dims = dimensionality(network)
     if sum(dims) == 1:
         hi = np.where(coords[:, dims] == coords[:, dims].max())[0]
@@ -340,15 +340,15 @@ def find_surface_nodes(network):
         hits[lo] = True
         return hits
     if sum(dims) == 2:
-        markers = generate_points_on_circle(n=max(10, int(coords.shape[0]/10)), r=r)
+        markers = generate_points_on_circle(n=max(10, int(coords.shape[0] / 10)), r=r)
         pts = np.vstack((coords[:, dims], markers))
     else:
-        markers = generate_points_on_sphere(n=max(10, int(coords.shape[0]/10)), r=r)
+        markers = generate_points_on_sphere(n=max(10, int(coords.shape[0] / 10)), r=r)
         pts = np.vstack((coords, markers))
     tri = Delaunay(pts, incremental=False)
     (indices, indptr) = tri.vertex_neighbor_vertices
     for k in range(coords.shape[0], tri.npoints):
-        neighbors = indptr[indices[k]:indices[k+1]]
+        neighbors = indptr[indices[k] : indices[k + 1]]
         inds = np.where(neighbors < coords.shape[0])
         hits[neighbors[inds]] = True
     return hits
@@ -383,7 +383,7 @@ def internode_distance(network, inds_1=None, inds_2=None):
 
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     p1 = np.array(inds_1, ndmin=1)
     p2 = np.array(inds_2, ndmin=1)
     return distance_matrix(coords[p1], coords[p2])
@@ -406,9 +406,9 @@ def iscoplanar(network):
 
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix + '.coords']
+    coords = network[node_prefix + ".coords"]
     if np.shape(coords)[0] < 3:
-        raise Exception('At least 3 input pores are required')
+        raise Exception("At least 3 input pores are required")
 
     Px = coords[:, 0]
     Py = coords[:, 1]
@@ -431,7 +431,7 @@ def iscoplanar(network):
         if i >= (np.size(Px) - 1):
             return False
         # Chose a secon basis vector
-        n2 = np.array((Px[i+1] - Px[i], Py[i+1] - Py[i], Pz[i+1] - Pz[i])).T
+        n2 = np.array((Px[i + 1] - Px[i], Py[i + 1] - Py[i], Pz[i + 1] - Pz[i])).T
         # Find their cross product
         n = np.cross(n1, n2)
         i += 1
@@ -469,7 +469,7 @@ def is_fully_connected(network, inds=None):
     temp = csgraph.connected_components(am, directed=False)[1]
     is_connected = np.unique(temp).size == 1
     Np = am.shape[0]
-    Nt = int(am.nnz/2)
+    Nt = int(am.nnz / 2)
     # Ensure all clusters are part of inds, if given
     if not is_connected and inds is not None:
         am.resize(Np + 1, Np + 1)
@@ -497,8 +497,8 @@ def get_cubic_spacing(network):
     """
     node_prefix = get_node_prefix(network)
     edge_prefix = get_edge_prefix(network)
-    coords = network[node_prefix+'.coords']
-    conns = network[edge_prefix+'.conns']
+    coords = network[node_prefix + ".coords"]
+    conns = network[edge_prefix + ".conns"]
     # Find Network spacing
     C12 = coords[conns]
     mag = np.linalg.norm(np.diff(C12, axis=1), axis=2)
@@ -539,7 +539,7 @@ def get_cubic_shape(network):
 
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     L = np.ptp(coords, axis=0)
     mask = L.astype(bool)
     S = get_cubic_spacing(network)
@@ -568,25 +568,25 @@ def get_domain_area(network, inlets=None, outlets=None):
 
     """
     if dimensionality(network).sum() != 3:
-        raise Exception('The network is not 3D, specify area manually')
+        raise Exception("The network is not 3D, specify area manually")
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     inlets = coords[inlets]
     outlets = coords[outlets]
     if not iscoplanar(inlets):
-        print('Detected inlet pores are not coplanar')
+        print("Detected inlet pores are not coplanar")
     if not iscoplanar(outlets):
-        print('Detected outlet pores are not coplanar')
+        print("Detected outlet pores are not coplanar")
     Nin = np.ptp(inlets, axis=0) > 0
     if Nin.all():
-        print('Detected inlets are not oriented along a principle axis')
+        print("Detected inlets are not oriented along a principle axis")
     Nout = np.ptp(outlets, axis=0) > 0
     if Nout.all():
-        print('Detected outlets are not oriented along a principle axis')
+        print("Detected outlets are not oriented along a principle axis")
     hull_in = ConvexHull(points=inlets[:, Nin])
     hull_out = ConvexHull(points=outlets[:, Nout])
     if hull_in.volume != hull_out.volume:
-        print('Inlet and outlet faces are different area')
+        print("Inlet and outlet faces are different area")
     area = hull_in.volume  # In 2D: volume=area, area=perimeter
     return area
 
@@ -611,17 +611,17 @@ def get_domain_length(network, inlets=None, outlets=None):
 
     """
     node_prefix = get_node_prefix(network)
-    coords = network[node_prefix+'.coords']
+    coords = network[node_prefix + ".coords"]
     inlets = coords[inlets]
     outlets = coords[outlets]
     if not iscoplanar(inlets):
-        print('Detected inlet pores are not coplanar')
+        print("Detected inlet pores are not coplanar")
     if not iscoplanar(outlets):
-        print('Detected inlet pores are not coplanar')
+        print("Detected inlet pores are not coplanar")
     tree = KDTree(data=inlets)
     Ls = np.unique(np.float64(tree.query(x=outlets)[0]))
     if not np.allclose(Ls, Ls[0]):
-        print('A unique value of length could not be found')
+        print("A unique value of length could not be found")
     length = Ls[0]
     return length
 
@@ -649,7 +649,7 @@ def tri_to_am(tri):
     indices, indptr = tri.vertex_neighbor_vertices
     if 1:  # Original way
         for k in range(tri.npoints):
-            lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
+            lil.rows[k] = indptr[indices[k] : indices[k + 1]].tolist()
         # Convert to coo format
         lil.data = lil.rows  # Just a dummy array to make things work properly
         coo = lil.tocoo()
@@ -657,14 +657,14 @@ def tri_to_am(tri):
         coo = [[], []]
         for k in range(tri.npoints):
             # lil.rows[k] = indptr[indices[k]:indices[k + 1]].tolist()
-            col = indptr[indices[k]:indices[k+1]]
-            coo[0].extend(np.ones_like(col)*k)
+            col = indptr[indices[k] : indices[k + 1]]
+            coo[0].extend(np.ones_like(col) * k)
             coo[1].extend(col)
         coo = sprs.coo_matrix((np.ones_like(coo[0]), (coo[0], coo[1])))
     # Set weights to 1's
     coo.data = np.ones_like(coo.data)
     # Remove diagonal, and convert to csr remove duplicates
-    am = sprs.triu(A=coo, k=1, format='csr')
+    am = sprs.triu(A=coo, k=1, format="csr")
     # The convert back to COO and return
     am = am.tocoo()
     return am
@@ -744,8 +744,8 @@ def dict_to_am(network, weights=None):
     """
     edge_prefix = get_edge_prefix(network)
     node_prefix = get_node_prefix(network)
-    conns = np.copy(network[edge_prefix+'.conns'])
-    shape = [network[node_prefix+'.coords'].shape[0]]*2
+    conns = np.copy(network[edge_prefix + ".conns"])
+    shape = [network[node_prefix + ".coords"].shape[0]] * 2
     if weights is None:
         weights = np.ones_like(conns[:, 0], dtype=int)
     if isgtriu(network):  # If graph is triu, then it is assumed to be undirected
@@ -783,17 +783,17 @@ def dict_to_im(network):
     """
     edge_prefix = get_edge_prefix(network)
     node_prefix = get_node_prefix(network)
-    conns = network[edge_prefix+'.conns']
-    coords = network[node_prefix+'.coords']
+    conns = network[edge_prefix + ".conns"]
+    coords = network[node_prefix + ".coords"]
     if isgtriu(network):
-        data = np.ones(2*conns.shape[0], dtype=int)
+        data = np.ones(2 * conns.shape[0], dtype=int)
         shape = (coords.shape[0], conns.shape[0])
         temp = np.arange(conns.shape[0])
         cols = np.vstack((temp, temp)).T.flatten()
         rows = conns.flatten()
         im = sprs.coo_matrix((data, (rows, cols)), shape=shape)
     else:
-        raise Exception('This function is not implemented for directed graphs')
+        raise Exception("This function is not implemented for directed graphs")
     return im
 
 
@@ -814,10 +814,10 @@ def ismultigraph(network):
     """
     edge_prefix = get_edge_prefix(network)
     node_prefix = get_node_prefix(network)
-    conns = network[edge_prefix+'.conns']
-    coords = network[node_prefix+'.coords']
+    conns = network[edge_prefix + ".conns"]
+    coords = network[node_prefix + ".coords"]
     data = np.ones_like(conns[:, 0], dtype=int)
-    shape = 2*[coords.shape[0]]
+    shape = 2 * [coords.shape[0]]
     am = sprs.coo_matrix((data, (conns[:, 0], conns[:, 1])), shape=shape)
     am.sum_duplicates()
     return np.any(am.data > 1)
@@ -838,7 +838,7 @@ def isgtriu(network):
         Returns ``True`` if *all* rows in "conns" are ordered as [lo, hi]
     """
     edge_prefix = get_edge_prefix(network)
-    conns = network[edge_prefix+'.conns']
+    conns = network[edge_prefix + ".conns"]
     return np.all(conns[:, 0] < conns[:, 1])
 
 
@@ -861,13 +861,14 @@ def to_triu(network):
     This does not check for the creation of duplicate connections
     """
     edge_prefix = get_edge_prefix(network)
-    conns = network[edge_prefix+'.conns']
-    network[edge_prefix+'.conns'] = np.sort(conns, axis=1)
+    conns = network[edge_prefix + ".conns"]
+    network[edge_prefix + ".conns"] = np.sort(conns, axis=1)
     return network
 
 
-def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
-                drop_dupes=True, drop_negs=True):
+def conns_to_am(
+    conns, shape=None, force_triu=True, drop_diag=True, drop_dupes=True, drop_negs=True
+):
     r"""
     Converts a list of connections into a Scipy sparse adjacency matrix
 
@@ -916,7 +917,7 @@ def conns_to_am(conns, shape=None, force_triu=True, drop_diag=True,
     # Perform one last check on adjacency matrix
     missing = np.where(np.bincount(conns.flatten()) == 0)[0]
     if np.size(missing) or np.any(am.col.max() < (shape[0] - 1)):
-        print('Some nodes are not connected to any bonds')
+        print("Some nodes are not connected to any bonds")
     return am
 
 
@@ -925,9 +926,9 @@ def istriu(am):
     Returns ``True`` if the sparse adjacency matrix is upper triangular
     """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is irrelevant')
+        print("Matrix is not square, triangularity is irrelevant")
         return False
-    if am.format != 'coo':
+    if am.format != "coo":
         am = am.tocoo(copy=False)
     return np.all(am.row <= am.col)
 
@@ -937,9 +938,9 @@ def istril(am):
     Returns ``True`` if the sparse adjacency matrix is lower triangular
     """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, triangularity is irrelevant')
+        print("Matrix is not square, triangularity is irrelevant")
         return False
-    if am.format != 'coo':
+    if am.format != "coo":
         am = am.tocoo(copy=False)
     return np.all(am.row >= am.col)
 
@@ -949,7 +950,7 @@ def istriangular(am):
     Returns ``True`` if the sparse adjacency matrix is either upper or lower
     triangular
     """
-    if am.format != 'coo':
+    if am.format != "coo":
         am = am.tocoo(copy=False)
     return istril(am) or istriu(am)
 
@@ -960,9 +961,9 @@ def issymmetric(am):
     Returns ``True`` if the sparse adjacency matrix is symmetric
     """
     if am.shape[0] != am.shape[1]:
-        print('Matrix is not square, symmetrical is irrelevant')
+        print("Matrix is not square, symmetrical is irrelevant")
         return False
-    if am.format != 'coo':
+    if am.format != "coo":
         am = am.tocoo(copy=False)
     if istril(am) or istriu(am):
         return False

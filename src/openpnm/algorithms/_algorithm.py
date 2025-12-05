@@ -1,17 +1,18 @@
 import logging
+
 import numpy as np
-from openpnm.core import ParserMixin, LabelMixin, Base2
+
+from openpnm.core import Base2, LabelMixin, ParserMixin
 from openpnm.utils import Docorator
 
-
-__all__ = ['Algorithm']
+__all__ = ["Algorithm"]
 
 
 logger = logging.getLogger(__name__)
 docstr = Docorator()
 
 
-@docstr.get_sections(base='AlgorithmSettings', sections=docstr.all_sections)
+@docstr.get_sections(base="AlgorithmSettings", sections=docstr.all_sections)
 @docstr.dedent
 class AlgorithmSettings:
     r"""
@@ -23,7 +24,7 @@ class AlgorithmSettings:
     """
 
 
-@docstr.get_sections(base='Algorithm', sections=['Parameters'])
+@docstr.get_sections(base="Algorithm", sections=["Parameters"])
 @docstr.dedent
 class Algorithm(ParserMixin, LabelMixin, Base2):
     r"""
@@ -35,11 +36,21 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
 
     """
 
-    def __init__(self, network, name='alg_?', **kwargs):
+    def __init__(self, network, name="alg_?", **kwargs):
         super().__init__(network=network, name=name, **kwargs)
         self.settings._update(AlgorithmSettings())
-        self['pore.all'] = np.ones([network.Np, ], dtype=bool)
-        self['throat.all'] = np.ones([network.Nt, ], dtype=bool)
+        self["pore.all"] = np.ones(
+            [
+                network.Np,
+            ],
+            dtype=bool,
+        )
+        self["throat.all"] = np.ones(
+            [
+                network.Nt,
+            ],
+            dtype=bool,
+        )
 
     # @functools.cached_property
     @property
@@ -49,10 +60,10 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
         running the algorithm.
         """
         import networkx as nx
+
         phase = self.project[self.settings.phase]
         # Generate global dependency graph
-        dg = nx.compose_all([x.models.dependency_graph(deep=True)
-                             for x in [phase]])
+        dg = nx.compose_all([x.models.dependency_graph(deep=True) for x in [phase]])
         variable_props = self.settings["variable_props"].copy()
         variable_props.add(self.settings["quantity"])
         base = list(variable_props)
@@ -85,7 +96,7 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
         # Fetch objects associated with the algorithm
         phase = self.project[self.settings.phase]
         # Update 'quantity' on phase with the most recent value
-        quantity = self.settings['quantity']
+        quantity = self.settings["quantity"]
         phase[quantity] = self.x
         # Regenerate all associated objects
         phase.regenerate_models(propnames=iterative_props)
@@ -100,9 +111,9 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
             The specific type of boundary condition to clear. If not provided
             all types will be cleared.
         """
-        self.set_BC(pores=None, bctype=bctype, mode='remove')
+        self.set_BC(pores=None, bctype=bctype, mode="remove")
 
-    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode='add'):
+    def set_BC(self, pores=None, bctype=[], bcvalues=[], mode="add"):
         r"""
         The main method for setting and adjusting boundary conditions.
 
@@ -161,29 +172,24 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
         # If a list of modes was given, handle them each in order
         if not isinstance(mode, str):
             for item in mode:
-                self.set_BC(pores=pores, bctype=bctype,
-                            bcvalues=bcvalues, mode=item)
+                self.set_BC(pores=pores, bctype=bctype, bcvalues=bcvalues, mode=item)
             return
         # If a list of bctypes was given, handle them each in order
         if len(bctype) == 0:
-            bctype = self['pore.bc'].keys()
+            bctype = self["pore.bc"].keys()
         if not isinstance(bctype, str):
             for item in bctype:
-                self.set_BC(pores=pores, bctype=item,
-                            bcvalues=bcvalues, mode=mode)
+                self.set_BC(pores=pores, bctype=item, bcvalues=bcvalues, mode=mode)
             return
 
         # Begin method
-        bc_types = list(self['pore.bc'].keys())
+        bc_types = list(self["pore.bc"].keys())
         other_types = np.setdiff1d(bc_types, bctype).tolist()
 
-        mode = self._parse_mode(
-            mode,
-            allowed=['overwrite', 'add', 'remove'],
-            single=True)
+        mode = self._parse_mode(mode, allowed=["overwrite", "add", "remove"], single=True)
 
         # Infer the value that indicates "no bc" based on array dtype
-        no_bc = get_no_bc(self[f'pore.bc.{bctype}'])
+        no_bc = get_no_bc(self[f"pore.bc.{bctype}"])
 
         if pores is None:
             pores = self.Ps
@@ -192,23 +198,25 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
         # Deal with size of the given bcvalues
         values = np.array(bcvalues)
         if values.size == 1:
-            values = np.ones_like(pores, dtype=values.dtype)*values
+            values = np.ones_like(pores, dtype=values.dtype) * values
         # Ensure values and pores are the same size
         if values.size > 1 and values.size != pores.size:
-            raise Exception('The number of values must match the number of locations')
+            raise Exception("The number of values must match the number of locations")
 
         # Finally adjust the BCs according to mode
-        if mode == 'add':
+        if mode == "add":
             mask = np.ones_like(pores, dtype=bool)  # Indices of pores to keep
-            for item in self['pore.bc'].keys():  # Remove pores that are taken
-                mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
+            for item in self["pore.bc"].keys():  # Remove pores that are taken
+                mask[isfinite(self[f"pore.bc.{item}"][pores])] = False
             if not np.all(mask):  # Raise exception if some conflicts found
-                msg = "Some of the given locations already have BCs, " \
-                    + "either use mode='remove' first or " \
+                msg = (
+                    "Some of the given locations already have BCs, "
+                    + "either use mode='remove' first or "
                     + "use mode='overwrite' instead"
+                )
                 raise Exception(msg)
             self[f"pore.bc.{bctype}"][pores[mask]] = values[mask]
-        elif mode == 'overwrite':
+        elif mode == "overwrite":
             # Put given values in specified BC, sort out conflicts below
             self[f"pore.bc.{bctype}"][pores] = values
             # Collect indices that are present for other BCs for removal
@@ -216,12 +224,14 @@ class Algorithm(ParserMixin, LabelMixin, Base2):
             for item in other_types:
                 self[f"pore.bc.{item}"][pores] = get_no_bc(self[f"pore.bc.{item}"])
                 # Make a note of any BCs values of other types
-                mask[isfinite(self[f'pore.bc.{item}'][pores])] = False
+                mask[isfinite(self[f"pore.bc.{item}"][pores])] = False
             if not np.all(mask):  # Warn that other values were overwritten
-                msg = 'Some of the given locations already have BCs of ' \
-                    + 'another type, these will be overwritten'
+                msg = (
+                    "Some of the given locations already have BCs of "
+                    + "another type, these will be overwritten"
+                )
                 logger.warning(msg)
-        elif mode == 'remove':
+        elif mode == "remove":
             self[f"pore.bc.{bctype}"][pores] = no_bc
 
 
@@ -231,9 +241,9 @@ def get_no_bc(arr):
 
 
 def isfinite(arr, inf=None):
-    if arr.dtype in (bool, ):
-        results = arr == True
-    elif arr.dtype in (float, ):
+    if arr.dtype in (bool,):
+        results = arr
+    elif arr.dtype in (float,):
         results = ~np.isnan(arr)
     else:
         results = arr != inf

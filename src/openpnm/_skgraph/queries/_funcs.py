@@ -228,7 +228,7 @@ def find_neighbor_edges(network, inds, flatten=True, logic="or"):
     if global sites are considered.
 
     """
-    if flatten == False:
+    if not flatten:
         im = dict_to_im(network)
         am = None
     else:
