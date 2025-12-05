@@ -40,7 +40,10 @@ jobs:
           elif [[ "${{ github.event.head_commit.message }}" == *"#major"* ]]; then
             uvx bump-my-version bump major
           fi
-          git push --follow-tags
+          # Push commit first (with [no ci] to avoid infinite loop)
+          git push
+          # Push tag separately so it triggers the publish workflow
+          git push --tags
 
       - name: Merge release back into dev
         if: github.ref == 'refs/heads/release'
