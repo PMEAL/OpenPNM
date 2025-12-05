@@ -6,6 +6,7 @@ on:
 
 jobs:
   bump:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
@@ -40,10 +41,7 @@ jobs:
           elif [[ "${{ github.event.head_commit.message }}" == *"#major"* ]]; then
             uvx bump-my-version bump major
           fi
-          # Push commit first (with [no ci] to avoid infinite loop)
-          git push
-          # Push tag separately so it triggers the publish workflow
-          git push --tags
+          git push --follow-tags
 
       - name: Merge release back into dev
         if: github.ref == 'refs/heads/release'

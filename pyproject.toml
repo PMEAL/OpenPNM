@@ -248,7 +248,7 @@ tag_name = "v{new_major}.{new_minor}.{new_patch}"
 tag_message = "Bump version: {current_version} → {new_version}"
 allow_dirty = false
 commit = true
-message = "Bump version: {current_version} → {new_version} [no ci]"
+message = "Bump version: {current_version} → {new_version}"
 commit_args = ""
 
 [tool.bumpversion.parts.pre_l]
