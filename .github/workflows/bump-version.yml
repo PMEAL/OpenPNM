@@ -6,7 +6,7 @@ on:
 
 jobs:
   bump:
-    if: github.actor != 'github-actions[bot]'
+    if: ${{ !contains(github.event.head_commit.message, '[skip bump]') }}
     runs-on: ubuntu-latest
 
     steps:
@@ -48,5 +48,5 @@ jobs:
         run: |
           git fetch origin dev
           git checkout dev
-          git merge --no-ff origin/release -m "Merge release into dev [no ci]"
+          git merge --no-ff origin/release -m "maint: merge release into dev [skip bump]"
           git push origin dev

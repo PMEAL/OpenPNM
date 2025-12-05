@@ -248,7 +248,7 @@ tag_name = "v{new_major}.{new_minor}.{new_patch}"
 tag_message = "Bump version: {current_version} → {new_version}"
 allow_dirty = false
 commit = true
-message = "Bump version: {current_version} → {new_version}"
+message = "maint: bump version: {current_version} → {new_version} [skip bump]"
 commit_args = ""
 
 [tool.bumpversion.parts.pre_l]
