@@ -1,10 +1,10 @@
-import scipy.spatial as sptl
-import scipy.sparse as sprs
 import numpy as np
+import scipy.spatial as sptl
+
 from openpnm._skgraph.generators import tools
 from openpnm._skgraph.operations import trim_nodes
-from openpnm._skgraph.tools import isoutside, conns_to_am
 from openpnm._skgraph.queries import find_neighbor_nodes
+from openpnm._skgraph.tools import conns_to_am, isoutside
 
 
 def voronoi_delaunay_dual(
@@ -14,8 +14,8 @@ def voronoi_delaunay_dual(
     reflect=True,
     f=1,
     relaxation=0,
-    node_prefix='node',
-    edge_prefix='edge',
+    node_prefix="node",
+    edge_prefix="edge",
     return_tri=False,
 ):
     r"""
@@ -74,7 +74,7 @@ def voronoi_delaunay_dual(
     # Perform tessellations
     vor = sptl.Voronoi(points=points[:, mask])
     for _ in range(relaxation):
-        points = tools.lloyd_relaxation(vor, mode='fast')
+        points = tools.lloyd_relaxation(vor, mode="fast")
         vor = sptl.Voronoi(points=points[:, mask])
 
     # Collect delaunay edges
@@ -89,8 +89,8 @@ def voronoi_delaunay_dual(
     mask = np.any(conns_vor < 0, axis=1)
     conns_vor = conns_vor[~mask] + vor.npoints
     # Finally, get interconnecting edges
-    idx = [vor.regions[vor.point_region[i]] for i in range(0, len(vor.regions)-1)]
-    conns_inter = [([i]*len(idx[i]), idx[i]) for i in range(0, len(idx))]
+    idx = [vor.regions[vor.point_region[i]] for i in range(0, len(vor.regions) - 1)]
+    conns_inter = [([i] * len(idx[i]), idx[i]) for i in range(0, len(idx))]
     conns_inter = np.hstack(conns_inter).astype(int).T
     mask = np.any(conns_inter < 0, axis=1)
     conns_inter = conns_inter[~mask, :] + np.array([0, vor.npoints], dtype=int)
@@ -114,38 +114,38 @@ def voronoi_delaunay_dual(
 
     # Assign coords and conns to network dict
     network = {}
-    network[node_prefix+'.coords'] = coords
-    network[edge_prefix+'.conns'] = conns
+    network[node_prefix + ".coords"] = coords
+    network[edge_prefix + ".conns"] = conns
 
     n_nodes = coords.shape[0]
     n_edges = conns.shape[0]
 
     # Label all pores and throats by type
-    network[node_prefix+'.delaunay'] = np.zeros(n_nodes, dtype=bool)
-    network[node_prefix+'.delaunay'][0:vor.npoints] = True
-    network[node_prefix+'.voronoi'] = np.zeros(n_nodes, dtype=bool)
-    network[node_prefix+'.voronoi'][vor.npoints:] = True
+    network[node_prefix + ".delaunay"] = np.zeros(n_nodes, dtype=bool)
+    network[node_prefix + ".delaunay"][0 : vor.npoints] = True
+    network[node_prefix + ".voronoi"] = np.zeros(n_nodes, dtype=bool)
+    network[node_prefix + ".voronoi"][vor.npoints :] = True
     # Label throats between Delaunay pores
-    network[edge_prefix+'.delaunay'] = np.zeros(n_edges, dtype=bool)
-    Ts = np.all(network[edge_prefix+'.conns'] < vor.npoints, axis=1)
-    network[edge_prefix+'.delaunay'][Ts] = True
+    network[edge_prefix + ".delaunay"] = np.zeros(n_edges, dtype=bool)
+    Ts = np.all(network[edge_prefix + ".conns"] < vor.npoints, axis=1)
+    network[edge_prefix + ".delaunay"][Ts] = True
     # Label throats between Voronoi pores
-    network[edge_prefix+'.voronoi'] = np.zeros(n_edges, dtype=bool)
-    Ts = np.all(network[edge_prefix+'.conns'] >= vor.npoints, axis=1)
-    network[edge_prefix+'.voronoi'][Ts] = True
+    network[edge_prefix + ".voronoi"] = np.zeros(n_edges, dtype=bool)
+    Ts = np.all(network[edge_prefix + ".conns"] >= vor.npoints, axis=1)
+    network[edge_prefix + ".voronoi"][Ts] = True
     # Label throats connecting a Delaunay and a Voronoi pore
-    Ts = np.sum(network[node_prefix+'.delaunay'][conns].astype(int), axis=1) == 1
-    network[edge_prefix+'.interconnect'] = Ts
+    Ts = np.sum(network[node_prefix + ".delaunay"][conns].astype(int), axis=1) == 1
+    network[edge_prefix + ".interconnect"] = Ts
 
     if trim:
         # Find all delaunay nodes outside the domain
-        Ps = isoutside(network=network, shape=shape)*network[node_prefix+'.delaunay']
+        Ps = isoutside(network=network, shape=shape) * network[node_prefix + ".delaunay"]
         if np.any(Ps):  # only occurs if points were reflected
             # Find voronoi nodes connected to these and mark them as surface nodes
             inds = np.where(Ps)[0]
             Ns = find_neighbor_nodes(network=network, inds=inds)
-            network[node_prefix+'.surface'] = np.zeros(n_nodes, dtype=bool)
-            network[node_prefix+'.surface'][Ns] = True
+            network[node_prefix + ".surface"] = np.zeros(n_nodes, dtype=bool)
+            network[node_prefix + ".surface"][Ns] = True
             Ps = isoutside(network=network, shape=shape)
             inds = np.where(Ps)[0]
             network = trim_nodes(network=network, inds=inds)
@@ -163,6 +163,7 @@ def voronoi_delaunay_dual(
 
 if __name__ == "__main__":
     import openpnm as op
+
     pn, vor, tri = voronoi_delaunay_dual(
         points=500,
         shape=[1, 1, 0],
@@ -170,19 +171,18 @@ if __name__ == "__main__":
         reflect=True,
         f=0.2,
         relaxation=0,
-        node_prefix='pore',
-        edge_prefix='throat',
+        node_prefix="pore",
+        edge_prefix="throat",
     )
     net = op.network.Network()
     net.update(pn)
     h = None
-    h = op.visualization.plot_connections(
-        net, throats=pn['throat.delaunay'], c='b', ax=h)
-    h = op.visualization.plot_connections(
-        net, throats=pn['throat.voronoi'], c='g', ax=h)
-    h = op.visualization.plot_connections(
-        net, throats=pn['throat.interconnect'], c='r', ax=h)
+    h = op.visualization.plot_connections(net, throats=pn["throat.delaunay"], c="b", ax=h)
+    h = op.visualization.plot_connections(net, throats=pn["throat.voronoi"], c="g", ax=h)
+    h = op.visualization.plot_connections(net, throats=pn["throat.interconnect"], c="r", ax=h)
     h = op.visualization.plot_coordinates(
-        net, pores=pn['pore.voronoi'], c='g', markersize=150, ax=h)
+        net, pores=pn["pore.voronoi"], c="g", markersize=150, ax=h
+    )
     h = op.visualization.plot_coordinates(
-        net, pores=pn['pore.delaunay'], c='b', markersize=150, ax=h)
+        net, pores=pn["pore.delaunay"], c="b", markersize=150, ax=h
+    )

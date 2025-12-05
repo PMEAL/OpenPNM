@@ -1,22 +1,26 @@
 import numpy as np
 import scipy.sparse as sprs
 from scipy.sparse import csgraph
-from openpnm._skgraph.tools import conns_to_am, dict_to_am, dict_to_im
-from openpnm._skgraph.tools import istriu, isgtriu
-from openpnm._skgraph.tools import get_node_prefix, get_edge_prefix
 
+from openpnm._skgraph.tools import (
+    dict_to_am,
+    dict_to_im,
+    get_edge_prefix,
+    get_node_prefix,
+    isgtriu,
+)
 
 __all__ = [
-    'find_common_edges',
-    'filter_by_z',
-    'find_connecting_edges',
-    'find_neighbor_nodes',
-    'find_neighbor_edges',
-    'find_connected_nodes',
-    'find_complementary_nodes',
-    'find_complementary_edges',
-    'find_path',
-    'find_coordination',
+    "find_common_edges",
+    "filter_by_z",
+    "find_connecting_edges",
+    "find_neighbor_nodes",
+    "find_neighbor_edges",
+    "find_connected_nodes",
+    "find_complementary_nodes",
+    "find_complementary_edges",
+    "find_path",
+    "find_coordination",
 ]
 
 
@@ -43,7 +47,7 @@ def find_complementary_edges(network, inds, asmask=False):
     """
     edge_prefix = get_edge_prefix(network)
     inds = np.unique(inds)
-    N = network[edge_prefix+'.conns'].shape[0]
+    N = network[edge_prefix + ".conns"].shape[0]
     mask = np.ones(shape=N, dtype=bool)
     mask[inds] = False
     if asmask:
@@ -75,7 +79,7 @@ def find_complementary_nodes(network, inds, asmask=False):
     """
     node_prefix = get_node_prefix(network)
     inds = np.unique(inds)
-    N = network[node_prefix+'.coords'].shape[0]
+    N = network[node_prefix + ".coords"].shape[0]
     mask = np.ones(shape=N, dtype=bool)
     mask[inds] = False
     if asmask:
@@ -84,7 +88,7 @@ def find_complementary_nodes(network, inds, asmask=False):
         return np.arange(N)[mask]
 
 
-def find_connected_nodes(network, inds, flatten=True, logic='or'):
+def find_connected_nodes(network, inds, flatten=True, logic="or"):
     r"""
     Finds which nodes are connected to a given set of edges
 
@@ -140,20 +144,20 @@ def find_connected_nodes(network, inds, flatten=True, logic='or'):
     neighbors = np.hstack((am.row[edges], am.col[edges]))
     if neighbors.size > 0:
         n_sites = np.amax(neighbors)
-    if logic in ['or', 'union', 'any']:
+    if logic in ["or", "union", "any"]:
         neighbors = np.unique(neighbors)
-    elif logic in ['xor', 'exclusive_or']:
+    elif logic in ["xor", "exclusive_or"]:
         neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor', 'nxor']:
+    elif logic in ["xnor", "nxor"]:
         neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'all', 'intersection']:
+    elif logic in ["and", "all", "intersection"]:
         temp = np.vstack((am.row[edges], am.col[edges])).T.tolist()
         temp = [set(pair) for pair in temp]
         neighbors = temp[0]
         [neighbors.intersection_update(pair) for pair in temp[1:]]
         neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
-        raise Exception('Specified logic is not implemented')
+        raise Exception("Specified logic is not implemented")
     if flatten is False:
         if neighbors.size:
             mask = np.zeros(shape=n_sites + 1, dtype=bool)
@@ -164,14 +168,14 @@ def find_connected_nodes(network, inds, flatten=True, logic='or'):
             if len(inds):
                 temp = temp.astype(float)
                 temp[inds] = np.nan
-            temp = np.reshape(temp, newshape=[len(edges), 2], order='F')
+            temp = np.reshape(temp, newshape=[len(edges), 2], order="F")
             neighbors = temp
         else:
             neighbors = [np.array([], dtype=np.int64) for i in range(len(edges))]
     return neighbors
 
 
-def find_neighbor_edges(network, inds, flatten=True, logic='or'):
+def find_neighbor_edges(network, inds, flatten=True, logic="or"):
     r"""
     Finds all edges that are connected to the given input nodes
 
@@ -231,27 +235,27 @@ def find_neighbor_edges(network, inds, flatten=True, logic='or'):
         am = dict_to_am(network)
         im = None
     if im is not None:
-        if im.format != 'lil':
+        if im.format != "lil":
             im = im.tolil(copy=False)
         rows = [im.rows[i] for i in np.array(inds, ndmin=1, dtype=np.int64)]
         if len(rows) == 0:
             return []
         neighbors = np.hstack(rows).astype(np.int64)
         n_bonds = int(im.nnz / 2)
-        if logic in ['or', 'union', 'any']:
+        if logic in ["or", "union", "any"]:
             neighbors = np.unique(neighbors)
-        elif logic in ['xor', 'exclusive_or']:
+        elif logic in ["xor", "exclusive_or"]:
             neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
-        elif logic in ['xnor', 'shared']:
+        elif logic in ["xnor", "shared"]:
             neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
-        elif logic in ['and', 'all', 'intersection']:
+        elif logic in ["and", "all", "intersection"]:
             neighbors = set(neighbors)
             [neighbors.intersection_update(i) for i in rows]
             neighbors = np.array(list(neighbors), dtype=int, ndmin=1)
         else:
-            raise Exception('Specified logic is not implemented')
-        if (flatten is False):
-            if (neighbors.size > 0):
+            raise Exception("Specified logic is not implemented")
+        if flatten is False:
+            if neighbors.size > 0:
                 mask = np.zeros(shape=n_bonds, dtype=bool)
                 mask[neighbors] = True
                 for i in range(len(rows)):
@@ -262,33 +266,32 @@ def find_neighbor_edges(network, inds, flatten=True, logic='or'):
                 neighbors = [np.array([], dtype=np.int64) for i in range(len(inds))]
         return neighbors
     elif am is not None:
-        if am.format != 'coo':
+        if am.format != "coo":
             am = am.tocoo(copy=False)
         if flatten is False:
-            raise Exception('flatten cannot be used with an adjacency matrix')
+            raise Exception("flatten cannot be used with an adjacency matrix")
         if isgtriu(network):
             am = sprs.triu(am, k=1)
         Ps = np.zeros(am.shape[0], dtype=bool)
         Ps[inds] = True
         conns = np.vstack((am.row, am.col)).T
-        if logic in ['or', 'union', 'any']:
+        if logic in ["or", "union", "any"]:
             neighbors = np.any(Ps[conns], axis=1)
-        elif logic in ['xor', 'exclusive_or']:
+        elif logic in ["xor", "exclusive_or"]:
             neighbors = np.sum(Ps[conns], axis=1) == 1
-        elif logic in ['xnor', 'shared']:
+        elif logic in ["xnor", "shared"]:
             neighbors = np.all(Ps[conns], axis=1)
-        elif logic in ['and', 'all', 'intersection']:
-            raise Exception('Specified logic is not implemented')
+        elif logic in ["and", "all", "intersection"]:
+            raise Exception("Specified logic is not implemented")
         else:
-            raise Exception('Specified logic is not implemented')
+            raise Exception("Specified logic is not implemented")
         neighbors = np.where(neighbors)[0]
         return neighbors
     else:
-        raise Exception('Either the incidence or the adjacency matrix must be specified')
+        raise Exception("Either the incidence or the adjacency matrix must be specified")
 
 
-def find_neighbor_nodes(network, inds, flatten=True, include_input=False,
-                        logic='or'):
+def find_neighbor_nodes(network, inds, flatten=True, include_input=False, logic="or"):
     r"""
     Finds all nodes that are directly connected to the input nodes
 
@@ -355,18 +358,18 @@ def find_neighbor_nodes(network, inds, flatten=True, include_input=False,
         return []
     n_nodes = am.shape[0]
     neighbors = am_coo.col[np.in1d(am_coo.row, nodes)]
-    if logic in ['or', 'union', 'any']:
+    if logic in ["or", "union", "any"]:
         neighbors = np.unique(neighbors)
-    elif logic in ['xor', 'exclusive_or']:
+    elif logic in ["xor", "exclusive_or"]:
         neighbors = np.unique(np.where(np.bincount(neighbors) == 1)[0])
-    elif logic in ['xnor', 'nxor']:
+    elif logic in ["xnor", "nxor"]:
         neighbors = np.unique(np.where(np.bincount(neighbors) > 1)[0])
-    elif logic in ['and', 'all', 'intersection']:
+    elif logic in ["and", "all", "intersection"]:
         neighbors = set(neighbors)
         [neighbors.intersection_update(i) for i in rows]
         neighbors = np.array(list(neighbors), dtype=np.int64, ndmin=1)
     else:
-        raise Exception('Specified logic is not implemented')
+        raise Exception("Specified logic is not implemented")
     # Deal with removing inputs or not
     mask = np.zeros(shape=n_nodes, dtype=bool)
     mask[neighbors] = True
@@ -421,15 +424,12 @@ def find_connecting_edges(inds, network=None, am=None):
         return []
     if network is not None:
         edge_prefix = get_edge_prefix(network)
-        am = dict_to_am(
-            network,
-            weights=np.arange(network[edge_prefix+'.conns'].shape[0])
-        )
+        am = dict_to_am(network, weights=np.arange(network[edge_prefix + ".conns"].shape[0]))
     elif am is not None:
         pass
     else:
-        raise Exception('Either g or am must be provided')
-    if am.format != 'dok':
+        raise Exception("Either g or am must be provided")
+    if am.format != "dok":
         am = am.todok(copy=True)
     z = tuple(zip(nodes[:, 0], nodes[:, 1]))
     neighbors = np.array([am.get(item, np.nan) for item in z])
@@ -553,10 +553,11 @@ def find_path(network, pairs, weights=None):
     if weights is not None:
         am.data = np.ones_like(am.row, dtype=int)
     pairs = np.array(pairs, ndmin=2)
-    paths = csgraph.dijkstra(csgraph=am, indices=pairs[:, 0],
-                             return_predecessors=True, min_only=False)[1]
+    paths = csgraph.dijkstra(
+        csgraph=am, indices=pairs[:, 0], return_predecessors=True, min_only=False
+    )[1]
     if isgtriu(network):
-        am.data = np.hstack(2*[np.arange(am.data.size/2)]).astype(int)
+        am.data = np.hstack(2 * [np.arange(am.data.size / 2)]).astype(int)
     else:
         am.data = np.arange(am.data.size).astype(int)
     dok = am.todok()
@@ -572,10 +573,10 @@ def find_path(network, pairs, weights=None):
             ans.append(pairs[row][0])
             ans.reverse()
             nodes.append(np.array(ans, dtype=int))
-            keys = [tuple((ans[i], ans[i+1])) for i in range(len(ans)-1)]
+            keys = [tuple((ans[i], ans[i + 1])) for i in range(len(ans) - 1)]
             temp = [dok[k] for k in keys]
             edges.append(np.array(temp, dtype=int))
         else:
             nodes.append([])
             edges.append([])
-    return {'node_paths': nodes, 'edge_paths': edges}
+    return {"node_paths": nodes, "edge_paths": edges}

@@ -2,14 +2,13 @@ import numpy as np
 from numba import njit
 from scipy.stats import rankdata
 
-
 __all__ = [
-    'qupc_initialize',
-    'qupc_update',
-    'qupc_compress',
-    'qupc_reduce',
-    'qupc_union',
-    'qupc_find',
+    "qupc_initialize",
+    "qupc_update",
+    "qupc_compress",
+    "qupc_reduce",
+    "qupc_union",
+    "qupc_find",
 ]
 
 
@@ -32,7 +31,7 @@ def qupc_update(arr, ind, val):
 
 
 def qupc_compress(arr):
-    temp = rankdata(arr, method='dense')
+    temp = rankdata(arr, method="dense")
     arr[:] = temp
     arr -= 1
     return arr
@@ -40,16 +39,18 @@ def qupc_compress(arr):
 
 @njit
 def qupc_reduce(arr):
-    for i in range(len(arr)-1, 0, -1):
+    for i in range(len(arr) - 1, 0, -1):
         arr[i] = arr[arr[i]]
     return arr
 
+
 @njit
 def qupc_union(arr, ind, val):
-    indp=qupc_find(arr, ind)
-    valp=qupc_find(arr, val)
-    arr[indp]=valp
+    indp = qupc_find(arr, ind)
+    valp = qupc_find(arr, val)
+    arr[indp] = valp
     return arr
+
 
 @njit
 def qupc_find(arr, ind):
@@ -59,7 +60,7 @@ def qupc_find(arr, ind):
     return ind
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     a = qupc_initialize(10)
     qupc_update(a, 4, 2)
     qupc_update(a, 7, 4)
