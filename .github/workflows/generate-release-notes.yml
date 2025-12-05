@@ -1,0 +1,37 @@
+name: Release Notes
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Release notes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          git fetch --all --tags --force
+          chmod +x .github/workflows/logger.sh
+          chmod +x .github/workflows/utils.sh
+          source .github/workflows/utils.sh
+          bash .github/workflows/logger.sh
+          echo "TAG=$(get_most_recent_tag)" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.changelog.outputs.TAG }}" \
+            --title "${{ steps.changelog.outputs.TAG }}" \
+            --notes-file CHANGELOG.md \
+            --draft

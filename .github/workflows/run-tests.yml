@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - release
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+          cache-dependency-glob: "**/pyproject.toml"
+          cache-suffix: "uv-${{ matrix.python-version }}-${{ matrix.os }}"
+
+      - name: Install dependencies
+        run: uv sync --group test --group build --extra extras
+
+      - name: Build package
+        run: uv build
+
+      - name: Set matplotlib backend
+        run: echo "MPLBACKEND=Agg" >> $GITHUB_ENV
+
+      - name: Running tests
+        run: uv run pytest --cov=. --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
