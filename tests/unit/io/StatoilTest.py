@@ -1,8 +1,6 @@
 import os
 import numpy as np
-import scipy as sp
 import openpnm as op
-import networkx as nx
 from pathlib import Path
 
 

@@ -18,8 +18,8 @@ proj = ws.new_project()
 # Create network
 net = op.network.Cubic(shape=[33, 33, 1], spacing=9e-4, project=proj)
 # Remove the pores at the corners of the network
-Ps = (net['pore.back']  * net['pore.right']
-    + net['pore.back']  * net['pore.left']
+Ps = (net['pore.back'] * net['pore.right']
+    + net['pore.back'] * net['pore.left']
     + net['pore.front'] * net['pore.right']
     + net['pore.front'] * net['pore.left'])
 Ts = net['throat.surface']

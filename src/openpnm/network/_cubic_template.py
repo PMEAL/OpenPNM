@@ -1,4 +1,3 @@
-import logging
 import numpy as np
 from openpnm.network import Network
 from openpnm._skgraph.generators import cubic_template

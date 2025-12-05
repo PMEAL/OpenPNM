@@ -8,7 +8,7 @@ except ImportError:  # For newer Scipy
     from scipy.optimize._nonlin import TerminationCondition
 from tqdm.auto import tqdm
 from openpnm.algorithms import Transport
-from openpnm.utils import Docorator, TypedList
+from openpnm.utils import Docorator
 
 
 __all__ = ["ReactiveTransport"]

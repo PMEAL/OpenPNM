@@ -4,7 +4,6 @@ import scipy.sparse.csgraph as spgr
 from openpnm.topotools import is_fully_connected
 from openpnm.algorithms import Algorithm
 from openpnm.utils import Docorator, TypedSet, Workspace
-from openpnm.utils import check_data_health
 from openpnm import solvers
 from ._solution import SteadyStateSolution, SolutionContainer
 

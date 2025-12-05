@@ -11,20 +11,16 @@ __all__ = [
 
 
 _doctxt = Substitution(
-    phase=
-    r"""phase : OpenPNM Phase object
+    phase=r"""phase : OpenPNM Phase object
             The phase object to which this model is associated (i.e. attached).
             This controls the length of the calculated array(s), and also
             provides access to other necessary properties.""",
-    network=
-    r"""network : OpenPNM Network object
+    network=r"""network : OpenPNM Network object
             The network object to which this model is associated (i.e.
             attached). This controls the length of the calculated array(s),
             and also provides access to other necessary properties.""",
-    dict_blurb=
-    r"""Name of the dictionary key on the target object pointing to the
+    dict_blurb=r"""Name of the dictionary key on the target object pointing to the
     array containing values of """,
-    return_arr=
-    r"""values : ndarray
+    return_arr=r"""values : ndarray
             A numpy ndarray containing the computed values of """,
 )

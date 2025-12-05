@@ -1,6 +1,5 @@
 import numpy as np
 from openpnm.network import Network
-from openpnm._skgraph.generators.tools import parse_points
 from openpnm._skgraph.generators import voronoi_delaunay_dual
 from openpnm.utils import Docorator
 

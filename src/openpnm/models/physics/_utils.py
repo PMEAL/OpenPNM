@@ -1,7 +1,6 @@
 r"""
 Pore-scale models for calculating the conductance of conduits.
 """
-from numpy import vstack
 
 
 __all__ = [

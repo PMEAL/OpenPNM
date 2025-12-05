@@ -2,8 +2,8 @@
 import numpy as np
 import openpnm as op
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from openpnm.utils import tic, toc
+from openpnm.algorithms.legacy import TransientReactiveTransport
 
 np.random.seed(10)
 ws = op.Workspace()
@@ -119,7 +119,6 @@ toc()
 # toc()
 
 # %% TransientReactiveTransport (legacy)
-from openpnm.algorithms.legacy import TransientReactiveTransport
 trt_legacy = TransientReactiveTransport(network=net, phase=air)
 dt_avg = np.diff(sol.t).mean()
 t_settings = {

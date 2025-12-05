@@ -74,11 +74,11 @@ def network_from_networkx(G):
                 item = item.replace(b, '')
             # Create arrays for subsequent indexing, if not present already
             if 'pore.'+item not in net.keys():
-                if dtype == str:  # handle strings of arbitrary length
+                if isinstance(dtype, str):  # handle strings of arbitrary length
                     net['pore.'+item] = np.ndarray((Np,), dtype='object')
                 elif dtype is list:
                     dtype = type(val[0])
-                    if dtype == str:
+                    if isinstance(dtype, str):
                         dtype = 'object'
                     cols = len(val)
                     net['pore.'+item] = np.ndarray((Np, cols), dtype=dtype)
@@ -111,11 +111,11 @@ def network_from_networkx(G):
                 item = item.replace(b, '')
             # Create arrays for subsequent indexing, if not present already
             if 'throat.'+item not in net.keys():
-                if dtype == str:
+                if isinstance(dtype, str):
                     net['throat.'+item] = np.ndarray((Nt,), dtype='object')
                 if dtype is list:
                     dtype = type(val[0])
-                    if dtype == str:
+                    if isinstance(dtype, str):
                         dtype = 'object'
                     cols = len(val)
                     net['throat.'+item] = np.ndarray((Nt, cols),

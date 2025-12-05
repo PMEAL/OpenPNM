@@ -1,11 +1,8 @@
 import logging
-import pickle
 import re
 import uuid
 from copy import deepcopy
-from datetime import datetime
 
-import numpy as np
 
 from openpnm.utils import SettingsAttr, Workspace
 

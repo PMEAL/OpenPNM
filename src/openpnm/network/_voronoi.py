@@ -1,6 +1,5 @@
 from openpnm.network import Network
 from openpnm.utils import Docorator
-from openpnm.topotools import label_faces
 from openpnm._skgraph.generators import voronoi
 
 

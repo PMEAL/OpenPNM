@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import PatchCollection
-from matplotlib.patches import Circle, Polygon, Rectangle
+from matplotlib.patches import Circle, Rectangle
 
 from openpnm._skgraph.tools import rotate_coords
 from openpnm.models.geometry import throat_endpoints, throat_length

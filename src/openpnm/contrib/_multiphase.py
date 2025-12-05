@@ -137,7 +137,7 @@ class MultiPhase(Phase):
         pores = np.array(pores, ndmin=1)
         throats = np.array(throats, ndmin=1)
 
-        if not(pores.size ^ throats.size):
+        if not (pores.size ^ throats.size):
             raise Exception("Must either pass 'pores' or 'throats'")
         if phase not in self.project:
             raise Exception(f"{phase.name} doesn't belong to this project")

@@ -1,6 +1,5 @@
 import functools
 import inspect
-import os
 import warnings
 from collections.abc import Iterable
 
@@ -231,8 +230,8 @@ def flat_list(input_list):
     Given a list of nested lists of arbitrary depth, returns a single
     level or 'flat' list.
     """
-    def _flatten(l):
-        for el in l:
+    def _flatten(list_):
+        for el in list_:
             if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
                 yield from _flatten(el)
             else:
@@ -526,7 +525,7 @@ def get_printable_props(item, suffix='', hr=78*'―'):
     lines = ''.join(header) + '\n' + hr
     i = 0
     for k, v in item.items():
-        if (v.dtype != bool) and not ('._' in k):
+        if (v.dtype != bool) and '._' not in k:
             i += 1
             s = [' ']*78
             s[:3] = str(i+1).rjust(3)
@@ -583,7 +582,7 @@ def get_printable_labels(item, suffix='', hr=78*'―'):
     lines = ''.join(header) + '\n' + hr
     i = 0
     for k, v in item.items():
-        if (v.dtype == bool) and not ('._' in k):
+        if (v.dtype == bool) and '._' not in k:
             i += 1
             s = [' ']*78
             s[:3] = str(i+1).rjust(3)

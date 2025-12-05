@@ -1,11 +1,9 @@
-import os
 import logging
 import numpy as np
-from openpnm.topotools import trim, extend
+from openpnm.topotools import trim
 from openpnm.network import Network
 from pathlib import Path
 from pandas import read_table, DataFrame
-from tqdm.auto import tqdm
 
 
 logger = logging.getLogger(__name__)

@@ -10,52 +10,40 @@ __all__ = [
 
 
 _geodocs = Substitution(
-    network=
-    r"""network : OpenPNM Network object
+    network=r"""network : OpenPNM Network object
 
     """,
-    Dp=
-    r"""pore_diameter : str
+    Dp=r"""pore_diameter : str
             Name of the dictionary key on ``network`` containing the ndarray of
             pore diameter values.""",
-    Dt=
-    r"""throat_diameter : str
+    Dt=r"""throat_diameter : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat diameter values.""",
-    Vp=
-    r"""pore_volume : str
+    Vp=r"""pore_volume : str
             Name of the dictionary key on ``network`` containing the ndarray of
             pore volume values.""",
-    Vt=
-    r"""throat_volume : str
+    Vt=r"""throat_volume : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat volume values.""",
-    Lt=
-    r"""throat_length : str
+    Lt=r"""throat_length : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat length values.""",
-    Pcoords=
-    r"""pore_coords : str
+    Pcoords=r"""pore_coords : str
             Name of the dictionary key on ``network`` containing the ndarray of
             pore coordinate values.""",
-    Tcoords=
-    r"""throat_coords : str
+    Tcoords=r"""throat_coords : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat centroid coordinate values.""",
-    At=
-    r"""throat_area : str
+    At=r"""throat_area : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat surface values.""",
-    Pt=
-    r"""throat_perimeter : str
+    Pt=r"""throat_perimeter : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat perimeter values.""",
-    Tcen=
-    r"""throat_centroid : str
+    Tcen=r"""throat_centroid : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat centroid coordinate values.""",
-    Act=
-    r"""throat_cross_sectional_area : str
+    Act=r"""throat_cross_sectional_area : str
             Name of the dictionary key on ``network`` containing the ndarray of
             throat cross-sectional area values.""",
 )

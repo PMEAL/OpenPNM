@@ -1,8 +1,6 @@
 import logging
 import numpy as np
-import scipy.sparse as sprs
-from scipy.sparse import csgraph
-from openpnm.utils import PrintableDict, Workspace
+from openpnm.utils import Workspace
 from openpnm._skgraph import simulations
 from openpnm._skgraph import queries
 from collections import namedtuple

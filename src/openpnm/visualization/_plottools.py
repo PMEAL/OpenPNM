@@ -3,7 +3,6 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.pyplot import cm
-from tqdm.auto import tqdm
 
 import openpnm as op
 
@@ -117,10 +116,8 @@ def plot_connections(network,
 
     """
     import matplotlib.pyplot as plt
-    from matplotlib import cm
     from matplotlib import colors as mcolors
     from matplotlib.collections import LineCollection
-    from mpl_toolkits.mplot3d import Axes3D
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
     from openpnm.topotools import dimensionality
@@ -304,8 +301,6 @@ def plot_coordinates(network,
 
     """
     import matplotlib.pyplot as plt
-    from matplotlib import cm
-    from mpl_toolkits.mplot3d import Axes3D
 
     from openpnm.topotools import dimensionality
 

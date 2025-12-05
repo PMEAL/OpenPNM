@@ -1,7 +1,5 @@
-import pytest
 import numpy as np
 import openpnm as op
-import matplotlib.pyplot as plt
 from openpnm._skgraph import generators as gen
 from openpnm._skgraph import tools
 from numpy.testing import assert_allclose
