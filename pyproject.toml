@@ -30,7 +30,7 @@ dependencies = [
     "pyamg>=5.3.0",
     "pypardiso; platform_machine=='x86_64' or platform_machine=='AMD64'",
     "rich>=14.1.0",
-    "scikit-image<0.24",
+    "scikit-image>=0.25.0",
     "scipy>=1.16.2",
     "sympy>=1.14.0",
     "thermo>=0.4.2",
