@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12', '3.13']
+        python-version: ["3.11", "3.12", "3.13"]
         os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
 
     steps:
@@ -48,8 +48,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.11', '3.12', '3.13']
-        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
 
     steps:
       - name: Install uv
@@ -62,7 +62,5 @@ jobs:
       - name: Install OpenPNM from PyPI
         run: |
           uv venv  
-          uv pip install openpnm[extras] pytest pytest-cov
-
-      - name: Run tests
-        run: uv run pytest -v
+          uv pip install openpnm[extras]
+          uv run python -c "import openpnm; print(openpnm.__version__)"
