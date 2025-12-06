@@ -28,7 +28,7 @@ dependencies = [
     "numpy<2.2",
     "pandas>=2.3.2",
     "pyamg>=5.3.0",
-    "pypardiso; platform_machine=='x86_64' or platform_machine=='AMD64'",
+    "pypardiso; platform_system != 'Darwin' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')",
     "rich>=14.1.0",
     "scikit-image>=0.25.0",
     "scipy>=1.16.2",
@@ -51,11 +51,7 @@ Documentation = "https://openpnm.org"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = [
-    "--assert=plain",
-    "-ra -v",
-    "--ignore=docs/conf.py",
-]
+addopts = ["--assert=plain", "-ra -v", "--ignore=docs/conf.py"]
 python_files = "*.py"
 python_classes = "*Test"
 python_functions = "test_*"

@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.11', '3.12', '3.13']
-        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
 
     steps:
       - name: Checkout code
@@ -60,7 +60,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install OpenPNM from PyPI
-        run: uv pip install openpnm[extras] pytest pytest-cov
+        run: |
+          uv venv  
+          uv pip install openpnm[extras] pytest pytest-cov
 
       - name: Run tests
         run: uv run pytest -v
