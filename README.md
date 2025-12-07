@@ -31,15 +31,15 @@ pip install openpnm
 
 OpenPNM can also be installed from the [conda-forge](https://anaconda.org/conda-forge/openpnm) repository using:
 
-```
-conda install -c conda-forge openpnm
+```shell
+conda install conda-forge::openpnm
 ```
 
 ### For developers
 
 For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/PMEAL/OpenPNM/) and installed by running:
 
-```
+```shell
 pip install -e 'path/to/downloaded/files'
 ```
 
