@@ -19,7 +19,7 @@ fd.run()
 L = (shape * spacing)[1]
 A = (shape * spacing)[[0, 2]].prod()
 Mdot = fd.rate(pores=net.pores("left")).squeeze()
-Deff0 =  Mdot * L / A
+Deff0 = Mdot * L / A
 
 # Get Deff w/ including Knudsen effect
 mdiff = op.models.physics.diffusive_conductance.mixed_diffusion

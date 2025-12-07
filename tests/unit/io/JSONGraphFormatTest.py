@@ -4,7 +4,6 @@ import pytest
 import numpy as np
 import openpnm as op
 from pathlib import Path
-from openpnm.io import network_from_jsongraph, network_to_jsongraph
 
 
 class JSONGraphTest:

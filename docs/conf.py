@@ -1,37 +1,41 @@
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 # Path setup                                                             #
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import math
 import os
+import shutil
 import sys
 from datetime import datetime
+
+import matplotlib.pyplot as plt
+
+from openpnm import __version__
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath('../../'))
 
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 # Project info                                                           #
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 
 project = 'OpenPNM'
 copyright = f'{datetime.now().year}, PMEAL'
 author = 'OpenPNM Dev Team'
 
 # The full version, including alpha/beta/rc tags
-from openpnm import __version__
 release = __version__
 
 # Copy examples folder from OpenPNM root to docs folder
-import shutil
 shutil.copytree('../examples', 'examples', dirs_exist_ok=True)
 
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 # General config                                                         #
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -91,9 +95,9 @@ autodoc_default_options = {
     'exclude-members': ", ".join(members_to_exclude)
 }
 
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 # Matplotlib plot_directive options                                      #
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 
 plot_pre_code = """
 import numpy as np
@@ -104,9 +108,7 @@ plot_formats = [('svg', 200), 'pdf']
 plot_html_show_formats = False
 plot_html_show_source_link = False
 
-import math
 phi = (math.sqrt(5) + 1)/2
-
 font_size = 13*72/96.0  # 13 px
 
 plot_rcparams = {
@@ -126,12 +128,11 @@ plot_rcparams = {
     'text.usetex': False,
 }
 
-import matplotlib.pyplot as plt
 plt.ioff()
 
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 # HTML/theme options                                                     #
-#------------------------------------------------------------------------#
+# ------------------------------------------------------------------------#
 
 html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']

@@ -1,0 +1,47 @@
+name: Examples
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.operating-system }}
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: ["3.12"]
+        operating-system: [ubuntu-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install pandoc
+        uses: pandoc/actions/setup@v1
+
+      - name: Set up uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+          cache-dependency-glob: "**/pyproject.toml"
+          cache-suffix: "uv-${{ matrix.python-version }}-${{ matrix.operating-system }}"
+
+      - name: Install OpenPNM
+        run: |
+          uv sync --group test --group build --extra extras
+          uv build
+
+      - name: Run examples
+        run: |
+          uv run pytest \
+            -p no:python \
+            --nbval-lax \
+            --suppress-no-test-exit-code

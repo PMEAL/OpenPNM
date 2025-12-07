@@ -1,9 +1,6 @@
-import collections
 
 import numpy as np
 from numpy.testing import assert_allclose
-from sympy import ln as sym_ln
-from sympy import symbols
 
 import openpnm as op
 import openpnm.models.physics as pm

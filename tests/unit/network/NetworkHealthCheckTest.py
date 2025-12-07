@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 import openpnm as op
 from openpnm.topotools import extend, trim

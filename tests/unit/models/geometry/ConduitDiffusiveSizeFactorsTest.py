@@ -34,7 +34,7 @@ class ConduitDiffusiveSizeFactorsTest:
                     'pore2': SF[:, 2]}
         S_desired = {
             'pore1': array([1.62474893, 1.80140852]),
-            'throat': array([12.81981939,  1.29174358]),
+            'throat': array([12.81981939, 1.29174358]),
             'pore2': array([1.80140852, 2.07781253])}
         for k, v in S_actual.items():
             assert_allclose(v, S_desired[k])
