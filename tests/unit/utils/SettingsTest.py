@@ -1,6 +1,5 @@
 import pytest
 
-import openpnm as op
 from openpnm.utils import SettingsAttr, TypedList, TypedSet
 
 

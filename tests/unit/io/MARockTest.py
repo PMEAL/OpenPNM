@@ -28,7 +28,6 @@ class MARockTest:
 
 
 if __name__ == '__main__':
-    import py
 
     # All the tests in this file can be run with 'playing' this file
     t = MARockTest()

@@ -1,0 +1,252 @@
+[project]
+name = "openpnm"
+version = "3.5.5-dev4"
+description = "A framework for conducting pore network modeling simulations of multiphase transport in porous materials"
+authors = [{ name = "OpenPNM Team", email = "jgostick@gmail.com" }]
+maintainers = [
+    { name = "Jeff Gostick", email = "jgostick@gmail.com" },
+    { name = "Amin Sadeghi", email = "amin.sadeghi@live.com" },
+]
+license = "MIT"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "docrep>=0.3.2",
+    "h5py>=3.14.0",
+    "jsonschema>=4.25.1",
+    "llvmlite>=0.44",
+    "matplotlib>=3.10.6",
+    "matplotlib-inline>=0.1.7",
+    "networkx>=3.5",
+    "numba>=0.61",
+    "numpy<2.2",
+    "pandas>=2.3.2",
+    "pyamg>=5.3.0",
+    "pypardiso; platform_system != 'Darwin' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')",
+    "rich>=14.1.0",
+    "scikit-image>=0.25.0",
+    "scipy>=1.16.2",
+    "sympy>=1.14.0",
+    "thermo>=0.4.2",
+    "tqdm>=4.67.1",
+    "transforms3d>=0.4.2",
+]
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+
+[project.optional-dependencies]
+extras = ["porespy", "ngsolve"]
+
+[project.urls]
+Homepage = "https://openpnm.org"
+Repository = "https://github.com/PMEAL/OpenPNM"
+"Bug Tracker" = "https://github.com/PMEAL/OpenPNM/issues"
+Documentation = "https://openpnm.org"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = ["--assert=plain", "-ra -v", "--ignore=docs/conf.py"]
+python_files = "*.py"
+python_classes = "*Test"
+python_functions = "test_*"
+testpaths = ["test", "examples"]
+norecursedirs = [".git", ".github", ".ipynb_checkpoints", "build", "dist"]
+
+[tool.coverage.run]
+source = ["src/openpnm"]
+[tool.coverage.report]
+omit = [
+    "docs/**",
+    "test/**",
+    "examples/**",
+    "src/openpnm/__version__.py",
+    "src/openpnm/beta/**",
+    "**/__init__.py",
+    "example.py",
+    "setup.py",
+]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 96
+indent-width = 4
+
+# Assume Python 3.11
+target-version = "py311"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F", "W", "E2"]
+extend-select = ["I"]
+ignore = ["E731", "F841", "E226", "I001"]
+preview = true
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401", "F403", "I001"]
+"test/**" = ["F841"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = true
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+build = [
+    "bump-my-version",
+    "hatch",
+    "meson",
+    "cibuildwheel",
+    "build",
+    "ninja",
+    "pip",
+]
+test = [
+    "codecov",
+    "coverage",
+    "nbval",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "pytest-custom-exit-code",
+    "pytest-split",
+]
+docs = [
+    "mock",
+    "myst-nb",
+    "nbstripout>=0.8.1",
+    "pandoc",
+    "pydata-sphinx-theme",
+    "sphinx",
+    "sphinx-autoapi",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "tensorflow",
+    "plotly",
+]
+interactive = [
+    "ipython",
+    "ipykernel",
+    "ipywidgets",
+    "jupyter",
+    "jupyterlab_widgets",
+    "spyder-kernels>=3.0",
+    "plotly",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+path = "src/openpnm/__version__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/openpnm"]
+
+[tool.bumpversion]
+current_version = "3.5.5-dev4"
+parse = """(?x)
+    (?P<major>0|[1-9]\\d*)\\.
+    (?P<minor>0|[1-9]\\d*)\\.
+    (?P<patch>0|[1-9]\\d*)
+    (?:
+        -                             # dash separator for pre-release section
+        (?P<pre_l>[a-zA-Z-]+)         # pre-release label
+        (?P<pre_n>0|[1-9]\\d*)        # pre-release version number
+    )?                                # pre-release section is optional
+"""
+serialize = [
+    "{major}.{minor}.{patch}-{pre_l}{pre_n}",
+    "{major}.{minor}.{patch}",
+]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+tag = true
+sign_tags = false
+tag_name = "v{new_major}.{new_minor}.{new_patch}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "maint: bump version: {current_version} → {new_version} [skip bump]"
+commit_args = ""
+
+[tool.bumpversion.parts.pre_l]
+values = ["dev"]
+optional_value = "dev"

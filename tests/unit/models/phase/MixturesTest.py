@@ -1,9 +1,7 @@
-import numpy as np
 
 import openpnm as op
 
 # from openpnm.phase import mixtures
-import openpnm.models as mods
 
 
 class MixturesTest:
