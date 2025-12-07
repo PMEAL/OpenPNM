@@ -1,77 +1,35 @@
 name: Deploy to PyPI
 
 on:
+  workflow_dispatch:
   push:
     tags:
-      - '*'
+      - "v*"
 
 jobs:
   deploy:
-    name: Publish 🐍 📦 to PyPI
+    name: Publish to PyPI
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: release  # the production branch name (for proper version #)
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+          python-version: "3.12"
 
-    - name: Set env variables
-      run: |
-        chmod +x .github/workflows/utils.sh
-        source .github/workflows/utils.sh
-        VERSION_FILE=openpnm/__version__.py
-        echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
-        echo "VERSION=$(get_version $VERSION_FILE)" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: uv sync --group build
 
-    - name: Set env variables (for tag mismatch)
-      run: |
-        echo "Tag: $TAG, Version: $VERSION"
-        if [ "${TAG//v}" = "${VERSION%.dev?}" ]; then
-            echo "TAG_MISMATCH=false" >> $GITHUB_ENV
-        else
-            echo "TAG_MISMATCH=true" >> $GITHUB_ENV
-        fi
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-        echo "${{ github.event.ref }}"
-        echo "Tag/version mismatch: $TAG_MISMATCH"
-
-    - name: Build distribution 📦
-      run: python setup.py sdist bdist_wheel
-
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_TOKEN }}
-        skip_existing: true
-
-    # - name: Publish distribution 📦 to TestPyPI
-    #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-    #   uses: pypa/gh-action-pypi-publish@master
-    #   with:
-    #     user: __token__
-    #     password: ${{ secrets.TESTPYPI_TOKEN }}
-    #     repository_url: https://test.pypi.org/legacy/
-
-    # Not a good idea: if a non-conforming tag is push, e.g. random_tag, it
-    # first gets deleted by cleanup-tags.yml, and then publish-to-pypi.yml gets
-    # tricked and deletes the most recent tag! Ouch!
-
-    # - name: Delete tag if doesn't match with version
-    #   if: contains(env.TAG_MISMATCH, 'true')
-    #   run: |
-    #     git config --local user.email "action@github.com"
-    #     git config --local user.name "GitHub Action"
-    #     REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
-    #     remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${REPOSITORY}.git"
-    #     git push "${remote_repo}" :refs/tags/$TAG
+      - name: Build and publish to PyPI
+        run: |
+          export HATCH_INDEX_USER="__token__"
+          export HATCH_INDEX_AUTH="${{ secrets.HATCH_INDEX_AUTH }}"
+          uv run hatch build
+          uv run hatch publish

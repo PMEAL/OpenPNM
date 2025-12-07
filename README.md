@@ -6,44 +6,46 @@
 
 -----
 
-> VERSION 3.0 of OpenPNM is now out. All the [examples on the website](https://openpnm.org/_examples/index.html) are now using the features and idioms of V3. For a description of the main changes please see our [recent blog post](http://pmeal.com/posts/2022-10-10-notebook-post/). 
-
 # Overview of OpenPNM
 
-*OpenPNM* is a comprehensive framework for performing pore network simulations of porous materials.
+OpenPNM is a framework for performing pore network simulations of porous materials.
 
 ## More Information
 
-For more details about the package can be found in the [on-line documentation](https://openpnm.org)
+For more details about the package can be found in the [online documentation](https://openpnm.org)
 
 ## Installation and Requirements
 
-### Preferred method
-The preferred way of installing OpenPNM is through [Anaconda Cloud](https://anaconda.org/conda-forge/openpnm) using:
+> [!NOTE]
+> We no longer support macOS on x86_64 (Intel) systems. A few dependencies—`triangle` among them—are no longer maintained there, and that breaks our build. These packages are mostly optional, though, so if you need OpenPNM on that platform, you can still build it from source.
 
-```
-conda install -c conda-forge openpnm
-```
+### [pip](https://pypi.org/project/openpnm/)
 
-### Alternative method
-OpenPNM can also be installed from the [Python Package Index](https://pypi.org/project/openpnm/) using:
+OpenPNM can be installed using `pip` by running the following command in a terminal:
 
-```
+```shell
 pip install openpnm
 ```
 
-However, we don't recommend installing using `pip` since `pypardiso`, which is a blazing fast direct solver, is not available for Windows users who use Python 3.7+.
+### [conda-forge](https://anaconda.org/conda-forge/openpnm)
+
+OpenPNM can also be installed from the [conda-forge](https://anaconda.org/conda-forge/openpnm) repository using:
+
+```shell
+conda install conda-forge::openpnm
+```
 
 ### For developers
-For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/pmeal/OpenPNM/) and installed by running:
 
-```
+For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/PMEAL/OpenPNM/) and installed by running:
+
+```shell
 pip install -e 'path/to/downloaded/files'
 ```
 
-The advantage to installing from the source code is that you can edit the files and have access to your changes each time you import *OpenPNM*.
+The advantage of installing from the source code is that you can edit the files and have access to your changes each time you import OpenPNM.
 
-OpenPNM requires the *Scipy Stack* (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the [Anaconda Distribution](https://conda.io/docs/user-guide/install/download.html).
+OpenPNM requires the Scipy Stack (Numpy, Scipy, Matplotlib, etc), which is most conveniently obtained by installing the [Anaconda Distribution](https://www.anaconda.com/download/).
 
 ## Asking Questions and Getting Help
 
@@ -53,11 +55,7 @@ Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) fun
 
 OpenPNM is developed by the Porous Materials Engineering and Analysis Lab [(PMEAL)](http://pmeal.com), in the [Department of Chemical Engineering](https://uwaterloo.ca/chemical-engineering/) at the [University of Waterloo](https://uwaterloo.ca/) in Waterloo, Ontario, Canada.
 
-The lead developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
-
-## Acknowledgements
-
-OpenPNM is grateful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to OpenPNM since it's inception in 2011.
+The lead developer for this project is Prof. Jeff Gostick (<jgostick@gmail.com>).
 
 ## Citation
 

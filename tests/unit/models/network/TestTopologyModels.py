@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.testing import  assert_allclose
 import openpnm as op
 
 
@@ -116,6 +115,16 @@ class TopologyModelsTest:
         pn.add_model(propname='throat.reversed',
                      model=op.models.network.reversed_throats)
         assert pn['throat.reversed'].sum() == 1
+
+    def test_gabrial_edges(self):
+        net = op.network.Delaunay(points=30, shape=[1, 1, 0])
+        net.add_model(propname='throat.gabriel',
+                      model=op.models.network.gabriel_edges)
+        assert net['throat.gabriel'].sum() < net.Nt
+        net = op.network.Delaunay(points=30, shape=[1, 1, 1])
+        net.add_model(propname='throat.gabriel',
+                      model=op.models.network.gabriel_edges)
+        assert net['throat.gabriel'].sum() < net.Nt
 
 
 if __name__ == '__main__':

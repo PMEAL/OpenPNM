@@ -1,6 +1,6 @@
-import openpnm as op
-from openpnm.utils import SettingsAttr, TypedList, TypedSet
 import pytest
+
+from openpnm.utils import SettingsAttr, TypedList, TypedSet
 
 
 class SettingsTest:
@@ -116,5 +116,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

@@ -1,5 +1,9 @@
+import sys
+
 import numpy as np
 import numpy.testing as nt
+import pytest
+
 import openpnm as op
 
 
@@ -25,6 +29,7 @@ class SolversTest:
         x = self.alg['pore.x']
         nt.assert_allclose(x.mean(), 0.624134, rtol=1e-5)
 
+    @pytest.mark.skipif(sys.platform == 'darwin', reason="Pardiso not available on arm64")
     def test_pardiso_spsolve(self):
         solver = op.solvers.PardisoSpsolve()
         self.alg.run(solver=solver)
@@ -33,6 +38,12 @@ class SolversTest:
 
     def test_scipy_cg(self):
         solver = op.solvers.ScipyCG()
+        self.alg.run(solver=solver)
+        x = self.alg['pore.x']
+        nt.assert_allclose(x.mean(), 0.624134, rtol=1e-5)
+
+    def test_pyamg_ruge_stuben_solver(self):
+        solver = op.solvers.PyamgRugeStubenSolver()
         self.alg.run(solver=solver)
         x = self.alg['pore.x']
         nt.assert_allclose(x.mean(), 0.624134, rtol=1e-5)

@@ -1,7 +1,6 @@
-import pytest
 import numpy as np
+
 import openpnm as op
-import matplotlib.pyplot as plt
 
 
 class DrainageTest:
@@ -54,5 +53,5 @@ if __name__ == "__main__":
     self = t
     for item in t.__dir__():
         if item.startswith("test"):
-            print("running test: " + item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

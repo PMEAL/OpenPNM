@@ -1,6 +1,6 @@
-import openpnm as op
 import numpy as np
-import pytest
+
+import openpnm as op
 
 
 class HealthCheckTest:
@@ -13,7 +13,7 @@ class HealthCheckTest:
     def check_data_health(self):
         self.net.update({'pore.test': np.array([1, 2, 3, 4, 5, 6])})
         a = op.utils.check_data_health(self.net)
-        assert a.health == False
+        assert not a.health
         assert a['pore.test'] != []
         assert a['pore.coords'] == []
         assert a['throat.conns'] == []
@@ -30,5 +30,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

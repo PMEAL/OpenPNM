@@ -1,6 +1,7 @@
-import openpnm as op
 import numpy as np
 import pytest
+
+import openpnm as op
 
 
 class MixtureTest:
@@ -10,14 +11,14 @@ class MixtureTest:
 
     def test_init_binary_gas(self):
         net = op.network.Demo()
-        N2 = op.phase.Species(network=net, species='n2', name='pure_N2')
-        O2 = op.phase.Species(network=net, species='o2', name='pure_O2')
+        N2 = op.phase.Species(network=net, species='N2', name='pure_N2')
+        O2 = op.phase.Species(network=net, species='O2', name='pure_O2')
         air = op.phase.BinaryGas(network=net, components=[N2, O2], name='air')
 
     def test_liquid_mixture_two_comps(self):
         net = op.network.Demo()
         A = op.phase.StandardLiquid(network=net, species='ethanol')
-        B = op.phase.StandardLiquid(network=net, species='h2o')
+        B = op.phase.StandardLiquid(network=net, species='H2O')
         vodka = op.phase.LiquidMixture(network=net, components=[A, B])
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
@@ -26,7 +27,7 @@ class MixtureTest:
     def test_standard_liquid_mixture(self):
         net = op.network.Demo()
         A = op.phase.StandardLiquid(network=net, species='ethanol')
-        B = op.phase.StandardLiquid(network=net, species='h2o')
+        B = op.phase.StandardLiquid(network=net, species='H2O')
         vodka = op.phase.StandardLiquidMixture(network=net, components=[A, B])
         vodka.x(A.name, 0.4)
         vodka.x(B.name, 0.6)
@@ -46,8 +47,8 @@ class MixtureTest:
 
     def test_standard_gas_mixture(self):
         net = op.network.Demo()
-        A = op.phase.StandardGas(network=net, species='o2')
-        B = op.phase.StandardGas(network=net, species='n2')
+        A = op.phase.StandardGas(network=net, species='O2')
+        B = op.phase.StandardGas(network=net, species='N2')
         air = op.phase.StandardGasMixture(network=net, components=[A, B])
         air.y(A.name, 0.21)
         air.y(B.name, 0.79)
@@ -67,8 +68,8 @@ class MixtureTest:
 
     def test_add_and_remove_component_method(self):
         net = op.network.Demo()
-        o2 = op.phase.Species(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.Species(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.Species(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.Species(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         air.remove_comp(n2)
         assert len(air.components) == 1
@@ -77,8 +78,8 @@ class MixtureTest:
 
     def test_check_health(self):
         net = op.network.Demo()
-        o2 = op.phase.Species(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.Species(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.Species(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.Species(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         air['pore.mole_fraction.pure_N2'] = 0.79
         air['pore.mole_fraction.pure_O2'] = 0.21
@@ -90,8 +91,8 @@ class MixtureTest:
 
     def test_getitem(self):
         net = op.network.Demo()
-        o2 = op.phase.Species(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.Species(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.Species(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.Species(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         d = air['pore.mole_fraction']
         set_a = set(['pure_N2', 'pure_O2'])
@@ -99,8 +100,8 @@ class MixtureTest:
 
     def test_getitem_with_species(self):
         net = op.network.Demo()
-        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.StandardGas(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         mu1 = air['pore.viscosity.pure_N2']
         mu2 = air['pore.viscosity.pure_O2']
@@ -108,8 +109,8 @@ class MixtureTest:
 
     def test_get_comp(self):
         net = op.network.Demo()
-        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.StandardGas(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         del o2['pore.viscosity']
         _ = air['pore.viscosity.pure_N2']
@@ -118,8 +119,8 @@ class MixtureTest:
 
     def test_get_mix_vals(self):
         net = op.network.Demo()
-        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.StandardGas(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='N2', name='pure_N2')
         air = op.phase.GasMixture(network=net, components=[n2, o2])
         mu1 = air.get_mix_vals('pore.viscosity')
         # Mole fraction weighting won't work without mole fractions
@@ -137,8 +138,8 @@ class MixtureTest:
 
     def test_regenerate_components(self):
         net = op.network.Demo()
-        o2 = op.phase.StandardGas(network=net, species='o2', name='pure_O2')
-        n2 = op.phase.StandardGas(network=net, species='n2', name='pure_N2')
+        o2 = op.phase.StandardGas(network=net, species='O2', name='pure_O2')
+        n2 = op.phase.StandardGas(network=net, species='N2', name='pure_N2')
         air = op.phase.StandardGasMixture(network=net, components=[n2, o2])
         air.y(o2.name, y=0.2)
         air.y(n2.name, y=0.8)
@@ -164,5 +165,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

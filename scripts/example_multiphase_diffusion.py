@@ -16,7 +16,6 @@ import openpnm as op
 from openpnm.network import Cubic
 from openpnm.phase import Air, Water
 from openpnm.contrib import MultiPhase
-from openpnm.geometry import SpheresAndCylinders
 from openpnm.physics import Standard
 from openpnm.models.misc import constant
 from openpnm.models.physics.source_terms import linear
@@ -86,4 +85,4 @@ c2d = np.rot90(c.reshape(shape).squeeze())
 plt.imshow(c2d)
 plt.colorbar()
 
-#op.io.XDMF.export_data(network=net, phases=mphase, filename="network")
+# op.io.XDMF.export_data(network=net, phases=mphase, filename="network")

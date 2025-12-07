@@ -1,4 +1,3 @@
-import pytest
 import openpnm as op
 import numpy as np
 

@@ -1,99 +1,139 @@
-function join_by {
-    # It was necessary to define this function because
-    # Unix's `join` didn't work.
-    local d=$1
-    local f=$2
-    shift
-    printf %s "$f" "${@/#/$d}"
+#!/usr/bin/env bash
+# shellcheck source=utils.sh
+# Generates a changelog from merge commits between the two most recent tags.
+
+set -euo pipefail
+
+log() {
+    echo "[INFO] $*" >&2
 }
 
-function is_empty {
-    if [ "$1" == "- " ]; then
-        echo "true"
+log_section() {
+    echo "" >&2
+    echo "====== $* ======" >&2
+}
+
+join_by() {
+    local d="$1"; shift
+    local first=1
+    for f in "$@"; do
+        if (( first )); then
+            printf "%s" "$f"
+            first=0
+        else
+            printf "%s%s" "$d" "$f"
+        fi
+    done
+}
+
+is_empty() {
+    [[ "${1:-}" == "- " ]] && echo "true" || echo "false"
+}
+
+filter_commits_by_label() {
+    local commits="$1"
+    local label="$2"
+    local result
+    result=$(echo "$commits" | grep -Ei -- "$label" | \
+        sed -E '/^\s*$/d' | \
+        sed -E 's/^[[:space:]]*[-]?[[:space:]]*/- /' | \
+        sed -E "s/[[:space:]]*$label\b//I" || true)
+    local count
+    count=$(echo "$result" | grep -c '^- ' || echo "0")
+    log "  Found $count commits with label '$label'"
+    echo "$result"
+}
+
+filter_commits_exclude_label() {
+    local commits="$1"
+    local exclude_labels="$2"
+    local result
+    # Filter out labeled commits and common noise patterns from subject lines
+    result=$(echo "$commits" | \
+        grep -Eiv -- "$exclude_labels" | \
+        grep -Eiv -- "^Merge pull request" | \
+        sed -E '/^[[:space:]]*$/d' | \
+        sed -E 's/^[[:space:]]*[-]?[[:space:]]*/- /' || true)
+    local count
+    count=$(echo "$result" | grep -c '^- ' || echo "0")
+    log "  Found $count uncategorized commits"
+    echo "$result"
+}
+
+filter_commits_by_tag_interval() {
+    local tag_old="$1"
+    local tag_new="$2"
+    log "Fetching PR merge commits between '$tag_old' and '$tag_new'"
+    local result
+    # Get full body of merge commits, use separator to split commits
+    # Then filter to only PR merges and extract body content (skip merge line)
+    result=$(git log --merges "${tag_old}..${tag_new}" --format="%B<<<COMMIT_END>>>" 2>/dev/null | \
+        awk '
+        BEGIN { RS="<<<COMMIT_END>>>\n?"; ORS="\n" }
+        /^Merge pull request/ {
+            # Skip the first line (Merge pull request...) and print the rest
+            n = split($0, lines, "\n")
+            for (i = 2; i <= n; i++) {
+                line = lines[i]
+                # Skip empty lines, conflict markers, and chore commits
+                if (line ~ /^[[:space:]]*$/) continue
+                if (line ~ /^#/) continue
+                if (line ~ /Conflicts:/) continue
+                if (line ~ /^chore\(/) continue
+                print line
+            }
+        }
+        ' || true)
+    local count
+    count=$(echo "$result" | grep -c '.' || echo "0")
+    log "Found $count lines from PR descriptions"
+    echo "$result"
+}
+
+append_to_entry_with_label() {
+    local content="$1"
+    local file="$2"
+    local label="$3"
+    if [ "$(is_empty "$content")" = "false" ] && [ -n "$content" ]; then
+        log "  Adding section '$label' to $file"
+        printf "### %s\n\n%s\n\n" "$label" "$content" >> "$file"
     else
-        echo "false"
+        log "  Skipping empty section '$label'"
     fi
 }
 
-function filter_commits_by_label {
-    local temp
-    local commits=$1            # fetch the first argument
-    local exclude_labels=$2     # fetch the second argument
-    temp=$(echo "${commits}" | grep -E --ignore-case "$exclude_labels")
-    # Strip empty lines (that might include tabs, spaces, etc.)
-    temp=$(echo "${temp}" | sed -r '/^\s*$/d')
-    # Make each line a bullet point by appending "- " to lines
-    temp=$(echo "${temp}" | sed -e 's/^/- /')
-    echo "$temp"
-}
+# --- Main ---
 
-function filter_commits_exclude_label {
-    local temp
-    local commits=$1            # fetch the first argument
-    local exclude_labels=$2     # fetch the second argument
-    # Reverse filter commits by the given labels (i.e. exclude labels)
-    temp=$(echo "$commits" | grep -v -E --ignore-case "$exclude_labels")
-    # Strip empty lines (that might include tabs, spaces, etc.)
-    temp=$(echo "${temp}" | sed -r '/^\s*$/d')
-    # Make each line a bullet point by appending "- " to lines
-    temp=$(echo "${temp}" | sed -e 's/^/- /')
-    echo "$temp"
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/utils.sh"
 
-function filter_commits_by_tag_interval {
-    local temp
-    # --format=%B only outputs commit messages (excluding committer, date, etc.)
-    # --first-parent excludes merge commits into the topic branch, ex. dev -> feature
-    # temp=$(git log --merges "${1}..${2}" --format=%B --first-parent dev)
-    temp=$(git log --merges "${1}..${2}" --format=%B)
-    # Remove those merge commits for updating feature branches
-    temp=$(echo "${temp}" | grep -v -E "Merge branch")
-    echo "$temp"
-}
+log_section "Starting changelog generation"
 
-function append_to_entry_with_label {
-    if [ "$(is_empty "$1")" == "false" ]; then
-        echo "### $3"   >> $2
-        echo "${1}"     >> $2
-        echo ""         >> $2
-    fi
-}
-
-function get_nth_recent_tag {
-    tags=($(git for-each-ref --sort=-creatordate --format '%(refname:strip=2)' refs/tags --count=$1))
-    echo "${tags[$(($1-1))]}"
-}
-
-# Fetching merge commit messages since the last tag
+log "Retrieving tags..."
 tag_old=$(get_nth_recent_tag 2)
 tag_new=$(get_nth_recent_tag 1)
-tag_date=$(git show "$tag_new" --format="%cs")
-merge_commits=$(filter_commits_by_tag_interval $tag_old $tag_new)
+log "Previous tag: $tag_old"
+log "Current tag:  $tag_new"
 
-# Fetching new features/enhancements/maintenance/api change/bug fixes/documentation
+merge_commits=$(filter_commits_by_tag_interval "$tag_old" "$tag_new")
+
+log_section "Categorizing commits by label"
 features=$(filter_commits_by_label "$merge_commits" "#new")
 enhancements=$(filter_commits_by_label "$merge_commits" "#enh")
 maintenance=$(filter_commits_by_label "$merge_commits" "#maint")
 changes=$(filter_commits_by_label "$merge_commits" "#api")
 fixes=$(filter_commits_by_label "$merge_commits" "#bug")
-documentation=$(filter_commits_by_label "$merge_commits" "#doc")
+documentation=$(filter_commits_by_label "$merge_commits" "#docs?")
 
-# Fetching uncategorized merge commits (those w/o keywords)
-all_keywords=$(join_by "|" \#new \#enh \#maint \#api \#bug \#doc \#patch \#minor \#major)
+all_keywords=$(join_by "|" "#new" "#enh" "#maint" "#api" "#bug" "#docs?" "#patch" "#minor" "#major")
 uncategorized=$(filter_commits_exclude_label "$merge_commits" "$all_keywords")
 
-# Delete "entry" file if already exists
-if test -f entry; then
-    rm entry
-fi
+log_section "Building changelog entry"
 
-# Delete "CHANGELOG.md" file if already exists
-if test -f CHANGELOG.md; then
-    rm CHANGELOG.md
-fi
+[ -f entry ] && rm -f entry
+[ -f CHANGELOG.md ] && rm -f CHANGELOG.md
 
-# Compile change log
-echo -e "## ${tag_new}\n" >> entry
+printf "## %s\n\n" "$tag_new" >> entry
 append_to_entry_with_label "$features" entry ":rocket: New features"
 append_to_entry_with_label "$enhancements" entry ":cake: Enhancements"
 append_to_entry_with_label "$maintenance" entry ":wrench: Maintenance"
@@ -102,9 +142,12 @@ append_to_entry_with_label "$fixes" entry ":bug: Bugfixes"
 append_to_entry_with_label "$documentation" entry ":green_book: Documentation"
 append_to_entry_with_label "$uncategorized" entry ":question: Uncategorized"
 
-echo "$(<entry)"
+log_section "Generated changelog entry"
+cat entry
 
-# Modify CHANGELOG.md to reflect new changes
-echo -e "# Change log\n" >> CHANGELOG.md
-echo "$(<entry)" >> CHANGELOG.md
-rm entry
+log_section "Writing CHANGELOG.md"
+printf "# Change log\n\n" > CHANGELOG.md
+cat entry >> CHANGELOG.md
+rm -f entry
+
+log "Changelog generation complete"

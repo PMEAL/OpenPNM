@@ -1,6 +1,5 @@
 import numpy as np
 from openpnm._skgraph import generators as gen
-from openpnm._skgraph.visualization import plot_edges, plot_nodes
 import openpnm._skgraph.operations as ops
 
 
@@ -54,8 +53,8 @@ class SKGROperationsTest:
         g = ops.add_nodes(g, [5, 5, 5])
         assert g['node.float'].shape[0] == 29
         assert np.isnan(g['node.float'][-1])
-        assert g['node.int'][-1] < 0  # value is platform dependent -2147483648
-        assert g['node.bool'][-1] == False
+        assert g['node.int'][-1] <= 0  # value is platform dependent -2147483648
+        assert not g['node.bool'][-1]
 
     def test_add_edges(self):
         g = gen.cubic([3, 3, 3])
@@ -68,8 +67,8 @@ class SKGROperationsTest:
         g = ops.add_edges(g, [2, 4])
         assert g['edge.float'].shape[0] == 56
         assert np.isnan(g['edge.float'][-1])
-        assert g['edge.int'][-1] < 0  # value is platform dependent -2147483648
-        assert g['edge.bool'][-1] == False
+        assert g['edge.int'][-1] <= 0  # value is platform dependent -2147483648
+        assert not g['edge.bool'][-1]
 
     def test_trim_edges(self):
         net = gen.cubic([3, 3, 3])

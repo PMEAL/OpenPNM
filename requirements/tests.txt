@@ -1,4 +1,3 @@
-codecov
 jupyter
 nbval
 netgen-mesher
