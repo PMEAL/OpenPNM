@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.stats as spst
-from numpy.testing import assert_approx_equal, assert_array_almost_equal_nulp
+from numpy.testing import assert_array_almost_equal_nulp
 
 import openpnm as op
 import openpnm.models.misc as mods

@@ -64,7 +64,7 @@ class GraphToolsTest:
         self.ws.clear()
 
     def test_find_connected_sites(self):
-        Ps = topotools.find_connected_sites(bonds=[0],network=self.net, flatten=True)
+        Ps = topotools.find_connected_sites(bonds=[0], network=self.net, flatten=True)
         assert np.all(Ps == [0, 1])
         Ps = topotools.find_connected_sites(bonds=[1], network=self.net, flatten=True)
         assert np.all(Ps == [0, 3])

@@ -3,7 +3,6 @@ import inspect
 import chemicals
 import numpy as np
 from numpy.testing import assert_allclose, assert_approx_equal
-from thermo import Chemical
 
 import openpnm as op
 from openpnm.utils import get_mixture_model_args
