@@ -16,7 +16,11 @@ For more details about the package can be found in the [online documentation](ht
 
 ## Installation and Requirements
 
+> [!NOTE]
+> We no longer support macOS on x86_64 (Intel) systems. A few dependencies—`triangle` among them—are no longer maintained there, and that breaks our build. These packages are mostly optional, though, so if you need OpenPNM on that platform, you can still build it from source.
+
 ### [pip](https://pypi.org/project/openpnm/)
+
 OpenPNM can be installed using `pip` by running the following command in a terminal:
 
 ```shell
@@ -24,16 +28,18 @@ pip install openpnm
 ```
 
 ### [conda-forge](https://anaconda.org/conda-forge/openpnm)
+
 OpenPNM can also be installed from the [conda-forge](https://anaconda.org/conda-forge/openpnm) repository using:
 
-```
-conda install -c conda-forge openpnm
+```shell
+conda install conda-forge::openpnm
 ```
 
 ### For developers
+
 For developers who intend to change the source code or contribute to OpenPNM, the source code can be downloaded from [Github](https://github.com/PMEAL/OpenPNM/) and installed by running:
 
-```
+```shell
 pip install -e 'path/to/downloaded/files'
 ```
 
@@ -49,7 +55,7 @@ Github now has a [Discussions](https://github.com/PMEAL/OpenPNM/discussions) fun
 
 OpenPNM is developed by the Porous Materials Engineering and Analysis Lab [(PMEAL)](http://pmeal.com), in the [Department of Chemical Engineering](https://uwaterloo.ca/chemical-engineering/) at the [University of Waterloo](https://uwaterloo.ca/) in Waterloo, Ontario, Canada.
 
-The lead developer for this project is Prof. Jeff Gostick (jgostick@gmail.com).
+The lead developer for this project is Prof. Jeff Gostick (<jgostick@gmail.com>).
 
 ## Citation
 

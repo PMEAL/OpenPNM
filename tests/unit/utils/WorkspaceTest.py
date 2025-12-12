@@ -1,7 +1,4 @@
-import os
-import pytest
 import openpnm as op
-from numpy.testing import assert_allclose
 
 
 class WorkspaceTest:

@@ -16,7 +16,7 @@ class ConduitLengthsTest:
 
     def test_spheres_and_cylinders(self):
         L_actual = mods.spheres_and_cylinders(self.net)
-        L_desired = np.array([[0.15      , 0.44688711, 0.40311289],
+        L_desired = np.array([[0.15, 0.44688711, 0.40311289],
                               [0.40311289, 0.30965898, 0.28722813]])
         assert_allclose(L_actual, L_desired)
         # Incompatible data with model assumptions
@@ -45,7 +45,7 @@ class ConduitLengthsTest:
 
     def test_circles_and_rectangles(self):
         L_actual = mods.circles_and_rectangles(self.net)
-        L_desired = np.array([[0.15      , 0.44688711, 0.40311289],
+        L_desired = np.array([[0.15, 0.44688711, 0.40311289],
                               [0.40311289, 0.30965898, 0.28722813]])
         assert_allclose(L_actual, L_desired)
         # Incompatible data with model assumptions

@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from numpy.testing import assert_approx_equal
@@ -28,14 +27,14 @@ class IPTest:
         assert np.sum(alg["pore.invasion_sequence"] == 0) == 200
 
         alg.set_inlet_BC(mode='remove')
-        assert np.sum(alg["pore.bc.inlet"] == True) == 0
+        assert np.sum(alg["pore.bc.inlet"]) == 0
 
         alg.set_inlet_BC(pores=self.net.pores("top"), mode='add')
         with pytest.raises(Exception):
             alg.set_outlet_BC(pores=self.net.pores("top"), mode='add')
-        assert np.sum(alg["pore.bc.outlet"] == True) == 0
+        assert np.sum(alg["pore.bc.outlet"]) == 0
         alg.set_outlet_BC(pores=self.net.pores("top"), mode='overwrite')
-        assert np.sum(alg["pore.bc.outlet"] == True) == 100
+        assert np.sum(alg["pore.bc.outlet"]) == 100
 
     def test_run(self):
         alg = op.algorithms.InvasionPercolation(network=self.net, phase=self.water)
