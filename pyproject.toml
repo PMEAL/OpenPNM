@@ -190,6 +190,7 @@ docs = [
     "mock",
     "myst-nb",
     "nbstripout>=0.8.1",
+    "numpydoc",
     "pandoc",
     "pydata-sphinx-theme",
     "sphinx",
