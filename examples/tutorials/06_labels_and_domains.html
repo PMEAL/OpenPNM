@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using Labels and Defining Domains &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>Using Labels and Defining Domains &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -454,10 +454,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:44:23] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-</pre>
-</div></div>
 </div>
 <section id="using-predefined-labels">
 <h2>Using Predefined Labels<a class="headerlink" href="#using-predefined-labels" title="Link to this heading">#</a></h2>
@@ -471,7 +467,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fe88399a850&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -836,7 +832,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 <p>In V3 we have developed what we think is a <em>much tidier approach</em> to managing heterogeneous domains.  Instead of creating multiple <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> objects (and consequently multiple <code class="docutils literal notranslate"><span class="pre">Physics</span></code> objects), you now add all the pore-scale models to the <code class="docutils literal notranslate"><span class="pre">Network</span></code> and <code class="docutils literal notranslate"><span class="pre">Phase</span></code> objects directly.  The trick is that when adding models you specify one additional argument: the  <code class="docutils literal notranslate"><span class="pre">domain</span></code> (i.e. pores or throats) to which the model applies, as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_seed</span><span class="o">.</span><span class="n">random</span><span class="p">,</span>
              <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
              <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -855,7 +851,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fe88399a850&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -885,7 +881,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 <p>The power of this new approach is really visible when we consider applying a model with different parameters to a different set of pores:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_seed</span><span class="o">.</span><span class="n">random</span><span class="p">,</span>
              <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
              <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -903,7 +899,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fe88399a850&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -994,7 +990,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fe88399a850&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1037,18 +1033,18 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_seed</span><span class="o">.</span><span class="n">random</span><span class="p">)</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span> 
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
              <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span> 
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
              <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
 </pre></div>
@@ -1074,14 +1070,13 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/1ea83bf2173073ac9f31b14efb832918d4df6567e4957d93102f8a0f094a27e2.png"><img alt="../../_images/1ea83bf2173073ac9f31b14efb832918d4df6567e4957d93102f8a0f094a27e2.png" src="../../_images/1ea83bf2173073ac9f31b14efb832918d4df6567e4957d93102f8a0f094a27e2.png" style="width: 1183px; height: 584px;" />
-</a>
+<img alt="../../_images/0111e1bc87a05037e1733fd59fdbc20977b6672d6a93214d361a630d23d1aee6.png" src="../../_images/0111e1bc87a05037e1733fd59fdbc20977b6672d6a93214d361a630d23d1aee6.png" />
 </div>
 </div>
 <p>And now we can apply a model to the full domain that computes the pore volume, using values of pore diameter that were computed uniquely for each domain:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1099,8 +1094,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/112be11432860e0b7f990d461afa19958126ca92cbf9dc39a0e5853344796321.png"><img alt="../../_images/112be11432860e0b7f990d461afa19958126ca92cbf9dc39a0e5853344796321.png" src="../../_images/112be11432860e0b7f990d461afa19958126ca92cbf9dc39a0e5853344796321.png" style="width: 583px; height: 583px;" />
-</a>
+<img alt="../../_images/81a761e8277a19fa8ba1a508dfc71704ffec564653060ad476b1cf208bf4d051.png" src="../../_images/81a761e8277a19fa8ba1a508dfc71704ffec564653060ad476b1cf208bf4d051.png" />
 </div>
 </div>
 </section>
@@ -1119,11 +1113,11 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_size</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
-             <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;front&#39;</span><span class="p">,</span> 
+             <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;front&#39;</span><span class="p">,</span>
              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span> 
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_size</span><span class="o">.</span><span class="n">from_neighbor_pores</span><span class="p">,</span>
              <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;back&#39;</span><span class="p">,</span>
              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
@@ -1140,7 +1134,7 @@ net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f980ff68090&gt;
+net : &lt;openpnm.network.Cubic at 0x7fe88399a850&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――

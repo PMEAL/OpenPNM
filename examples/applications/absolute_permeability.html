@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting absolute permeability &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>Predicting absolute permeability &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -459,10 +459,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:42:22] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-</pre>
-</div></div>
 </div>
 <section id="create-a-random-cubic-network">
 <h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Link to this heading">#</a></h2>
@@ -483,17 +479,17 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
-<span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="n">phase</span><span class="p">[</span><span class="s1">&#39;pore.viscosity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="n">phase</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span><span class="p">)</span>
 <span class="n">phase</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:42:24] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:18:48] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         <span style="color: #008000; text-decoration-color: #008000">'throat.surface_tension'</span>                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
-</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.diffusive_conductance was not run since the following property is         <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.diffusive_conductance was not run since the following property is         <a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         missing: <span style="color: #008000; text-decoration-color: #008000">'throat.diffusivity'</span>                                                    <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 </div></div>
@@ -531,8 +527,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/4962302a7d0e2a586428c9a21a3d9613ebcbab5eb1f6038728daee3f77ea91fa.png"><img alt="../../_images/4962302a7d0e2a586428c9a21a3d9613ebcbab5eb1f6038728daee3f77ea91fa.png" src="../../_images/4962302a7d0e2a586428c9a21a3d9613ebcbab5eb1f6038728daee3f77ea91fa.png" style="width: 483px; height: 472px;" />
-</a>
+<img alt="../../_images/59d270d2bcf5be2335777d3196dd75d834662581e8f70a317b2bbe1ee8736346.png" src="../../_images/59d270d2bcf5be2335777d3196dd75d834662581e8f70a317b2bbe1ee8736346.png" />
 </div>
 </div>
 </section>
@@ -555,9 +550,9 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:42:29] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Attempting to estimate inlet area<span style="color: #808000; text-decoration-color: #808000">...</span>will be low                              <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/topotools/_topotools.py#1046" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1046</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:18:51] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Attempting to estimate inlet area<span style="color: #808000; text-decoration-color: #808000">...</span>will be low                              <a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/topotools/_topotools.py#1046" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1046</span></a>
 </pre>
-</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Attempting to estimate domain length<span style="color: #808000; text-decoration-color: #808000">...</span>could be low if boundary pores were   <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/topotools/_topotools.py#1090" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1090</span></a>
+</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Attempting to estimate domain length<span style="color: #808000; text-decoration-color: #808000">...</span>could be low if boundary pores were   <a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/topotools/_topotools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_topotools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/topotools/_topotools.py#1090" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">1090</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         not added                                                                    <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                  </span>
 </pre>
 </div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The value of K is: 0.07 mD

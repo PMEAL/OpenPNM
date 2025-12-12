@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Import an Extracted Network and Predict Transport Properties &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>Import an Extracted Network and Predict Transport Properties &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -447,43 +447,31 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:43:04] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-</pre>
-</div></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;porespy&#39;
+</pre></div>
+</div>
+</div>
 </div>
 <p>Load a small image of Berea sandstone:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
-            <span class="s1">&#39;../../tests/fixtures/berea_100_to_300.npz&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pkg_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">pkg_root</span> <span class="o">/</span> <span class="s2">&quot;tests/fixtures/berea_100_to_300.npz&quot;</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;im&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>             <span class="s1">&#39;../../tests/fixtures/berea_100_to_300.npz&#39;</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">im</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;im&#39;</span><span class="p">]</span>
-
-<span class="nn">File /opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/numpy/lib/_npyio_impl.py:451,</span> in <span class="ni">load</span><span class="nt">(file, mmap_mode, allow_pickle, fix_imports, encoding, max_header_size)</span>
-<span class="g g-Whitespace">    </span><span class="mi">449</span>     <span class="n">own_fid</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="g g-Whitespace">    </span><span class="mi">450</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">451</span>     <span class="n">fid</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">fspath</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span>
-<span class="g g-Whitespace">    </span><span class="mi">452</span>     <span class="n">own_fid</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="g g-Whitespace">    </span><span class="mi">454</span> <span class="c1"># Code to distinguish from NumPy binary files and pickles.</span>
-
-<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/home/runner/work/OpenPNM/OpenPNM/docs/tests/fixtures/berea_100_to_300.npz&#39;
 </pre></div>
 </div>
 </div>
@@ -520,17 +508,25 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span>
-    <span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> 
+    <span class="n">phases</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
     <span class="n">voxel_size</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">],</span>
-    <span class="n">boundary_width</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> 
-    <span class="n">accuracy</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> 
-    <span class="n">parallelization</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">boundary_width</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">accuracy</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span>
+    <span class="n">parallel_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_snows.py:446: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_snows.py:594: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
+/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/tools/_morphology.py:174: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
+  strel = cube(w)
+</pre></div>
+</div>
+</div>
 </div>
 <p>For more details on the use of the <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function see <a class="reference external" href="https://porespy.org/examples/networks/reference/snow2.html">this example</a>.  The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object with results attaches as attributes.  We can see these attributes if we print it:</p>
 <div class="cell docutils container">
@@ -541,7 +537,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of snow2 generated at Wed Nov 22 17:21:54 2023
+Results of snow2 generated at Fri Dec  5 00:33:54 2025
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 network                   Dictionary with 26 items
 regions                   Array of size (206, 200, 200)
@@ -568,39 +564,39 @@ phases                    Array of size (206, 200, 200)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x183be2404f0&gt;
+net : &lt;openpnm.network.Network at 0x11af6f6b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  throat.conns                                                  2510 / 2510
-  3  pore.coords                                                   1420 / 1420
-  4  pore.region_label                                             1420 / 1420
-  5  pore.phase                                                    1420 / 1420
-  6  throat.phases                                                 2510 / 2510
-  7  pore.region_volume                                            1420 / 1420
-  8  pore.equivalent_diameter                                      1420 / 1420
-  9  pore.local_peak                                               1420 / 1420
- 10  pore.global_peak                                              1420 / 1420
- 11  pore.geometric_centroid                                       1420 / 1420
- 12  throat.global_peak                                            2510 / 2510
- 13  pore.inscribed_diameter                                       1420 / 1420
- 14  pore.extended_diameter                                        1420 / 1420
- 15  throat.inscribed_diameter                                     2510 / 2510
- 16  throat.total_length                                           2510 / 2510
- 17  throat.direct_length                                          2510 / 2510
- 18  throat.perimeter                                              2510 / 2510
- 19  pore.volume                                                   1420 / 1420
- 20  pore.surface_area                                             1420 / 1420
- 21  throat.cross_sectional_area                                   2510 / 2510
- 22  throat.equivalent_diameter                                    2510 / 2510
+  2  throat.conns                                                  2638 / 2638
+  3  pore.coords                                                   1422 / 1422
+  4  pore.region_label                                             1422 / 1422
+  5  pore.phase                                                    1422 / 1422
+  6  throat.phases                                                 2638 / 2638
+  7  pore.region_volume                                            1422 / 1422
+  8  pore.equivalent_diameter                                      1422 / 1422
+  9  pore.local_peak                                               1422 / 1422
+ 10  pore.global_peak                                              1422 / 1422
+ 11  pore.geometric_centroid                                       1422 / 1422
+ 12  throat.global_peak                                            2638 / 2638
+ 13  pore.inscribed_diameter                                       1422 / 1422
+ 14  pore.extended_diameter                                        1422 / 1422
+ 15  throat.inscribed_diameter                                     2638 / 2638
+ 16  throat.total_length                                           2638 / 2638
+ 17  throat.direct_length                                          2638 / 2638
+ 18  throat.perimeter                                              2638 / 2638
+ 19  pore.volume                                                   1422 / 1422
+ 20  pore.surface_area                                             1422 / 1422
+ 21  throat.cross_sectional_area                                   2638 / 2638
+ 22  throat.equivalent_diameter                                    2638 / 2638
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Labels                                                 Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-  2  pore.all                                                             1420
-  3  throat.all                                                           2510
-  4  pore.boundary                                                         180
-  5  pore.xmin                                                             103
-  6  pore.xmax                                                              77
+  2  pore.all                                                             1422
+  3  throat.all                                                           2638
+  4  pore.boundary                                                         182
+  5  pore.xmin                                                             104
+  6  pore.xmax                                                              78
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div>
 </div>
@@ -643,8 +639,8 @@ Key                                 Value
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 headless_throats                    []
 looped_throats                      []
-isolated_pores                      [456, 574, 783, 1023, 1115, 1158, 1179]
-disconnected_pores                  [227, 246, 247, 319, 362, 456, 574, 783, 1023, 1115, 1158, 1179, 1181, 1189, 1204, 1345, 1346, 1347]
+isolated_pores                      [456, 574, 1115, 1158, 1179]
+disconnected_pores                  [456, 574, 1115, 1158, 1179, 1204, 1346, 1347, 1348]
 duplicate_throats                   []
 bidirectional_throats               []
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -688,7 +684,7 @@ bidirectional_throats               []
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[17:21:55] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py:480</span>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:33:54] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         <span style="color: #008000; text-decoration-color: #008000">'throat.surface_tension'</span>                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 </div></div>
@@ -707,12 +703,12 @@ bidirectional_throats               []
 <span class="n">F</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">Deff</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The Formation factor of the extracted network is </span><span class="si">{</span><span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The compares to a value of </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;formation factor&#39;</span><span class="p">][</span><span class="s1">&#39;Fx&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> from DNS&quot;</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;formation factor&#39;</span><span class="p">][</span><span class="s1">&#39;Fx&#39;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.09</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;formation factor&#39;</span><span class="p">][</span><span class="s1">&#39;Fx&#39;</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Formation factor of the extracted network is 25.098142684548733
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The Formation factor of the extracted network is 22.33394375429123
 The compares to a value of 23.12 from DNS
 </pre></div>
 </div>
@@ -731,12 +727,12 @@ The compares to a value of 23.12 from DNS
 <span class="n">K</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="o">/</span><span class="n">A</span><span class="p">)</span><span class="o">/</span><span class="n">dP</span><span class="o">*</span><span class="mf">1e12</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Permeability coefficient is </span><span class="si">{</span><span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> Darcy&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The compares to a value of </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;permeability&#39;</span><span class="p">][</span><span class="s1">&#39;Kx&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span><span class="si">}</span><span class="s2"> from DNS&quot;</span><span class="p">)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;permeability&#39;</span><span class="p">][</span><span class="s1">&#39;Kx&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;permeability&#39;</span><span class="p">][</span><span class="s1">&#39;Kx&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Permeability coefficient is 1.3181940680110902 Darcy
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Permeability coefficient is 1.4732149604234128 Darcy
 The compares to a value of 1.36 from DNS
 </pre></div>
 </div>

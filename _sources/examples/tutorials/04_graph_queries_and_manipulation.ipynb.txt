@@ -433,11 +433,11 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', marker='*', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red', marker='*',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', marker='.', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', marker='.',\n",
     "                                  markersize=50, ax=ax);"
    ]
   },
@@ -497,11 +497,11 @@
     "fig, ax = plt.subplots()\n",
     "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, Ps, c='green', \n",
+    "op.visualization.plot_coordinates(pn, Ps, c='green',\n",
     "                                  markersize=50, marker='s', ax=ax);"
    ]
   },
@@ -533,7 +533,7 @@
    "source": [
     "Ps = pn.pores(['left', 'back'])\n",
     "print(Ps)\n",
-    "Ps = pn.find_neighbor_pores (pores=Ps, mode='xor')\n",
+    "Ps = pn.find_neighbor_pores(pores=Ps, mode='xor')\n",
     "print(Ps)"
    ]
   },
@@ -561,11 +561,11 @@
     "fig, ax = plt.subplots()\n",
     "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, Ps, c='green', \n",
+    "op.visualization.plot_coordinates(pn, Ps, c='green',\n",
     "                                  markersize=50, marker='s', ax=ax);"
    ]
   },
@@ -623,13 +623,13 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, Ps, c='green', \n",
+    "op.visualization.plot_coordinates(pn, Ps, c='green',\n",
     "                                  markersize=50, marker='s', ax=ax);"
    ]
   },
@@ -683,11 +683,11 @@
    "source": [
     "fig, ax = plt.subplots()\n",
     "op.visualization.plot_connections(pn, Ts, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax);"
    ]
   },
@@ -733,11 +733,11 @@
    "source": [
     "fig, ax = plt.subplots()\n",
     "op.visualization.plot_connections(pn, Ts, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax);"
    ]
   },
@@ -783,11 +783,11 @@
    "source": [
     "fig, ax = plt.subplots()\n",
     "op.visualization.plot_connections(pn, Ts, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_left, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P_left, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P_bottom, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P_bottom, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax);"
    ]
   },
@@ -841,11 +841,11 @@
    "source": [
     "fig, ax = plt.subplots()\n",
     "op.visualization.plot_connections(pn, Ts, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P1, c='red', \n",
+    "op.visualization.plot_coordinates(pn, P1, c='red',\n",
     "                                  markersize=50, marker='*', ax=ax)\n",
-    "op.visualization.plot_coordinates(pn, P2, c='blue', \n",
+    "op.visualization.plot_coordinates(pn, P2, c='blue',\n",
     "                                  markersize=50, marker='.', ax=ax);"
    ]
   },
@@ -1134,7 +1134,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, pn.Ps, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
     "op.visualization.plot_connections(pn, ax=ax);"
    ]
@@ -1330,7 +1330,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
     "op.visualization.plot_connections(pn, ax=ax);"
    ]
@@ -1364,7 +1364,7 @@
     "pn = op.network.Cubic(shape=[3, 2, 1])\n",
     "op.topotools.trim(network=pn, pores=[2, 4])\n",
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
     "op.visualization.plot_connections(pn, ax=ax);"
    ]
@@ -1456,7 +1456,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
     "op.visualization.plot_connections(pn, ax=ax);"
    ]
@@ -1499,7 +1499,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
     "op.visualization.plot_connections(pn, ax=ax);"
    ]
@@ -1544,7 +1544,7 @@
    ],
    "source": [
     "fig, ax = plt.subplots()\n",
-    "op.visualization.plot_coordinates(pn, c='lightgrey', \n",
+    "op.visualization.plot_coordinates(pn, c='lightgrey',\n",
     "                                  markersize=50, ax=ax)\n",
     "op.visualization.plot_connections(pn, ax=ax);"
    ]

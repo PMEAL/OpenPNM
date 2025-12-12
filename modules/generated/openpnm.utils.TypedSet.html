@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>TypedSet &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>TypedSet &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -1969,7 +1969,7 @@
 <h1>TypedSet<a class="headerlink" href="#typedset" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="openpnm.utils.TypedSet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TypedSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/_settings.html#TypedSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.TypedSet" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TypedSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/utils/_settings.html#TypedSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.utils.TypedSet" title="Link to this definition">#</a></dt>
 <dd><p>A set that enforces all elements have the same type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
@@ -1979,7 +1979,7 @@
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.add.html#openpnm.utils.TypedSet.add" title="openpnm.utils.TypedSet.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(item)</p></td>
 <td><p>Add an element to a set.</p></td>
@@ -2002,11 +2002,11 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.isdisjoint.html#openpnm.utils.TypedSet.isdisjoint" title="openpnm.utils.TypedSet.isdisjoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isdisjoint</span></code></a></p></td>
 <td><p>Return True if two sets have a null intersection.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.issubset.html#openpnm.utils.TypedSet.issubset" title="openpnm.utils.TypedSet.issubset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issubset</span></code></a></p></td>
-<td><p>Report whether another set contains this set.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.issubset.html#openpnm.utils.TypedSet.issubset" title="openpnm.utils.TypedSet.issubset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issubset</span></code></a>(other, /)</p></td>
+<td><p>Test whether every element in the set is in other.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.issuperset.html#openpnm.utils.TypedSet.issuperset" title="openpnm.utils.TypedSet.issuperset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issuperset</span></code></a></p></td>
-<td><p>Report whether this set contains another set.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.issuperset.html#openpnm.utils.TypedSet.issuperset" title="openpnm.utils.TypedSet.issuperset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issuperset</span></code></a>(other, /)</p></td>
+<td><p>Test whether every element in other is in the set.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="openpnm.utils.TypedSet.symmetric_difference.html#openpnm.utils.TypedSet.symmetric_difference" title="openpnm.utils.TypedSet.symmetric_difference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symmetric_difference</span></code></a></p></td>
 <td><p>Return the symmetric difference of two sets as a new set.</p></td>

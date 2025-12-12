@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.models.physics.capillary_pressure._funcs &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>openpnm.models.physics.capillary_pressure._funcs &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../../../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -387,10 +387,7 @@
   <h1>Source code for openpnm.models.physics.capillary_pressure._funcs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">transforms3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">_gohlketransforms</span> <span class="k">as</span> <span class="n">tr</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">physics</span> <span class="k">as</span> <span class="n">pm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">_doctxt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.models.physics._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_key_props</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>

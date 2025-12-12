@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.algorithms._algorithm &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>openpnm.algorithms._algorithm &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -386,19 +386,20 @@
                   
   <h1>Source code for openpnm.algorithms._algorithm</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">Base2</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base2</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">ParserMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Docorator</span>
 
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Algorithm&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Algorithm&quot;</span><span class="p">]</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;AlgorithmSettings&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s2">&quot;AlgorithmSettings&quot;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">docstr</span><span class="o">.</span><span class="n">all_sections</span><span class="p">)</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AlgorithmSettings</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -412,7 +413,7 @@
 
 <div class="viewcode-block" id="Algorithm">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Algorithm.html#openpnm.algorithms.Algorithm">[docs]</a>
-<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s1">&#39;Algorithm&#39;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">])</span>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">get_sections</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="s2">&quot;Algorithm&quot;</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Parameters&quot;</span><span class="p">])</span>
 <span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Algorithm</span><span class="p">(</span><span class="n">ParserMixin</span><span class="p">,</span> <span class="n">LabelMixin</span><span class="p">,</span> <span class="n">Base2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -424,11 +425,21 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;alg_?&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;alg_?&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">AlgorithmSettings</span><span class="p">())</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">Np</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;throat.all&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">Nt</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># @functools.cached_property</span>
     <span class="nd">@property</span>
@@ -438,10 +449,10 @@
 <span class="sd">        running the algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
         <span class="c1"># Generate global dependency graph</span>
-        <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose_all</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">phase</span><span class="p">]])</span>
+        <span class="n">dg</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose_all</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">dependency_graph</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">phase</span><span class="p">]])</span>
         <span class="n">variable_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;variable_props&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">variable_props</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">])</span>
         <span class="n">base</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variable_props</span><span class="p">)</span>
@@ -474,7 +485,7 @@
         <span class="c1"># Fetch objects associated with the algorithm</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">phase</span><span class="p">]</span>
         <span class="c1"># Update &#39;quantity&#39; on phase with the most recent value</span>
-        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;quantity&quot;</span><span class="p">]</span>
         <span class="n">phase</span><span class="p">[</span><span class="n">quantity</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
         <span class="c1"># Regenerate all associated objects</span>
         <span class="n">phase</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">(</span><span class="n">propnames</span><span class="o">=</span><span class="n">iterative_props</span><span class="p">)</span>
@@ -491,12 +502,12 @@
 <span class="sd">            The specific type of boundary condition to clear. If not provided</span>
 <span class="sd">            all types will be cleared.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">bctype</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">bctype</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Algorithm.set_BC">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.algorithms.Algorithm.set_BC.html#openpnm.algorithms.Algorithm.set_BC">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="p">[],</span> <span class="n">bcvalues</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="p">[],</span> <span class="n">bcvalues</span><span class="o">=</span><span class="p">[],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The main method for setting and adjusting boundary conditions.</span>
 
@@ -555,29 +566,24 @@
         <span class="c1"># If a list of modes was given, handle them each in order</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">bctype</span><span class="p">,</span>
-                            <span class="n">bcvalues</span><span class="o">=</span><span class="n">bcvalues</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">bctype</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">bcvalues</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># If a list of bctypes was given, handle them each in order</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bctype</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">bctype</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">bctype</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bctype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">bctype</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
-                            <span class="n">bcvalues</span><span class="o">=</span><span class="n">bcvalues</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pores</span><span class="p">,</span> <span class="n">bctype</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">bcvalues</span><span class="o">=</span><span class="n">bcvalues</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Begin method</span>
-        <span class="n">bc_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">bc_types</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">other_types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">bc_types</span><span class="p">,</span> <span class="n">bctype</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span>
-            <span class="n">mode</span><span class="p">,</span>
-            <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;overwrite&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">],</span>
-            <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;remove&quot;</span><span class="p">],</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Infer the value that indicates &quot;no bc&quot; based on array dtype</span>
-        <span class="n">no_bc</span> <span class="o">=</span> <span class="n">get_no_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.bc.</span><span class="si">{</span><span class="n">bctype</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span>
+        <span class="n">no_bc</span> <span class="o">=</span> <span class="n">get_no_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">bctype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">pores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ps</span>
@@ -586,23 +592,25 @@
         <span class="c1"># Deal with size of the given bcvalues</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bcvalues</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">*</span><span class="n">values</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">*</span> <span class="n">values</span>
         <span class="c1"># Ensure values and pores are the same size</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">pores</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The number of values must match the number of locations&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The number of values must match the number of locations&quot;</span><span class="p">)</span>
 
         <span class="c1"># Finally adjust the BCs according to mode</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;add&quot;</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">pores</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>  <span class="c1"># Indices of pores to keep</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;pore.bc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># Remove pores that are taken</span>
-                <span class="n">mask</span><span class="p">[</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.bc.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">])]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;pore.bc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># Remove pores that are taken</span>
+                <span class="n">mask</span><span class="p">[</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">pores</span><span class="p">])]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>  <span class="c1"># Raise exception if some conflicts found</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Some of the given locations already have BCs, &quot;</span> \
-                    <span class="o">+</span> <span class="s2">&quot;either use mode=&#39;remove&#39; first or &quot;</span> \
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Some of the given locations already have BCs, &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;either use mode=&#39;remove&#39; first or &quot;</span>
                     <span class="o">+</span> <span class="s2">&quot;use mode=&#39;overwrite&#39; instead&quot;</span>
+                <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">bctype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">pores</span><span class="p">[</span><span class="n">mask</span><span class="p">]]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;overwrite&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;overwrite&quot;</span><span class="p">:</span>
             <span class="c1"># Put given values in specified BC, sort out conflicts below</span>
             <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">bctype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
             <span class="c1"># Collect indices that are present for other BCs for removal</span>
@@ -610,12 +618,14 @@
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">other_types</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_no_bc</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
                 <span class="c1"># Make a note of any BCs values of other types</span>
-                <span class="n">mask</span><span class="p">[</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.bc.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">][</span><span class="n">pores</span><span class="p">])]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">mask</span><span class="p">[</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">pores</span><span class="p">])]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>  <span class="c1"># Warn that other values were overwritten</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Some of the given locations already have BCs of &#39;</span> \
-                    <span class="o">+</span> <span class="s1">&#39;another type, these will be overwritten&#39;</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Some of the given locations already have BCs of &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;another type, these will be overwritten&quot;</span>
+                <span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;remove&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;remove&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;pore.bc.</span><span class="si">{</span><span class="n">bctype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="n">pores</span><span class="p">]</span> <span class="o">=</span> <span class="n">no_bc</span></div>
 </div>
 
@@ -627,9 +637,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">isfinite</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">inf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="p">):</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">==</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="p">):</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">arr</span>
+    <span class="k">elif</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">float</span><span class="p">,):</span>
         <span class="n">results</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">arr</span> <span class="o">!=</span> <span class="n">inf</span>

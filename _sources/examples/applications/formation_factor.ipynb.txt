@@ -158,7 +158,7 @@
     "op.visualization.plot_coordinates(ax=fig,\n",
     "                                  network=pn,\n",
     "                                  size_by=pn[\"pore.diameter\"],\n",
-    "                                  color_by=Diff[\"pore.concentration\"], \n",
+    "                                  color_by=Diff[\"pore.concentration\"],\n",
     "                                  markersize=100)\n",
     "_ = plt.axis('off')"
    ]
@@ -229,7 +229,7 @@
    "source": [
     "# NBVAL_IGNORE_OUTPUT\n",
     "R = Diff.rate(pores=inlet, mode='group')[0]\n",
-    "A = op.topotools.get_domain_area(pn, inlets=inlet, outlets=outlet);\n",
+    "A = op.topotools.get_domain_area(pn, inlets=inlet, outlets=outlet)\n",
     "L = op.topotools.get_domain_length(pn, inlets=inlet, outlets=outlet)\n",
     "D_eff = R * L / (A) / (C_in - C_out)\n",
     "F = 1/D_eff\n",

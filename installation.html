@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>Installation &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=52b624fa"></script>
+    <script src="_static/documentation_options.js?v=5349f462"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -397,99 +397,45 @@
                   
   <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
-<p>OpenPNM depends heavily on the SciPy Stack. The best way to get a fully
-functional environment is the <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda
-distribution</a>.
-Be sure to get the Python 3.9+ version.</p>
-<p>Once you’ve installed Anaconda you can then install <code class="docutils literal notranslate"><span class="pre">openpnm</span></code>. It is
-available on <a class="reference external" href="https://anaconda.org/conda-forge/openpnm">conda-forge</a>
-and can be installed by typing the following at the <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">openpnm</span>
+<section id="uv">
+<h2><code class="docutils literal notranslate"><span class="pre">uv</span></code><a class="headerlink" href="#uv" title="Link to this heading">#</a></h2>
+<p>The recommended way to install Python and desired packages (like OpenPNM) is using <a class="reference external" href="https://docs.astral.sh/uv">uv</a>. <code class="docutils literal notranslate"><span class="pre">uv</span></code> has rapidly become the most popular package manager for Python. You’ll be able to find lots of blog articles extolling the virtues of <code class="docutils literal notranslate"><span class="pre">uv</span></code>, but its main feature is speed.</p>
+<ol class="arabic simple">
+<li><p>First you need to install <code class="docutils literal notranslate"><span class="pre">uv</span></code>. The official installation instructions are provided on the <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation">astral website</a>. This will install <code class="docutils literal notranslate"><span class="pre">uv</span></code> on your system so it will be available from the terminal or command line.</p></li>
+<li><p>Next you navigate to the folder where the project files and data will be or already are stored, like scripts and tomograms.</p></li>
+<li><p>Then you create a virtual environment in that directory using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span> <span class="pre">--python</span> <span class="pre">3.12</span></code>. This adds a <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder, where <code class="docutils literal notranslate"><span class="pre">uv</span></code> will store all its information. Note that OpenPNM only supports python version 3.11, 3.12 and 3.13. This is largely because of dependencies which have firm version requirements.</p></li>
+<li><p>Finally, you run <cite>uv pip install openpnm</cite>. The first time you do this <code class="docutils literal notranslate"><span class="pre">uv</span></code> will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster.</p></li>
+</ol>
+<p>When using <code class="docutils literal notranslate"><span class="pre">uv</span></code> we recommend <a class="reference external" href="https://code.visualstudio.com/">VSCode</a> as the IDE to write and edit scripts. VSCode will automatically find the <code class="docutils literal notranslate"><span class="pre">venv</span></code> inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding <code class="docutils literal notranslate"><span class="pre">venvs</span></code> so is cumbersome to use when switching between projects.</p>
+</section>
+<section id="conda">
+<h2><code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#conda" title="Link to this heading">#</a></h2>
+<p>OpenPNM is also available via the <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a> package manager. If you prefer to use <code class="docutils literal notranslate"><span class="pre">conda</span></code>, you can install OpenPNM by running the following command in your terminal or command prompt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>conda-forge::openpnm
 </pre></div>
 </div>
-<p>It’s possible to use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">openpnm</span></code>, but this will not result
-in a full installation and some features won’t work (e.g., outputting to
-ParaView).</p>
+</section>
+</section>
 <section id="installing-the-dev-version">
-<h2>Installing the dev version<a class="headerlink" href="#installing-the-dev-version" title="Link to this heading">#</a></h2>
-<p>We frequently publish new releases every couple of months, but if you
-still want to use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch,
-(but not yet officially released), you have two options:</p>
-<section id="the-easy-way">
-<h3>The easy way<a class="headerlink" href="#the-easy-way" title="Link to this heading">#</a></h3>
-<p>If you’re looking for an easy way to install the development version of
-<code class="docutils literal notranslate"><span class="pre">openpnm</span></code> and use the latest features, you can install it using:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PMEAL</span><span class="o">/</span><span class="n">OpenPNM</span><span class="o">.</span><span class="n">git</span><span class="nd">@dev</span>
+<h1>Installing the <code class="docutils literal notranslate"><span class="pre">dev</span></code> version<a class="headerlink" href="#installing-the-dev-version" title="Link to this heading">#</a></h1>
+<p>If you are a OpenPNM contributor or want to get the newest updates as they roll in, you need to clone the OpenPNM repository from Github and install it locally. It’s not as difficult as it sounds, just follow these steps:</p>
+<p>Open up the terminal/cmd and use <code class="docutils literal notranslate"><span class="pre">cd</span></code> to navigate to the directory where you want to store the OpenPNM code. Clone the repo to your disk using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PMEAL/OpenPNM
+</pre></div>
+</div>
+<p>Since your terminal is currently in the OpenPNM directory, you can now install OpenPNM and all its dependencies with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To keep your “local” OpenPNM installation up to date, you should regularly pull the latest changes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>pull
 </pre></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This approach is not recommended if you are a OpenPNM contributor or
-want to frequently get new updates as they roll in. If you insist on
-using this approach, to get the latest version at any point, you
-need to first uninstall your OpenPNM and then rerun the command above.</p>
+<p>For the development version of OpenPNM to work, you need to first remove
+any versions that you may have previously installed using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">openpnm</span></code></p>
 </div>
-</section>
-<section id="the-hard-but-correct-way">
-<h3>The hard (but correct) way<a class="headerlink" href="#the-hard-but-correct-way" title="Link to this heading">#</a></h3>
-<p>If you are a OpenPNM contributor or want to easily get the new updates as
-they roll in, you need to properly clone our repo and install it locally.
-It’s not as difficult as it sounds, just follow these steps:</p>
-<p>Open up the terminal/cmd and <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the directory you want to clone <code class="docutils literal notranslate"><span class="pre">openpnm</span></code>.</p>
-<p>Clone the repo somewhere in your disk using:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PMEAL</span><span class="o">/</span><span class="n">OpenPNM</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root folder of <code class="docutils literal notranslate"><span class="pre">openpnm</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">OpenPNM</span>
-</pre></div>
-</div>
-<p>Install <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> dependencies, either through <code class="docutils literal notranslate"><span class="pre">conda</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">--</span><span class="n">file</span> <span class="n">requirements</span><span class="o">/</span><span class="n">conda</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
-</pre></div>
-</div>
-<p>or through <code class="docutils literal notranslate"><span class="pre">pip</span></code> (as a last resort, since <code class="docutils literal notranslate"><span class="pre">conda</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code> are not very compatible):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-</pre></div>
-</div>
-<p>Install <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> in “editable” mode:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
-</pre></div>
-</div>
-<p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To
-keep your “local” <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> installation up to date, every now and then, <code class="docutils literal notranslate"><span class="pre">cd</span></code>
-to the root folder of <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> and pull the latest changes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">pull</span>
-</pre></div>
-</div>
-<p>Of course, it’ll be much easier if you use a GUI for <code class="docutils literal notranslate"><span class="pre">git</span></code> (e.g., GitFork, GitKraken, etc.).</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>For the development version of <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> to work, you need to first remove
-the <code class="docutils literal notranslate"><span class="pre">openpnm</span></code> that you’ve previously installed using <code class="docutils literal notranslate"><span class="pre">pip</span></code> (via
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">openpnm</span></code>) or <code class="docutils literal notranslate"><span class="pre">conda</span></code> (via <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">remove</span> <span class="pre">openpnm</span></code>).</p>
-</div>
-</section>
-</section>
-<section id="where-s-my-conda-prompt">
-<h2>Where’s my <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt?<a class="headerlink" href="#where-s-my-conda-prompt" title="Link to this heading">#</a></h2>
-<p>All the commands in this page need to be typed in the <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt.</p>
-<section id="windows">
-<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading">#</a></h3>
-<p>On Windows you should have a shortcut to the “Anaconda prompt” in the
-Anaconda program group in the start menu. This will open a Windows
-command console with access to the Python features added by <code class="docutils literal notranslate"><span class="pre">conda</span></code>,
-such as installing things via <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
-</section>
-<section id="mac-and-linux">
-<h3>Mac and Linux<a class="headerlink" href="#mac-and-linux" title="Link to this heading">#</a></h3>
-<p>On Mac or Linux, you need to open a normal terminal window, then type
-<code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">env</span></code> where you replace <code class="docutils literal notranslate"><span class="pre">env</span></code> with the name of
-the environment you want to install OpenPNM. If you don’t know what this
-means, then use <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">base</span></code>, which will install OpenPNM in
-the base environment which is the default.</p>
-</section>
-</section>
 </section>
 
 
@@ -515,17 +461,14 @@ the base environment which is the default.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-dev-version">Installing the dev version</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-easy-way">The easy way</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-hard-but-correct-way">The hard (but correct) way</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Installation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uv"><code class="docutils literal notranslate"><span class="pre">uv</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conda"><code class="docutils literal notranslate"><span class="pre">conda</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-s-my-conda-prompt">Where’s my <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt?</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#windows">Windows</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mac-and-linux">Mac and Linux</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-dev-version">Installing the <code class="docutils literal notranslate"><span class="pre">dev</span></code> version</a></li>
 </ul>
-</li>
-</ul>
+
   </nav></div>
 
 </div></div>

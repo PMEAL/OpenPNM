@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assigning Geometric Properties &#8212; OpenPNM 3.5.2 documentation</title>
+    <title>Assigning Geometric Properties &#8212; OpenPNM 3.6.0 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=52b624fa"></script>
+    <script src="../../_static/documentation_options.js?v=5349f462"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.5.2 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.5.2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
   
   
 </a></div>
@@ -461,14 +461,11 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spst</span>
 <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[15:44:18] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> PARDISO solver not installed on this platform. Simulations will be slow.       <a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_workspace.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/openpnm/utils/_workspace.py#56" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">56</span></a>
-</pre>
-</div></div>
 </div>
 <p>Let’s start by creating a blank Cubic network.  As we can see by printing it, there are only coordinates, connections, and some labels, but no geometric properties:</p>
 <div class="cell docutils container">
@@ -481,7 +478,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f851c0bd270&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -529,7 +526,6 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spst</span>
 <span class="n">psd</span> <span class="o">=</span> <span class="n">spst</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">]);</span>
@@ -537,8 +533,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/2543db2ab6731378204df7f1766e032fbe4ba6fc2397c20afcda354817535077.png"><img alt="../../_images/2543db2ab6731378204df7f1766e032fbe4ba6fc2397c20afcda354817535077.png" src="../../_images/2543db2ab6731378204df7f1766e032fbe4ba6fc2397c20afcda354817535077.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/c704f6a1a073f19d075f4f31f0048ffe65265dd48499bfd85eb1c7b94d7d4096.png" src="../../_images/c704f6a1a073f19d075f4f31f0048ffe65265dd48499bfd85eb1c7b94d7d4096.png" />
 </div>
 </div>
 <p>The above distribution looks good, let’s just make absolutely sure that our distribution is not so wide that it has negative numbers or values greater than 50 um:</p>
@@ -575,8 +570,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/d0d7e77a5e9bb10679e8363b940be47b96e149b2680c7dc9c505e2fb3ef83023.png"><img alt="../../_images/d0d7e77a5e9bb10679e8363b940be47b96e149b2680c7dc9c505e2fb3ef83023.png" src="../../_images/d0d7e77a5e9bb10679e8363b940be47b96e149b2680c7dc9c505e2fb3ef83023.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/3cd46093b383aca3029397db2a5cf9a2598e07ab61c85ceb4c7d5abe295a516c.png" src="../../_images/3cd46093b383aca3029397db2a5cf9a2598e07ab61c85ceb4c7d5abe295a516c.png" />
 </div>
 </div>
 <p>Again, let’s inspect the high and low values:</p>
@@ -637,8 +631,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/b83e0ebb8e34bff52bbfe0571721439a71194ab47c9da3a663a505d09bdf7fec.png"><img alt="../../_images/b83e0ebb8e34bff52bbfe0571721439a71194ab47c9da3a663a505d09bdf7fec.png" src="../../_images/b83e0ebb8e34bff52bbfe0571721439a71194ab47c9da3a663a505d09bdf7fec.png" style="width: 624px; height: 463px;" />
-</a>
+<img alt="../../_images/942fb4653a472b4a5499f6a2c423b7dd20bcb332bd00df5163b6bd0a66f8e9cc.png" src="../../_images/942fb4653a472b4a5499f6a2c423b7dd20bcb332bd00df5163b6bd0a66f8e9cc.png" />
 </div>
 </div>
 <p>We can see from the above plot that the throat sizes are similar to the pore sizes, which is expected since they are taken from the pore sizes values. However, we can also see a small shift to the left, which is also expected given that the throats always take on the size of the smaller pore, creating a bias towards smaller sizes.</p>
@@ -653,8 +646,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/3c04e4cd78c1e369da2ec4c88694c368bc00a9c3ff8d78b14292e8a7c3e17c37.png"><img alt="../../_images/3c04e4cd78c1e369da2ec4c88694c368bc00a9c3ff8d78b14292e8a7c3e17c37.png" src="../../_images/3c04e4cd78c1e369da2ec4c88694c368bc00a9c3ff8d78b14292e8a7c3e17c37.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/3c6f475c4d887669e3b648a6c1b41529af5a7232706d38763db33e175069532d.png" src="../../_images/3c6f475c4d887669e3b648a6c1b41529af5a7232706d38763db33e175069532d.png" />
 </div>
 </div>
 <p>One downside of the above approach is that you no longer have control over the shape and distribution of the throat sizes. This can be solved by applying the same approach just described but to <em>random seeds</em> instead of actual sizes. Then the random seeds can be put into a cumulative density function to compute the corresponding size.  This is demonstrated below:</p>
@@ -682,8 +674,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/0029dfcc21680413aeb08a89be0f93e7afde31739b027d6b194700b168ef14f5.png"><img alt="../../_images/0029dfcc21680413aeb08a89be0f93e7afde31739b027d6b194700b168ef14f5.png" src="../../_images/0029dfcc21680413aeb08a89be0f93e7afde31739b027d6b194700b168ef14f5.png" style="width: 624px; height: 463px;" />
-</a>
+<img alt="../../_images/fe0b13407f2c391e638fb22aacd1aaf58bcffdc6fe0e3c9c99cac9a18f0a6777.png" src="../../_images/fe0b13407f2c391e638fb22aacd1aaf58bcffdc6fe0e3c9c99cac9a18f0a6777.png" />
 </div>
 </div>
 <p>Now we can find the throat seed values as the <em>minimum pore seed</em> value of the two neighboring pores:</p>
@@ -706,8 +697,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/34a83ed8daf8277fcc1633b339221e60b2b4dc0cd9fbb4846ca239057f7ec361.png"><img alt="../../_images/34a83ed8daf8277fcc1633b339221e60b2b4dc0cd9fbb4846ca239057f7ec361.png" src="../../_images/34a83ed8daf8277fcc1633b339221e60b2b4dc0cd9fbb4846ca239057f7ec361.png" style="width: 624px; height: 463px;" />
-</a>
+<img alt="../../_images/9c3cd0af48ae05cbd5a5fe7582021b1cdb6976d7aac40b66dfc95fd332579584.png" src="../../_images/9c3cd0af48ae05cbd5a5fe7582021b1cdb6976d7aac40b66dfc95fd332579584.png" />
 </div>
 </div>
 <p>Once the pore and throat diameters are specified, the next step is to define any dependent properties of interest, such as pore volume or throat length. These additional calculations tend to require that we assume a shape for the pores and throats.  It is not mandatory to use spheres and cylinders, though this is a common choice.  We could also work with cubic pores and cuboid throats, which occupy a large volume fraction for instance.  The choice of cubic shapes also happens to make the calculations much easier, for reasons explored below, so in this tutorial we’ll assume cubic shapes.  Let’s calculate the throat length, and pore surface area, since each of these illustrate very important concepts regarding the use of vectorized calculations.</p>
@@ -780,7 +770,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_seed</span><span class="o">.</span><span class="n">random</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> 
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
              <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Seed value provided to numpy&#39;s random number generator.</span>
              <span class="n">num_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">],)</span>
@@ -797,7 +787,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_seed</span><span class="o">.</span><span class="n">from_neighbor_pores</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span> 
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
              <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
@@ -816,7 +806,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">normal</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mf">2.5e-5</span><span class="p">,</span>
              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">);</span>
@@ -824,8 +814,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/58dca6f934014aaf3beabbe3dd865a9fbfb5fa5186aeaa42afa75a90b6659e9e.png"><img alt="../../_images/58dca6f934014aaf3beabbe3dd865a9fbfb5fa5186aeaa42afa75a90b6659e9e.png" src="../../_images/58dca6f934014aaf3beabbe3dd865a9fbfb5fa5186aeaa42afa75a90b6659e9e.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/f4460e3c8e63ad063f66df97bb70818879f787ecd7b87eac00e77d3d9544d13a.png" src="../../_images/f4460e3c8e63ad063f66df97bb70818879f787ecd7b87eac00e77d3d9544d13a.png" />
 </div>
 </div>
 <p>And similarly we fetch a model for the throat sizes as well:</p>
@@ -834,7 +823,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_size</span><span class="o">.</span><span class="n">normal</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mf">2.5e-5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
@@ -842,8 +831,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/fffe4e8628965bc1dedf12fa713447e7ab7382e7fdbac7e06707d6b8ded3932d.png"><img alt="../../_images/fffe4e8628965bc1dedf12fa713447e7ab7382e7fdbac7e06707d6b8ded3932d.png" src="../../_images/fffe4e8628965bc1dedf12fa713447e7ab7382e7fdbac7e06707d6b8ded3932d.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/bf3632fbcf2dacf46b8daf40c1a9c3e0a546db11e01910b9855a04feaebf6fee.png" src="../../_images/bf3632fbcf2dacf46b8daf40c1a9c3e0a546db11e01910b9855a04feaebf6fee.png" />
 </div>
 </div>
 <p>Now that we have pore and throat sizes, we can compute their volumes (and other properties). The volume will depend on the shape of the pores and throats.  In OpenPNM we do not explicitly track such <em>shapes</em>.  Instead we offer several models that calculate the property of interest for a given shape. This is illustrated below:</p>
@@ -852,7 +840,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">spheres_and_cylinders</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-<span class="n">f1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span> 
+<span class="n">f1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f1</span><span class="p">)</span>
 <span class="n">f2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cylinder</span>
@@ -872,7 +860,7 @@ net : &lt;openpnm.network.Cubic at 0x7fe9a4273ec0&gt;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">spheres_and_cylinders</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.length&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-<span class="n">f1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span> 
+<span class="n">f1</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_volume</span><span class="o">.</span><span class="n">sphere</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f1</span><span class="p">)</span>
 <span class="n">f2</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_volume</span><span class="o">.</span><span class="n">cylinder</span>
@@ -928,40 +916,40 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7fe97d8d2b90&gt;,
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pore.diameter&#39;: {&#39;model&#39;: &lt;function product at 0x7f84f00f3b00&gt;,
                    &#39;props&#39;: [&#39;pore.max_size&#39;, &#39;pore.seed&#39;]},
  &#39;pore.max_size&#39;: {&#39;iters&#39;: 10,
-                   &#39;model&#39;: &lt;function largest_sphere at 0x7fe97b6d89d0&gt;},
+                   &#39;model&#39;: &lt;function largest_sphere at 0x7f84edd88860&gt;},
  &#39;pore.seed&#39;: {&#39;element&#39;: &#39;pore&#39;,
-               &#39;model&#39;: &lt;function random at 0x7fe97d8d25f0&gt;,
+               &#39;model&#39;: &lt;function random at 0x7f84f00f32e0&gt;,
                &#39;num_range&#39;: [0.2, 0.7],
                &#39;seed&#39;: None},
- &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7fe97b6d8d30&gt;,
+ &#39;pore.volume&#39;: {&#39;model&#39;: &lt;function sphere at 0x7f84edd88ea0&gt;,
                  &#39;pore_diameter&#39;: &#39;pore.diameter&#39;},
- &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7fe97b6d9480&gt;,
+ &#39;throat.cross_sectional_area&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f84edd89940&gt;,
                                  &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.diameter&#39;: {&#39;factor&#39;: 0.5,
-                     &#39;model&#39;: &lt;function scaled at 0x7fe97d8d2c20&gt;,
+                     &#39;model&#39;: &lt;function scaled at 0x7f84f00f3ba0&gt;,
                      &#39;prop&#39;: &#39;throat.max_size&#39;},
- &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7fe97b729ea0&gt;,
+ &#39;throat.diffusive_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f84f00f2d40&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7fe97b7289d0&gt;,
+ &#39;throat.hydraulic_size_factors&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f84edd8bce0&gt;,
                                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7fe97b6d9b40&gt;,
+ &#39;throat.length&#39;: {&#39;model&#39;: &lt;function spheres_and_cylinders at 0x7f84edd8a660&gt;,
                    &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                    &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
- &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7fe97b6da830&gt;,
+ &#39;throat.lens_volume&#39;: {&#39;model&#39;: &lt;function lens at 0x7f84edd8b920&gt;,
                         &#39;pore_diameter&#39;: &#39;pore.diameter&#39;,
                         &#39;throat_diameter&#39;: &#39;throat.diameter&#39;},
  &#39;throat.max_size&#39;: {&#39;mode&#39;: &#39;min&#39;,
-                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7fe97d8d2d40&gt;,
+                     &#39;model&#39;: &lt;function from_neighbor_pores at 0x7f84f00f3ce0&gt;,
                      &#39;prop&#39;: &#39;pore.diameter&#39;},
- &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7fe97b6da3b0&gt;,
+ &#39;throat.total_volume&#39;: {&#39;model&#39;: &lt;function cylinder at 0x7f84edd8b6a0&gt;,
                          &#39;throat_diameter&#39;: &#39;throat.diameter&#39;,
                          &#39;throat_length&#39;: &#39;throat.length&#39;},
- &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7fe97d8d2830&gt;,
+ &#39;throat.volume&#39;: {&#39;model&#39;: &lt;function difference at 0x7f84f00f3740&gt;,
                    &#39;props&#39;: [&#39;throat.total_volume&#39;, &#39;throat.lens_volume&#39;]}}
 </pre></div>
 </div>
@@ -978,7 +966,7 @@ Actual throat volumes: [1.57978631e-14 1.74677718e-14 1.68073070e-14]
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7fe97923b1a0&gt;
+net : &lt;openpnm.network.Cubic at 0x7f84eb96c370&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1055,7 +1043,7 @@ pore.diameter             model:                    product
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_size</span><span class="o">.</span><span class="n">normal</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mf">2.5e-5</span><span class="p">,</span>
              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
 </pre></div>
@@ -1091,8 +1079,7 @@ pore.diameter             model:                    normal
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/957213165048d181bb79166e1bbe3f6ac50d59932cfd43fc7f4c5ffee9cc3cfe.png"><img alt="../../_images/957213165048d181bb79166e1bbe3f6ac50d59932cfd43fc7f4c5ffee9cc3cfe.png" src="../../_images/957213165048d181bb79166e1bbe3f6ac50d59932cfd43fc7f4c5ffee9cc3cfe.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/f772626b32424b5d87efa401a51e37e3ff948dd7f58d76a95fc59a336ca30677.png" src="../../_images/f772626b32424b5d87efa401a51e37e3ff948dd7f58d76a95fc59a336ca30677.png" />
 </div>
 </div>
 <p>This distribution is quite truncated, due to the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> values that were used.  Let’s reach into that model and change this.  First print the model:</p>
@@ -1126,8 +1113,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/94440261f150a9a5475020156f6007da830f49d92c48b2ded3251386f8e7a7d3.png"><img alt="../../_images/94440261f150a9a5475020156f6007da830f49d92c48b2ded3251386f8e7a7d3.png" src="../../_images/94440261f150a9a5475020156f6007da830f49d92c48b2ded3251386f8e7a7d3.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/32b5460ed1de8cf1c73072b718596bb838f3e903173a9e83ca757bdd94111835.png" src="../../_images/32b5460ed1de8cf1c73072b718596bb838f3e903173a9e83ca757bdd94111835.png" />
 </div>
 </div>
 </section>
@@ -1141,7 +1127,7 @@ pore.seed                 model:                    random
              <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">pore_seed</span><span class="o">.</span><span class="n">random</span><span class="p">)</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mf">2.5e-5</span><span class="p">,</span>
              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span>
@@ -1149,7 +1135,7 @@ pore.seed                 model:                    random
              <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">)</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">,</span>
              <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
-             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> 
+             <span class="n">scale</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
              <span class="n">loc</span><span class="o">=</span><span class="mf">2.5e-5</span><span class="p">,</span>
              <span class="n">seeds</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">])</span>
@@ -1196,8 +1182,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/c4b754f912c3e09b575f5bb131e27c33406cbc8cf4b8154fbc4c7b6b07771ad4.png"><img alt="../../_images/c4b754f912c3e09b575f5bb131e27c33406cbc8cf4b8154fbc4c7b6b07771ad4.png" src="../../_images/c4b754f912c3e09b575f5bb131e27c33406cbc8cf4b8154fbc4c7b6b07771ad4.png" style="width: 623px; height: 463px;" />
-</a>
+<img alt="../../_images/a88c07162d2123edef752b73cae59f022a342cabd54e7ed617aa81038838ea2f.png" src="../../_images/a88c07162d2123edef752b73cae59f022a342cabd54e7ed617aa81038838ea2f.png" />
 </div>
 </div>
 <p>The green circles are pore properties and the orange squares are throat properties. We can also see that there are two models which are not dependent on anything else: <code class="docutils literal notranslate"><span class="pre">'throat.spacing'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.coordination_number'</span></code>.  These are added to all networks during generation but not run, hence their values do no show up when doing <code class="docutils literal notranslate"><span class="pre">print(pn)</span></code>.</p>
@@ -1213,8 +1198,7 @@ pore.seed                 model:                    random
 </div>
 </div>
 <div class="cell_output docutils container">
-<a class="reference internal image-reference" href="../../_images/afb03eeece9cf1c9ae3195c9c5fd21c0e5d18ba3c3f9a11e6a41bcac90e7443f.png"><img alt="../../_images/afb03eeece9cf1c9ae3195c9c5fd21c0e5d18ba3c3f9a11e6a41bcac90e7443f.png" src="../../_images/afb03eeece9cf1c9ae3195c9c5fd21c0e5d18ba3c3f9a11e6a41bcac90e7443f.png" style="width: 484px; height: 484px;" />
-</a>
+<img alt="../../_images/36367a2108a51ae6e7ee9aed2f0681325494c99b12e67bcb41576078e3c2ec3b.png" src="../../_images/36367a2108a51ae6e7ee9aed2f0681325494c99b12e67bcb41576078e3c2ec3b.png" />
 </div>
 </div>
 </section>

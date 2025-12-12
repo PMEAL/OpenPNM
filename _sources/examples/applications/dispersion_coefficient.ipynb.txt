@@ -161,8 +161,8 @@
     "sf = op.algorithms.StokesFlow(network=pn, phase=water)\n",
     "sf.set_value_BC(pores=pn.pores('back'), values=50.0)\n",
     "sf.set_value_BC(pores=pn.pores('front'), values=0)\n",
-    "sf.run();\n",
-    "water.update({'pore.pressure':sf['pore.pressure']})"
+    "sf.run()\n",
+    "water.update({'pore.pressure': sf['pore.pressure']})"
    ]
   },
   {
@@ -189,8 +189,8 @@
     "mod = op.models.physics.ad_dif_conductance.ad_dif\n",
     "water.add_model(propname='throat.ad_dif_conductance', model=mod, s_scheme='powerlaw')\n",
     "ad = op.algorithms.TransientAdvectionDiffusion(network=pn, phase=water)\n",
-    "ad.settings._update({'pore.volume' : 'pore.effective_volume'})\n",
-    "inlet  = pn.pores('back') \n",
+    "ad.settings._update({'pore.volume': 'pore.effective_volume'})\n",
+    "inlet = pn.pores('back')\n",
     "outlet = pn.pores('front')\n",
     "ad.set_value_BC(pores=inlet, values=1.0)\n",
     "ad.set_outflow_BC(pores=outlet)\n",
@@ -1088,10 +1088,10 @@
     "soln = ad.soln\n",
     "for ti in soln['pore.concentration'].t:\n",
     "    c_front = soln['pore.concentration'](ti)[Ps_front]\n",
-    "    q_front = sf.rate(throats=pn.Ts,mode='single')[Ts_front]\n",
+    "    q_front = sf.rate(throats=pn.Ts, mode='single')[Ts_front]\n",
     "    c_avg.append((q_front*c_front).sum() / q_front.sum())\n",
     "\n",
-    "fig, ax = plt.subplots()    \n",
+    "fig, ax = plt.subplots()\n",
     "ax.plot(soln['pore.concentration'].t, c_avg, \"o-\")\n",
     "ax.legend(('simulation', 'fitted'))\n",
     "ax.set_xlabel('time (s)')\n",
@@ -1125,7 +1125,7 @@
    "metadata": {},
    "outputs": [],
    "source": [
-    "def elution(step,v,DL):\n",
+    "def elution(step, v, DL):\n",
     "    x = 40*1e-4\n",
     "    el1 = 0.5*(special.erfc((x-step*v)/(2*(DL*step)**(1/2))))\n",
     "    el2 = 0.5*np.exp(v*x/DL)\n",
