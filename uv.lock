@@ -2468,6 +2468,18 @@ wheels = [
 ]
 
 [[package]]
+name = "numpydoc"
+version = "1.10.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e9/3c/dfccc9e7dee357fb2aa13c3890d952a370dd0ed071e0f7ed62ed0df567c1/numpydoc-1.10.0.tar.gz", hash = "sha256:3f7970f6eee30912260a6b31ac72bba2432830cd6722569ec17ee8d3ef5ffa01", size = 94027, upload-time = "2025-12-02T16:39:12.937Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/62/5e/3a6a3e90f35cea3853c45e5d5fb9b7192ce4384616f932cf7591298ab6e1/numpydoc-1.10.0-py3-none-any.whl", hash = "sha256:3149da9874af890bcc2a82ef7aae5484e5aa81cb2778f08e3c307ba6d963721b", size = 69255, upload-time = "2025-12-02T16:39:11.561Z" },
+]
+
+[[package]]
 name = "onemkl-license"
 version = "2025.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2478,7 +2490,7 @@ wheels = [
 
 [[package]]
 name = "openpnm"
-version = "3.5.5.dev4"
+version = "3.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "docrep" },
@@ -2522,6 +2534,7 @@ docs = [
     { name = "mock" },
     { name = "myst-nb" },
     { name = "nbstripout" },
+    { name = "numpydoc" },
     { name = "pandoc" },
     { name = "plotly" },
     { name = "pydata-sphinx-theme" },
@@ -2591,6 +2604,7 @@ docs = [
     { name = "mock" },
     { name = "myst-nb" },
     { name = "nbstripout", specifier = ">=0.8.1" },
+    { name = "numpydoc" },
     { name = "pandoc" },
     { name = "plotly" },
     { name = "pydata-sphinx-theme" },
