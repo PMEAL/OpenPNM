@@ -1,6 +1,6 @@
 [project]
 name = "openpnm"
-version = "3.6.0"
+version = "3.6.0-dev1"
 description = "A framework for conducting pore network modeling simulations of multiphase transport in porous materials"
 authors = [{ name = "OpenPNM Team", email = "jgostick@gmail.com" }]
 maintainers = [
@@ -220,7 +220,7 @@ path = "src/openpnm/__version__.py"
 packages = ["src/openpnm"]
 
 [tool.bumpversion]
-current_version = "3.6.0"
+current_version = "3.6.0-dev1"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
