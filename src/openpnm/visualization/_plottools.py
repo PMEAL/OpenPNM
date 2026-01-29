@@ -26,7 +26,7 @@ def plot_connections(network,
                      size_by=None,
                      color_by=None,
                      label_by=None,
-                     cmap='jet',
+                     cmap='turbo',
                      color='b',
                      alpha=1.0,
                      linestyle='solid',
@@ -135,7 +135,7 @@ def plot_connections(network,
         fig, ax = plt.subplots()
     else:
         # The next line is necessary if ax was created using plt.subplots()
-        fig, ax = ax.get_figure(), ax.get_figure().gca()
+        fig = ax.get_figure()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -158,17 +158,12 @@ def plot_connections(network,
             cmap = plt.cm.get_cmap(cmap)
     # Override colors with color_by if given
     if color_by is not None:
-        color_by = np.array(color_by, dtype=np.float16)
+        color_by = np.array(color_by)
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        vmin = kwargs.pop('vmin', color_by.min())
-        vmax = kwargs.pop('vmax', color_by.max())
-        cscale = (color_by - vmin) / (vmax - vmin)
-        color = cmap(cscale)
-        color[:, 3] = alpha
     if size_by is not None:
         if len(size_by) != len(Ts):
             size_by = size_by[Ts]
@@ -182,11 +177,11 @@ def plot_connections(network,
     fontkws = kwargs.pop('font', {})
 
     if ThreeD:
-        lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
+        lc = Line3DCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
                               linestyles=linestyle, linewidths=linewidth,
                               antialiaseds=np.ones_like(network.Ts), **kwargs)
     else:
-        lc = LineCollection(throat_pos, colors=color, cmap=cmap,
+        lc = LineCollection(throat_pos, array=color_by, cmap=cmap, alpha=alpha,
                             linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
         if label_by is not None:
@@ -211,7 +206,7 @@ def plot_coordinates(network,
                      size_by=None,
                      color_by=None,
                      label_by=None,
-                     cmap='jet',
+                     cmap='turbo',
                      color='r',
                      alpha=1.0,
                      marker='o',
@@ -321,7 +316,7 @@ def plot_coordinates(network,
         fig, ax = plt.subplots()
     else:
         # The next line is necessary if ax was created using plt.subplots()
-        fig, ax = ax.get_figure(), ax.get_figure().gca()
+        fig = ax.get_figure()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -343,16 +338,12 @@ def plot_coordinates(network,
         except AttributeError:
             cmap = plt.cm.get_cmap(cmap)
     if color_by is not None:
-        color_by = np.array(color_by, dtype=np.float16)
+        color_by = np.array(color_by)
         if len(color_by) != len(Ps):
             color_by = color_by[Ps]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        vmin = kwargs.pop('vmin', color_by.min())
-        vmax = kwargs.pop('vmax', color_by.max())
-        cscale = (color_by - vmin) / (vmax - vmin)
-        color = cmap(cscale)
     if size_by is not None:
         if len(size_by) != len(Ps):
             size_by = size_by[Ps]
@@ -375,10 +366,11 @@ def plot_coordinates(network,
     else:
         _X, _Y = np.column_stack((X, Y, Z))[:, dim].T
         sc = ax.scatter(_X, _Y,
-                        c=color,
+                        c=color_by,
                         s=markersize,
                         marker=marker,
                         alpha=alpha,
+                        cmap=cmap,
                         **kwargs)
         if label_by is not None:
             for count, (i, j, k) in enumerate(network.coords[Ps, :]):
