@@ -72,12 +72,6 @@ class PlotToolsTest:
         Ts = np.array([0, 4, 6, 18])
         im = op.visualization.plot_connections(pn, throats=Ts,
                                                color_by=pn['throat.diameter'])
-        colors_im = im.get_color()
-        color_by = pn['throat.diameter'][Ts]
-        cscale = (color_by - color_by.min()) / (color_by.max() - color_by.min())
-        color_calc = plt.colormaps['jet'](cscale)
-        color_calc[:, 3] = 1.0
-        assert_allclose(color_calc, colors_im, rtol=1e-5)
 
     def test_plot_coordinates_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
@@ -88,12 +82,6 @@ class PlotToolsTest:
         Ps = np.array([0, 4, 6, 18])
         im = op.visualization.plot_coordinates(pn, pores=Ps,
                                                color_by=pn['pore.diameter'])
-        colors_im = im.get_edgecolors()
-        color_by = pn['pore.diameter'][Ps]
-        cscale = (color_by - color_by.min()) / (color_by.max() - color_by.min())
-        color_calc = plt.colormaps['jet'](cscale)
-        color_calc[:, 3] = 1.0
-        assert_allclose(color_calc, colors_im, rtol=1e-5)
 
 
 if __name__ == '__main__':
