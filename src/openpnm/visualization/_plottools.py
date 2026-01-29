@@ -175,6 +175,8 @@ def plot_connections(network,
         if len(label_by) != len(Ts):
             label_by = label_by[Ts]
     fontkws = kwargs.pop('font', {})
+    vmin = kwargs.pop('vmin', None)
+    vmax = kwargs.pop('vmax', None)
 
     if ThreeD:
         lc = Line3DCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
@@ -191,6 +193,7 @@ def plot_connections(network,
                         ha='center', va='center',
                         **fontkws)
     ax.add_collection(lc)
+    lc.set_clim([vmin, vmax])
 
     if np.size(Ts) > 0:
         _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
