@@ -164,6 +164,7 @@ def plot_connections(network,
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
+        color = color_by
     if size_by is not None:
         if len(size_by) != len(Ts):
             size_by = size_by[Ts]
@@ -183,7 +184,7 @@ def plot_connections(network,
                               linestyles=linestyle, linewidths=linewidth,
                               antialiaseds=np.ones_like(network.Ts), **kwargs)
     else:
-        lc = LineCollection(throat_pos, array=color_by, cmap=cmap, alpha=alpha,
+        lc = LineCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
                             linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
         if label_by is not None:
@@ -200,7 +201,7 @@ def plot_connections(network,
         _label_axes(ax=ax, X=X, Y=Y, Z=Z)
         fig.tight_layout()
 
-    return lc
+    return ax
 
 
 def plot_coordinates(network,
@@ -321,7 +322,7 @@ def plot_coordinates(network,
         # The next line is necessary if ax was created using plt.subplots()
         fig = ax.get_figure()
     if ThreeD and ax.name != '3d':
-        fig.delaxes(ax)
+        # fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
 
     # Collect specified coordinates
@@ -347,6 +348,7 @@ def plot_coordinates(network,
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
+        color = color_by
     if size_by is not None:
         if len(size_by) != len(Ps):
             size_by = size_by[Ps]
@@ -369,7 +371,7 @@ def plot_coordinates(network,
     else:
         _X, _Y = np.column_stack((X, Y, Z))[:, dim].T
         sc = ax.scatter(_X, _Y,
-                        c=color_by,
+                        c=color,
                         s=markersize,
                         marker=marker,
                         alpha=alpha,
@@ -385,7 +387,7 @@ def plot_coordinates(network,
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
     fig.tight_layout()
 
-    return sc
+    return ax
 
 
 def _label_axes(ax, X, Y, Z):

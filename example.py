@@ -73,7 +73,7 @@ rxn2.run()
 
 # Plot concentration profile
 fig, ax = plt.subplots()
-sc = op.visualization.plot_coordinates(
+ax = op.visualization.plot_coordinates(
     network=pn,
     ax=ax,
     color_by=rxn2['pore.concentration'],
@@ -82,7 +82,7 @@ sc = op.visualization.plot_coordinates(
     ec='k',
     linewidth=0.5,
 )
-lc = op.visualization.plot_connections(
+ax = op.visualization.plot_connections(
     network=pn,
     ax=ax,
     zorder=0,
@@ -91,3 +91,5 @@ lc = op.visualization.plot_connections(
     alpha=0.5,
 )
 ax.axis(False)
+fig.colorbar(ax.collections[0], label='pore.concentration')
+fig.colorbar(ax.collections[1], label='throat.diameter')
