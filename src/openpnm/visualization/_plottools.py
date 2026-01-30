@@ -26,7 +26,7 @@ def plot_connections(network,
                      size_by=None,
                      color_by=None,
                      label_by=None,
-                     cmap='jet',
+                     cmap='turbo',
                      color='b',
                      alpha=1.0,
                      linestyle='solid',
@@ -106,13 +106,13 @@ def plot_connections(network,
     >>> pn.add_boundary_pores()
     >>> Ts = pn.throats('*boundary', mode='not')  # find internal throats
     >>> fig, ax = plt.subplots()  # create empty figure
-    >>> _ = op.visualization.plot_connections(network=pn,
-    ...                                       throats=Ts)  # plot internal throats
+    >>> ax = op.visualization.plot_connections(network=pn,
+    ...                                        throats=Ts)  # plot internal throats
     >>> Ts = pn.throats('*boundary')  # find boundary throats
-    >>> _ = op.visualization.plot_connections(network=pn,
-    ...                                       throats=Ts,
-    ...                                       ax=ax,
-    ...                                       color='r')  # plot boundary throats in red
+    >>> ax = op.visualization.plot_connections(network=pn,
+    ...                                        throats=Ts,
+    ...                                        ax=ax,
+    ...                                        color='r')  # plot boundary throats in red
 
     """
     import matplotlib.pyplot as plt
@@ -135,7 +135,7 @@ def plot_connections(network,
         fig, ax = plt.subplots()
     else:
         # The next line is necessary if ax was created using plt.subplots()
-        fig, ax = ax.get_figure(), ax.get_figure().gca()
+        fig = ax.get_figure()
     if ThreeD and ax.name != '3d':
         fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
@@ -158,17 +158,13 @@ def plot_connections(network,
             cmap = plt.cm.get_cmap(cmap)
     # Override colors with color_by if given
     if color_by is not None:
-        color_by = np.array(color_by, dtype=np.float16)
+        color_by = np.array(color_by)
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        vmin = kwargs.pop('vmin', color_by.min())
-        vmax = kwargs.pop('vmax', color_by.max())
-        cscale = (color_by - vmin) / (vmax - vmin)
-        color = cmap(cscale)
-        color[:, 3] = alpha
+        color = color_by
     if size_by is not None:
         if len(size_by) != len(Ts):
             size_by = size_by[Ts]
@@ -180,13 +176,15 @@ def plot_connections(network,
         if len(label_by) != len(Ts):
             label_by = label_by[Ts]
     fontkws = kwargs.pop('font', {})
+    vmin = kwargs.pop('vmin', None)
+    vmax = kwargs.pop('vmax', None)
 
     if ThreeD:
-        lc = Line3DCollection(throat_pos, colors=color, cmap=cmap,
+        lc = Line3DCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
                               linestyles=linestyle, linewidths=linewidth,
                               antialiaseds=np.ones_like(network.Ts), **kwargs)
     else:
-        lc = LineCollection(throat_pos, colors=color, cmap=cmap,
+        lc = LineCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
                             linestyles=linestyle, linewidths=linewidth,
                             antialiaseds=np.ones_like(network.Ts), **kwargs)
         if label_by is not None:
@@ -196,13 +194,14 @@ def plot_connections(network,
                         ha='center', va='center',
                         **fontkws)
     ax.add_collection(lc)
+    lc.set_clim([vmin, vmax])
 
     if np.size(Ts) > 0:
         _scale_axes(ax=ax, X=X, Y=Y, Z=Z)
         _label_axes(ax=ax, X=X, Y=Y, Z=Z)
         fig.tight_layout()
 
-    return lc
+    return ax
 
 
 def plot_coordinates(network,
@@ -211,7 +210,7 @@ def plot_coordinates(network,
                      size_by=None,
                      color_by=None,
                      label_by=None,
-                     cmap='jet',
+                     cmap='turbo',
                      color='r',
                      alpha=1.0,
                      marker='o',
@@ -289,15 +288,15 @@ def plot_coordinates(network,
     >>> pn.add_boundary_pores()
     >>> Ps = pn.pores('internal')  # find internal pores
     >>> fig, ax = plt.subplots()  # create empty figure
-    >>> _ = op.visualization.plot_coordinates(network=pn,
-    ...                                       pores=Ps,
-    ...                                       color='b',
-    ...                                       ax=ax)  # plot internal pores
+    >>> ax = op.visualization.plot_coordinates(network=pn,
+    ...                                        pores=Ps,
+    ...                                        color='b',
+    ...                                        ax=ax)  # plot internal pores
     >>> Ps = pn.pores('*boundary')  # find boundary pores
-    >>> _ = op.visualization.plot_coordinates(network=pn,
-    ...                                       pores=Ps,
-    ...                                       color='r',
-    ...                                       ax=ax)  # plot boundary pores in red
+    >>> ax = op.visualization.plot_coordinates(network=pn,
+    ...                                        pores=Ps,
+    ...                                        color='r',
+    ...                                        ax=ax)  # plot boundary pores in red
 
     """
     import matplotlib.pyplot as plt
@@ -321,9 +320,9 @@ def plot_coordinates(network,
         fig, ax = plt.subplots()
     else:
         # The next line is necessary if ax was created using plt.subplots()
-        fig, ax = ax.get_figure(), ax.get_figure().gca()
+        fig = ax.get_figure()
     if ThreeD and ax.name != '3d':
-        fig.delaxes(ax)
+        # fig.delaxes(ax)
         ax = fig.add_subplot(111, projection='3d')
 
     # Collect specified coordinates
@@ -343,16 +342,13 @@ def plot_coordinates(network,
         except AttributeError:
             cmap = plt.cm.get_cmap(cmap)
     if color_by is not None:
-        color_by = np.array(color_by, dtype=np.float16)
+        color_by = np.array(color_by)
         if len(color_by) != len(Ps):
             color_by = color_by[Ps]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        vmin = kwargs.pop('vmin', color_by.min())
-        vmax = kwargs.pop('vmax', color_by.max())
-        cscale = (color_by - vmin) / (vmax - vmin)
-        color = cmap(cscale)
+        color = color_by
     if size_by is not None:
         if len(size_by) != len(Ps):
             size_by = size_by[Ps]
@@ -379,6 +375,7 @@ def plot_coordinates(network,
                         s=markersize,
                         marker=marker,
                         alpha=alpha,
+                        cmap=cmap,
                         **kwargs)
         if label_by is not None:
             for count, (i, j, k) in enumerate(network.coords[Ps, :]):
@@ -390,7 +387,7 @@ def plot_coordinates(network,
     _label_axes(ax=ax, X=Xl, Y=Yl, Z=Zl)
     fig.tight_layout()
 
-    return sc
+    return ax
 
 
 def _label_axes(ax, X, Y, Z):

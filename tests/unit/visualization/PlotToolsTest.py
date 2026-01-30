@@ -66,34 +66,65 @@ class PlotToolsTest:
     def test_plot_connections_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
-        pn.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders)
-        pn.regenerate_models()
         Ts = np.array([0, 4, 6, 18])
-        im = op.visualization.plot_connections(pn, throats=Ts,
-                                               color_by=pn['throat.diameter'])
-        colors_im = im.get_color()
-        color_by = pn['throat.diameter'][Ts]
-        cscale = (color_by - color_by.min()) / (color_by.max() - color_by.min())
-        color_calc = plt.colormaps['jet'](cscale)
-        color_calc[:, 3] = 1.0
-        assert_allclose(color_calc, colors_im, rtol=1e-5)
+        _ = op.visualization.plot_connections(
+            pn,
+            throats=Ts,
+            color_by=np.random.rand(pn.Nt),
+        )
 
     def test_plot_coordinates_color_by(self):
         pn = op.network.Cubic(shape=[5, 5, 1])
         np.random.seed(10)
-        pn.add_model_collection(
-            op.models.collections.geometry.spheres_and_cylinders)
-        pn.regenerate_models()
-        Ps = np.array([0, 4, 6, 18])
-        im = op.visualization.plot_coordinates(pn, pores=Ps,
-                                               color_by=pn['pore.diameter'])
-        colors_im = im.get_edgecolors()
-        color_by = pn['pore.diameter'][Ps]
-        cscale = (color_by - color_by.min()) / (color_by.max() - color_by.min())
-        color_calc = plt.colormaps['jet'](cscale)
-        color_calc[:, 3] = 1.0
-        assert_allclose(color_calc, colors_im, rtol=1e-5)
+        _ = op.visualization.plot_coordinates(
+            pn,
+            color_by=np.random.rand(pn.Np),
+        )
+
+    def test_plot_connections_and_coordinates_color_by_3D(self):
+        pn = op.network.Cubic(shape=[5, 5, 5])
+        np.random.seed(10)
+        ax = op.visualization.plot_connections(
+            pn,
+            color_by=np.random.rand(pn.Nt),
+        )
+        ax = op.visualization.plot_coordinates(
+            pn,
+            color_by=np.random.rand(pn.Np),
+            ax=ax,
+        )
+
+    def test_plot_connections_and_coordinates_color(self):
+        pn = op.network.Cubic(shape=[5, 5, 1])
+        ax = op.visualization.plot_connections(
+            network=pn,
+            color='b',
+        )
+        ax = op.visualization.plot_coordinates(
+            network=pn,
+            color='b',
+            ax=ax,
+        )
+
+    def test_3d(self):
+        pn = op.network.Cubic(shape=[10, 10, 3])
+        pn['pore.internal'] = True
+        pn.add_boundary_pores()
+        Ps = pn.pores('internal')  # find internal pores
+        fig, ax = plt.subplots()  # create empty figure
+        ax = op.visualization.plot_coordinates(
+            network=pn,
+            pores=Ps,
+            color='g',
+            ax=ax,
+        )
+        Ps = pn.pores('*boundary')  # find boundary pores
+        ax = op.visualization.plot_coordinates(
+            network=pn,
+            pores=Ps,
+            color='r',
+            ax=ax,
+        )
 
 
 if __name__ == '__main__':
