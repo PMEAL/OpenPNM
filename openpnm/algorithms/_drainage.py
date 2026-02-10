@@ -193,13 +193,38 @@ class Drainage(Algorithm):
 
     def _snap_off(self, pressure):
  
-        Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure']
-        hasPressureToSnapOff = pressure > Pc_snapoff
-        hasAdjancentPoresFilledWith_nwp = ~self['pore.invaded'][self.network.conns[:,0]] & ~self['pore.invaded'][self.network.conns[:,1]]
-        isThroatFilledWith_nwp = ~self['throat.invaded']
+        Pc_snapoff = self.project[self.settings.phase]["pore.surface_tension"]
+        
+        Pc -= sigma * A * (num_active_conns_per_node-1).clip(min=0)
 
-        snapOffHappens = hasPressureToSnapOff & hasAdjancentPoresFilledWith_nwp & isThroatFilledWith_nwp
-        self['throat.invaded'][snapOffHappens] = True
+        is_pore_filled_with_nwp = ~self['pore.invaded']
+        has_pressure_to_pbf =  pressure >= Pc
+
+        pore_body_filling_happens = is_pore_filled_with_nwp & has_pressure_to_pbf & (num_active_conns_per_node>0)
+        self['pore.invaded'][pore_body_filling_happens] = True
+        pbf_now = pore_body_filling_happens & (self['pore.invasion_pressure'] == np.inf)
+        self['pore.invasion_pressure'][pbf_now] = pressure
+        self['pore.invasion_sequence'][pbf_now] = i
+
+
+
+    def _snap_off(self, pressure, i, spontaneous = True):
+       
+        if spontaneous:
+            Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure_spontaneous']
+        else:
+            Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure_forced']
+
+        has_pressure_to_snap_off = pressure >= Pc_snapoff
+        has_adjancent_pores_filled_with_nwp = ~self['pore.invaded'][self.network.conns[:,0]] & ~self['pore.invaded'][self.network.conns[:,1]]
+        is_throat_filled_with_nwp = ~self['throat.invaded']
+
+        snap_off_happens = has_pressure_to_snap_off & has_adjancent_pores_filled_with_nwp & is_throat_filled_with_nwp
+        self['throat.invaded'][snap_off_happens] = True
+        snap_off_now = snap_off_happens & (self['throat.invasion_pressure'] == np.inf)
+        self['throat.invasion_pressure'][snap_off_now] = pressure
+        self['throat.invasion_sequence'][snap_off_now] = i
+
 
     def apply_trapping(self):
         r"""
