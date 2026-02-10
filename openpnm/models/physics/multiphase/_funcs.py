@@ -2,7 +2,9 @@ import numpy as np
 from openpnm.models import _doctxt
 
 
-__all__ = ["conduit_conductance", "late_filling"]
+__all__ = ["conduit_conductance",
+           "conduit_conductance_imb_wp",
+           "late_filling"]
 
 
 @_doctxt
@@ -65,6 +67,34 @@ def conduit_conductance(phase, throat_conductance,
     value = phase[throat_conductance].copy()
     value[mask] = value[mask]*factor
     return value
+
+@_doctxt
+def conduit_conductance_imb_wp(phase, throat_conductance, corner_conductance,
+                        throat_occupancy='throat.occupancy',
+                        pore_occupancy='pore.occupancy',
+                        mode='strict', factor=1e-6):
+    
+    """
+    function to compute conductance considering the wetting phase layer at the walls when the throat is filled with non wetting phase.. to be applied in water invasion cases
+    """
+
+    network = phase.network
+    invaded_throats = phase[throat_occupancy] < 0.5
+    uninvaded_throats = ~invaded_throats
+    conns = network['throat.conns']
+    invaded_pores = phase[pore_occupancy] < 0.5
+    invaded_pores = np.sum(invaded_pores[conns], axis=1).astype(bool)
+    restriction =  (invaded_pores + invaded_throats).astype(bool)
+
+    g = phase[throat_conductance].copy()  
+    g[restriction] *= factor
+
+    g_pc = phase[corner_conductance].copy()
+    G = network["throat.shape_factor"]
+    circular_throats = G > 0.079
+    g[restriction & ~circular_throats] += np.sum(g_pc[restriction & ~circular_throats], axis=1)
+
+    return g
 
 
 @_doctxt
