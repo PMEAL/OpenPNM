@@ -75,7 +75,9 @@ def conduit_conductance_imb_wp(phase, throat_conductance, corner_conductance,
                         mode='strict', factor=1e-6):
     
     """
-    function to compute conductance considering the wetting phase layer at the walls when the throat is filled with non wetting phase.. to be applied in water invasion cases
+    function to compute conductance considering the wetting phase layer at the walls
+    when the throat is filled with non wetting phase..
+    to be applied in water invasion cases
     """
 
     network = phase.network
