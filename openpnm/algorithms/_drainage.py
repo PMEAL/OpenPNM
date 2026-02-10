@@ -51,6 +51,7 @@ class Drainage(Algorithm):
         self['pore.bc.inlet'] = False
         self['pore.bc.outlet'] = False
         self.is_imbibition = is_imbibition
+        self.pmax_drainage = None
         self.reset()
 
     def reset(self):
@@ -298,6 +299,12 @@ class Drainage(Algorithm):
         pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
         data = pc_curve(np.array(pc), np.array(s))
         return data
+
+    def get_pmax(self):
+        return self.pmax_drainage
+    
+    def update_pmax(self, pmax):
+        self.pmax_drainage = pmax
 
 
 # %%
