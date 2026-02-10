@@ -191,9 +191,49 @@ class Drainage(Algorithm):
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
 
-    def _snap_off(self, pressure):
- 
-        Pc_snapoff = self.project[self.settings.phase]["pore.surface_tension"]
+
+    def _imb_piston_like_displacement(self, pressure, i):
+
+        invaded_pores   = self['pore.invaded']
+        invaded_throats = self['throat.invaded']
+        conns = self.network.conns
+     
+        has_pressure = pressure >= self.project[self.settings.phase][self.settings.throat_entry_pressure] 
+        has_adjacent_inv_pore = invaded_pores[conns[:,0]] | invaded_pores[conns[:,1]] 
+
+        piston_like_displacement = has_adjacent_inv_pore & has_pressure
+        self['throat.invaded'][piston_like_displacement] = True
+        pld_now = piston_like_displacement & (self['throat.invasion_pressure'] == np.inf)
+        self['throat.invasion_pressure'][pld_now] = pressure
+        self['throat.invasion_sequence'][pld_now] = i
+
+
+    def _pore_body_filling(self, pressure, i):
+
+        K = self.project[self.settings.phase]['pore.abs_perm'] * 10**12
+        # A = 4* 0.015*10**(-3) #0.03 / np.sqrt(K)#
+        A = 1* 0.03 /np.sqrt(K)
+
+        Pc = self.project[self.settings.phase]['pore.capillary_pressure_basis']
+
+        is_throat_invaded = self['throat.invaded']
+
+        conns = self.network.conns
+        num_nodes = conns.max() + 1  # number of nodes or pores = Np
+
+        # Repeat the invaded flag for both ends of each throat
+        weights = np.concatenate((is_throat_invaded.astype(int)[:, None], 
+                                  is_throat_invaded.astype(int)[:, None]), axis=1).astype(float)
+        # weights *= np.random.rand(weights.shape[0], 2)
+        
+        # Count invaded throats per pore
+        num_active_conns_per_node = np.bincount(
+            conns.ravel(),
+            weights=weights.ravel(),
+            minlength=num_nodes
+            )
+
+        sigma = self.project[self.settings.phase]["pore.surface_tension"]
         
         Pc -= sigma * A * (num_active_conns_per_node-1).clip(min=0)
 
