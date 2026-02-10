@@ -51,6 +51,7 @@ class Drainage(Algorithm):
         self['pore.bc.inlet'] = False
         self['pore.bc.outlet'] = False
         self.is_imbibition = is_imbibition
+        self.pmax_drainage = None
         self.reset()
 
     def reset(self):
@@ -160,17 +161,27 @@ class Drainage(Algorithm):
             low = 0.80*phase[self.settings.throat_entry_pressure].min()
             pressures = np.logspace(np.log10(low), np.log10(hi), pressures)
         pressures = np.array(pressures, ndmin=1)
-        msg = 'Performing drainage simulation'
-        for i, p in enumerate(tqdm(pressures, msg)):
-            self._run_special(p)
-            pmask = self['pore.invaded'] * (self['pore.invasion_pressure'] == np.inf)
-            self['pore.invasion_pressure'][pmask] = p
-            self['pore.invasion_sequence'][pmask] = i
-            tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
-            self['throat.invasion_pressure'][tmask] = p
-            self['throat.invasion_sequence'][tmask] = i
-            if self.is_imbibition:
-                self._snap_off(p)
+
+        if not self.is_imbibition: 
+            msg = 'Performing drainage simulation'
+            for i, p in enumerate(tqdm(pressures, msg)):
+                self._run_special(p)
+                pmask = self['pore.invaded'] * (self['pore.invasion_pressure'] == np.inf)
+                self['pore.invasion_pressure'][pmask] = p
+                self['pore.invasion_sequence'][pmask] = i
+                tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
+                self['throat.invasion_pressure'][tmask] = p
+                self['throat.invasion_sequence'][tmask] = i
+                self.pmax_drainage = p
+
+        else: 
+            msg = 'Performing imbibition simulation'
+            for i, p in enumerate(tqdm(pressures, msg)):
+                self._imb_piston_like_displacement(p, i)
+                spontaneous = p < self.pmax_drainage
+                self._snap_off(p, i, spontaneous=spontaneous)
+                self._pore_body_filling(p, i)
+
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.bc.outlet']):
             self.apply_trapping()
@@ -190,15 +201,80 @@ class Drainage(Algorithm):
         self['pore.invaded'][s_labels >= 0] = True
         self['throat.invaded'][b_labels >= 0] = True
 
-    def _snap_off(self, pressure):
- 
-        Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure']
-        hasPressureToSnapOff = pressure > Pc_snapoff
-        hasAdjancentPoresFilledWith_nwp = ~self['pore.invaded'][self.network.conns[:,0]] & ~self['pore.invaded'][self.network.conns[:,1]]
-        isThroatFilledWith_nwp = ~self['throat.invaded']
 
-        snapOffHappens = hasPressureToSnapOff & hasAdjancentPoresFilledWith_nwp & isThroatFilledWith_nwp
-        self['throat.invaded'][snapOffHappens] = True
+    def _imb_piston_like_displacement(self, pressure, i):
+
+        invaded_pores   = self['pore.invaded']
+        invaded_throats = self['throat.invaded']
+        conns = self.network.conns
+     
+        has_pressure = pressure >= self.project[self.settings.phase][self.settings.throat_entry_pressure] 
+        has_adjacent_inv_pore = invaded_pores[conns[:,0]] | invaded_pores[conns[:,1]] 
+
+        piston_like_displacement = has_adjacent_inv_pore & has_pressure
+        self['throat.invaded'][piston_like_displacement] = True
+        pld_now = piston_like_displacement & (self['throat.invasion_pressure'] == np.inf)
+        self['throat.invasion_pressure'][pld_now] = pressure
+        self['throat.invasion_sequence'][pld_now] = i
+
+
+    def _pore_body_filling(self, pressure, i):
+
+        K = self.project[self.settings.phase]['pore.abs_perm'] * 10**12
+        # A = 4* 0.015*10**(-3) #0.03 / np.sqrt(K)#
+        A = 1* 0.03 /np.sqrt(K)
+
+        Pc = self.project[self.settings.phase]['pore.capillary_pressure_basis']
+
+        is_throat_invaded = self['throat.invaded']
+
+        conns = self.network.conns
+        num_nodes = conns.max() + 1  # number of nodes or pores = Np
+
+        # Repeat the invaded flag for both ends of each throat
+        weights = np.concatenate((is_throat_invaded.astype(int)[:, None], 
+                                  is_throat_invaded.astype(int)[:, None]), axis=1).astype(float)
+        # weights *= np.random.rand(weights.shape[0], 2)
+        
+        # Count invaded throats per pore
+        num_active_conns_per_node = np.bincount(
+            conns.ravel(),
+            weights=weights.ravel(),
+            minlength=num_nodes
+            )
+
+        sigma = self.project[self.settings.phase]["pore.surface_tension"]
+        
+        Pc -= sigma * A * (num_active_conns_per_node-1).clip(min=0)
+
+        is_pore_filled_with_nwp = ~self['pore.invaded']
+        has_pressure_to_pbf =  pressure >= Pc
+
+        pore_body_filling_happens = is_pore_filled_with_nwp & has_pressure_to_pbf & (num_active_conns_per_node>0)
+        self['pore.invaded'][pore_body_filling_happens] = True
+        pbf_now = pore_body_filling_happens & (self['pore.invasion_pressure'] == np.inf)
+        self['pore.invasion_pressure'][pbf_now] = pressure
+        self['pore.invasion_sequence'][pbf_now] = i
+
+
+
+    def _snap_off(self, pressure, i, spontaneous = True):
+       
+        if spontaneous:
+            Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure_spontaneous']
+        else:
+            Pc_snapoff = self.project[self.settings.phase]['throat.snap_off_pressure_forced']
+
+        has_pressure_to_snap_off = pressure >= Pc_snapoff
+        has_adjancent_pores_filled_with_nwp = ~self['pore.invaded'][self.network.conns[:,0]] & ~self['pore.invaded'][self.network.conns[:,1]]
+        is_throat_filled_with_nwp = ~self['throat.invaded']
+
+        snap_off_happens = has_pressure_to_snap_off & has_adjancent_pores_filled_with_nwp & is_throat_filled_with_nwp
+        self['throat.invaded'][snap_off_happens] = True
+        snap_off_now = snap_off_happens & (self['throat.invasion_pressure'] == np.inf)
+        self['throat.invasion_pressure'][snap_off_now] = pressure
+        self['throat.invasion_sequence'][snap_off_now] = i
+
 
     def apply_trapping(self):
         r"""
@@ -298,6 +374,12 @@ class Drainage(Algorithm):
         pc_curve = namedtuple('pc_curve', ('pc', 'snwp'))
         data = pc_curve(np.array(pc), np.array(s))
         return data
+
+    def get_pmax(self):
+        return self.pmax_drainage
+    
+    def update_pmax(self, pmax):
+        self.pmax_drainage = pmax
 
 
 # %%
