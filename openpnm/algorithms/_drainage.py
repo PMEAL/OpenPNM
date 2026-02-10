@@ -161,17 +161,27 @@ class Drainage(Algorithm):
             low = 0.80*phase[self.settings.throat_entry_pressure].min()
             pressures = np.logspace(np.log10(low), np.log10(hi), pressures)
         pressures = np.array(pressures, ndmin=1)
-        msg = 'Performing drainage simulation'
-        for i, p in enumerate(tqdm(pressures, msg)):
-            self._run_special(p)
-            pmask = self['pore.invaded'] * (self['pore.invasion_pressure'] == np.inf)
-            self['pore.invasion_pressure'][pmask] = p
-            self['pore.invasion_sequence'][pmask] = i
-            tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
-            self['throat.invasion_pressure'][tmask] = p
-            self['throat.invasion_sequence'][tmask] = i
-            if self.is_imbibition:
-                self._snap_off(p)
+
+        if not self.is_imbibition: 
+            msg = 'Performing drainage simulation'
+            for i, p in enumerate(tqdm(pressures, msg)):
+                self._run_special(p)
+                pmask = self['pore.invaded'] * (self['pore.invasion_pressure'] == np.inf)
+                self['pore.invasion_pressure'][pmask] = p
+                self['pore.invasion_sequence'][pmask] = i
+                tmask = self['throat.invaded'] * (self['throat.invasion_pressure'] == np.inf)
+                self['throat.invasion_pressure'][tmask] = p
+                self['throat.invasion_sequence'][tmask] = i
+                self.pmax_drainage = p
+
+        else: 
+            msg = 'Performing imbibition simulation'
+            for i, p in enumerate(tqdm(pressures, msg)):
+                self._imb_piston_like_displacement(p, i)
+                spontaneous = p < self.pmax_drainage
+                self._snap_off(p, i, spontaneous=spontaneous)
+                self._pore_body_filling(p, i)
+
         # If any outlets were specified, evaluate trapping
         if np.any(self['pore.bc.outlet']):
             self.apply_trapping()
