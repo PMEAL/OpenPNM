@@ -15,35 +15,7 @@
    "execution_count": 1,
    "id": "e13b67cf",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_lt_methods.py:21: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  strel = {2: {'min': disk(1), 'max': square(3)}, 3: {'min': ball(1), 'max': cube(3)}}\n",
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_lt_methods.py:21: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  strel = {2: {'min': disk(1), 'max': square(3)}, 3: {'min': ball(1), 'max': cube(3)}}\n",
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/metrics/_funcs.py:65: FutureWarning: `square` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  strel = {2: {\"min\": disk(1), \"max\": square(3)}, 3: {\"min\": ball(1), \"max\": cube(3)}}\n",
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/metrics/_funcs.py:65: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  strel = {2: {\"min\": disk(1), \"max\": square(3)}, 3: {\"min\": ball(1), \"max\": cube(3)}}\n"
-     ]
-    },
-    {
-     "data": {
-      "text/html": [
-       "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\"><span style=\"color: #7fbfbf; text-decoration-color: #7fbfbf\">[00:33:41] </span><span style=\"color: #800000; text-decoration-color: #800000; font-weight: bold\">ERROR   </span> Loaded version from importlib.metadata                                           <a href=\"file:///Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/__init__.py\" target=\"_blank\"><span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">__init__.py</span></a><span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">:</span><a href=\"file:///Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/__init__.py#57\" target=\"_blank\"><span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">57</span></a>\n",
-       "</pre>\n"
-      ],
-      "text/plain": [
-       "\u001b[2;36m[00:33:41]\u001b[0m\u001b[2;36m \u001b[0m\u001b[1;31mERROR   \u001b[0m Loaded version from importlib.metadata                                           \u001b]8;id=172077;file:///Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/__init__.py\u001b\\\u001b[2m__init__.py\u001b[0m\u001b]8;;\u001b\\\u001b[2m:\u001b[0m\u001b]8;id=173415;file:///Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/__init__.py#57\u001b\\\u001b[2m57\u001b[0m\u001b]8;;\u001b\\\n"
-      ]
-     },
-     "metadata": {},
-     "output_type": "display_data"
-    }
-   ],
+   "outputs": [],
    "source": [
     "import openpnm as op\n",
     "import porespy as ps\n",
@@ -123,20 +95,7 @@
    "execution_count": 4,
    "id": "b2a3d3d4",
    "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_snows.py:446: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))\n",
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_snows.py:594: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  labels, N = spim.label(peaks > 0, structure=cube(3))\n",
-      "/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/tools/_morphology.py:174: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.\n",
-      "  strel = cube(w)\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "snow = ps.networks.snow2(\n",
     "    phases=im,\n",
@@ -166,7 +125,7 @@
      "output_type": "stream",
      "text": [
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
-      "Results of snow2 generated at Fri Dec  5 00:33:54 2025\n",
+      "Results of snow2 generated at Thu Jan 29 09:27:16 2026\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
       "network                   Dictionary with 26 items\n",
       "regions                   Array of size (206, 200, 200)\n",
@@ -217,7 +176,7 @@
      "text": [
       "\n",
       "══════════════════════════════════════════════════════════════════════════════\n",
-      "net : <openpnm.network.Network at 0x11af6f6b0>\n",
+      "net : <openpnm.network.Network at 0x16273d040>\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
       "  #  Properties                                                   Valid Values\n",
       "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n",
@@ -398,12 +357,12 @@
     {
      "data": {
       "text/html": [
-       "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\"><span style=\"color: #7fbfbf; text-decoration-color: #7fbfbf\">[00:33:54] </span><span style=\"color: #808000; text-decoration-color: #808000\">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href=\"file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py\" target=\"_blank\"><span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">_models.py</span></a><span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">:</span><a href=\"file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py#480\" target=\"_blank\"><span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">480</span></a>\n",
+       "<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\"><span style=\"color: #7fbfbf; text-decoration-color: #7fbfbf\">[09:27:17] </span><span style=\"color: #808000; text-decoration-color: #808000\">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">_models.py:480</span>\n",
        "<span style=\"color: #7fbfbf; text-decoration-color: #7fbfbf\">           </span>         <span style=\"color: #008000; text-decoration-color: #008000\">'throat.surface_tension'</span>                                                         <span style=\"color: #7f7f7f; text-decoration-color: #7f7f7f\">              </span>\n",
        "</pre>\n"
       ],
       "text/plain": [
-       "\u001b[2;36m[00:33:54]\u001b[0m\u001b[2;36m \u001b[0m\u001b[33mWARNING \u001b[0m throat.entry_pressure was not run since the following property is missing:       \u001b]8;id=970589;file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py\u001b\\\u001b[2m_models.py\u001b[0m\u001b]8;;\u001b\\\u001b[2m:\u001b[0m\u001b]8;id=629820;file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py#480\u001b\\\u001b[2m480\u001b[0m\u001b]8;;\u001b\\\n",
+       "\u001b[2;36m[09:27:17]\u001b[0m\u001b[2;36m \u001b[0m\u001b[33mWARNING \u001b[0m throat.entry_pressure was not run since the following property is missing:       \u001b[2m_models.py\u001b[0m\u001b[2m:\u001b[0m\u001b[2m480\u001b[0m\n",
        "\u001b[2;36m           \u001b[0m         \u001b[32m'throat.surface_tension'\u001b[0m                                                         \u001b[2m              \u001b[0m\n"
       ]
      },
@@ -505,7 +464,7 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "openpnm",
+   "display_name": "OpenPNM",
    "language": "python",
    "name": "python3"
   },
@@ -519,7 +478,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.13.0"
+   "version": "3.12.0"
   }
  },
  "nbformat": 4,

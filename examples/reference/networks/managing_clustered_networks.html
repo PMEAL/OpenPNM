@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Managing Clustered Networks &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>Managing Clustered Networks &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -359,7 +359,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../applications/adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../applications/formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/porosity.html">Predicting Porosity</a></li>
@@ -542,7 +541,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7f1166a4e580&gt;
+net : &lt;openpnm.network.Demo at 0x7f6a2130a940&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -651,9 +650,9 @@ net : &lt;openpnm.network.Demo at 0x7f1166a4e580&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[200000.         200000.         200000.         200000.
- 200000.         165876.49078686 153184.41835841 127163.67266185
- 134277.5504535  126206.48758013 122693.35167395 101381.02257154
- 102393.63171917 114128.45499452 117983.09009042 117259.37497708
+ 200000.         178636.69904085 191761.73948114 195169.50740311
+ 137992.58783457 151362.94357216 166280.73197537 102246.39058585
+ 104297.78250028 108896.69883237 112325.47210668 122809.04959785
  100000.         100000.         100000.         100000.
  100000.        ]
 </pre></div>
@@ -668,16 +667,10 @@ net : &lt;openpnm.network.Demo at 0x7f1166a4e580&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/OpenPNM/OpenPNM/src/openpnm/visualization/_plottools.py:346: RuntimeWarning: overflow encountered in cast
-  color_by = np.array(color_by, dtype=np.float16)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;X&#39;, ylabel=&#39;Y&#39;&gt;
 </pre></div>
 </div>
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:20:13] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> nans or infs found in color_by array, setting to <span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0</span>                            <a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/visualization/_plottools.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_plottools.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/visualization/_plottools.py#351" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">351</span></a>
-</pre>
-</div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x7f11662ca900&gt;
-</pre></div>
-</div>
-<img alt="../../../_images/a3549771841b747a8b07b614c569edc2a46264b030be840f54b4e651a84e761f.png" src="../../../_images/a3549771841b747a8b07b614c569edc2a46264b030be840f54b4e651a84e761f.png" />
+<img alt="../../../_images/884ca891d79d96228f4c990ca77a82b7c2dc0c8c6c504c4194a0b712ad976734.png" src="../../../_images/884ca891d79d96228f4c990ca77a82b7c2dc0c8c6c504c4194a0b712ad976734.png" />
 </div>
 </div>
 </section>
@@ -737,7 +730,7 @@ net : &lt;openpnm.network.Demo at 0x7f1166a4e580&gt;
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

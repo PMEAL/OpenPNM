@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Import an Extracted Network and Predict Transport Properties &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>Import an Extracted Network and Predict Transport Properties &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -355,7 +355,6 @@
 <li class="toctree-l2"><a class="reference internal" href="adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porosity.html">Predicting Porosity</a></li>
@@ -517,16 +516,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_snows.py:446: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
-/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/filters/_snows.py:594: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  labels, N = spim.label(peaks &gt; 0, structure=cube(3))
-/Users/amin/Code/OpenPNM/.venv/lib/python3.13/site-packages/porespy/tools/_morphology.py:174: FutureWarning: `cube` is deprecated since version 0.25 and will be removed in version 0.27. Use `skimage.morphology.footprint_rectangle` instead.
-  strel = cube(w)
-</pre></div>
-</div>
-</div>
 </div>
 <p>For more details on the use of the <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function see <a class="reference external" href="https://porespy.org/examples/networks/reference/snow2.html">this example</a>.  The <code class="docutils literal notranslate"><span class="pre">snow2</span></code> function returns a <code class="docutils literal notranslate"><span class="pre">Results</span></code> object with results attaches as attributes.  We can see these attributes if we print it:</p>
 <div class="cell docutils container">
@@ -537,7 +526,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-Results of snow2 generated at Fri Dec  5 00:33:54 2025
+Results of snow2 generated at Thu Jan 29 09:27:16 2026
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 network                   Dictionary with 26 items
 regions                   Array of size (206, 200, 200)
@@ -564,7 +553,7 @@ phases                    Array of size (206, 200, 200)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Network at 0x11af6f6b0&gt;
+net : &lt;openpnm.network.Network at 0x16273d040&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -684,7 +673,7 @@ bidirectional_throats               []
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[00:33:54] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <a href="file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///Users/amin/Code/OpenPNM/src/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[09:27:17] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.entry_pressure was not run since the following property is missing:       <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py:480</span>
 <span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         <span style="color: #008000; text-decoration-color: #008000">'throat.surface_tension'</span>                                                         <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
 </pre>
 </div></div>
@@ -775,7 +764,7 @@ The compares to a value of 1.36 from DNS
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

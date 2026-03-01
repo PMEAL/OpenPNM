@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>plot_coordinates &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>plot_coordinates &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -1969,7 +1969,7 @@
 <h1>plot_coordinates<a class="headerlink" href="#plot-coordinates" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="openpnm.visualization.plot_coordinates">
-<span class="sig-name descname"><span class="pre">plot_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/visualization/_plottools.html#plot_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.visualization.plot_coordinates" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'turbo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/openpnm/visualization/_plottools.html#plot_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openpnm.visualization.plot_coordinates" title="Link to this definition">#</a></dt>
 <dd><p>Produce a 3D plot showing specified pore coordinates as markers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2028,15 +2028,15 @@ Otherwise, each call to either of these methods creates a new figure.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pn</span><span class="o">.</span><span class="n">add_boundary_pores</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;internal&#39;</span><span class="p">)</span>  <span class="c1"># find internal pores</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>  <span class="c1"># create empty figure</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
-<span class="gp">... </span>                                      <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span>
-<span class="gp">... </span>                                      <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                                      <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>  <span class="c1"># plot internal pores</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+<span class="gp">... </span>                                       <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span>
+<span class="gp">... </span>                                       <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                       <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>  <span class="c1"># plot internal pores</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ps</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;*boundary&#39;</span><span class="p">)</span>  <span class="c1"># find boundary pores</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
-<span class="gp">... </span>                                      <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span>
-<span class="gp">... </span>                                      <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                                      <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>  <span class="c1"># plot boundary pores in red</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+<span class="gp">... </span>                                       <span class="n">pores</span><span class="o">=</span><span class="n">Ps</span><span class="p">,</span>
+<span class="gp">... </span>                                       <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                       <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>  <span class="c1"># plot boundary pores in red</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2095,7 +2095,7 @@ Otherwise, each call to either of these methods creates a new figure.</p>
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

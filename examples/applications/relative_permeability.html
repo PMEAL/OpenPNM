@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting relative permeability &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>Predicting relative permeability &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -361,7 +361,6 @@
 <li class="toctree-l2"><a class="reference internal" href="adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porosity.html">Predicting Porosity</a></li>
@@ -470,12 +469,14 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">spheres_and_cylinders</span><span class="p">)</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+
 <span class="n">air</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Air</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;air&#39;</span><span class="p">)</span>
 <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.surface_tension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.072</span>
 <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.contact_angle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">180.0</span>
 <span class="n">air</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">air</span><span class="p">)</span>
 <span class="n">air</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span><span class="p">)</span>
 <span class="n">air</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
+
 <span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;water&#39;</span><span class="p">)</span>
 <span class="n">water</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">water</span><span class="p">)</span>
 <span class="n">water</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">basic</span><span class="p">)</span>
@@ -505,36 +506,14 @@
 <p>To update the occupancy of phases at each saturation point, we created a custom function:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">sat_occ_update</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">nwp</span><span class="p">,</span> <span class="n">wp</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculates the saturation of each phase using the invasion</span>
-<span class="sd">        sequence from either invasion percolation.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        network: network</span>
-<span class="sd">        nwp : phase</span>
-<span class="sd">            non-wetting phase</span>
-<span class="sd">        wp : phase</span>
-<span class="sd">            wetting phase</span>
-<span class="sd">        ip : IP</span>
-<span class="sd">            invasion percolation (ran before calling this function)</span>
-<span class="sd">        i: int</span>
-<span class="sd">            The invasion_sequence limit for masking pores/throats that</span>
-<span class="sd">            have already been invaded within this limit range. The</span>
-<span class="sd">            saturation is found by adding the volume of pores and thorats</span>
-<span class="sd">            that meet this sequence limit divided by the bulk volume.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pore_mask</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">i</span>
-    <span class="n">throat_mask</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">i</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calc_snwp</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">nwp</span><span class="p">,</span> <span class="n">wp</span><span class="p">):</span>
+    <span class="n">pore_mask</span> <span class="o">=</span> <span class="n">nwp</span><span class="p">[</span><span class="s2">&quot;pore.occupancy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">throat_mask</span> <span class="o">=</span> <span class="n">nwp</span><span class="p">[</span><span class="s2">&quot;throat.occupancy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">sat_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">][</span><span class="n">pore_mask</span><span class="p">])</span>
     <span class="n">sat_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">][</span><span class="n">throat_mask</span><span class="p">])</span>
     <span class="n">sat1</span> <span class="o">=</span> <span class="n">sat_p</span> <span class="o">+</span> <span class="n">sat_t</span>
     <span class="n">bulk</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">sat</span> <span class="o">=</span> <span class="n">sat1</span><span class="o">/</span><span class="n">bulk</span>
-    <span class="n">nwp</span><span class="p">[</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_mask</span>
-    <span class="n">nwp</span><span class="p">[</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">throat_mask</span>
-    <span class="n">wp</span><span class="p">[</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">throat_mask</span>
-    <span class="n">wp</span><span class="p">[</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">pore_mask</span>
     <span class="k">return</span> <span class="n">sat</span>
 </pre></div>
 </div>
@@ -551,14 +530,14 @@ Therefore, we only need to find the rate values for calculating the relative per
 <p>We define a function <code class="docutils literal notranslate"><span class="pre">Rate_calc</span></code>, which simulates a stokes flow given the hydraulic conductance keyword and returns the rate of inlet fluid flow.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">Rate_calc</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">inlet</span><span class="p">,</span> <span class="n">outlet</span><span class="p">,</span> <span class="n">conductance</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">Rate_calc</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">inlet</span><span class="p">,</span> <span class="n">outlet</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">):</span>
     <span class="n">phase</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
     <span class="n">St_p</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">StokesFlow</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
     <span class="n">St_p</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">_update</span><span class="p">({</span><span class="s1">&#39;conductance&#39;</span><span class="p">:</span> <span class="n">conductance</span><span class="p">})</span>
     <span class="n">St_p</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">St_p</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlet</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">St_p</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">St_p</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">))</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">St_p</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlet</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;group&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">val</span>
 </pre></div>
 </div>
@@ -567,8 +546,8 @@ Therefore, we only need to find the rate values for calculating the relative per
 <p>In this example we are focusing on finding the relative permeabilities in x direction. A similar procedure can be applied on y and z directions. Let’s define inlet and outlet pores:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flow_in</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-<span class="n">flow_out</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">flow_in</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmin&#39;</span><span class="p">)</span>
+<span class="n">flow_out</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;xmax&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -580,10 +559,20 @@ Therefore, we only need to find the rate values for calculating the relative per
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_mp_cond</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">multiphase</span><span class="o">.</span><span class="n">conduit_conductance</span>
-<span class="n">air</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_mp_cond</span><span class="p">,</span> <span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">,</span>
-              <span class="n">throat_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
-<span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_mp_cond</span><span class="p">,</span> <span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">,</span>
-              <span class="n">throat_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">)</span>
+<span class="n">air</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model_mp_cond</span><span class="p">,</span>
+    <span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">,</span>
+    <span class="n">throat_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;strict&#39;</span><span class="p">,</span>
+    <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">water</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model_mp_cond</span><span class="p">,</span>
+    <span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">,</span>
+    <span class="n">throat_conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;strict&#39;</span><span class="p">,</span>
+    <span class="n">regen_mode</span><span class="o">=</span><span class="s1">&#39;deferred&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -597,29 +586,29 @@ Therefore, we only need to find the rate values for calculating the relative per
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Snwp_num</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">flow_in</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
 <span class="n">flow_out</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">pores</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-<span class="n">max_seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ip</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]),</span>
-          <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ip</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">])])</span>
-<span class="n">start</span> <span class="o">=</span> <span class="n">max_seq</span><span class="o">//</span><span class="n">Snwp_num</span>
-<span class="n">stop</span> <span class="o">=</span> <span class="n">max_seq</span>
-<span class="n">step</span> <span class="o">=</span> <span class="n">max_seq</span><span class="o">//</span><span class="n">Snwp_num</span>
 <span class="n">Snwparr</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">relperm_nwp</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">relperm_wp</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">Rate_abs_nwp</span> <span class="o">=</span> <span class="n">Rate_calc</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">air</span><span class="p">,</span> <span class="n">flow_in</span><span class="p">,</span> <span class="n">flow_out</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">)</span>
+<span class="n">Rate_abs_wp</span> <span class="o">=</span> <span class="n">Rate_calc</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">flow_in</span><span class="p">,</span> <span class="n">flow_out</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ip</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">])[::</span><span class="mi">200</span><span class="p">]:</span>
+    <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s1">&#39;pore.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">i</span>
+    <span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s1">&#39;throat.invasion_sequence&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">i</span>
+    <span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;pore.occupancy&#39;</span><span class="p">]</span>
+    <span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">air</span><span class="p">[</span><span class="s1">&#39;throat.occupancy&#39;</span><span class="p">]</span>
     <span class="n">air</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
     <span class="n">water</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
-    <span class="n">sat</span> <span class="o">=</span> <span class="n">sat_occ_update</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">nwp</span><span class="o">=</span><span class="n">air</span><span class="p">,</span> <span class="n">wp</span><span class="o">=</span><span class="n">water</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
-    <span class="n">Snwparr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sat</span><span class="p">)</span>
-    <span class="n">Rate_abs_nwp</span> <span class="o">=</span> <span class="n">Rate_calc</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">air</span><span class="p">,</span> <span class="n">flow_in</span><span class="p">,</span> <span class="n">flow_out</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">)</span>
-    <span class="n">Rate_abs_wp</span> <span class="o">=</span> <span class="n">Rate_calc</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">flow_in</span><span class="p">,</span> <span class="n">flow_out</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.hydraulic_conductance&#39;</span><span class="p">)</span>
+    <span class="n">sat</span> <span class="o">=</span> <span class="n">calc_snwp</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">nwp</span><span class="o">=</span><span class="n">air</span><span class="p">,</span> <span class="n">wp</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
     <span class="n">Rate_enwp</span> <span class="o">=</span> <span class="n">Rate_calc</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">air</span><span class="p">,</span> <span class="n">flow_in</span><span class="p">,</span> <span class="n">flow_out</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">)</span>
     <span class="n">Rate_ewp</span> <span class="o">=</span> <span class="n">Rate_calc</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">water</span><span class="p">,</span> <span class="n">flow_in</span><span class="p">,</span> <span class="n">flow_out</span><span class="p">,</span> <span class="n">conductance</span><span class="o">=</span><span class="s1">&#39;throat.conduit_hydraulic_conductance&#39;</span><span class="p">)</span>
+    <span class="n">Snwparr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sat</span><span class="p">)</span>
     <span class="n">relperm_nwp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Rate_enwp</span><span class="o">/</span><span class="n">Rate_abs_nwp</span><span class="p">)</span>
     <span class="n">relperm_wp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Rate_ewp</span><span class="o">/</span><span class="n">Rate_abs_wp</span><span class="p">)</span>
 </pre></div>
@@ -629,21 +618,19 @@ Therefore, we only need to find the rate values for calculating the relative per
 <p>Let’s plot the relative permeability curves:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Snwparr</span><span class="p">,</span> <span class="n">relperm_nwp</span><span class="p">,</span> <span class="s1">&#39;*-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_nwp&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Snwparr</span><span class="p">,</span> <span class="n">relperm_wp</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_wp&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Snwp&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Kr&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Relative Permeability in x direction&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Snwparr</span><span class="p">,</span> <span class="n">relperm_nwp</span><span class="p">,</span> <span class="s1">&#39;*-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_nwp&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Snwparr</span><span class="p">,</span> <span class="n">relperm_wp</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Kr_wp&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Snwp&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Kr&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Relative Permeability in x direction&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc78455f3e0&gt;
-</pre></div>
-</div>
-<img alt="../../_images/2860123087d4e6badfb4b56f5441a81b40bbecf5fe8d2c2e073074110a270b3d.png" src="../../_images/2860123087d4e6badfb4b56f5441a81b40bbecf5fe8d2c2e073074110a270b3d.png" />
+<img alt="../../_images/65edb9f3ae69022b13ea2aa21296f8a52513f3300a9f94c3ab515fb3aa2cbc45.png" src="../../_images/65edb9f3ae69022b13ea2aa21296f8a52513f3300a9f94c3ab515fb3aa2cbc45.png" />
 </div>
 </div>
 </section>
@@ -705,7 +692,7 @@ Therefore, we only need to find the rate values for calculating the relative per
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

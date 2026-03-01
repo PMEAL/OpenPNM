@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>Simulating Single Phase Transport &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -361,7 +361,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../applications/adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../applications/formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../applications/porosity.html">Predicting Porosity</a></li>
@@ -466,7 +465,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
+net : &lt;openpnm.network.Demo at 0x7fb930dbc2d0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -526,7 +525,7 @@ net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7fc142735770&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7fb8db57d0e0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -582,16 +581,16 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fc142735770&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[7.79508284e-14 1.16630483e-14 1.14211354e-14 5.37139078e-15
- 8.19452985e-16 1.81713392e-15 1.58690839e-15 1.38674633e-15
- 4.74424652e-15 3.97958503e-15 5.01853522e-15 6.00778888e-15
- 6.52247408e-16 1.66154680e-14 1.89622761e-14 1.64801312e-14
- 1.60762904e-14 1.26321786e-14 1.54439887e-14 7.64446019e-15
- 9.44380457e-16 2.96132038e-14 1.67979389e-15 4.85970137e-15
- 1.39508443e-15 8.61776692e-16 4.48839844e-15 1.62323551e-15
- 3.92324194e-15 1.67183989e-15 7.02622169e-16 4.36782734e-15
- 6.13046722e-15 6.21573486e-15 1.58795676e-14 6.41975483e-16
- 1.94465631e-14 1.23228784e-14 7.00085433e-14 6.10612393e-15]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[6.77744267e-15 2.22141861e-14 6.10028673e-15 5.30283461e-16
+ 3.15718716e-15 4.79807990e-15 6.15076685e-14 8.58802011e-15
+ 1.23988640e-14 1.19928903e-14 7.18167442e-15 7.44612288e-15
+ 1.24456005e-15 9.54532424e-16 1.94726127e-15 7.40962136e-16
+ 1.31947160e-15 7.75064199e-15 4.11433966e-14 6.61276164e-15
+ 3.23746694e-15 4.64506145e-15 2.30619766e-14 7.24343205e-15
+ 5.35909014e-16 4.10036665e-15 4.10375913e-15 5.71642192e-14
+ 7.61113650e-15 8.40002220e-15 8.65134927e-14 1.00921640e-15
+ 5.10492395e-15 1.99021809e-15 9.80835603e-16 1.67558569e-15
+ 9.83526746e-16 4.79635555e-15 2.59900288e-15 7.79031032e-16]
 </pre></div>
 </div>
 </div>
@@ -651,7 +650,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7fc142735770&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fb8db76dc70&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -681,7 +680,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fb8db76dc70&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -730,7 +729,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
+stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fb8db76dc70&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -756,8 +755,8 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([198832.93689665, 193474.67306692, 191404.66064814, 188551.37072738,
-       193390.03503021])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([197139.11825326, 205190.47719428, 200308.66141602, 201847.86637596,
+       211162.37547512])
 </pre></div>
 </div>
 </div>
@@ -778,7 +777,7 @@ stokes_01 : &lt;openpnm.algorithms.StokesFlow at 0x7fc142745950&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
+net : &lt;openpnm.network.Demo at 0x7fb930dbc2d0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -831,46 +830,46 @@ net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[6.92086607e-16, 6.96249743e-17, 6.33597724e-16],
-       [2.86294410e-16, 1.04173292e-17, 1.78313323e-16],
-       [1.78313323e-16, 1.02012548e-17, 2.75425092e-16],
-       [1.97624479e-16, 4.79767762e-18, 1.04576160e-16],
-       [2.86709386e-17, 7.31927988e-19, 7.23876793e-17],
-       [1.04036362e-16, 1.62304757e-18, 5.10473714e-17],
-       [5.10473714e-17, 1.41741221e-18, 6.47681497e-17],
-       [6.09247630e-17, 1.23862927e-18, 4.62723920e-17],
-       [1.77962179e-16, 4.23751804e-18, 9.78058745e-17],
-       [9.78058745e-17, 3.55452933e-18, 1.07192090e-16],
-       [1.19252589e-16, 4.48251023e-18, 1.15660637e-16],
-       [1.15660637e-16, 5.36610264e-18, 1.97833234e-16],
-       [2.47228872e-17, 5.82581480e-19, 6.13932201e-17],
-       [2.63303927e-16, 1.48407856e-17, 2.53627286e-16],
-       [2.53627286e-16, 1.69369334e-17, 3.45617706e-16],
-       [3.25183673e-16, 1.47199040e-17, 2.29932085e-16],
-       [2.46046190e-16, 1.43591970e-17, 2.64254939e-16],
-       [2.37202227e-16, 1.12829476e-17, 2.07376877e-16],
-       [2.07376877e-16, 1.37944309e-17, 3.50027262e-16],
-       [2.57533512e-16, 6.82796264e-18, 1.26769233e-16],
-       [9.90008802e-17, 8.43512076e-19, 2.86709386e-17],
-       [4.28783731e-16, 2.64502455e-17, 3.41522387e-16],
-       [8.14313006e-17, 1.50037670e-18, 5.10473714e-17],
-       [1.89034025e-16, 4.34064127e-18, 9.73888768e-17],
-       [6.25865868e-17, 1.24607679e-18, 4.62723920e-17],
-       [2.86709386e-17, 7.69731140e-19, 8.22346687e-17],
-       [1.55999696e-16, 4.00899686e-18, 9.78058745e-17],
-       [5.10473714e-17, 1.44985926e-18, 7.13809822e-17],
-       [9.73888768e-17, 3.50420419e-18, 1.03614505e-16],
-       [4.62723920e-17, 1.49327225e-18, 1.11509040e-16],
-       [7.48320306e-17, 6.27575761e-19, 2.47228872e-17],
-       [9.78058745e-17, 3.90130384e-18, 1.44983800e-16],
-       [1.25967687e-16, 5.47567783e-18, 1.63104430e-16],
-       [1.15660637e-16, 5.55183811e-18, 2.12160505e-16],
-       [3.03173933e-16, 1.41834860e-17, 2.29932085e-16],
-       [2.47228872e-17, 5.73406690e-19, 5.84133062e-17],
-       [2.81529551e-16, 1.73694941e-17, 2.87953424e-16],
-       [2.23011737e-16, 1.10066834e-17, 2.07376877e-16],
-       [5.84619190e-16, 6.25309971e-17, 6.67394497e-16],
-       [1.57813975e-16, 5.45393462e-18, 1.26769233e-16]])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[1.27129807e-16, 6.05355044e-18, 2.04192744e-16],
+       [3.43950197e-16, 1.98415099e-17, 2.93809866e-16],
+       [1.70508899e-16, 5.44872089e-18, 1.23722851e-16],
+       [4.27214625e-17, 4.73644387e-19, 2.26009999e-17],
+       [8.41816743e-17, 2.81997100e-18, 8.86289244e-17],
+       [9.71349154e-17, 4.28560153e-18, 1.85262600e-16],
+       [5.44568323e-16, 5.49380927e-17, 6.18522996e-16],
+       [2.64836297e-16, 7.67074182e-18, 1.39488185e-16],
+       [3.00607180e-16, 1.10745531e-17, 1.83966628e-16],
+       [1.83966628e-16, 1.07119411e-17, 2.83188722e-16],
+       [2.26162688e-16, 6.41460658e-18, 1.28118296e-16],
+       [1.28118296e-16, 6.65080955e-18, 2.41845383e-16],
+       [1.11380686e-16, 1.11162977e-18, 3.51713536e-17],
+       [3.51713536e-17, 8.52579720e-19, 5.20039816e-17],
+       [7.18507164e-17, 1.73927614e-18, 5.91267950e-17],
+       [3.85964206e-17, 6.61820672e-19, 3.00794584e-17],
+       [4.35608010e-17, 1.17854009e-18, 6.76111383e-17],
+       [1.41553308e-16, 6.92280326e-18, 2.10081497e-16],
+       [4.08726413e-16, 3.67489094e-17, 5.30360363e-16],
+       [2.40537386e-16, 5.90645884e-18, 1.14755297e-16],
+       [9.78562258e-17, 2.89167617e-18, 8.41816743e-17],
+       [1.72731341e-16, 4.14892684e-18, 9.71349154e-17],
+       [2.93809866e-16, 2.05987487e-17, 3.68749877e-16],
+       [1.23722851e-16, 6.46976794e-18, 2.45725334e-16],
+       [2.26009999e-17, 4.78669080e-19, 4.46901239e-17],
+       [8.41816743e-17, 3.66241037e-18, 1.84546613e-16],
+       [9.71349154e-17, 3.66544051e-18, 1.22904915e-16],
+       [5.44568323e-16, 5.10585631e-17, 5.58684393e-16],
+       [2.51144505e-16, 6.79819822e-18, 1.28118296e-16],
+       [1.39488185e-16, 7.50282379e-18, 2.55011629e-16],
+       [6.84725011e-16, 7.72730685e-17, 7.17535801e-16],
+       [6.53531184e-17, 9.01422957e-19, 3.51713536e-17],
+       [1.94470362e-16, 4.55967186e-18, 1.00560727e-16],
+       [7.87101989e-17, 1.77764478e-18, 5.91267950e-17],
+       [9.68681080e-17, 8.76073482e-19, 3.00794584e-17],
+       [1.27661077e-16, 1.49661797e-18, 4.35608010e-17],
+       [3.51713536e-17, 8.78477186e-19, 5.91971883e-17],
+       [1.00560727e-16, 4.28406135e-18, 1.69885755e-16],
+       [5.91267950e-17, 2.32140584e-18, 1.58393006e-16],
+       [3.00794584e-17, 6.95823466e-19, 4.96125250e-17]])
 </pre></div>
 </div>
 </div>
@@ -898,16 +897,16 @@ net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([6.43961035e-14, 1.06530511e-14, 1.04374292e-14, 5.01926855e-15,
-       7.91252897e-16, 1.73490680e-15, 1.51184382e-15, 1.32437023e-15,
-       4.44577021e-15, 3.72096645e-15, 4.66257521e-15, 5.59634758e-15,
-       6.31377964e-16, 1.49033976e-14, 1.69945815e-14, 1.48565359e-14,
-       1.44480242e-14, 1.14632200e-14, 1.39647294e-14, 7.07575184e-15,
-       9.09859739e-16, 2.59962257e-14, 1.60313684e-15, 4.55227522e-15,
-       1.33266404e-15, 8.31664400e-16, 4.20778909e-15, 1.54783461e-15,
-       3.66726263e-15, 1.59883266e-15, 6.79669155e-16, 4.09433867e-15,
-       5.69195600e-15, 5.78655097e-15, 1.43256775e-14, 6.21461218e-16,
-       1.73317843e-14, 1.11779188e-14, 5.83086539e-14, 5.66650616e-15])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([6.29135183e-15, 1.97421007e-14, 5.66943586e-15, 5.13818860e-16,
+       2.96361464e-15, 4.49573004e-15, 5.16999254e-14, 7.92284833e-15,
+       1.13021145e-14, 1.09418812e-14, 6.65937535e-15, 6.89831571e-15,
+       1.19486953e-15, 9.17259360e-16, 1.84815780e-15, 7.13046634e-16,
+       1.26327335e-15, 7.16418919e-15, 3.54928856e-14, 6.14554478e-15,
+       3.04301615e-15, 4.35447608e-15, 2.04818722e-14, 6.71545186e-15,
+       5.19347059e-16, 3.85607839e-15, 3.84405859e-15, 4.82337252e-14,
+       7.04649549e-15, 7.75475139e-15, 7.08810357e-14, 9.70939468e-16,
+       4.77636235e-15, 1.89067474e-15, 9.44774241e-16, 1.60177531e-15,
+       9.45865310e-16, 4.49173068e-15, 2.46604022e-15, 7.51120880e-16])
 </pre></div>
 </div>
 </div>
@@ -923,8 +922,8 @@ net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([206030.51767315, 200115.50328601, 197829.26721771, 194751.64014372,
-       199841.69018322])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([203599.00061465, 212221.09648979, 207073.90404988, 208820.61242143,
+       218709.42932029])
 </pre></div>
 </div>
 </div>
@@ -953,8 +952,8 @@ net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([206030.51767315, 200115.50328602, 197829.26721771, 194751.64014372,
-       199841.69018322])
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([203599.00061465, 212221.09648979, 207073.90404988, 208820.61242143,
+       218709.42932029])
 </pre></div>
 </div>
 </div>
@@ -1024,7 +1023,7 @@ net : &lt;openpnm.network.Demo at 0x7fc1941dada0&gt;
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

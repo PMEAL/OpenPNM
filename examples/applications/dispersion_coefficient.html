@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting dispersion coefficient &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>Predicting dispersion coefficient &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -361,7 +361,6 @@
 <li class="toctree-l2"><a class="reference internal" href="adjusting_pore_size_distributions.html">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Predicting dispersion coefficient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porosity.html">Predicting Porosity</a></li>
@@ -479,15 +478,11 @@
 <span class="n">water</span><span class="p">[</span><span class="s1">&#39;pore.diffusivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-9</span>
 <span class="n">water</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">water</span><span class="p">)</span>
 <span class="n">water</span><span class="o">.</span><span class="n">add_model_collection</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">physics</span><span class="o">.</span><span class="n">standard</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">water</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;throat.electrical_conductance&#39;</span><span class="p">]</span>
 <span class="n">water</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:19:07] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> throat.electrical_conductance was not run since the following property is        <a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/core/_models.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_models.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/src/openpnm/core/_models.py#480" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">480</span></a>
-<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         missing: <span style="color: #008000; text-decoration-color: #008000">'throat.electrical_conductivity'</span>                                        <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">              </span>
-</pre>
-</div></div>
 </div>
 </section>
 <section id="defining-effective-pore-volume">
@@ -712,7 +707,7 @@ v_fitted =  7.0669E-05  m/s
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>

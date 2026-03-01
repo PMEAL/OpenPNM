@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.6.0 documentation</title>
+    <title>Adjusting Pore Size Distributions &#8212; OpenPNM 3.6.0-dev2 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=5349f462"></script>
+    <script src="../../_static/documentation_options.js?v=317067a7"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.0-dev2 documentation - Home"/>
   
   
 </a></div>
@@ -359,7 +359,6 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Adjusting Pore Size Distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dispersion_coefficient.html">Predicting dispersion coefficient</a></li>
 <li class="toctree-l2"><a class="reference internal" href="effective_diffusivity_and_tortuosity.html">Finding Effective Diffusivity and Tortuosity of a Network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="formation_factor.html">Predicting Formation Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mercury_intrusion.html">Calibrating a Network Using Mercury Intrusion Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="network_extraction.html">Import an Extracted Network and Predict Transport Properties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="porosity.html">Predicting Porosity</a></li>
@@ -445,7 +444,7 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="adjusting-pore-size-distributions">
 <h1>Adjusting Pore Size Distributions<a class="headerlink" href="#adjusting-pore-size-distributions" title="Link to this heading">#</a></h1>
-<p>In this example we show how you can create your very own custom pore size distribution. We start by describing how the built-in models work to calculate pore and throat sizes. Next we show how to add a custom pore size distribution using a weibull distribution. Included in this example is how we might visualize our pore and throat size distributions in a histogram.</p>
+<p>In this example we show how you can create your own custom pore size distribution. We start by describing how the built-in models work to calculate pore and throat sizes. Next we show how to add a custom pore size distribution using a Weibull distribution. Included in this example is how we might visualize our pore and throat size distributions in a histogram.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
@@ -469,12 +468,12 @@
 <p>We can visualize the cubic lattice we created using <code class="docutils literal notranslate"><span class="pre">plot_connections</span></code> found under <code class="docutils literal notranslate"><span class="pre">op.visualization</span></code></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/cb02dc61cfa4490b76c0080ce16f24fecacaf69538a8c1abb2060e54cfbdcfb1.png" src="../../_images/cb02dc61cfa4490b76c0080ce16f24fecacaf69538a8c1abb2060e54cfbdcfb1.png" />
+<img alt="../../_images/a814ab9748210a7f8c2e721f6736ba2d93fc351dc446af7dacf646e1a3a12866.png" src="../../_images/a814ab9748210a7f8c2e721f6736ba2d93fc351dc446af7dacf646e1a3a12866.png" />
 </div>
 </div>
 </section>
@@ -494,12 +493,25 @@
 <p>Remember that a model collection is just a dictionary of geometry models. This means that <code class="docutils literal notranslate"><span class="pre">geo</span></code> can be treated like any other python dictionary. This includes how we can get a list of keys using the <code class="docutils literal notranslate"><span class="pre">keys()</span></code> method. This is useful for quickly viewing the geometry models already in the model collection.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geo</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">geo</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dict_keys([&#39;pore.seed&#39;, &#39;pore.max_size&#39;, &#39;pore.diameter&#39;, &#39;pore.volume&#39;, &#39;throat.max_size&#39;, &#39;throat.diameter&#39;, &#39;throat.length&#39;, &#39;throat.cross_sectional_area&#39;, &#39;throat.total_volume&#39;, &#39;throat.lens_volume&#39;, &#39;throat.volume&#39;, &#39;throat.diffusive_size_factors&#39;, &#39;throat.hydraulic_size_factors&#39;])
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pore.seed
+pore.max_size
+pore.diameter
+pore.volume
+throat.max_size
+throat.diameter
+throat.length
+throat.cross_sectional_area
+throat.total_volume
+throat.lens_volume
+throat.volume
+throat.diffusive_size_factors
+throat.hydraulic_size_factors
 </pre></div>
 </div>
 </div>
@@ -529,7 +541,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
+net : &lt;openpnm.network.Cubic at 0x7fef90156b20&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -580,7 +592,7 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/748bbca15360c0aaed8219dcd1caa724e8651a071daffb8697174e0d67a6c9f3.png" src="../../_images/748bbca15360c0aaed8219dcd1caa724e8651a071daffb8697174e0d67a6c9f3.png" />
+<img alt="../../_images/921120e278d0335cc4629d69f648d7243c88df5810d9b4d6e3fe9fd6b82d2b2d.png" src="../../_images/921120e278d0335cc4629d69f648d7243c88df5810d9b4d6e3fe9fd6b82d2b2d.png" />
 </div>
 </div>
 </section>
@@ -605,10 +617,11 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 </div>
 </div>
 </div>
-<p>We can add this array of pore sizes directly to our network object like we would any python dictionary. Warning this overwrites the existing pore diameter. To update the throat diameter we need to <code class="docutils literal notranslate"><span class="pre">regenerate_models()</span></code>.</p>
+<p>We can add this array of pore sizes directly to our network object like we would any python dictionary. To update the throat diameter we need to <code class="docutils literal notranslate"><span class="pre">regenerate_models('throat.diameter)</span></code>. Also note that regenerating <em>all</em> the models (i.e. <code class="docutils literal notranslate"><span class="pre">pn.regenerate_models()</span></code>) will also re-run the ‘pore.diameter’ model.  We must either specify to regenerate the <code class="docutils literal notranslate"><span class="pre">'throat.diameter'</span></code> model or delete the <code class="docutils literal notranslate"><span class="pre">'pore.diameter'</span></code> model.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+<span class="k">del</span> <span class="n">pn</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span>
 <span class="n">pn</span><span class="o">.</span><span class="n">regenerate_models</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -626,7 +639,7 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/99bcb2c09a09dd8f1e89d89a4217d0adf77491bc203da0651b1c1a12282ad6d5.png" src="../../_images/99bcb2c09a09dd8f1e89d89a4217d0adf77491bc203da0651b1c1a12282ad6d5.png" />
+<img alt="../../_images/dd8e41780f02909729f207e8df4edc781c38da8f9bbdd960b3537ecab3abaa07.png" src="../../_images/dd8e41780f02909729f207e8df4edc781c38da8f9bbdd960b3537ecab3abaa07.png" />
 </div>
 </div>
 </section>
@@ -666,11 +679,20 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">from_neighbor_pores</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span>
-             <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span>
+    <span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.seed&#39;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+    <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;pore.seed&#39;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;min&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">throat_size</span><span class="o">.</span><span class="n">weibull</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter_2&#39;</span><span class="p">,</span>
-             <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span>
+    <span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.diameter_2&#39;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">scale</span><span class="o">=</span><span class="mf">.2</span><span class="p">,</span>
+    <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -687,7 +709,7 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5214d5d58989fff50c5f0a72f0b130d4d116d5f1becee9ca8ef49317cac039b7.png" src="../../_images/5214d5d58989fff50c5f0a72f0b130d4d116d5f1becee9ca8ef49317cac039b7.png" />
+<img alt="../../_images/e98a5757b5945e956a96d8a4d61a1dc568ee6d058013858e784f2f72606fab61.png" src="../../_images/e98a5757b5945e956a96d8a4d61a1dc568ee6d058013858e784f2f72606fab61.png" />
 </div>
 </div>
 <p>If for some reason we were unhappy with the distribution, it can easily be changed and updated.  For instance, to reduce the number of small pores, we can adjust the <code class="docutils literal notranslate"><span class="pre">num_range</span></code> parameter on the <code class="docutils literal notranslate"><span class="pre">'pore.seed'</span></code> model and re-run:</p>
@@ -705,13 +727,13 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Pore Diameter&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter_2&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Throat Diameter&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e6a8e075884973d515d9ad238d8a04670414071b0befdb3b63bbec19fb65ac9d.png" src="../../_images/e6a8e075884973d515d9ad238d8a04670414071b0befdb3b63bbec19fb65ac9d.png" />
+<img alt="../../_images/a4790b1b0d4f023413de99adf9f6e3e2b5d878c94d61119c5af86a749c043e20.png" src="../../_images/a4790b1b0d4f023413de99adf9f6e3e2b5d878c94d61119c5af86a749c043e20.png" />
 </div>
 </div>
 <p>This illustrates the power/utility of using pore-scale models properly, instead of essentially hard-coding the pore size values as was done by using the <code class="docutils literal notranslate"><span class="pre">scipy.stats</span></code> classes directly.</p>
@@ -719,16 +741,27 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="n">ig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_networkx</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span>
+    <span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+    <span class="n">color_by</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span>
+    <span class="n">size_by</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">],</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span>
+    <span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+    <span class="n">color_by</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">],</span>
+    <span class="n">size_by</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">],</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[20:18:59] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Ignoring fixed x limits to fulfill fixed data aspect with adjustable data limits. <a href="file:///home/runner/work/OpenPNM/OpenPNM/.venv/lib/python3.12/site-packages/matplotlib/axes/_base.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_base.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/.venv/lib/python3.12/site-packages/matplotlib/axes/_base.py#2096" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">2096</span></a>
-</pre>
-</div><div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Ignoring fixed y limits to fulfill fixed data aspect with adjustable data limits. <a href="file:///home/runner/work/OpenPNM/OpenPNM/.venv/lib/python3.12/site-packages/matplotlib/axes/_base.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_base.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/.venv/lib/python3.12/site-packages/matplotlib/axes/_base.py#2088" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">2088</span></a>
-</pre>
-</div><img alt="../../_images/a5d578a583e073e4d1f72b0e8fb2eb435abd9ee38c911b17f5d9520c76aa1d58.png" src="../../_images/a5d578a583e073e4d1f72b0e8fb2eb435abd9ee38c911b17f5d9520c76aa1d58.png" />
+<img alt="../../_images/43117b1499b9e1e89008b61cbf98ef82ab4c46f83d739a68fa6ef3cc1be4d7a4.png" src="../../_images/43117b1499b9e1e89008b61cbf98ef82ab4c46f83d739a68fa6ef3cc1be4d7a4.png" />
 </div>
 </div>
 </section>
@@ -793,7 +826,7 @@ net : &lt;openpnm.network.Cubic at 0x7feb9c2b0050&gt;
 
   <p class="copyright">
     
-      © Copyright 2025, PMEAL.
+      © Copyright 2026, PMEAL.
       <br/>
     
   </p>
