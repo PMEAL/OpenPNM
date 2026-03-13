@@ -148,23 +148,27 @@ def plot_connections(network,
     throat_pos = np.column_stack((xyz[P1], xyz[P2])).reshape((Ts.size, 2, dim.sum()))
 
     # Deal with optional style related arguments
-    if 'c' in kwargs.keys():
-        color = kwargs.pop('c')
-    color = mcolors.to_rgb(color) + tuple([alpha])
     if isinstance(cmap, str):
         try:
             cmap = plt.colormaps.get_cmap(cmap)
         except AttributeError:
             cmap = plt.cm.get_cmap(cmap)
+    kwargs['cmap'] = cmap
     # Override colors with color_by if given
-    if color_by is not None:
+    if color_by is None:
+        if 'c' in kwargs.keys():
+            color = kwargs.pop('c')
+        color = mcolors.to_rgb(color) + tuple([alpha])
+        kwargs['color'] = color
+        _ = kwargs.pop('cmap', None)
+    else:
         color_by = np.array(color_by)
         if len(color_by) != len(Ts):
             color_by = color_by[Ts]
         if not np.all(np.isfinite(color_by)):
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
-        color = color_by
+        kwargs['array'] = color_by
     if size_by is not None:
         if len(size_by) != len(Ts):
             size_by = size_by[Ts]
@@ -180,13 +184,22 @@ def plot_connections(network,
     vmax = kwargs.pop('vmax', None)
 
     if ThreeD:
-        lc = Line3DCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
-                              linestyles=linestyle, linewidths=linewidth,
-                              antialiaseds=np.ones_like(network.Ts), **kwargs)
+        lc = Line3DCollection(
+            throat_pos,
+            alpha=alpha,
+            linestyles=linestyle,
+            linewidths=linewidth,
+            antialiaseds=np.ones_like(network.Ts),
+            **kwargs,
+        )
     else:
-        lc = LineCollection(throat_pos, array=color, cmap=cmap, alpha=alpha,
-                            linestyles=linestyle, linewidths=linewidth,
-                            antialiaseds=np.ones_like(network.Ts), **kwargs)
+        lc = LineCollection(
+            throat_pos, alpha=alpha,
+            linestyles=linestyle,
+            linewidths=linewidth,
+            antialiaseds=np.ones_like(network.Ts),
+            **kwargs,
+        )
         if label_by is not None:
             for count, (P1, P2) in enumerate(network.conns[Ts, :]):
                 i, j, k = np.mean(network.coords[[P1, P2], :], axis=0)
@@ -332,16 +345,17 @@ def plot_coordinates(network,
     Xl, Yl, Zl = network['pore.coords'].T
 
     # Parse formatting kwargs
-    if 'c' in kwargs.keys():
-        color = kwargs.pop('c')
-    if 's' in kwargs.keys():
-        markersize = kwargs.pop('s')
     if isinstance(cmap, str):
         try:
             cmap = plt.colormaps.get_cmap(cmap)
         except AttributeError:
             cmap = plt.cm.get_cmap(cmap)
-    if color_by is not None:
+    kwargs['cmap'] = cmap
+    if color_by is None:
+        if 'c' in kwargs.keys():
+            color = kwargs.pop('c')
+        _ = kwargs.pop('cmap')
+    else:
         color_by = np.array(color_by)
         if len(color_by) != len(Ps):
             color_by = color_by[Ps]
@@ -349,6 +363,8 @@ def plot_coordinates(network,
             color_by[~np.isfinite(color_by)] = 0
             logger.warning('nans or infs found in color_by array, setting to 0')
         color = color_by
+    if 's' in kwargs.keys():
+        markersize = kwargs.pop('s')
     if size_by is not None:
         if len(size_by) != len(Ps):
             size_by = size_by[Ps]
@@ -375,7 +391,6 @@ def plot_coordinates(network,
                         s=markersize,
                         marker=marker,
                         alpha=alpha,
-                        cmap=cmap,
                         **kwargs)
         if label_by is not None:
             for count, (i, j, k) in enumerate(network.coords[Ps, :]):
