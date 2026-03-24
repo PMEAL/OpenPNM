@@ -343,7 +343,7 @@ class Drainage(Algorithm):
         self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
         self['pore.invasion_sequence'][self['pore.trapped']] = -1
         self['throat.invasion_sequence'][self['throat.trapped']] = -1
-        # Make some adjustments
+        # Make some adjustments 
         Pmask = self['pore.invasion_sequence'] < 0
         Tmask = self['throat.invasion_sequence'] < 0
         self['pore.invasion_sequence'] = \
@@ -351,7 +351,10 @@ class Drainage(Algorithm):
         self['pore.invasion_sequence'][Pmask] = np.inf
         self['throat.invasion_sequence'] = \
             self['throat.invasion_sequence'].astype(float)
-        self['throat.invasion_sequence'][Tmask] = np.inf
+        self['throat.invasion_sequence'][Tmask] = np.inf #
+
+        self['throat.invaded'][self['throat.trapped']] = False
+        self['pore.invaded'][self['pore.trapped']] = False
 
     def pc_curve(self, pressures=None):
         if pressures is None:
