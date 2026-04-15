@@ -25,7 +25,7 @@ dependencies = [
     "matplotlib-inline>=0.1.7",
     "networkx>=3.5",
     "numba>=0.61",
-    "numpy>=2.1,<2.2",
+    "numpy<2.2",
     "pandas>=2.3.2",
     "pyamg>=5.3.0",
     "pypardiso; platform_system != 'Darwin' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')",
