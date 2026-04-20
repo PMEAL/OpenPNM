@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --group docs --group interactive
+          uv sync --group docs --group interactive --extra extras
 
       - name: Build the documentation
         run: |
