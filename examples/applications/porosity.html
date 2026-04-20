@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Predicting Porosity &#8212; OpenPNM 3.6.1 documentation</title>
+    <title>Predicting Porosity &#8212; OpenPNM 3.6.1-dev3 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f731707b"></script>
+    <script src="../../_static/documentation_options.js?v=0a4a7724"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.1 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.1 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.1-dev3 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.1-dev3 documentation - Home"/>
   
   
 </a></div>
@@ -460,20 +460,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">openpnm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">porespy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">ps</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">[</span><span class="s2">&quot;disable&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;porespy&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <section id="create-a-random-cubic-network">
 <h2>Create a random cubic network<a class="headerlink" href="#create-a-random-cubic-network" title="Link to this heading">#</a></h2>
@@ -564,7 +550,13 @@ Corrected Porosity: 0.12590
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">overlapping_spheres</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">overlapping_spheres</span><span class="p">(</span>
+    <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+    <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">porosity</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">50</span><span class="p">])</span>
 <span class="n">im_poro</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Porosity from image: </span><span class="si">{</span><span class="n">im_poro</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
@@ -572,10 +564,10 @@ Corrected Porosity: 0.12590
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Porosity from image: 63.3%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Porosity from image: 64.9%
 </pre></div>
 </div>
-<img alt="../../_images/d4af0866b8f4e0888f0469ba91d83cb687defb9e8a12a18a2808a9ea1f5b524e.png" src="../../_images/d4af0866b8f4e0888f0469ba91d83cb687defb9e8a12a18a2808a9ea1f5b524e.png" />
+<img alt="../../_images/5d87e16811359410ae3e2b1faf2903cdfe66f497aca16ac2be137851ed4995fa.png" src="../../_images/5d87e16811359410ae3e2b1faf2903cdfe66f497aca16ac2be137851ed4995fa.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -602,7 +594,7 @@ Corrected Porosity: 0.12590
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[09:28:01] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py:214</span>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[19:28:20] </span><span style="color: #808000; text-decoration-color: #808000">WARNING </span> Disabling paralelization as overlap exceeds than chunk size.                      <a href="file:///home/runner/work/OpenPNM/OpenPNM/.venv/lib/python3.12/site-packages/porespy/networks/_snow2.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">_snow2.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/runner/work/OpenPNM/OpenPNM/.venv/lib/python3.12/site-packages/porespy/networks/_snow2.py#214" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">214</span></a>
 </pre>
 </div></div>
 </div>
@@ -616,7 +608,7 @@ Corrected Porosity: 0.12590
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Porosity from pnm: 67.7%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Porosity from pnm: 73.7%
 </pre></div>
 </div>
 </div>
