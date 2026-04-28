@@ -1,6 +1,6 @@
 [project]
 name = "openpnm"
-version = "3.6.2"
+version = "3.6.2-dev2"
 description = "A framework for conducting pore network modeling simulations of multiphase transport in porous materials"
 authors = [{ name = "OpenPNM Team", email = "jgostick@gmail.com" }]
 maintainers = [
@@ -25,7 +25,7 @@ dependencies = [
     "matplotlib-inline>=0.1.7",
     "networkx>=3.5",
     "numba>=0.61",
-    "numpy<2.2",
+    "numpy>=2",
     "pandas>=2.3.2",
     "pyamg>=5.3.0",
     "pypardiso; platform_system != 'Darwin' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')",
@@ -220,7 +220,7 @@ path = "src/openpnm/__version__.py"
 packages = ["src/openpnm"]
 
 [tool.bumpversion]
-current_version = "3.6.2"
+current_version = "3.6.2-dev2"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.

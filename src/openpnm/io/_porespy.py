@@ -22,13 +22,18 @@ def network_from_porespy(filename):
     """
     # Parse the filename
     if isinstance(filename, dict):
-        net = filename
+        net = dict(filename)
     else:
         filename = _parse_filename(filename=filename)
         with open(filename, mode='rb') as f:
             net = pk.load(f)
 
+    # Pop param.* entries so they're routed via __setitem__ into _params
+    # rather than landing as raw dict items via update().
+    params = {k: net.pop(k) for k in list(net) if k.startswith('param.')}
     network = Network()
     network.update(net)
+    for key, value in params.items():
+        network[key] = value
 
     return network
