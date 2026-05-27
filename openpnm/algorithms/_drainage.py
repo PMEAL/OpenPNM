@@ -162,6 +162,15 @@ class Drainage(Algorithm):
             pressures = np.logspace(np.log10(low), np.log10(hi), pressures)
         pressures = np.array(pressures, ndmin=1)
 
+        def sat_function():
+
+            total_vol = np.sum(self.network['throat.volume']) + np.sum(self.network['pore.volume'])
+            sat = np.sum(self.network['throat.volume'][self['throat.invaded']]) + \
+                np.sum(self.network['pore.volume'][self['pore.invaded']])
+            sat /= total_vol
+            # print(sat)
+            return sat
+
         if not self.is_imbibition: 
             msg = 'Performing drainage simulation'
             for i, p in enumerate(tqdm(pressures, msg)):
