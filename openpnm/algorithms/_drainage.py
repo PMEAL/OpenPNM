@@ -193,10 +193,16 @@ class Drainage(Algorithm):
         else: 
             msg = 'Performing imbibition simulation'
             for i, p in enumerate(tqdm(pressures, msg)):
-                self._imb_piston_like_displacement(p, i)
                 spontaneous = p < self.pmax_drainage
+                if not spontaneous:
+                    break
+                self._imb_piston_like_displacement(p, i)
                 self._snap_off(p, i, spontaneous=spontaneous)
                 self._pore_body_filling(p, i)
+                sat = sat_function()
+                # if np.any(self['pore.bc.outlet']):
+                #     self.apply_trapping()
+                # print(f'p: {p}, s: {sat} ')
 
         # # If any outlets were specified, evaluate trapping
             if np.any(self['pore.bc.outlet']):
