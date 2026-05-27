@@ -182,6 +182,13 @@ class Drainage(Algorithm):
                 self['throat.invasion_pressure'][tmask] = p
                 self['throat.invasion_sequence'][tmask] = i
                 self.pmax_drainage = p
+                if np.any(self['pore.bc.outlet']):
+                    self.apply_trapping()
+
+                sat = sat_function()
+                # print(f'i: {i}, sat: {sat}')
+                if sat>=.749:
+                    break
 
         else: 
             msg = 'Performing imbibition simulation'
