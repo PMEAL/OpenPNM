@@ -194,8 +194,11 @@ class Drainage(Algorithm):
             msg = 'Performing imbibition simulation'
             for i, p in enumerate(tqdm(pressures, msg)):
                 spontaneous = p < self.pmax_drainage
-                if not spontaneous:
-                    break
+                        # # If any outlets were specified, evaluate trapping
+                if np.any(self['pore.bc.outlet']):
+                    self.apply_trapping()
+                # if not spontaneous:
+                #     break
                 self._imb_piston_like_displacement(p, i)
                 self._snap_off(p, i, spontaneous=spontaneous)
                 self._pore_body_filling(p, i)
@@ -347,8 +350,9 @@ class Drainage(Algorithm):
             # trap_condition = both_pores_invaded & same_cluster & uninvaded_throat
             # self['throat.trapped'][trap_condition] = True # Stelio
             # Identify cluster numbers connected to the outlets
+            
             clusters = np.unique(s[self['pore.bc.outlet']])
-            # Find ALL throats connected to any trapped site, since these
+            # Find ALL throats coenected to any trapped site, since these
             # throats must also be trapped, and update their cluster numbers
             Ts = self.network.find_neighbor_throats(pores=s >= 0)
             b[Ts] = np.amax(s[self.network.conns], axis=1)[Ts]
@@ -362,24 +366,25 @@ class Drainage(Algorithm):
         # data on the object accordingly
         # self['pore.trapped'][self['pore.residual']] = False
         # self['throat.trapped'][self['throat.residual']] = False
-        # self['pore.invaded'][self['pore.trapped']] = False
-        # self['throat.invaded'][self['throat.trapped']] = False
-        self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
-        self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
-        self['pore.invasion_sequence'][self['pore.trapped']] = -1
-        self['throat.invasion_sequence'][self['throat.trapped']] = -1
-        # Make some adjustments 
-        Pmask = self['pore.invasion_sequence'] < 0
-        Tmask = self['throat.invasion_sequence'] < 0
-        self['pore.invasion_sequence'] = \
-            self['pore.invasion_sequence'].astype(float)
-        self['pore.invasion_sequence'][Pmask] = np.inf
-        self['throat.invasion_sequence'] = \
-            self['throat.invasion_sequence'].astype(float)
-        self['throat.invasion_sequence'][Tmask] = np.inf #
+                self['pore.invaded'][self['pore.trapped']] = False
+                self['throat.invaded'][self['throat.trapped']] = False
+            else:
+                self['pore.invasion_pressure'][self['pore.trapped']] = np.inf
+                self['throat.invasion_pressure'][self['throat.trapped']] = np.inf
+                self['pore.invasion_sequence'][self['pore.trapped']] = -1
+                self['throat.invasion_sequence'][self['throat.trapped']] = -1
+                # Make some adjustments 
+                Pmask = self['pore.invasion_sequence'] < 0
+                Tmask = self['throat.invasion_sequence'] < 0
+                self['pore.invasion_sequence'] = \
+                    self['pore.invasion_sequence'].astype(float)
+                self['pore.invasion_sequence'][Pmask] = np.inf
+                self['throat.invasion_sequence'] = \
+                    self['throat.invasion_sequence'].astype(float)
+                self['throat.invasion_sequence'][Tmask] = np.inf #
 
-        self['throat.invaded'][self['throat.trapped']] = False
-        self['pore.invaded'][self['pore.trapped']] = False
+                self['throat.invaded'][self['throat.trapped']] = False
+                self['pore.invaded'][self['pore.trapped']] = False
 
     def pc_curve(self, pressures=None):
         if pressures is None:
