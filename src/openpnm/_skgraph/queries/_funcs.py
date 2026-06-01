@@ -357,7 +357,7 @@ def find_neighbor_nodes(network, inds, flatten=True, include_input=False, logic=
     if len(rows) == 0:
         return []
     n_nodes = am.shape[0]
-    neighbors = am_coo.col[np.in1d(am_coo.row, nodes)]
+    neighbors = am_coo.col[np.isin(am_coo.row, nodes)]
     if logic in ["or", "union", "any"]:
         neighbors = np.unique(neighbors)
     elif logic in ["xor", "exclusive_or"]:

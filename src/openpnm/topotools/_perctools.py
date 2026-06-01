@@ -89,7 +89,7 @@ def find_isolated_clusters(network, mask, inlets):
         connected to the given ``inlets``.
     """
     labels = find_clusters(network=network, mask=mask)
-    isolated = np.in1d(labels.pore_labels, labels.pore_labels[inlets], invert=True)
+    isolated = np.isin(labels.pore_labels, labels.pore_labels[inlets], invert=True)
     isolated = np.where(isolated)[0]
     return isolated
 
