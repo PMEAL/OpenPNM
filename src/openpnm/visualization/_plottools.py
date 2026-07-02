@@ -3,6 +3,7 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.pyplot import cm
+from matplotlib.colors import ListedColormap
 
 import openpnm as op
 
@@ -153,6 +154,8 @@ def plot_connections(network,
             cmap = plt.colormaps.get_cmap(cmap)
         except AttributeError:
             cmap = plt.cm.get_cmap(cmap)
+    else:
+        cmap = ListedColormap(color, name="throat_cmap")
     kwargs['cmap'] = cmap
     # Override colors with color_by if given
     if color_by is None:
