@@ -816,7 +816,7 @@ class Network(Domain):
         Pn = np.unique(temp).astype(np.int64)
         # Remove inputs if necessary
         if include_input is False:
-            Pn = Pn[~np.in1d(Pn, pores)]
+            Pn = Pn[~np.isin(Pn, pores)]
         # Convert list of lists to a list of ndarrays
         if flatten is False:
             if len(Pn) == 0:  # Deal with no nearby neighbors

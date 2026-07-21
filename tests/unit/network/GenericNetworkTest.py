@@ -179,7 +179,7 @@ class NetworkTest:
         a = self.net.find_nearby_pores(pores=[0, 1], r=2,
                                        flatten=True, include_input=True)
         assert np.size(a) == 17
-        assert np.all(np.in1d([0, 1], a))
+        assert np.all(np.isin([0, 1], a))
 
     def test_get_incidence_matrix(self):
         net = op.network.Demo([4, 4, 1])

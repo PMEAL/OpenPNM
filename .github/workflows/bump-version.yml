@@ -46,7 +46,16 @@ jobs:
       - name: Merge release back into dev
         if: github.ref == 'refs/heads/release'
         run: |
-          git fetch origin dev
-          git checkout dev
-          git merge --no-ff origin/release -m "maint: merge release into dev [skip bump]"
+          # Fetch both branches after the release bump.  In particular, the
+          # origin/release ref checked out by actions/checkout can otherwise
+          # still point at the pre-bump commit.
+          git fetch origin dev release
+          git checkout -B dev origin/dev
+
+          # Keep the release version when the version edits conflict.  Other
+          # non-conflicting development changes on dev are retained.
+          git merge --no-ff -X theirs origin/release \
+            -m "maint: merge release into dev [skip bump]"
+
+          uvx bump-my-version bump pre_n --no-tag
           git push origin dev

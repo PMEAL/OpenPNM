@@ -227,9 +227,9 @@ def remove_isolated_clusters(labels, inlets):
     # Remove cluster numbers == -1, if any
     inv_clusters = inv_clusters[inv_clusters >= 0]
     # Find all pores in invading clusters
-    p_invading = np.in1d(labels.site_labels, inv_clusters)
+    p_invading = np.isin(labels.site_labels, inv_clusters)
     labels.site_labels[~p_invading] = -1
-    t_invading = np.in1d(labels.bond_labels, inv_clusters)
+    t_invading = np.isin(labels.bond_labels, inv_clusters)
     labels.bond_labels[~t_invading] = -1
     return labels
 
@@ -268,5 +268,5 @@ def ispercolating(conns, occupied, inlets, outlets):
     outs = np.unique(clusters.site_labels[outlets])
     if outs[0] == -1:
         outs = outs[1:]
-    hits = np.in1d(ins, outs)
+    hits = np.isin(ins, outs)
     return np.any(hits)
