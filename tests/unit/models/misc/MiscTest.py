@@ -108,7 +108,7 @@ class MiscTest:
                            propname='pore.seed',
                            prop='throat.seed',
                            mode='min')
-        assert np.all(np.in1d(self.net['pore.seed'], self.net['throat.seed']))
+        assert np.all(np.isin(self.net['pore.seed'], self.net['throat.seed']))
         assert np.isclose(self.net['throat.seed'].mean(), 0.5)
         assert np.isclose(self.net['pore.seed'].mean(), 0.16454849498327762)
 
@@ -121,7 +121,7 @@ class MiscTest:
                            propname='pore.seed',
                            prop='throat.seed',
                            mode='max')
-        assert np.all(np.in1d(self.net['pore.seed'], self.net['throat.seed']))
+        assert np.all(np.isin(self.net['pore.seed'], self.net['throat.seed']))
         assert np.isclose(self.net['throat.seed'].mean(), 0.5)
         assert np.isclose(self.net['pore.seed'].mean(), 0.8595317725752508)
 
