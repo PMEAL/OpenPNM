@@ -3,13 +3,22 @@ from scipy.integrate import solve_ivp
 from openpnm.algorithms._solution import TransientSolution
 from openpnm.integrators import Integrator
 
-__all__ = ['ScipyRK45']
+__all__ = ['ScipyIntegrator',
+           'ScipyRK45',
+           'ScipyBDF',
+           'ScipyLSODA']
 
 
-class ScipyRK45(Integrator):
-    """Integrator class based on SciPy's implementation of RK45"""
+class ScipyIntegrator(Integrator):
+    """Integrator class based on SciPy's ODE solvers"""
 
-    def __init__(self, atol=1e-6, rtol=1e-6, verbose=False, linsolver=None):
+    def __init__(self,
+                 method="RK45",
+                 atol=1e-6,
+                 rtol=1e-6,
+                 verbose=False,
+                 linsolver=None):
+        self.method = method
         self.atol = atol
         self.rtol = rtol
         self.verbose = verbose
@@ -47,10 +56,30 @@ class ScipyRK45(Integrator):
             "atol": self.atol,
             "rtol": self.rtol,
             "t_eval": saveat,
-            # FIXME: uncomment next line when/if scipy#11815 is merged
-            # "verbose": self.verbose,
+            # "verbose": self.verbose,  # Uncomment if supported in scipy
         }
-        sol = solve_ivp(rhs, tspan, x0, method="RK45", **options)
+        sol = solve_ivp(rhs, tspan, x0, method=self.method, **options)
         if sol.success:
             return TransientSolution(sol.t, sol.y)
         raise Exception(sol.message)
+
+
+class ScipyRK45(ScipyIntegrator):
+    """Integrator class using SciPy's RK45 method"""
+
+    def __init__(self, method="RK45", **kwargs):
+        super().__init__(method=method, **kwargs)
+
+
+class ScipyBDF(ScipyIntegrator):
+    """Integrator class using SciPy's BDF method"""
+
+    def __init__(self, method="BDF", **kwargs):
+        super().__init__(method=method, **kwargs)
+
+
+class ScipyLSODA(ScipyIntegrator):
+    """Integrator class using SciPy's LSODA method"""
+
+    def __init__(self, method="LSODA", **kwargs):
+        super().__init__(method=method, **kwargs)
