@@ -47,6 +47,7 @@ class TransientReactiveTransport(ReactiveTransport):
         self.settings._update(TransientReactiveTransportSettings())
         self.settings['phase'] = phase.name
         self["pore.ic"] = np.nan
+        self._callbacks = []
 
     def run(self, x0, tspan, saveat=None, integrator=None):
         """
@@ -101,6 +102,37 @@ class TransientReactiveTransport(ReactiveTransport):
     def _run_special(self, x0):
         pass
 
+    def _set_callback(self, func):
+        """
+        Stores the given function handle as a callback.
+
+        Callback functions are called at the beginning of every time step.
+
+        Parameters
+        ----------
+        func : function
+            Function to be called as a callback. Must be a function of
+            t and y.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        >>> import openpnm as op
+        >>> net = op.network.Demo([1, 2, 3])
+        >>> air = op.phase.Air(network=net)
+        >>> air.add_model_collection(op.models.collections.physics.standard)
+        >>> trt = op.algorithms.TransientReactiveTransport(network=net, phase=air)
+        >>> func = lambda t, y: print(t)
+        >>> trt._set_callback(func)
+
+        """
+        if not callable(func):
+            raise Exception("'func' must be a function. See Examples section.")
+        self._callbacks.append(func)
+
     def _build_rhs(self):
         """
         Returns a function handle, which calculates dy/dt = rhs(y, t).
@@ -113,6 +145,7 @@ class TransientReactiveTransport(ReactiveTransport):
         """
         def ode_func(t, y):
             # TODO: add a cache mechanism
+            self._apply_callbacks(t, y)
             self.x = y
             self._update_A_and_b()
             A = self.A.tocsc()
@@ -128,3 +161,7 @@ class TransientReactiveTransport(ReactiveTransport):
         x0[bc_pores] = self['pore.bc.value'][bc_pores]
         quantity = self.settings['quantity']
         self[quantity] = x0
+
+    def _apply_callbacks(self, t, y):
+        for func in self._callbacks:
+            func(t, y)

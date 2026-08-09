@@ -1,18 +1,17 @@
-if __name__ == "__main__":
+import openpnm as op
+import porespy as ps
+import numpy as np
+import os
+from pathlib import Path
 
-    import openpnm as op
-    import porespy as ps
-    import numpy as np
-    import os
-    from pathlib import Path
 
+def test_porespy_io_on_berea():
 
     # %% Read image from file in fixtures
     path = Path(os.path.realpath(__file__),
                 '../../../tests/fixtures/berea_100_to_300.npz')
     data = np.load(path.resolve())
     im = data['im']
-
 
     # %% Note meta data for this image
     data = {
@@ -62,7 +61,6 @@ if __name__ == "__main__":
     gas['pore.viscosity'] = 1.0
     gas.add_model_collection(op.models.collections.physics.basic)
     gas.regenerate_models()
-
 
     # %% Perform Fickian Diffusion to find formation factor
     fd = op.algorithms.FickianDiffusion(network=pn, phase=gas)
