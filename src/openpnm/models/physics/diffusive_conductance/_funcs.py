@@ -193,4 +193,4 @@ def taylor_aris_diffusion(phase,
         gtot = 1 / (1/g1 + 1/gt + 1/g2)
     else:
         gtot = Dt * (1 + Pet**2 / 192) * F
-    return gtot
+    return _np.vstack((gtot, gtot)).T

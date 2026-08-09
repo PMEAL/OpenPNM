@@ -81,6 +81,9 @@ class AdvectionDiffusion(ReactiveTransport):
         C12 = network.conns[throats]
         P12 = phase[self.settings['pressure']][C12]
         gh = phase[self.settings['hydraulic_conductance']][throats]
+        # Special treatment when gh is not Nt by 1
+        if gh.size == 2 * len(throats):
+            gh = gh[:, 0]  # assumes hydraulic conductance is symmetric
         Q12 = -gh * np.diff(P12, axis=1).squeeze()
         Qp = np.zeros(self.Np)
         np.add.at(Qp, C12[:, 0], -Q12)

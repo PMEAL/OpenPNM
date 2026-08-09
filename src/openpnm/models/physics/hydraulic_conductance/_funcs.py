@@ -50,7 +50,8 @@ def generic_hydraulic(
     g1 = F1 / mu1
     gt = Ft / mut
     g2 = F2 / mu2
-    return 1 / (1/g1 + 1/gt + 1/g2)
+    G = 1 / (1/g1 + 1/gt + 1/g2)
+    return _np.vstack((G, G)).T
 
 
 @_doctxt
@@ -203,4 +204,5 @@ def valvatne_blunt(
     gt = kt * At**2 * Gt / mu_t
     value = L1 / gp[conns[:, 0]] + Lt / gt + L2 / gp[conns[:, 1]]
 
-    return 1 / value
+    G = 1 / value
+    return _np.vstack((G, G)).T
