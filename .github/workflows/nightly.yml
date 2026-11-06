@@ -8,6 +8,7 @@ on:
 
 jobs:
   test-dev:
+    if: ${{ github.repository == 'PMEAL/OpenPNM' }}
     name: Dev / ${{ matrix.os }} / py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -40,6 +41,7 @@ jobs:
         run: uv run pytest -v
 
   test-pypi:
+    if: ${{ github.repository == 'PMEAL/OpenPNM' }}
     name: PyPI / ${{ matrix.os }} / py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     defaults:
