@@ -526,7 +526,10 @@ class Base2(dict):
         Parameters
         ----------
         propname : str
-            The dictionary key of the property to fetch.
+            The dictionary key of the property to fetch. Can be 'pore.diameter'
+            or just 'diameter'.  To fetch different propnames for pores and throats
+            supply them both in a list, like
+            `['pore.diameter', 'throat.inscribed_diameter']`.
 
         Returns
         -------
@@ -535,8 +538,13 @@ class Base2(dict):
             for pore1, throat, and pore2 respectively.
 
         """
-        poreprop = 'pore.' + propname.split('.', 1)[-1]
-        throatprop = 'throat.' + propname.split('.', 1)[-1]
+        if isinstance(propname, str):
+            poreprop = 'pore.' + propname.split('.', 1)[-1]
+            throatprop = 'throat.' + propname.split('.', 1)[-1]
+        elif isinstance(propname, list):
+            poreprop = propname[0] if propname[0].startswith('pore') else propname[1]
+            throatprop = \
+                propname[0] if propname[0].startswith('throat') else propname[1]
         conns = self.network.conns
         try:
             T = self[throatprop]
