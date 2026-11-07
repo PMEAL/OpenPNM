@@ -61,6 +61,9 @@ def ad_dif(
     else:
         raise Exception(f"Shape of {throat_diffusive_conductance} must either"
                         r" be (Nt,1) or (Nt,2)")
+    # Special treatment when gh is not Nt by 1
+    if gh.size == 2 * network.Nt:
+        gh = gh[:, 0]  # assumes hydraulic conductance is symmetric
 
     Qij = -gh * _np.diff(P[cn], axis=1).squeeze()
     Qij = _np.append(Qij, -Qij)
