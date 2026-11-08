@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; OpenPNM 3.6.4 documentation</title>
+    <title>Installation &#8212; OpenPNM 3.6.5 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=af38eec5"></script>
+    <script src="_static/documentation_options.js?v=0b406adc"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4 documentation - Home"/>
-    <img src="_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4 documentation - Home"/>
+    <img src="_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.5 documentation - Home"/>
+    <img src="_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.5 documentation - Home"/>
   
   
 </a></div>
@@ -403,10 +403,18 @@
 <ol class="arabic simple">
 <li><p>First you need to install <code class="docutils literal notranslate"><span class="pre">uv</span></code>. The official installation instructions are provided on the <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation">astral website</a>. This will install <code class="docutils literal notranslate"><span class="pre">uv</span></code> on your system so it will be available from the terminal or command line.</p></li>
 <li><p>Next you navigate to the folder where the project files and data will be or already are stored, like scripts and tomograms.</p></li>
-<li><p>Then you create a virtual environment in that directory using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span> <span class="pre">--python</span> <span class="pre">3.12</span></code>. This adds a <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder, where <code class="docutils literal notranslate"><span class="pre">uv</span></code> will store all its information. Note that OpenPNM only supports python version 3.11, 3.12 and 3.13. This is largely because of dependencies which have firm version requirements.</p></li>
+<li><p>Then you create a virtual environment in that directory using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span> <span class="pre">--python</span> <span class="pre">3.14</span></code>. This adds a <code class="docutils literal notranslate"><span class="pre">.venv</span></code> folder, where <code class="docutils literal notranslate"><span class="pre">uv</span></code> will store all its information. OpenPNM supports Python versions 3.11 through 3.14. Python 3.15 is not yet supported because several compiled dependencies do not provide compatible wheels.</p></li>
 <li><p>Finally, you run <cite>uv pip install openpnm</cite>. The first time you do this <code class="docutils literal notranslate"><span class="pre">uv</span></code> will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster.</p></li>
 </ol>
 <p>When using <code class="docutils literal notranslate"><span class="pre">uv</span></code> we recommend <a class="reference external" href="https://code.visualstudio.com/">VSCode</a> as the IDE to write and edit scripts. VSCode will automatically find the <code class="docutils literal notranslate"><span class="pre">venv</span></code> inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding <code class="docutils literal notranslate"><span class="pre">venvs</span></code> so is cumbersome to use when switching between projects.</p>
+<p>PoreSpy is installed separately when image processing or network extraction is
+needed, using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">porespy</span></code>. It is no longer included in
+<code class="docutils literal notranslate"><span class="pre">openpnm[extras]</span></code>, which installs NGSolve for STL export. OpenPNM can import
+network dictionaries produced by PoreSpy without requiring PoreSpy to be installed.
+Until a PoreSpy release supporting Python 3.14 is available, examples using
+PoreSpy should be run with Python 3.11 through 3.13. The development environment
+for these notebooks can be installed with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--python</span> <span class="pre">3.12</span> <span class="pre">--group</span> <span class="pre">test</span>
+<span class="pre">--group</span> <span class="pre">examples</span> <span class="pre">--extra</span> <span class="pre">extras</span></code>.</p>
 </section>
 <section id="conda">
 <h2><code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#conda" title="Link to this heading">#</a></h2>
