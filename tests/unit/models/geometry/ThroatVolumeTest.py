@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 
 import openpnm as op
 import openpnm.models.geometry.throat_volume as mods
@@ -34,21 +34,21 @@ class ThroatVolumeTest:
                            regen_mode='normal')
         a = np.array([0.007853981])
         b = np.unique(self.net['throat.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_cube(self):
         self.net.add_model(propname='throat.volume',
                            model=mods.cuboid)
         a = np.array([0.01])
         b = np.unique(self.net['throat.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_rectangle(self):
         self.net.add_model(propname='throat.volume',
                            model=mods.rectangle)
         a = np.array([0.1])
         b = np.unique(self.net['throat.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_extrusion(self):
         self.net.add_model(propname='throat.volume',

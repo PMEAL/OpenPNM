@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 
 import openpnm as op
 import openpnm.models.geometry.throat_cross_sectional_area as mods
@@ -18,7 +18,7 @@ class ThroatCrossSectionalAreaTest:
                            regen_mode='normal')
         a = np.array([0.007853981])
         b = np.unique(self.net['throat.cross_sectional_area'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_cube(self):
         self.net.add_model(propname='throat.cross_sectional_area',
@@ -26,7 +26,7 @@ class ThroatCrossSectionalAreaTest:
                               regen_mode='normal')
         a = np.array([0.01])
         b = np.unique(self.net['throat.cross_sectional_area'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_rectangle(self):
         self.net.add_model(propname='throat.cross_sectional_area',
@@ -34,7 +34,7 @@ class ThroatCrossSectionalAreaTest:
                            regen_mode='normal')
         a = np.array([0.1])
         b = np.unique(self.net['throat.cross_sectional_area'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
 
 if __name__ == '__main__':

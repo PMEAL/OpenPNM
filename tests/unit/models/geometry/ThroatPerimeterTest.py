@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 
 import openpnm as op
 import openpnm.models.geometry.throat_perimeter as mods
@@ -16,7 +16,7 @@ class ThroatPerimeterTest:
                            regen_mode='normal')
         a = np.array([0.31415927])
         b = np.unique(self.net['throat.perimeter'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_cuboid(self):
         self.net.add_model(propname='throat.perimeter',
@@ -24,7 +24,7 @@ class ThroatPerimeterTest:
                            regen_mode='normal')
         a = np.array([0.4])
         b = np.unique(self.net['throat.perimeter'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_rectangle(self):
         self.net.add_model(propname='throat.perimeter',
@@ -32,7 +32,7 @@ class ThroatPerimeterTest:
                            regen_mode='normal')
         a = np.array([1.0])
         b = np.unique(self.net['throat.perimeter'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
 
 if __name__ == '__main__':

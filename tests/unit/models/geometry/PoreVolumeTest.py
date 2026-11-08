@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.testing import assert_approx_equal
+from numpy.testing import assert_allclose
 
 import openpnm as op
 import openpnm.models.geometry.pore_volume as mods
@@ -17,7 +17,7 @@ class PoreVolumeTest:
                            regen_mode='normal')
         a = np.array([0.52359878*1.05**3])
         b = np.unique(self.net['pore.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_circle(self):
         self.net.add_model(propname='pore.volume',
@@ -25,7 +25,7 @@ class PoreVolumeTest:
                            regen_mode='normal')
         a = np.array([3.14159265/4*1.05**2])
         b = np.unique(self.net['pore.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_cube(self):
         self.net.add_model(propname='pore.volume',
@@ -33,7 +33,7 @@ class PoreVolumeTest:
                            regen_mode='normal')
         a = np.array([1.0*1.05**3])
         b = np.unique(self.net['pore.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_square(self):
         self.net.add_model(propname='pore.volume',
@@ -41,7 +41,7 @@ class PoreVolumeTest:
                            regen_mode='normal')
         a = np.array([1.0*1.05**2])
         b = np.unique(self.net['pore.volume'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
     def test_effective(self):
         net = op.network.Cubic(shape=[2, 2, 1])
@@ -51,7 +51,7 @@ class PoreVolumeTest:
                       model=mods.effective)
         a = np.array([0.5 + 0.25])
         b = np.unique(net['pore.volume_effective'])
-        assert_approx_equal(a, b)
+        assert_allclose(a, b)
 
 
 if __name__ == '__main__':

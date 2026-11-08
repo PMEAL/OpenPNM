@@ -10,10 +10,19 @@ The recommended way to install Python and desired packages (like OpenPNM) is usi
 
 1. First you need to install ``uv``. The official installation instructions are provided on the `astral website <https://docs.astral.sh/uv/getting-started/installation>`_. This will install ``uv`` on your system so it will be available from the terminal or command line.
 2. Next you navigate to the folder where the project files and data will be or already are stored, like scripts and tomograms.
-3. Then you create a virtual environment in that directory using ``uv venv --python 3.12``. This adds a ``.venv`` folder, where ``uv`` will store all its information. Note that OpenPNM only supports python version 3.11, 3.12 and 3.13. This is largely because of dependencies which have firm version requirements.
+3. Then you create a virtual environment in that directory using ``uv venv --python 3.14``. This adds a ``.venv`` folder, where ``uv`` will store all its information. OpenPNM supports Python versions 3.11 through 3.14. Python 3.15 is not yet supported because several compiled dependencies do not provide compatible wheels.
 4. Finally, you run `uv pip install openpnm`. The first time you do this ``uv`` will download and compile a few things, which may take some time, but it will store all of this so subsequent usage will be much faster.
 
 When using ``uv`` we recommend `VSCode <https://code.visualstudio.com/>`_ as the IDE to write and edit scripts. VSCode will automatically find the ``venv`` inside the current folder, which is very handy. Spyder is a good IDE for scientific programming, but it does not (yet) have automatic support for finding ``venvs`` so is cumbersome to use when switching between projects.
+
+PoreSpy is installed separately when image processing or network extraction is
+needed, using ``uv pip install porespy``. It is no longer included in
+``openpnm[extras]``, which installs NGSolve for STL export. OpenPNM can import
+network dictionaries produced by PoreSpy without requiring PoreSpy to be installed.
+Until a PoreSpy release supporting Python 3.14 is available, examples using
+PoreSpy should be run with Python 3.11 through 3.13. The development environment
+for these notebooks can be installed with ``uv sync --python 3.12 --group test
+--group examples --extra extras``.
 
 ``conda``
 ---------

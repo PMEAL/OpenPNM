@@ -8,6 +8,7 @@ on:
 
 jobs:
   test-dev:
+    if: ${{ github.repository == 'PMEAL/OpenPNM' }}
     name: Dev / ${{ matrix.os }} / py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -16,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
@@ -40,6 +41,7 @@ jobs:
         run: uv run pytest -v
 
   test-pypi:
+    if: ${{ github.repository == 'PMEAL/OpenPNM' }}
     name: PyPI / ${{ matrix.os }} / py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -48,6 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Add 3.14 after the first supporting OpenPNM release is published.
         python-version: ["3.11", "3.12", "3.13"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 

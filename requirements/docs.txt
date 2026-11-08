@@ -8,4 +8,4 @@ pydata-sphinx-theme
 sphinx
 sphinx-copybutton
 sphinx-design
-porespy
+porespy; python_version < '3.14'
