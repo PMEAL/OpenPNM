@@ -13,24 +13,29 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
     "docrep>=0.3.2",
     "h5py>=3.14.0",
+    "h5py>=3.15.0; python_version >= '3.14'",
     "jsonschema>=4.25.1",
-    "llvmlite>=0.44",
     "matplotlib>=3.10.6",
     "matplotlib-inline>=0.1.7",
     "networkx>=3.5",
-    "numba>=0.61",
+    "numba>=0.63",
     "numpy>=2",
-    "pandas>=2.3.2",
-    "pyamg>=5.3.0",
+    "numpy>=2.3.3; python_version >= '3.14'",
+    "pandas>=2.3.3",
+    "pyamg>=5.4.0",
     "pypardiso; platform_system != 'Darwin' and (platform_machine == 'x86_64' or platform_machine == 'AMD64')",
     "rich>=14.1.0",
-    "scikit-image>=0.25.0",
+    "scikit-image>=0.26.0",
     "scipy>=1.16.2",
     "sympy>=1.14.0",
     "thermo>=0.4.2",
@@ -38,10 +43,10 @@ dependencies = [
     "transforms3d>=0.4.2",
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.15"
 
 [project.optional-dependencies]
-extras = ["porespy", "ngsolve"]
+extras = ["ngsolve>=6.2.2608"]
 
 [project.urls]
 Homepage = "https://openpnm.org"
@@ -186,7 +191,12 @@ test = [
     "pytest-custom-exit-code",
     "pytest-split",
 ]
+examples = [
+    # PoreSpy is notebook tooling, not an OpenPNM runtime dependency.
+    "porespy; python_version < '3.14'",
+]
 docs = [
+    { include-group = "examples" },
     "mock",
     "myst-nb",
     "nbstripout>=0.8.1",
@@ -197,7 +207,7 @@ docs = [
     "sphinx-autoapi",
     "sphinx-copybutton",
     "sphinx-design",
-    "tensorflow",
+    "tensorflow; python_version < '3.14'",
     "plotly",
 ]
 interactive = [

@@ -1,7 +1,7 @@
 jupyter
 nbval
 netgen-mesher
-porespy
+porespy; python_version < '3.14'
 py
 pytest
 pytest-cache

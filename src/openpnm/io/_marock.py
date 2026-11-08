@@ -67,10 +67,10 @@ def network_from_marock(filename, voxel_size=1):
         net['pore.coordination'] = np.ndarray([Np, ], int)
         net['pore.ID_number'] = np.ndarray([Np, ], int)
         for i in range(0, Np):
-            ID = np.fromfile(file=f, count=1, dtype='u4')
+            ID = np.fromfile(file=f, count=1, dtype='u4')[0]
             net['pore.ID_number'][i] = ID
             net['pore.boundary_type'][i] = np.fromfile(file=f, count=1,
-                                                       dtype='u1')
+                                                       dtype='u1')[0]
             z = np.fromfile(file=f, count=1, dtype='u4')[0]
             net['pore.coordination'][i] = z
             att_pores = np.fromfile(file=f, count=z, dtype='u4')
@@ -97,7 +97,7 @@ def network_from_marock(filename, voxel_size=1):
         for i in range(0, Nt):
             ID = np.fromfile(file=f, count=1, dtype='u4')
             net['throat.cross_sectional_area'][i] = \
-                np.fromfile(file=f, count=1, dtype='f4')
+                np.fromfile(file=f, count=1, dtype='f4')[0]
             # numvox = np.fromfile(file=f, count=1, dtype='u4')
             att_pores = np.fromfile(file=f, count=2, dtype='u4')
         nx = np.fromfile(file=f, count=1, dtype='u4')
