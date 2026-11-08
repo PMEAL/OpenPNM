@@ -36,7 +36,7 @@ jobs:
 
       - name: Install OpenPNM
         run: |
-          uv sync --group test --group build --extra extras
+          uv sync --group test --group build --group examples --extra extras
           uv build
 
       - name: Run examples

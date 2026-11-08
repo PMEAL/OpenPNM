@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
@@ -50,6 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Add 3.14 after the first supporting OpenPNM release is published.
         python-version: ["3.11", "3.12", "3.13"]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
