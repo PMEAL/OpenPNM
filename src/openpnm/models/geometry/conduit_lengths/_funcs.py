@@ -1,6 +1,6 @@
 import numpy as np
-
 from openpnm.models.geometry import _geodocs
+
 
 __all__ = [
     "spheres_and_cylinders",
@@ -29,8 +29,6 @@ def spheres_and_cylinders(
     Calculates conduit lengths in the network assuming pores are spheres
     and throats are cylinders.
 
-    A conduit is defined as ( 1/2 pore - full throat - 1/2 pore ).
-
     Parameters
     ----------
     %(network)s
@@ -44,9 +42,16 @@ def spheres_and_cylinders(
         of the pore-throat-pore conduits. The array is formatted as
         ``[pore1, throat, pore2]``.
 
+    Notes
+    -----
+    The cylindrical throat is assumed to overlap the spherical pore bodies creating
+    a hemispherical cap at the area of intersection. The length of the cap is
+    assigned to the throat.
+
     """
     L_ctc = _get_L_ctc(network)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
+    D1, Dt, D2 = \
+        network.get_conduit_data(propname=[pore_diameter, throat_diameter]).T
 
     # Handle the case where Dt > Dp
     if (Dt > D1).any() or (Dt > D2).any():
@@ -81,7 +86,9 @@ def spheres_and_cylinders(
 
 @_geodocs
 def circles_and_rectangles(
-    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are circles
@@ -107,13 +114,14 @@ def circles_and_rectangles(
     return spheres_and_cylinders(
         network=network,
         pore_diameter=pore_diameter,
-        throat_diameter=throat_diameter,
     )
 
 
 @_geodocs
 def cones_and_cylinders(
-    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
@@ -132,7 +140,8 @@ def cones_and_cylinders(
 
     """
     L_ctc = _get_L_ctc(network)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
+    D1, Dt, D2 = \
+        network.get_conduit_data(propname=[pore_diameter, throat_diameter]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -147,7 +156,11 @@ def cones_and_cylinders(
 
 
 @_geodocs
-def intersecting_cones(network, pore_coords="pore.coords", throat_coords="throat.coords"):
+def intersecting_cones(
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords",
+):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
     that intersect. Therefore, the throat is the cross sectional plane where
@@ -176,7 +189,10 @@ def intersecting_cones(network, pore_coords="pore.coords", throat_coords="throat
 
 @_geodocs
 def hybrid_cones_and_cylinders(
-    network, pore_diameter="pore.diameter", throat_coords="throat.coords"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
+    throat_coords="throat.coords",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cones
@@ -188,6 +204,7 @@ def hybrid_cones_and_cylinders(
     ----------
     %(network)s
     %(Dp)s
+    %(Dt)s
     %(Tcoords)s
 
     Returns
@@ -195,7 +212,8 @@ def hybrid_cones_and_cylinders(
 
     """
     L_ctc = _get_L_ctc(network)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
+    D1, Dt, D2 = \
+        network.get_conduit_data(propname=[pore_diameter, throat_diameter]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -216,7 +234,9 @@ def hybrid_cones_and_cylinders(
 
 @_geodocs
 def trapezoids_and_rectangles(
-    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -246,7 +266,9 @@ def trapezoids_and_rectangles(
 
 @_geodocs
 def intersecting_trapezoids(
-    network, pore_coords="pore.coords", throat_coords="throat.coords"
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -276,7 +298,9 @@ def intersecting_trapezoids(
 
 @_geodocs
 def hybrid_trapezoids_and_rectangles(
-    network, pore_diameter="pore.diameter", throat_coords="throat.coords"
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -306,7 +330,9 @@ def hybrid_trapezoids_and_rectangles(
 
 @_geodocs
 def pyramids_and_cuboids(
-    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are truncated
@@ -331,7 +357,9 @@ def pyramids_and_cuboids(
 
 @_geodocs
 def intersecting_pyramids(
-    network, pore_coords="pore.coords", throat_coords="throat.coords"
+    network,
+    pore_coords="pore.coords",
+    throat_coords="throat.coords",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are
@@ -356,7 +384,9 @@ def intersecting_pyramids(
 
 @_geodocs
 def hybrid_pyramids_and_cuboids(
-    network, pore_diameter="pore.diameter", throat_coords="throat.coords"
+    network,
+    pore_diameter="pore.diameter",
+    throat_coords="throat.coords",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are truncated
@@ -382,7 +412,9 @@ def hybrid_pyramids_and_cuboids(
 
 @_geodocs
 def cubes_and_cuboids(
-    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are cubes
@@ -399,7 +431,8 @@ def cubes_and_cuboids(
 
     """
     L_ctc = _get_L_ctc(network)
-    D1, Dt, D2 = network.get_conduit_data(pore_diameter.split(".", 1)[-1]).T
+    D1, Dt, D2 = \
+        network.get_conduit_data(propname=[pore_diameter, throat_diameter]).T
 
     L1 = D1 / 2
     L2 = D2 / 2
@@ -416,7 +449,9 @@ def cubes_and_cuboids(
 
 @_geodocs
 def squares_and_rectangles(
-    network, pore_diameter="pore.diameter", throat_diameter="throat.diameter"
+    network,
+    pore_diameter="pore.diameter",
+    throat_diameter="throat.diameter",
 ):
     r"""
     Calculates conduit lengths in the network assuming pores are squares
