@@ -46,7 +46,7 @@ def lloyd_relaxation(vor, mode='rigorous'):
     """
     pts = vor.points
     for i, r in enumerate(vor.point_region):
-        if np.all(np.array(vor.regions[r]) > 0):
+        if np.all(np.array(vor.regions[r]) >= 0):
             pts[i, :pts.shape[1]] = \
                 get_centroid(vor.vertices[vor.regions[r]], mode=mode)
     if pts.shape[1] == 2:
