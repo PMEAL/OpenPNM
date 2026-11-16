@@ -1,4 +1,6 @@
 import numpy as np
+import pytest
+from scipy.spatial import Voronoi
 import openpnm as op
 from openpnm._skgraph import generators as gen
 from openpnm._skgraph import tools
@@ -65,6 +67,24 @@ class SKGRGeneratorToolsTest:
         assert_allclose(pt, [0.5, 0.5, 0.5], rtol=1e-8)
         pt = gen.tools.get_centroid(pts, mode='fast')
         assert_allclose(pt, [0.5, 0.5, 0.25], rtol=1e-12)
+
+    @pytest.mark.parametrize("dimension", [2, 3])
+    @pytest.mark.parametrize("mode", ["fast", "rigorous"])
+    def test_lloyd_relaxation_includes_vertex_zero(self, dimension, mode):
+        points = np.random.default_rng(0).random((30, dimension))
+        vor = Voronoi(points.copy())
+        expected = points.copy()
+        includes_zero = False
+        for i, region in enumerate(vor.point_region):
+            vertices = vor.regions[region]
+            if vertices and -1 not in vertices:
+                expected[i] = gen.tools.get_centroid(vor.vertices[vertices], mode=mode)
+                includes_zero |= 0 in vertices
+        assert includes_zero
+        result = gen.tools.lloyd_relaxation(vor, mode=mode)
+        assert_allclose(result[:, :dimension], expected)
+        if dimension == 2:
+            assert_allclose(result[:, 2], 0)
 
     def test_parse_points(self):
         pts = gen.tools.parse_points(shape=[1, 1, 1], points=10)
