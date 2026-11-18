@@ -263,8 +263,9 @@ class InvasionPercolation(Algorithm):
         vols = np.concatenate((pvols, tvols))
         seqs = np.concatenate((pseq, tseq))
         Pcs = np.concatenate((pPc, tPc))
+        object_type = np.concatenate((np.ones(pvols.size), np.zeros(tvols.size)))  # classifies throats vs pores now for ordering : 1 = pore, 0 = throat
         data = np.rec.fromarrays(
-            [seqs, vols, Pcs], formats=["i", "f", "f"], names=["seq", "vol", "Pc"]
+            [seqs, object_type, vols, Pcs], formats=["i", "i1", "f", "f"], names=["seq", "object_type", "vol", "Pc"]
         )
         data.sort(axis=0, order="seq")
         pc_curve = namedtuple("pc_curve", ("pc", "snwp"))
