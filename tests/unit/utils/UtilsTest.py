@@ -94,6 +94,43 @@ class UtilsTest:
         assert not op.utils.is_valid_propname("throat.")
         assert not op.utils.is_valid_propname("pore.foo..bar")
 
+    def test_docstring_substitutions_resolved(self):
+        import importlib
+        import pkgutil
+        import re
+
+        token_re = re.compile(r"%\([A-Za-z0-9_.]+\)s")
+        targets = [
+            (op.phase.Mercury, "network"),
+            (op.models.geometry.pore_surface_area.cube, "throat_cross_sectional_area : str"),
+            (op.models.geometry.pore_surface_area.square, "throat_cross_sectional_area : str"),
+            (op.models.geometry.throat_capillary_shape_factor.jenkins_rao, "throat_perimeter : str"),
+            (op.models.physics.electrical_conductance.series_resistors, "phase : OpenPNM Phase object"),
+            (op.models.physics.meniscus.general_toroidal, "phase : OpenPNM Phase object"),
+            (op.contrib.multiphase_diffusion, "phase : OpenPNM Phase object"),
+        ]
+        for obj, expected in targets:
+            assert obj.__doc__ is not None
+            assert not token_re.search(obj.__doc__), (
+                f"{obj.__module__}.{obj.__qualname__} has unresolved tokens: "
+                f"{token_re.findall(obj.__doc__)}"
+            )
+            assert expected in obj.__doc__
+
+        unresolved = []
+        for modinfo in pkgutil.walk_packages(op.__path__, prefix="openpnm."):
+            mod = importlib.import_module(modinfo.name)
+            for name in getattr(mod, "__all__", ()):
+                if name.startswith("_"):
+                    continue
+                obj = getattr(mod, name, None)
+                if not getattr(obj, "__module__", "").startswith("openpnm"):
+                    continue
+                doc = getattr(obj, "__doc__", None)
+                if isinstance(doc, str) and token_re.search(doc):
+                    unresolved.append((f"{modinfo.name}.{name}", token_re.findall(doc)))
+        assert not unresolved, f"Unresolved docstring tokens in public API: {unresolved}"
+
 
 if __name__ == '__main__':
 
