@@ -11,7 +11,6 @@ __all__ = [
 ]
 
 
-@docstr.get_sections(base='Phase', sections=['Parameters'])
 @docstr.dedent
 class Mercury(Phase):
     r"""
