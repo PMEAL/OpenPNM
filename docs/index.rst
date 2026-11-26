@@ -20,7 +20,8 @@ simulations.
 .. image:: https://user-images.githubusercontent.com/14086031/188250733-9d08db14-7822-4ba7-97a5-af148e1deabb.png
    :name: banner2
 
-.. note::
+.. admonition:: Extract OpenPNM-Compatible Networks with PoreStore
+   :class: tip
 
     Looking for volumetric 3D image analysis in the cloud without local
     setup? `PoreStore <https://porestore.com/>`_ — built by the creators of
