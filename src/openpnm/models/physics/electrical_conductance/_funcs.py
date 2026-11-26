@@ -37,6 +37,7 @@ def generic_electrical(
                                 size_factors=size_factors)
 
 
+@_doctxt
 def series_resistors(
     phase,
     pore_conductivity='pore.electrical_conductivity',

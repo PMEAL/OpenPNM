@@ -70,10 +70,16 @@ class AdvectionDiffusion(ReactiveTransport):
         -----
         Outflow condition means that the gradient of the solved quantity
         does not change, i.e. is 0.
+        The boundary flow rates are recalculated from the current pressure and
+        hydraulic conductance each time the transport equations are assembled.
 
         """
         pores = self._parse_indices(pores)
+        values = self._get_outflow_rates(pores)
+        self.set_BC(pores=pores, bcvalues=values, bctype='outflow', mode=mode)
 
+    def _get_outflow_rates(self, pores):
+        """Calculate net flow into the specified boundary pores."""
         # Calculating A[i,i] values to ensure the outflow condition
         network = self.project.network
         phase = self.project[self.settings['phase']]
@@ -85,9 +91,7 @@ class AdvectionDiffusion(ReactiveTransport):
         Qp = np.zeros(self.Np)
         np.add.at(Qp, C12[:, 0], -Q12)
         np.add.at(Qp, C12[:, 1], Q12)
-
-        self.set_BC(pores=pores, bcvalues=Qp[pores], bctype='outflow',
-                    mode=mode)
+        return Qp[pores]
 
     def _apply_BCs(self):
         r"""
@@ -98,8 +102,11 @@ class AdvectionDiffusion(ReactiveTransport):
         if 'pore.bc.outflow' not in self.keys():
             return
         # Apply outflow BC
-        diag = self.A.diagonal()
         ind = np.isfinite(self['pore.bc.outflow'])
+        if not np.any(ind):
+            return
+        self['pore.bc.outflow'][ind] = self._get_outflow_rates(self.Ps[ind])
+        diag = self.A.diagonal()
         diag[ind] += self['pore.bc.outflow'][ind]
         self.A.setdiag(diag)
 

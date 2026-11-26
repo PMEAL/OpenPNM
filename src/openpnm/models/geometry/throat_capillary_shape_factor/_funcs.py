@@ -43,6 +43,7 @@ def mason_morrow(
     return value
 
 
+@_geodocs
 def jenkins_rao(
     network,
     throat_perimeter='throat.perimeter',
