@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 from numpy.testing import assert_allclose
+import openpnm.models.physics.diffusive_conductance as diffusive_conductance
 
 
 class DiffusiveConductanceTest:
@@ -120,6 +121,15 @@ class DiffusiveConductanceTest:
         desired = np.array([0.121193, 0.126131, 0.118578])
         assert_allclose(actual, desired, rtol=1e-5)
 
+    def test_conductance_shape(self):
+        available_models = [
+            getattr(diffusive_conductance, model_name)
+            for model_name in dir(diffusive_conductance)
+            if callable(getattr(diffusive_conductance, model_name))
+            ]
+        for model in available_models:
+            G = model(phase=self.phase)
+            assert_allclose(G.shape, (self.net.Nt, 2), rtol=0)
 
 if __name__ == '__main__':
 
