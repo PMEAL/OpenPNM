@@ -23,10 +23,10 @@ simulations.
 .. admonition:: Extract OpenPNM-Compatible Networks with PoreStore
    :class: tip
 
-    Looking for volumetric 3D image analysis in the cloud without local
-    setup? `PoreStore <https://porestore.com/>`_ — built by the creators of
-    OpenPNM and PoreSpy — extracts OpenPNM-ready pore networks alongside
-    direct 3D permeability, diffusivity, and tortuosity solvers.
+   Looking for volumetric 3D image analysis in the cloud without local
+   setup? `PoreStore <https://porestore.com/>`_ — built by the creators of
+   OpenPNM and PoreSpy — extracts OpenPNM-ready pore networks alongside
+   direct 3D permeability, diffusivity, and tortuosity solvers.
 
 .. toctree::
    :hidden:
