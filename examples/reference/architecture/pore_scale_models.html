@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Pore-Scale Models &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>Pore-Scale Models &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -521,7 +521,7 @@
 </div>
 </div>
 </div>
-<p>The next feature we might like is the ability to <em>re-run</em> the models. So instead of having to re-write the above line at various placesn throughout our script, it is desirable to store the model <em>on the object</em> for later use. For this purpose there is a <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute on every OpenPNM object. The <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute is actually a dictionary where the keys indicate where the proudced data should be stored.</p>
+<p>The next feature we might like is the ability to <em>re-run</em> the models. So instead of having to re-write the above line at various places throughout our script, it is desirable to store the model <em>on the object</em> for later use. For this purpose there is a <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute on every OpenPNM object. The <code class="docutils literal notranslate"><span class="pre">models</span></code> attribute is actually a dictionary where the keys indicate where the produced data should be stored.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pn</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">&#39;pore.diameter@all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">pore_seed</span><span class="p">,</span>

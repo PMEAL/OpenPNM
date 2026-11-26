@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>general_toroidal &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>general_toroidal &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -1980,7 +1980,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>%</strong><strong>(</strong><strong>phase</strong><strong>)</strong><strong>s</strong></p></li>
+<li><p><strong>phase</strong> (<em>OpenPNM Phase object</em>) – The phase object to which this model is associated (i.e. attached).
+This controls the length of the calculated array(s), and also
+provides access to other necessary properties.</p></li>
 <li><p><strong>profile_equation</strong> (<em>str</em>) – Options are ‘elliptical’ (default), ‘sinusoidal’.</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – <p>Determines what information to send back. Options are:</p>
 <blockquote>
@@ -2008,17 +2010,23 @@ before touching a solid feature</p></td>
 <li><p><strong>num_points</strong> (<em>float</em>) – The number of divisions to make along the profile length to assess the
 meniscus properties in order to find target pressures, touch lengths,
 minima and maxima. The default is 1000.</p></li>
-<li><p><strong>throat_scale_a</strong> (<em>str</em>) – %(dict_blurb)s scale factor for adjusting the profile along the
+<li><p><strong>throat_scale_a</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  scale factor for adjusting the profile along the
 throat axis (x).</p></li>
-<li><p><strong>throat_scale_b</strong> (<em>str</em>) – %(dict_blurb)s scale factor for adjusting the profile perpendicular
+<li><p><strong>throat_scale_b</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  scale factor for adjusting the profile perpendicular
 to the throat axis (y).</p></li>
-<li><p><strong>throat_diameter</strong> (<em>str</em>) – %(dict_blurb)s throat diameter values to be used.</p></li>
-<li><p><strong>touch_length</strong> (<em>str</em>) – %(dict_blurb)s maximum length that a meniscus can
+<li><p><strong>throat_diameter</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  throat diameter values to be used.</p></li>
+<li><p><strong>touch_length</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  maximum length that a meniscus can
 protrude into the connecting pore before touching a solid feature and
 therfore invading</p></li>
-<li><p><strong>surface_tension</strong> (<em>str</em>) – %(dict_blurb)s surface tension values to be used. If a pore property
+<li><p><strong>surface_tension</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  surface tension values to be used. If a pore property
 is given, it is interpolated to a throat list.</p></li>
-<li><p><strong>contact_angle</strong> (<em>str</em>) – %(dict_blurb)s contact angle values to be used. If a pore property
+<li><p><strong>contact_angle</strong> (<em>str</em>) – Name of the dictionary key on the target object pointing to the
+array containing values of  contact angle values to be used. If a pore property
 is given, it is interpolated to a throat list.</p></li>
 </ul>
 </dd>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.algorithms._invasion_percolation &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>openpnm.algorithms._invasion_percolation &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -666,8 +666,9 @@
         <span class="n">vols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pvols</span><span class="p">,</span> <span class="n">tvols</span><span class="p">))</span>
         <span class="n">seqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pseq</span><span class="p">,</span> <span class="n">tseq</span><span class="p">))</span>
         <span class="n">Pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pPc</span><span class="p">,</span> <span class="n">tPc</span><span class="p">))</span>
+        <span class="n">object_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pvols</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tvols</span><span class="o">.</span><span class="n">size</span><span class="p">)))</span>  <span class="c1"># classifies throats vs pores now for ordering : 1 = pore, 0 = throat</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromarrays</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">seqs</span><span class="p">,</span> <span class="n">vols</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">],</span> <span class="n">formats</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">,</span> <span class="s2">&quot;vol&quot;</span><span class="p">,</span> <span class="s2">&quot;Pc&quot;</span><span class="p">]</span>
+            <span class="p">[</span><span class="n">seqs</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">vols</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">],</span> <span class="n">formats</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;i1&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">,</span> <span class="s2">&quot;object_type&quot;</span><span class="p">,</span> <span class="s2">&quot;vol&quot;</span><span class="p">,</span> <span class="s2">&quot;Pc&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">data</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;seq&quot;</span><span class="p">)</span>
         <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;pc_curve&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;pc&quot;</span><span class="p">,</span> <span class="s2">&quot;snwp&quot;</span><span class="p">))</span>

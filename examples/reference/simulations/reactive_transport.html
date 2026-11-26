@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Reactive Transport &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>Reactive Transport &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -468,7 +468,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-net : &lt;openpnm.network.Cubic at 0x7f712b33d810&gt;
+net : &lt;openpnm.network.Cubic at 0x70210350e2b0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -512,7 +512,7 @@ net : &lt;openpnm.network.Cubic at 0x7f712b33d810&gt;
 </div>
 </div>
 </div>
-<p>OpenPNM’s <code class="docutils literal notranslate"><span class="pre">models</span></code> module contains a variety to pre-written source terms. Let’s use a standar reaction, also known as a power-law:</p>
+<p>OpenPNM’s <code class="docutils literal notranslate"><span class="pre">models</span></code> module contains a variety to pre-written source terms. Let’s use a standard reaction, also known as a power-law:</p>
 <div class="math notranslate nohighlight">
 \[ y = A_0 X^{A_1} + A_3 \rightarrow r_A = kC_A^b\]</div>
 <p>where <span class="math notranslate nohighlight">\(C_A\)</span> is the concentration of the diffusion species <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(b\)</span> are the kinetic constant (actually a strong function of temperature) and <span class="math notranslate nohighlight">\(b\)</span> is the reaction order.</p>
@@ -561,7 +561,7 @@ net : &lt;openpnm.network.Cubic at 0x7f712b33d810&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f717f343110&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7021014c0690&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -596,7 +596,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f717f343110&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f717f343110&gt;
+fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7021014c0690&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -624,7 +624,7 @@ fick_02 : &lt;openpnm.algorithms.FickianDiffusion at 0x7f717f343110&gt;
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>══════════════════════════════════════════════════════════════════════════════
-phase_01 : &lt;openpnm.phase.Phase at 0x7f71295d0050&gt;
+phase_01 : &lt;openpnm.phase.Phase at 0x7021014c02d0&gt;
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
   #  Properties                                                   Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -657,7 +657,7 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f71295d0050&gt;
 <p>Meaning the net diffusive flux into pore 6 from pores 3 and 7 is equal to the rate of consumption in pore 6.  We can further write the rate value as:</p>
 <div class="math notranslate nohighlight">
 \[ g_{3,6} (C_{A,3} - C_{A,6}) + g_{7,6} (C_{A,7} - C_{A,6}) = k C_{A,6}^2 \]</div>
-<p>Now we can see there will be a problem solving this equation since a non-linear concentration term has appeared.  <em>If</em> we could just write the reaction term as a linear expresssion we would be able to proceed:</p>
+<p>Now we can see there will be a problem solving this equation since a non-linear concentration term has appeared.  <em>If</em> we could just write the reaction term as a linear expression we would be able to proceed:</p>
 <div class="math notranslate nohighlight">
 \[ g_{3,6} (C_{A,3} - C_{A,6}) + g_{7,6} (C_{A,7} - C_{A,6}) = S_1 C_{A,6} + S_2 \]</div>
 <p>We could then group all the linear terms as follows:</p>
@@ -698,24 +698,24 @@ phase_01 : &lt;openpnm.phase.Phase at 0x7f71295d0050&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.79668739 -0.52845122  0.         -0.26823617  0.          0.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.09247097 -0.84276649  0.         -0.24970448  0.          0.
    0.          0.          0.        ]
- [-0.52845122  1.46419206 -0.29965912  0.         -0.63608172  0.
+ [-0.84276649  1.74024092 -0.6308851   0.         -0.26658934  0.
    0.          0.          0.        ]
- [ 0.         -0.29965912  1.05118121  0.          0.         -0.75152209
+ [ 0.         -0.6308851   1.24560205  0.          0.         -0.61471695
    0.          0.          0.        ]
- [-0.26823617  0.          0.          1.60879813 -0.45881464  0.
-  -0.88174732  0.          0.        ]
- [ 0.         -0.63608172  0.         -0.45881464  2.40507809 -0.70666587
-   0.         -0.60351587  0.        ]
- [ 0.          0.         -0.75152209  0.         -0.70666587  1.95945241
-   0.          0.         -0.50126444]
- [ 0.          0.          0.         -0.88174732  0.          0.
-   1.75434336 -0.87259604  0.        ]
- [ 0.          0.          0.          0.         -0.60351587  0.
-  -0.87259604  1.78718869 -0.31107679]
- [ 0.          0.          0.          0.          0.         -0.50126444
-   0.         -0.31107679  0.81234123]]
+ [-0.24970448  0.          0.          0.685727   -0.37021442  0.
+  -0.06580811  0.          0.        ]
+ [ 0.         -0.26658934  0.         -0.37021442  1.88539688 -0.65438938
+   0.         -0.59420375  0.        ]
+ [ 0.          0.         -0.61471695  0.         -0.65438938  1.43437171
+   0.          0.         -0.16526537]
+ [ 0.          0.          0.         -0.06580811  0.          0.
+   0.91785898 -0.85205087  0.        ]
+ [ 0.          0.          0.          0.         -0.59420375  0.
+  -0.85205087  1.56670444 -0.12044983]
+ [ 0.          0.          0.          0.          0.         -0.16526537
+   0.         -0.12044983  0.2857152 ]]
 </pre></div>
 </div>
 </div>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>square &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>square &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -123,8 +123,8 @@
       
     
     
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -1980,12 +1980,17 @@
 squares then subtracts the area of the neighboring throats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>%</strong><strong>(</strong><strong>network</strong><strong>)</strong><strong>s</strong></p></li>
-<li><p><strong>%</strong><strong>(</strong><strong>Dp</strong><strong>)</strong><strong>s</strong></p></li>
-<li><p><strong>%</strong><strong>(</strong><strong>Act</strong><strong>)</strong><strong>s</strong></p></li>
-<li><p><strong>amin</strong> (<em>float</em>) – The lower limit for surface area, useful for preventing</p></li>
-</ul>
+<dd class="field-odd"><p><strong>network</strong> (<em>OpenPNM Network object</em>)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>pore_diameter<span class="classifier">str</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">network</span></code> containing the ndarray of
+pore diameter values.</p>
+</dd>
+<dt>throat_cross_sectional_area<span class="classifier">str</span></dt><dd><p>Name of the dictionary key on <code class="docutils literal notranslate"><span class="pre">network</span></code> containing the ndarray of
+throat cross-sectional area values.</p>
+</dd>
+<dt>amin<span class="classifier">float</span></dt><dd><p>The lower limit for surface area, useful for preventing</p>
 </dd>
 </dl>
 </dd></dl>

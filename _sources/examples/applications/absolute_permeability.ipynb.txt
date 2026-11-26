@@ -11,7 +11,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "The example explains absolute permeabilty calculations on a cubic network. Note that permeability calculation for an extracted network from PoreSpy follows similar steps in assigning phase, algorithm and calculating permeability."
+    "The example explains absolute permeability calculations on a cubic network. Note that permeability calculation for an extracted network from PoreSpy follows similar steps in assigning phase, algorithm and calculating permeability."
    ]
   },
   {
@@ -125,7 +125,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "We can visulalize the pressure in the network:"
+    "We can visualize the pressure in the network:"
    ]
   },
   {

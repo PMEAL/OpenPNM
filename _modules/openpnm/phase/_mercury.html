@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openpnm.phase._mercury &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>openpnm.phase._mercury &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -42,7 +42,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -120,8 +120,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -387,6 +387,10 @@
   <h1>Source code for openpnm.phase._mercury</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.models.collections.phase</span><span class="w"> </span><span class="kn">import</span> <span class="n">mercury</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.phase</span><span class="w"> </span><span class="kn">import</span> <span class="n">Phase</span><span class="p">,</span> <span class="n">_fetch_chemical_props</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openpnm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Docorator</span>
+
+
+<span class="n">docstr</span> <span class="o">=</span> <span class="n">Docorator</span><span class="p">()</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -396,6 +400,7 @@
 
 <div class="viewcode-block" id="Mercury">
 <a class="viewcode-back" href="../../../modules/generated/openpnm.phase.Mercury.html#openpnm.phase.Mercury">[docs]</a>
+<span class="nd">@docstr</span><span class="o">.</span><span class="n">dedent</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Mercury</span><span class="p">(</span><span class="n">Phase</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates Phase object with and preset values and pore-scale models for</span>

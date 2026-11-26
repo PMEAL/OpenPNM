@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Explanation of Units &#8212; OpenPNM 3.6.4-dev4 documentation</title>
+    <title>Explanation of Units &#8212; OpenPNM 3.6.6 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=4e182bd8"></script>
+    <script src="../../../_static/documentation_options.js?v=3cb8e0b6"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -125,8 +125,8 @@
       
     
     
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
-    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.4-dev4 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-light" alt="OpenPNM 3.6.6 documentation - Home"/>
+    <img src="../../../_static/openpnm_logo.jpg" class="logo__image only-dark pst-js-only" alt="OpenPNM 3.6.6 documentation - Home"/>
   
   
 </a></div>
@@ -463,7 +463,7 @@
 <tr class="row-even"><td class="text-right"><p>pore.pressure</p></td>
 <td class="text-left"><p><span class="math notranslate nohighlight">\(Pa\)</span></p></td>
 </tr>
-<tr class="row-odd"><td class="text-right"><p>pore.emperature</p></td>
+<tr class="row-odd"><td class="text-right"><p>pore.temperature</p></td>
 <td class="text-left"><p><span class="math notranslate nohighlight">\(K\)</span></p></td>
 </tr>
 <tr class="row-even"><td class="text-right"><p>pore.volume</p></td>
@@ -478,8 +478,8 @@
 </tbody>
 </table>
 </div>
-<section id="use-of-absolute-pressure-vs-gauge-pressure">
-<h2>Use of absolute pressure vs gauge pressure<a class="headerlink" href="#use-of-absolute-pressure-vs-gauge-pressure" title="Link to this heading">#</a></h2>
+<section id="temperature-units-in-the-water-viscosity-model">
+<h2>Temperature units in the water viscosity model<a class="headerlink" href="#temperature-units-in-the-water-viscosity-model" title="Link to this heading">#</a></h2>
 <p>To demonstrate the importance of defining parameter values with correct units, a pore-scale model is examined in this section.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -519,7 +519,7 @@
 </div>
 </div>
 </div>
-<p>Which matches with reported values of water viscosity at 298 K. Note that assigning the pressure values as gauge pressure  or assigning the temperature as Celsius results in an incorrect estimation of viscosity. The reason is the pore-scale model equations were defined based on absolute pressure and absolute temperature.</p>
+<p>This matches reported values of water viscosity at 298 K. The <code class="docutils literal notranslate"><span class="pre">water_correlation</span></code> model requires temperature in kelvin; supplying a Celsius value directly gives an incorrect viscosity. It uses temperature and, when provided, salinity, but does not read <code class="docutils literal notranslate"><span class="pre">pore.pressure</span></code>. Changing pressure therefore does not change the viscosity calculated by this model. The correlation describes water or seawater at atmospheric pressure, with values above the normal boiling temperature evaluated at saturation pressure. For models that do depend on pressure, check their documentation for the required pressure units and reference.</p>
 </section>
 <section id="unit-conversion-packages-and-challenges">
 <h2>Unit conversion packages and challenges<a class="headerlink" href="#unit-conversion-packages-and-challenges" title="Link to this heading">#</a></h2>
@@ -550,7 +550,7 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-of-absolute-pressure-vs-gauge-pressure">Use of absolute pressure vs gauge pressure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#temperature-units-in-the-water-viscosity-model">Temperature units in the water viscosity model</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unit-conversion-packages-and-challenges">Unit conversion packages and challenges</a></li>
 </ul>
   </nav></div>
