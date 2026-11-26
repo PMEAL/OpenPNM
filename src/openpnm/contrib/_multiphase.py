@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 import openpnm.models.misc as misc
+from openpnm.models import _doctxt
 from openpnm.phase import Phase as Phase
 from openpnm.utils import Docorator, TypedSet
 
@@ -298,6 +299,7 @@ class MultiPhase(Phase):
                            mode=mode)
 
 
+@_doctxt
 def multiphase_diffusion(phase,
                          pore_diffusivity="pore.diffusivity",
                          throat_diffusivity="throat.diffusivity",

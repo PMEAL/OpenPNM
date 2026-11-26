@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from openpnm.models import _doctxt
 
 
 logger = logging.getLogger(__name__)
@@ -7,6 +8,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["purcell", "sinusoidal", "general_toroidal"]
 
 
+@_doctxt
 def general_toroidal(
     phase,
     profile_equation='elliptical',

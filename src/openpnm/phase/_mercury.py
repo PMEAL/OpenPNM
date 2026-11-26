@@ -1,5 +1,9 @@
 from openpnm.models.collections.phase import mercury
 from openpnm.phase import Phase, _fetch_chemical_props
+from openpnm.utils import Docorator
+
+
+docstr = Docorator()
 
 
 __all__ = [
@@ -7,6 +11,7 @@ __all__ = [
 ]
 
 
+@docstr.dedent
 class Mercury(Phase):
     r"""
     Creates Phase object with and preset values and pore-scale models for

@@ -93,6 +93,7 @@ def circle(
     return value
 
 
+@_geodocs
 def cube(
     network,
     pore_diameter='pore.diameter',
@@ -127,6 +128,7 @@ def cube(
     return value
 
 
+@_geodocs
 def square(
     network,
     pore_diameter='pore.diameter',
