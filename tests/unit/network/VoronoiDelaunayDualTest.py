@@ -110,6 +110,28 @@ class VoronoiTest:
             assert np.all(f[1] == [38, 39, 40, 41, 42, 43, 44,
                                    45, 46, 47, 48, 49])
 
+    def test_dual_relaxation_reflect(self):
+        for shape, ndim in [([1, 1, 1], 3), ([1, 1, 0], 2)]:
+            np.random.seed(0)
+            net = op.network.DelaunayVoronoiDual(
+                points=30,
+                shape=shape,
+                trim=True,
+                reflect=True,
+                f=0.5,
+                relaxation=2,
+            )
+            assert net.num_pores('delaunay') == 30
+            assert op.topotools.isoutside(network=net, shape=shape).sum() == 0
+            surf_vor = net['pore.surface'] & net['pore.voronoi']
+            assert surf_vor.sum() > 0
+            coords = net['pore.coords'][surf_vor, :ndim]
+            on_face = np.any(
+                np.isclose(coords, 0.0) | np.isclose(coords, 1.0),
+                axis=1,
+            )
+            assert np.all(on_face)
+
 
 if __name__ == '__main__':
 

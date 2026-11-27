@@ -75,6 +75,16 @@ def voronoi_delaunay_dual(
     vor = sptl.Voronoi(points=points[:, mask])
     for _ in range(relaxation):
         points = tools.lloyd_relaxation(vor, mode="fast")
+        if reflect:
+            d = {node_prefix + ".coords": points}
+            keep = ~isoutside(network=d, shape=shape)
+            points = points[keep]
+            points = tools.parse_points(
+                points=points,
+                shape=shape,
+                reflect=reflect,
+                f=f,
+            )
         vor = sptl.Voronoi(points=points[:, mask])
 
     # Collect delaunay edges
