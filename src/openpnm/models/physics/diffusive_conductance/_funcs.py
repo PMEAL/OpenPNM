@@ -97,7 +97,7 @@ def mixed_diffusion(phase,
         %(dict_blurb)s pore diffusivity
     pore_temperature : str
         %(dict_blurb)s pore temperature
-    molecular_weigth : str
+    molecular_weight : str
         %(dict_blurb)s pore molecular weight
     size_factors : str
         %(dict_blurb)s size factor
