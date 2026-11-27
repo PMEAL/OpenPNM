@@ -10,7 +10,7 @@ def cubic_template(template, spacing=1, connectivity=6,
 
     Parameters
     ----------
-    templte : ndarray
+    template : ndarray
         Each ``True`` value will be treated as a vertex while all others
         will be trimmed.
     spacing : array_like or float
