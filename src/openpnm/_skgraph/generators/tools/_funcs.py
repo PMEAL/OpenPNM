@@ -45,10 +45,11 @@ def lloyd_relaxation(vor, mode='rigorous'):
 
     """
     pts = vor.points
-    for i, r in enumerate(vor.point_region):
-        if np.all(np.array(vor.regions[r]) >= 0):
-            pts[i, :pts.shape[1]] = \
-                get_centroid(vor.vertices[vor.regions[r]], mode=mode)
+    vertices, regions = vor.vertices, vor.regions
+    for i, r in enumerate(vor.point_region.tolist()):
+        region = regions[r]
+        if -1 not in region:
+            pts[i] = get_centroid(vertices[region], mode=mode)
     if pts.shape[1] == 2:
         pts = np.c_[pts, np.zeros_like(pts[:, 0])]
     return pts
@@ -84,8 +85,7 @@ def get_centroid(pts, mode='rigorous'):
     """
     if mode == 'rigorous':
         tri = sptl.Delaunay(pts)
-        CoM = center_of_mass(simplices=tri.simplices.astype(np.int_),
-                             points=tri.points.astype(float))
+        CoM = center_of_mass(simplices=tri.simplices, points=tri.points)
     elif mode == 'fast':
         CoM = pts.mean(axis=0)
     return CoM
@@ -98,28 +98,12 @@ def get_centroid(pts, mode='rigorous'):
 # so I'm commenting out the decorator for now.
 # @njit
 def center_of_mass(simplices, points):
-    A = []
-    centroids = np.zeros((simplices.shape[0], points.shape[1]), dtype=float)
-    for i, s in enumerate(simplices):
-        xy = points[s]
-        cen = np.sum(points[s], axis=0)/simplices.shape[1]
-        centroids[i, :] = cen.astype(float)
-        if xy.shape[1] == 2:  # In 2D
-            # Use Heron's formula to find area of arbitrary triangle
-            a = np.sqrt((xy[0, 0] - xy[1, 0])**2 + (xy[0, 1] - xy[1, 1])**2)
-            b = np.sqrt((xy[1, 0] - xy[2, 0])**2 + (xy[1, 1] - xy[2, 1])**2)
-            c = np.sqrt((xy[2, 0] - xy[0, 0])**2 + (xy[2, 1] - xy[0, 1])**2)
-            s = (a + b + c)/2
-            temp = np.sqrt(s*(s-a)*(s-b)*(s-c))
-        else:
-            # Using formula from here: https://en.wikipedia.org/wiki/Tetrahedron
-            d = np.concatenate((xy.T, np.ones((1, 4))))  # In 3D
-            temp = np.abs(np.linalg.det(d))/6.0
-            # temp = 0
-        A.append(temp)
-    A = np.array(A, dtype=float)
-    CoM = np.array([(centroids[:, i]*A/A.sum()*len(A)).mean()
-                    for i in range(centroids.shape[1])], dtype=float)
+    xy = points[simplices]  # Coordinates of each simplex, (Ns, Nd+1, Nd)
+    # The determinant of the edge vectors is proportional to the area (2D) or
+    # volume (3D) of each simplex, and the constant cancels in the average
+    A = np.abs(np.linalg.det(xy[:, 1:] - xy[:, :1]))
+    # Area/volume weighted average of the simplex centroids
+    CoM = A @ xy.sum(axis=1)/(A.sum()*simplices.shape[1])
     return CoM
 
 
