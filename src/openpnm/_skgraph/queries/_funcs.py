@@ -352,11 +352,12 @@ def find_neighbor_nodes(network, inds, flatten=True, include_input=False, logic=
     if len(nodes) == 0:
         return []
     am_coo = dict_to_am(g)
-    am = am_coo.tolil(copy=False)
-    rows = am.rows[nodes].tolist()
+    # Only the rows of the input nodes are needed, so slice them from CSR
+    am = am_coo.tocsr()[nodes]
+    rows = np.split(am.indices, am.indptr[1:-1])
     if len(rows) == 0:
         return []
-    n_nodes = am.shape[0]
+    n_nodes = am_coo.shape[0]
     neighbors = am_coo.col[np.isin(am_coo.row, nodes)]
     if logic in ["or", "union", "any"]:
         neighbors = np.unique(neighbors)
